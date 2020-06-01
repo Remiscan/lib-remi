@@ -7,7 +7,12 @@ function autochargeClasses($className)
   { 
     require_once 'class_'.$className.'.php'; 
     return true; 
-  } 
+  }
+  elseif (file_exists('modules/class_'.$className.'.php'))
+  { 
+    require_once 'modules/class_'.$className.'.php'; 
+    return true; 
+  }
   return false; 
 }
 // Indique que la fonction précédente est la fonction d'autoload
