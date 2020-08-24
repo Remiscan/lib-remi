@@ -8,6 +8,7 @@ require_once __DIR__.'/version.php';
 //    /*< ?php ob_start();? >*/
 //    import { ... } from '../_common/abc.js';
 //    import { ... } from './abc.js.php';
+//    import './abc.js.php';
 //    /*< ?php $imports = ob_get_clean();
 //    require_once dirname(__DIR__, 1).'/_common/php/versionize-js-imports.php';
 //    echo versionizeImports($imports, __DIR__); ? >*/
@@ -16,12 +17,13 @@ require_once __DIR__.'/version.php';
 //
 //    import { ... } from '../_common/abc--2020.01.30_16.16.16.js';
 //    import { ... } from './abc--2020.03.11_20.31.18.js.php';
+//    import './abc--2020.03.11_20.31.18.js.php';
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function versionizeImports($imports, $fromDir = __DIR__)
 {
-  preg_match_all('/from \'((?:(?:\.\.)\/?)+|\.)\/(|.+\/)?([a-zA-Z0-9_-]+)(\.js(?:\.php)?)\';/', $imports, $matches);
+  preg_match_all('/(?:from|import) \'((?:(?:\.\.)\/?)+|\.)\/(|.+\/)?([a-zA-Z0-9_-]+)(\.js(?:\.php)?)\';/', $imports, $matches);
   $n = count($matches[0]);
 
   for ($i = 0; $i < $n; $i++)
