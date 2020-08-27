@@ -1,114 +1,162 @@
-let langage;
-const Textes = {};
-let _projet;
+///////////////////////////////////////////////////////////
+// Pour traduire un(e) appli / site web avec ce module : //
+// voir exemple en fin de fichier                        //
+///////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////
-// Peuple l'objet Textes pour pouvoir appeler getString quand on veut,
-// et place le texte français ou anglais aux bons endroits :
-// - en innerHTML des éléments ayant data-string="id" 
-// - en aria-label des éléments ayant data-label="id"
-function traduire(projet)
-{
-  _projet = projet;
+export default class Traduction {
+  constructor(app, path, defaultLanguage = 'fr') {
+    this.app = app;
+    this.path = path;
+    this.Textes = {};
+    this.loaded = false;
+    this.defaultLanguage = defaultLanguage;
+    this.buttonsReady = false;
 
-  const localLang = localStorage.getItem(`${projet}/langage`);
-  const httpLang = document.documentElement.dataset.httpLang;
-  const navLang = navigator.language;
-  let start = 0;
-  if (localLang != null)
-    langage = (localLang == 'fr') ? 'fr' : 'en';
-  else if (httpLang)
-    langage = (httpLang == 'fr') ? 'fr' : 'en';
-  else if (navLang != null)
-    langage = navLang.includes('fr') ? 'fr' : 'en';
-  else
-    langage = 'fr';
-
-  document.documentElement.lang = langage;
-
-  Array.from(document.querySelectorAll('[data-lang]')).forEach(bouton => {
-    if (bouton.dataset.lang == langage)
-    {
-      bouton.disabled = true;
-      bouton.tabIndex = -1;
-    }
+    const localLang = localStorage.getItem(`${this.app}/langage`);
+    const httpLang = document.documentElement.dataset.httpLang;
+    const navLang = navigator.language;
+    if (localLang != null)
+      this.language = localLang
+    else if (httpLang)
+      this.language = httpLang;
+    else if (navLang != null)
+      this.language = navLang.substring(0, 2);
     else
-    {
-      bouton.disabled = false;
-      bouton.tabIndex = 0;
+      this.language = defaultLanguage;
+  }
+
+  // Initialise le module de traduction pour ${projet}
+  async ready() {
+    if (this.loaded === true) return true;
+
+    let response = await fetch(this.path);
+    if (response.status !== 200) 
+      throw '[:(] Erreur ' + response.status + ' lors de la requête';
+    response = await response.json();
+
+    this.Textes = response;
+    this.loaded = true;
+    return true;
+  }
+
+  // Initialise les boutons pour changer de langue
+  async initLanguageButtons() {
+    if (this.buttonsReady) return true;
+    try {
+      Array.from(document.querySelectorAll('.bouton-langage')).forEach(bouton => {
+        bouton.addEventListener('click', async () => {
+          await this.switchLanguage(bouton.dataset.lang);
+          await this.traduire();
+        });
+      });
+      this.buttonsReady = true;
+      return true;
     }
-  });
+    catch(error) {
+      console.error(error);
+      return false;
+    }
+  }
 
-  const version = document.querySelector('link#strings').dataset.version || document.documentElement.dataset.version;
+  // Récupère un string dans la langue paramétrée de manière synchrone
+  getString(id, lang = false) {
+    const language = lang || this.language;
+    if (!this.loaded) throw 'La Traduction n\'est pas prête';
+    return this.Textes[language][id] || this.Textes[this.defaultLanguage][id] || 'undefined string';
+  }
 
-  return new Promise((resolve, reject) => {
-    if (Object.keys(Textes).length === 0 && Textes.constructor === Object)
-    {
-      start = 1;
+  // Change la langue paramétrée
+  async switchLanguage(lang = false)
+  {
+    try {
+      let nextLanguage = lang;
+      if (lang == false) {
+        const supportedLanguages = await this.supportedLanguages;
+        const k = supportedLanguages.findIndex(l => l == this.language);
+        nextLanguage = supportedLanguages[(k + 1) % supportedLanguages.length];
+      }
+      this.language = nextLanguage;
+      return true;
+    }
+    catch(error) {
+      console.error(error);
+      return false;
+    }
+  }
 
-      fetch(`/${projet}/strings--${version}.json`)
-      .then(response => {
-        if (response.status == 200)
-          return response;
+  set language(lang) {
+    localStorage.setItem(`${this.app}/langage`, lang);
+  }
+
+  get language() {
+    return localStorage.getItem(`${this.app}/langage`) || this.defaultLanguage;
+  }
+
+  get supportedLanguages() {
+    return this.ready().then(() => Object.getOwnPropertyNames(this.Textes));
+  }
+
+  async traduire(element = document, language = this.language) {
+    try {
+      await this.ready();
+      if (language != this.language) await this.switchLanguage(language);
+
+      // <html lang>
+      if (element == document) document.documentElement.lang = this.language;
+
+      // Dés/active les boutons de traduction
+      Array.from(element.querySelectorAll('[data-lang]')).forEach(bouton => {
+        if (bouton.dataset.lang == this.language)
+        {
+          bouton.disabled = true;
+          bouton.tabIndex = -1;
+        }
         else
-          throw '[:(] Erreur ' + response.status + ' lors de la requête';
-      })
-      .then(response => response.json())
-      .then(response => {
-        Textes.fr = response.fr;
-        Textes.en = response.en;
-        Object.freeze(Textes);
-        Object.freeze(Textes.fr);
-        Object.freeze(Textes.en);
-        return resolve();
-      })
-      .catch(error => reject(error));
+        {
+          bouton.disabled = false;
+          bouton.tabIndex = 0;
+        }
+      });
+
+      // Traduit les textes
+      Array.from(element.querySelectorAll('[data-string]')).forEach(e => {
+        e.innerHTML = this.getString(e.dataset.string);
+      });
+
+      // Traduit les aria-labels
+      Array.from(element.querySelectorAll('[data-label]')).forEach(e => {
+        e.setAttribute('aria-label', this.getString(e.dataset.label));
+      });
+
+      return true;
     }
-    else resolve();
-  })
-  .then(() => {
-    if (start && langage == httpLang) return;
-    
-    Array.from(document.querySelectorAll('[data-string]')).forEach(e => {
-      e.innerHTML = getString(e.dataset.string);
-    });
-
-    Array.from(document.querySelectorAll('[data-label]')).forEach(e => {
-      e.setAttribute('aria-label', getString(e.dataset.label));
-    });
-
-    return;
-  })
-  .catch(error => console.error(error));
+    catch(error) {
+      console.error(error);
+      return false;
+    }
+  }
 }
 
+/*************************
+ * Exemple de traduction *
+ *************************/
 
-///////////////////////////////////////////////////////////////////////////
-// Récupère un string dans la langue choisie, et en français si non-traduit
-function getString(id, lang = langage)
-{
-  return Textes[lang][id] || Textes['fr'][id] || 'undefined string';
+/*
+import DefTraduction from '../../_common/js/traduction.js';
+
+class ExtTraduction extends DefTraduction {
+  constructor() {
+    const version = document.querySelector('link#strings').dataset.version || document.documentElement.dataset.version || 0;
+    const path = `/app/strings--${version}.json`;
+    super('app', path);
+  }
+
+  async traduire(element = document) {
+    await super.traduire(element);
+    // Faire les opérations de traduction spécifiques à l'appli ici
+  }
 }
 
-
-//////////////////////////////////
-// Change la langue entre FR et EN
-function switchLangage(lang = false)
-{
-  if (!lang)
-    langage = (langage == 'fr') ? 'en' : 'fr';
-  else if (['fr', 'en'].includes(lang))
-    langage = lang;
-  localStorage.setItem(`${_projet}/langage`, langage);
-  return Promise.resolve();
-}
-
-
-/////////////////////////////
-// Récupère le langage actuel
-function getLangage()
-{
-  return langage;
-}
-
-export { traduire, getString, switchLangage, getLangage };
+export const Traduction = new ExtTraduction();
+export const getString = Traduction.getString.bind(Traduction);
+*/
