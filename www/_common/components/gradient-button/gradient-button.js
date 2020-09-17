@@ -6,7 +6,10 @@ template.innerHTML = `
     position: relative;
     --padding: .5em 1em;
     --hover-text-color: white;
+    --hover-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
     --text-shadow: 0 0 2px black;
+    font-family: system-ui;
+    font-weight: 600;
   }
 
   /* Native button functionality */
@@ -17,8 +20,7 @@ template.innerHTML = `
     appearance: none;
     background: none;
     border: none;
-    font-family: inherit;
-    font-size: inherit;
+    font: inherit;
     cursor: pointer;
     padding: 0;
     margin: 0;
@@ -72,7 +74,7 @@ template.innerHTML = `
   }
 
   button:active>.hover-text {
-    filter: grayscale(.5);
+    background-image: var(--hover-background-overlay), var(--gradient);
   }
 
   /* Invisible text for sizing purposes */
@@ -95,7 +97,7 @@ template.innerHTML = `
 </button>
 `;
 
-class RainbowButton extends HTMLElement {
+class GradientButton extends HTMLElement {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
@@ -106,7 +108,7 @@ class RainbowButton extends HTMLElement {
     return ['text', 'border-width'];
   }
 
-  update(attributes = RainbowButton.observedAttributes) {
+  update(attributes = GradientButton.observedAttributes) {
     if (!this.ready) return;
 
     text: {
@@ -137,4 +139,4 @@ class RainbowButton extends HTMLElement {
     this.update([name]);
   }
 }
-if (!customElements.get('rainbow-button')) customElements.define('rainbow-button', RainbowButton);
+if (!customElements.get('gradient-button')) customElements.define('gradient-button', GradientButton);
