@@ -4,10 +4,12 @@ template.innerHTML = `
   :host {
     display: inline-grid;
     position: relative;
+    --gradient: linear-gradient(to right, royalblue 0% 100%);
     --padding: .5em 1em;
     --hover-text-color: white;
     --hover-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
     --text-shadow: 0 0 2px black;
+    --text-filter: none;
     font-family: system-ui;
     font-weight: 600;
   }
@@ -57,6 +59,7 @@ template.innerHTML = `
     display: grid;
     place-items: center;
     z-index: 1;
+    filter: var(--text-filter);
   }
 
   .hover-text {

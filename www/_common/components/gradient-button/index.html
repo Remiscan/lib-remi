@@ -15,6 +15,7 @@
 
   gradient-button:nth-of-type(1) {
     --gradient: repeating-linear-gradient(-45deg, hsl(2,80%,50%) 0, hsl(24,100%,50%) 5px, hsl(39,100%,50%) 10px, hsl(70,100%,50%) 15px, hsl(158,100%,50%) 20px, hsl(230,70%,50%) 25px, hsl(252,100%,70%) 30px, hsl(2,80%,50%) 35px);
+    --text-filter: brightness(1.5);
   }
 
   gradient-button:nth-of-type(2) {
@@ -28,8 +29,13 @@
     --hover-text-color: black;
     --text-shadow: none;
   }
+
+  gradient-button:nth-of-type(4) {
+    --text-filter: brightness(1.5);
+  }
 </style>
 
 <gradient-button text="Test" border-width="2"></gradient-button>
 <gradient-button text="Ça va bien ?" border-width="3"></gradient-button>
 <gradient-button text="Moi je vais bien" border-width="2"></gradient-button>
+<gradient-button text="J'aime les frites" border-width="2"></gradient-button>
