@@ -20,7 +20,16 @@
   gradient-button:nth-of-type(2) {
     --gradient: linear-gradient(to right, plum 0%, mediumslateblue 100%);
   }
+
+  gradient-button:nth-of-type(3) {
+    --gradient: radial-gradient(pink 0%, aquamarine 100%);
+    font-size: 1.2em;
+    font-weight: 800;
+    --hover-text-color: black;
+    --text-shadow: none;
+  }
 </style>
 
 <gradient-button text="Test" border-width="2"></gradient-button>
-<gradient-button text="Ça va bien ?" border-width="2"></gradient-button>
+<gradient-button text="Ça va bien ?" border-width="3"></gradient-button>
+<gradient-button text="Moi je vais bien" border-width="2"></gradient-button>
