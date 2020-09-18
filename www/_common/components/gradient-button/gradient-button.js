@@ -4,14 +4,24 @@ template.innerHTML = `
   :host {
     display: inline-grid;
     position: relative;
-    --gradient: linear-gradient(to right, royalblue 0% 100%);
-    --padding: .5em 1em;
-    --hover-text-color: white;
-    --hover-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
-    --text-shadow: 0 0 2px black;
-    --text-filter: none;
     font-family: system-ui;
     font-weight: 600;
+
+    /* --- Customizable properties --- */
+    /* Background & text gradient */
+    --gradient: linear-gradient(to right, royalblue 0% 100%);
+    /* Padding around text */
+    --padding: .5em 1em;
+    /* Color of text on hover */
+    --hover-text-color: white;
+    /* Overlay over background on click */
+    --active-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
+    /* Shadow around text */
+    --text-shadow: 0 0 2px black;
+    /* Shadow around text on hover */
+    --hover-text-shadow: var(--text-shadow);
+    /* Filter applied to text */
+    --text-filter: none;
   }
 
   /* Native button functionality */
@@ -27,6 +37,7 @@ template.innerHTML = `
     padding: 0;
     margin: 0;
     display: grid;
+    place-items: center;
     padding: var(--padding);
   }
 
@@ -71,13 +82,14 @@ template.innerHTML = `
     transition: opacity .15s linear;
   }
 
-  button:hover>.hover-text {
+  button:hover>.hover-text,
+  button:focus>.hover-text {
     opacity: 1;
-    text-shadow: var(--text-shadow);
+    text-shadow: var(--hover-text-shadow);
   }
 
   button:active>.hover-text {
-    background-image: var(--hover-background-overlay), var(--gradient);
+    background-image: var(--active-background-overlay), var(--gradient);
   }
 
   /* Invisible text for sizing purposes */
