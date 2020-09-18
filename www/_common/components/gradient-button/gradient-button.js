@@ -17,11 +17,11 @@ template.innerHTML = `
     /* Overlay over background on click */
     --active-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
     /* Shadow around text */
-    --text-shadow: 0 0 2px black;
+    --text-shadow: 0 0 0 transparent;
     /* Shadow around text on hover */
-    --hover-text-shadow: var(--text-shadow);
+    --hover-text-shadow: 0 0 2px rgba(0, 0, 0, .7);
     /* Filter applied to text */
-    --text-filter: none;
+    --text-filter: brightness(1);
   }
 
   /* Native button functionality */
@@ -38,21 +38,17 @@ template.innerHTML = `
     margin: 0;
     display: grid;
     place-items: center;
-    padding: var(--padding);
   }
 
   /* Border and text sharing the same gradient */
   .border,
-  .visible-text,
+  .gradient-text,
   .hover-text {
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
     background-image: var(--gradient);
     grid-row: 1;
     grid-column: 1;
-    position: absolute;
   }
 
   .border {
@@ -63,14 +59,15 @@ template.innerHTML = `
     z-index: 0;
   }
 
-  .visible-text {
+  .gradient-text {
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
     display: grid;
     place-items: center;
     z-index: 1;
-    filter: var(--text-filter);
+    position: relative;
+    filter: drop-shadow(var(--text-shadow)) var(--text-filter);
   }
 
   .hover-text {
@@ -79,36 +76,36 @@ template.innerHTML = `
     place-items: center;
     z-index: 2;
     opacity: 0;
-    transition: opacity .15s linear;
+    transition: opacity .1s linear;
+    user-select: none;
+  }
+
+  .text {
+    padding: var(--padding);
+  }
+
+  .hover-text>.text {
+    filter: drop-shadow(var(--hover-text-shadow));
   }
 
   button:hover>.hover-text,
   button:focus>.hover-text {
     opacity: 1;
-    text-shadow: var(--hover-text-shadow);
   }
 
   button:active>.hover-text {
     background-image: var(--active-background-overlay), var(--gradient);
   }
-
-  /* Invisible text for sizing purposes */
-  .text {
-    color: transparent;
-    user-select: none;
-    grid-row: 1;
-    grid-column: 1;
-    position: relative;
-    z-index: 0;
-    text-shadow: var(--text-shadow);
-  }
 </style>
 
 <button>
   <div class="border"></div>
-  <div class="visible-text"></div>
-  <div class="hover-text" aria-hidden="true"></div>
-  <div class="text" aria-hidden="true"></div>
+  <div class="gradient-text">
+    <span class="text"></span>
+  </div>
+  <div class="hover-text" aria-hidden="true">
+    <span class="text"></span>
+  </div>
 </button>
 `;
 
@@ -128,9 +125,9 @@ class GradientButton extends HTMLElement {
 
     text: {
       if (!attributes.includes('text')) break text;
-      this.shadowRoot.querySelector('.visible-text').innerHTML = this.getAttribute('text');
-      this.shadowRoot.querySelector('.hover-text').innerHTML = this.getAttribute('text');
-      this.shadowRoot.querySelector('.text').innerHTML = this.getAttribute('text');
+      //this.shadowRoot.querySelector('.gradient-text').innerHTML = this.getAttribute('text');
+      //this.shadowRoot.querySelector('.hover-text').innerHTML = this.getAttribute('text');
+      Array.from(this.shadowRoot.querySelectorAll('.text')).forEach(span => span.innerHTML = this.getAttribute('text'));
     }
 
     const size = this.getBoundingClientRect();
