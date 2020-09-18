@@ -82,6 +82,7 @@ template.innerHTML = `
 
   .text {
     padding: var(--padding);
+    white-space: nowrap;
   }
 
   .hover-text>.text {
@@ -125,9 +126,9 @@ class GradientButton extends HTMLElement {
 
     text: {
       if (!attributes.includes('text')) break text;
-      //this.shadowRoot.querySelector('.gradient-text').innerHTML = this.getAttribute('text');
-      //this.shadowRoot.querySelector('.hover-text').innerHTML = this.getAttribute('text');
-      Array.from(this.shadowRoot.querySelectorAll('.text')).forEach(span => span.innerHTML = this.getAttribute('text'));
+      for (const span of Array.from(this.shadowRoot.querySelectorAll('.text'))) {
+        span.innerHTML = this.getAttribute('text');
+      }
     }
 
     const size = this.getBoundingClientRect();
