@@ -129,6 +129,10 @@ class GradientButton extends HTMLElement {
       for (const span of Array.from(this.shadowRoot.querySelectorAll('.text'))) {
         span.innerHTML = this.getAttribute('text');
       }
+      /* Placing the text in two elements allows a smoother transition on hover,
+      because both text elements have different filters & shadows applied that
+      don't transition as smoothly as the current opacity transition. This subtle
+      but perceptible difference can be observed in the CSS-only version. */
     }
 
     const size = this.getBoundingClientRect();
