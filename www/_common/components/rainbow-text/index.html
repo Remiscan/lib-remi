@@ -1,0 +1,132 @@
+<head>
+  <meta charset="utf-8">
+  <script src="gradient-button.js"></script>
+</head>
+
+<style>
+  :root {
+    --easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+    --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+    --easing-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui;
+  }
+  body {
+    background-color: hsl(300, 20%, 10%);
+    background-size: 64px 64px;
+    background-position: 0 0, 32px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  p {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .rainbow-text {
+    --band-number: 6;
+    --gradient: repeating-linear-gradient(to right,
+      hsl(0, 100%, 90%) 0,
+      hsl(39, 100%, 90%) calc(1 * 100% / var(--band-number)),
+      hsl(60, 100%, 90%) calc(2 * 100% / var(--band-number)),
+      hsl(120, 100%, 90%) calc(3 * 100% / var(--band-number)),
+      hsl(240, 100%, 90%) calc(4 * 100% / var(--band-number)),
+      hsl(300, 100%, 90%) calc(5 * 100% / var(--band-number)),
+      hsl(0, 100%, 90%) calc(7 * 100% / var(--band-number))
+    );
+
+    background-image: var(--gradient);
+    background-size: calc(var(--band-number) * 50%) 100%;
+    background-position: 0 0;
+    background-repeat: repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbow-text-animation 40s linear infinite;
+    animation-delay: calc(var(--delay, 0) * -1s);
+  }
+
+  @keyframes rainbow-text-animation {
+    0% { background-position: 0 0; }
+    100% { background-position: calc(100% * var(--band-number)) 0; }
+  }
+
+  .nav-link {
+    --color: red;
+    --background-color: rgba(255, 255, 255);
+    --underline-width: .1em;
+    --animation-duration: .2s;
+    --animation-easing: var(--easing-standard);
+
+    font-size: 4em;
+    font-weight: 600;
+    text-decoration: none;
+    color: transparent;
+    background: linear-gradient(to bottom,
+      var(--background-color) 0 calc(50% - var(--underline-width)),
+      var(--color) calc(50% - var(--underline-width)) 100%
+    );
+    background-size: 100% 200%;
+    background-position: 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: background-position var(--animation-duration) var(--animation-easing);
+    position: relative;
+    overflow: hidden;
+    padding: .2em .3em;
+    border-radius: .1em;
+  }
+
+  .nav-link::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: var(--background-color);
+    z-index: 0;
+    pointer-events: none;
+    transform: translateY(calc(100% - var(--underline-width)));
+    transition: transform var(--animation-duration) var(--animation-easing);
+    z-index: -1;
+  }
+
+  .nav-link:hover {
+    background-position: 0 100%;
+  }
+
+  .nav-link:hover::before {
+    transform: translateY(0);
+  }
+</style>
+
+<p style="flex-direction: column; justify-content: flex-start; align-items: flex-start; font-size: 4em; font-weight: 600; color: hsl(300, 25%, 70%);">
+
+<span>Je suis <span class="rainbow-text">Rémi</span>,</span>
+<span><span class="rainbow-text">développeur web</span> autodidacte</span>
+<span>et amateur de minimalisme.</span>
+
+<p style="gap: 1em">
+
+<a class="nav-link" style="--color: hsl(240, 70%, 35%);">Moi</a>
+<a class="nav-link" style="--color: hsl(170, 70%, 30%);">Projets</a>
+<a class="nav-link" style="--color: hsl(60, 70%, 30%);">Articles</a>
+<a class="nav-link" style="--color: hsl(30, 70%, 35%);">Contact</a>
+
+<script>
+  for (const text of Array.from(document.querySelectorAll('.rainbow-text'))) {
+    const random = Math.round(40 * Math.random());
+    text.style.setProperty('--delay', random);
+  }
+</script>
