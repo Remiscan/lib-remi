@@ -53,6 +53,7 @@
     color: transparent;
     animation: rainbow-text-animation 40s linear infinite;
     animation-delay: calc(var(--delay, 0) * -1s);
+    font-weight: 600;
   }
 
   @keyframes rainbow-text-animation {
@@ -62,12 +63,12 @@
 
   .nav-link {
     --color: red;
-    --background-color: rgba(255, 255, 255);
+    --background-color: hsl(300, 100%, 100%);
     --underline-width: .1em;
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
 
-    font-size: 4em;
+    font-size: 2em;
     font-weight: 600;
     text-decoration: none;
     color: transparent;
@@ -111,7 +112,7 @@
   }
 </style>
 
-<p style="flex-direction: column; justify-content: flex-start; align-items: flex-start; font-size: 4em; font-weight: 600; color: hsl(300, 25%, 70%);">
+<p style="flex-direction: column; justify-content: flex-start; align-items: flex-start; font-size: 3.5em; font-weight: 400; color: hsl(300, 25%, 70%);">
 
 <span>Je suis <span class="rainbow-text">Rémi</span>,</span>
 <span><span class="rainbow-text">développeur web</span> autodidacte</span>
@@ -119,10 +120,10 @@
 
 <p style="gap: 1em">
 
-<a class="nav-link" style="--color: hsl(240, 70%, 35%);">Moi</a>
-<a class="nav-link" style="--color: hsl(170, 70%, 30%);">Projets</a>
-<a class="nav-link" style="--color: hsl(60, 70%, 30%);">Articles</a>
-<a class="nav-link" style="--color: hsl(30, 70%, 35%);">Contact</a>
+<a class="nav-link" style="--color: hsl(250, 70%, 40%);">Moi</a>
+<a class="nav-link" style="--color: hsl(180, 70%, 25%);">Projets</a>
+<a class="nav-link" style="--color: hsl(25, 70%, 35%);">Articles</a>
+<a class="nav-link" style="--color: hsl(0, 0%, 35%);">Contact</a>
 
 <script>
   for (const text of Array.from(document.querySelectorAll('.rainbow-text'))) {
