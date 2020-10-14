@@ -121,7 +121,7 @@
 <p style="display: block; margin: 0 auto; font-size: 3.5em; font-weight: 400; color: hsl(300, 25%, 70%); max-width: 26ch;">
 
 <span>Je suis <strong>Rémi</strong>,</span><br>
-<span><strong style="--delay: 10;">développeur web</strong> autodidacte et amateur de minimalisme.</span>
+<span><strong>développeur web</strong> autodidacte et amateur de minimalisme.</span>
 
 <p style="gap: 1.5em">
 
@@ -131,10 +131,14 @@
 <a class="nav-link" href="#" style="--color: hsl(0, 0%, 35%);">Contact</a>
 
 <script>
+  function prepareRainbowText(conteneur, step = 0) {
   const random = Math.round(40 * Math.random());
   let i = 0;
-  for (const text of Array.from(document.querySelectorAll('strong'))) {
-    text.style.setProperty('--delay', random + i * 10);
+    for (const text of Array.from(conteneur.querySelectorAll('strong'))) {
+      text.style.animationDelay = `-${random + i * step}s`;
     i++;
   }
+  }
+  
+  prepareRainbowText(document);
 </script>
