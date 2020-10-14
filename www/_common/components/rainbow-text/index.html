@@ -68,6 +68,7 @@
   .nav-link {
     --color: red;
     --background-color: hsl(300, 100%, 100%);
+    --inactive-background-color:  hsl(300, 25%, 70%, .5);
     --underline-width: .2em;
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
@@ -99,11 +100,12 @@
     position: absolute;
     top: 0;
     left: 0;
-    background-color: var(--background-color);
+    background-color: var(--inactive-background-color);
     z-index: 0;
     pointer-events: none;
     transform: translateY(calc(100% - var(--underline-width)));
-    transition: transform var(--animation-duration) var(--animation-easing);
+    transition: transform var(--animation-duration) var(--animation-easing),
+                background-color calc(0.5 * var(--animation-duration)) var(--easing-decelerate) calc(0.5 * var(--animation-duration));
     z-index: -1;
     border-radius: calc(.5 * var(--underline-width));
   }
@@ -113,7 +115,10 @@
   }
 
   .nav-link:hover::before {
+    background-color: var(--background-color);
     transform: translateY(0);
+    opacity: 1;
+    transition: transform var(--animation-duration) var(--animation-easing);
   }
 </style>
 
