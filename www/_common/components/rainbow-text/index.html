@@ -68,7 +68,7 @@
   .nav-link {
     --color: red;
     --background-color: hsl(300, 100%, 100%);
-    --underline-width: .1em;
+    --underline-width: .15em;
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
 
@@ -86,9 +86,9 @@
     background-clip: text;
     transition: background-position var(--animation-duration) var(--animation-easing);
     position: relative;
-    overflow: hidden;
-    padding: .2em .3em;
-    border-radius: .1em;
+    overflow-y: hidden;
+    padding: calc(2 * var(--underline-width)) calc(3 * var(--underline-width));
+    border-radius: var(--underline-width);
   }
 
   .nav-link::before {
@@ -121,7 +121,7 @@
 <span>Je suis <strong>Rémi</strong>,</span><br>
 <span><strong style="--delay: 10;">développeur web</strong> autodidacte et amateur de minimalisme.</span>
 
-<p style="gap: 1em">
+<p style="gap: 1.5em">
 
 <a class="nav-link" href="#" style="--color: hsl(250, 70%, 40%);">Moi</a>
 <a class="nav-link" href="#" style="--color: hsl(180, 70%, 25%);">Projets</a>
@@ -129,8 +129,10 @@
 <a class="nav-link" href="#" style="--color: hsl(0, 0%, 35%);">Contact</a>
 
 <script>
-  /*for (const text of Array.from(document.querySelectorAll('strong'))) {
-    const random = Math.round(40 * Math.random());
-    text.style.setProperty('--delay', random);
-  }*/
+  const random = Math.round(40 * Math.random());
+  let i = 0;
+  for (const text of Array.from(document.querySelectorAll('strong'))) {
+    text.style.setProperty('--delay', random + i * 10);
+    i++;
+  }
 </script>
