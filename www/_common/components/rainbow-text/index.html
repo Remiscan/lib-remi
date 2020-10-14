@@ -1,6 +1,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1">
+
+  <!--<link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Raleway:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:wght@400;600&display=swap" media="print" onload="this.media='all'">-->
 </head>
 
 <style>
@@ -16,7 +19,7 @@
   html, body {
     height: 100%;
     margin: 0;
-    font-family: system-ui;
+    font-family: Roboto, system-ui;
   }
   body {
     background-color: hsl(300, 20%, 10%);
@@ -69,11 +72,10 @@
     --color: red;
     --background-color: hsl(300, 100%, 100%);
     --inactive-background-color:  hsl(300, 25%, 70%, .5);
-    --underline-width: .2em;
+    --underline-width: max(4px, .2em);
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
 
-    font-size: 2em;
     font-weight: 600;
     text-decoration: none;
     color: transparent;
@@ -88,7 +90,7 @@
     transition: background-position var(--animation-duration) var(--animation-easing);
     position: relative;
     overflow-y: hidden;
-    padding: calc(2 * var(--underline-width)) calc(2.5 * var(--underline-width));
+    padding: calc(1.5 * var(--underline-width)) calc(2 * var(--underline-width));
     border-radius: calc(.5 * var(--underline-width));
   }
 
@@ -120,19 +122,46 @@
     opacity: 1;
     transition: transform var(--animation-duration) var(--animation-easing);
   }
+
+  .nav-link.invert-colors,
+  .nav-link.no-color {
+    background: none;
+    transition: none;
+    color: white;
+    font-weight: 400;
+  }
+
+  .nav-link.invert-colors:hover::before {
+    background-color: var(--color);
+  }
+
+  .nav-link.no-color:hover::before {
+    background-color: var(--inactive-background-color);
+  }
 </style>
 
-<p style="display: block; margin: 0 auto; font-size: 3.5em; font-weight: 400; color: hsl(300, 25%, 70%); max-width: 26ch;">
+<p style="display: block; margin: 0 auto; font-size: 3.5em; /*font-family: Raleway;*/ font-family: system-ui; font-weight: 400; color: hsl(300, 25%, 70%); max-width: 25ch;">
 
 <span>Je suis <strong>Rémi</strong>,</span><br>
 <span><strong>développeur web</strong> autodidacte et amateur de minimalisme.</span>
 
-<p style="gap: 1.5em">
+<p style="gap: 1em; font-size: 2em;">
 
 <a class="nav-link" href="#" style="--color: hsl(250, 100%, 40%);">Moi</a>
 <a class="nav-link" href="#" style="--color: hsl(170, 100%, 25%);">Projets</a>
 <a class="nav-link" href="#" style="--color: hsl(25, 100%, 35%);">Articles</a>
 <a class="nav-link" href="#" style="--color: hsl(0, 0%, 35%);">Contact</a>
+
+<p style="gap: 1em; font-size: 1em;">
+
+<a class="nav-link with-icon invert-colors" href="#" style="--color: #6e5494;">GitHub</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(275, 70%, 40%);">CodePen</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: #0077B5;">LinkedIn</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(205, 99%, 55%);">Twitter</a>
+
+<p style="gap: 1em; font-size: 1em;">
+
+<a class="nav-link with-icon no-color" href="#">Lien normal</a>
 
 <script>
   function prepareRainbowText(conteneur, step = 0) {
