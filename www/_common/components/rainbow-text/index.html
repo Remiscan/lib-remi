@@ -32,7 +32,8 @@
     flex-wrap: wrap;
   }
 
-  .rainbow-text {
+  .rainbow-text,
+  strong {
     --band-number: 6;
     --gradient: repeating-linear-gradient(to right,
       hsl(0, 100%, 90%) 0,
@@ -114,8 +115,8 @@
 
 <p style="flex-direction: column; justify-content: flex-start; align-items: flex-start; font-size: 3.5em; font-weight: 400; color: hsl(300, 25%, 70%);">
 
-<span>Je suis <span class="rainbow-text">Rémi</span>,</span>
-<span><span class="rainbow-text">développeur web</span> autodidacte</span>
+<span>Je suis <strong>Rémi</strong>,</span>
+<span><strong>développeur web</strong> autodidacte</span>
 <span>et amateur de minimalisme.</span>
 
 <p style="gap: 1em">
@@ -126,7 +127,7 @@
 <a class="nav-link" style="--color: hsl(0, 0%, 35%);">Contact</a>
 
 <script>
-  for (const text of Array.from(document.querySelectorAll('.rainbow-text'))) {
+  for (const text of Array.from(document.querySelectorAll('strong'))) {
     const random = Math.round(40 * Math.random());
     text.style.setProperty('--delay', random);
   }
