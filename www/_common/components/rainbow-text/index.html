@@ -112,11 +112,15 @@
     border-radius: calc(.5 * var(--underline-width));
   }
 
-  .nav-link:hover {
+  .nav-link:hover,
+  .nav-link:focus,
+  .nav-link.selected {
     background-position: 0 100%;
   }
 
-  .nav-link:hover::before {
+  .nav-link:hover::before,
+  .nav-link:focus::before,
+  .nav-link.selected::before {
     background-color: var(--background-color);
     transform: translateY(0);
     opacity: 1;
@@ -131,11 +135,13 @@
     font-weight: 400;
   }
 
-  .nav-link.invert-colors:hover::before {
+  .nav-link.invert-colors:hover::before,
+  .nav-link.invert-colors:focus::before {
     background-color: var(--color);
   }
 
-  .nav-link.no-color:hover::before {
+  .nav-link.no-color:hover::before,
+  .nav-link.no-color:focus::before {
     background-color: var(--inactive-background-color);
   }
 </style>
