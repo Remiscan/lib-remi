@@ -19,7 +19,7 @@
   html, body {
     height: 100%;
     margin: 0;
-    font-family: Roboto, system-ui;
+    font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ubuntu, 'Helvetica Neue', sans-serif;
   }
   body {
     background-color: hsl(300, 20%, 10%);
@@ -39,34 +39,45 @@
     flex-wrap: wrap;
   }
 
+
+
   .rainbow-text,
   strong {
-    --band-number: 6;
-    --gradient: repeating-linear-gradient(to right,
-      hsl(0, 100%, 90%) 0,
-      hsl(39, 100%, 90%) calc(1 * 100% / var(--band-number)),
-      hsl(60, 100%, 90%) calc(2 * 100% / var(--band-number)),
-      hsl(120, 100%, 90%) calc(3 * 100% / var(--band-number)),
-      hsl(240, 100%, 90%) calc(4 * 100% / var(--band-number)),
-      hsl(300, 100%, 90%) calc(5 * 100% / var(--band-number)),
-      hsl(0, 100%, 90%) calc(6 * 100% / var(--band-number))
-    );
-
-    background-image: var(--gradient);
-    background-size: calc(var(--band-number) * 50%) 100%;
-    background-position: 0 0;
-    background-repeat: repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: rainbow-text-animation 40s linear infinite;
     font-weight: 600;
+    color: hsl(300, 25%, 85%);
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .rainbow-text,
+    strong {
+      --band-number: 6;
+      --gradient: repeating-linear-gradient(to right,
+        hsl(0, 100%, 90%) 0,
+        hsl(39, 100%, 90%) calc(1 * 100% / var(--band-number)),
+        hsl(60, 100%, 90%) calc(2 * 100% / var(--band-number)),
+        hsl(120, 100%, 90%) calc(3 * 100% / var(--band-number)),
+        hsl(240, 100%, 90%) calc(4 * 100% / var(--band-number)),
+        hsl(300, 100%, 90%) calc(5 * 100% / var(--band-number)),
+        hsl(0, 100%, 90%) calc(6 * 100% / var(--band-number))
+      );
+
+      background-image: var(--gradient);
+      background-size: calc(var(--band-number) * 50%) 100%;
+      background-position: 0 0;
+      background-repeat: repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow-text-animation 40s linear infinite;
+    }
   }
 
   @keyframes rainbow-text-animation {
     0% { background-position: 0 0; }
     100% { background-position: calc(100% * var(--band-number)) 0; }
   }
+
+  
 
   .nav-link {
     --color: red;
@@ -144,9 +155,38 @@
   .nav-link.no-color:focus::before {
     background-color: var(--inactive-background-color);
   }
+
+  a:not(.nav-link) {
+    --background-color:  hsl(300, 25%, 70%, .5);
+    --color:  hsl(300, 50%, 80%);
+    --underline-width: max(4px, .2em);
+    --animation-duration: .2s;
+    --animation-easing: var(--easing-standard);
+
+    color: var(--color);
+    text-decoration: none;
+    box-shadow: 0 calc(.5 * var(--underline-width)) 0 0 var(--background-color);
+    padding: 0 .1em;
+    transition: box-shadow var(--animation-duration) var(--animation-easing),
+                background-position var(--animation-duration) var(--animation-easing);
+
+    background-image: linear-gradient(to bottom, transparent 0 50%, hsl(300, 25%, 70%, .25) 50% 100%);
+    background-size: 100% 200%;
+    background-position: 0 0;
+  }
+
+  a:not(.nav-link):hover,
+  a:not(.nav-link):focus {
+    --color: hsl(300, 75%, 90%);
+    --background-color:  hsl(300, 25%, 70%, .25);
+
+    /*box-shadow: none;*/
+    background-position: 0 100%;
+    border-radius: calc(.5 * var(--underline-width));
+  }
 </style>
 
-<p style="display: block; margin: 0 auto; font-size: 3.5em; /*font-family: Raleway;*/ font-family: system-ui; font-weight: 400; color: hsl(300, 25%, 70%); max-width: 25ch;">
+<p style="display: block; margin: 0 auto; font-size: 3.5em; /*font-family: Raleway;*/ font-weight: 400; color: hsl(300, 25%, 70%); max-width: 25ch; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', sans-serif;">
 
 <span>Je suis <strong>Rémi</strong>,</span><br>
 <span><strong>développeur web</strong> autodidacte et amateur de minimalisme.</span>
@@ -158,6 +198,10 @@
 <a class="nav-link" href="#" style="--color: hsl(25, 100%, 35%);">Articles</a>
 <a class="nav-link" href="#" style="--color: hsl(0, 0%, 35%);">Contact</a>
 
+<p style="gap: 1em; font-size: 1.5em;">
+
+<a class="nav-link no-color" href="#">En apprendre + sur moi ></a>
+
 <p style="gap: 1em; font-size: 1em;">
 
 <a class="nav-link with-icon invert-colors" href="#" style="--color: #6e5494;">GitHub</a>
@@ -165,9 +209,9 @@
 <a class="nav-link with-icon invert-colors" href="#" style="--color: #0077B5;">LinkedIn</a>
 <a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(205, 99%, 55%);">Twitter</a>
 
-<p style="gap: 1em; font-size: 1em;">
+<p style="gap: 1em; font-size: 1em; line-height: 1.6em; max-width: 95%; display: block; color: hsl(300, 30%, 90%);;">
 
-<a class="nav-link with-icon no-color" href="#">Lien normal</a>
+Test de texte avec un <a class="with-icon" href="#">lien normal très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très long</a> en plein milieu.
 
 <script>
   function prepareRainbowText(conteneur, step = 0) {
