@@ -2,8 +2,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1">
 
-  <!--<link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Raleway:wght@400;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:wght@400;600&display=swap" media="print" onload="this.media='all'">-->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Raleway:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:wght@400;600&display=swap" media="print" onload="this.media='all'">
 </head>
 
 <style>
@@ -86,23 +86,31 @@
     --underline-width: max(4px, .2em);
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
+    --padding-top: calc(1.5 * var(--underline-width));
 
     font-weight: 600;
     text-decoration: none;
-    color: transparent;
-    background: linear-gradient(to bottom,
-      var(--background-color) 0 calc(50% - var(--underline-width)),
-      var(--color) calc(50% - var(--underline-width)) 100%
-    );
-    background-size: 100% 200%;
-    background-position: 0 0;
-    -webkit-background-clip: text;
-    background-clip: text;
-    transition: background-position var(--animation-duration) var(--animation-easing);
+    color: white;
     position: relative;
     overflow-y: hidden;
-    padding: calc(1.5 * var(--underline-width)) calc(2 * var(--underline-width));
+    overflow-x: visible;
+    padding: var(--padding-top) calc(2 * var(--underline-width));
     border-radius: calc(.5 * var(--underline-width));
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .nav-link {
+      color: transparent;
+      background: linear-gradient(to bottom,
+        var(--background-color) 0 calc(50% - var(--underline-width)),
+        var(--color) calc(50% - var(--underline-width)) 100%
+      );
+      background-size: 100% 200%;
+      background-position: 0 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      transition: background-position var(--animation-duration) var(--animation-easing);
+    }
   }
 
   .nav-link::before {
@@ -156,6 +164,69 @@
     background-color: var(--inactive-background-color);
   }
 
+  @supports (mask: var(--mask)) or (-webkit-mask: var(--mask)) {
+    .nav-link.no-color {
+      --gap: .25ch;
+      --arrow-width: 1.5ch;
+      display: inline-grid;
+      grid-template-columns: auto var(--arrow-width);
+      gap: var(--gap);
+      position: relative;
+    }
+
+    .nav-link.no-color::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: calc(100% - 2 * var(--padding-top));
+      grid-column: -2;
+      background: white;
+      mask: var(--mask);
+      mask-size: auto 100%;
+      mask-position: center;
+      -webkit-mask: var(--mask);
+      -webkit-mask-size: auto 100%;
+      -webkit-mask-position: center;
+      --mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M 9 3 L 15 12 L 9 21' stroke='white' stroke-linecap='round' stroke-width='4' fill='transparent'/%3E%3C/svg%3E");
+      position: absolute;
+      top: var(--padding-top);
+      right: 0;
+      /*transform: translateX(-.25ch);*/
+      transition: transform .2s var(--easing-standard);
+    }
+
+    .nav-link.no-color:hover::after {
+      transform: translateX(0);
+
+      --band-number: 6;
+      --gradient: repeating-linear-gradient(to right,
+        hsl(0, 100%, 80%) 0,
+        hsl(39, 100%, 80%) calc(1 * 100% / var(--band-number)),
+        hsl(60, 100%, 80%) calc(2 * 100% / var(--band-number)),
+        hsl(120, 100%, 80%) calc(3 * 100% / var(--band-number)),
+        hsl(240, 100%, 80%) calc(4 * 100% / var(--band-number)),
+        hsl(300, 100%, 80%) calc(5 * 100% / var(--band-number)),
+        hsl(0, 100%, 80%) calc(6 * 100% / var(--band-number))
+      );
+      --step: 2px;
+
+      background-image: var(--gradient);
+      background-size: calc(var(--band-number) * 200%) 100%;
+      background-position: 0 0;
+      background-repeat: repeat;
+      animation: rainbow-text-animation 80s linear infinite,
+                 back-and-forth 2s linear infinite;
+    }
+  }
+
+  @keyframes back-and-forth {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(calc(-1 * var(--step))); }
+    50% { transform: translateX(0); }
+    75% { transform: translateX(calc(-1 * var(--step))); }
+    100% { transform: translateX(0); }
+  }
+
   a:not(.nav-link) {
     --background-color:  hsl(300, 25%, 70%, .5);
     --color:  hsl(300, 50%, 80%);
@@ -200,7 +271,7 @@
 
 <p style="gap: 1em; font-size: 1.5em;">
 
-<a class="nav-link no-color" href="#">En apprendre + sur moi ></a>
+<a class="nav-link no-color" href="#">En apprendre + sur moi</a>
 
 <p style="gap: 1em; font-size: 1em;">
 
@@ -212,6 +283,14 @@
 <p style="gap: 1em; font-size: 1em; line-height: 1.6em; max-width: 95%; display: block; color: hsl(300, 30%, 90%);;">
 
 Test de texte avec un <a class="with-icon" href="#">lien normal très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très long</a> en plein milieu.
+
+<p>
+
+<svg viewBox="0 0 24 24" style="width: 48px; height: 48px;">
+  <g id="link-arrow">
+    <path d="M 9 3 L 15 12 L 9 21" stroke="white" stroke-linecap="round" stroke-width="4" fill="transparent"/>
+  </g>
+</svg>
 
 <script>
   function prepareRainbowText(conteneur, step = 0) {
