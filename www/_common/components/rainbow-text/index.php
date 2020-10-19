@@ -168,6 +168,8 @@
     .nav-link.no-color {
       --gap: .25ch;
       --arrow-width: 1.5ch;
+      --arrow-color: plum;
+
       display: inline-grid;
       grid-template-columns: auto var(--arrow-width);
       gap: var(--gap);
@@ -180,7 +182,7 @@
       width: 100%;
       height: calc(100% - 2 * var(--padding-top));
       grid-column: -2;
-      background: white;
+      background: var(--arrow-color);
       mask: var(--mask);
       mask-size: auto 100%;
       mask-position: center;
@@ -227,6 +229,14 @@
     100% { transform: translateX(0); }
   }
 
+  .nav-link.invert-colors {
+    display: inline-grid;
+    grid-template-columns: 2ch auto;
+    gap: .75ch;
+  }
+
+
+
   a:not(.nav-link) {
     --background-color:  hsl(300, 25%, 70%, .5);
     --color:  hsl(300, 50%, 80%);
@@ -257,6 +267,8 @@
   }
 </style>
 
+<?php include __DIR__.'/../../../mon-portfolio/images/social.svg' ?>
+
 <p style="display: block; margin: 0 auto; font-size: 3.5em; /*font-family: Raleway;*/ font-weight: 400; color: hsl(300, 25%, 70%); max-width: 25ch; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', sans-serif;">
 
 <span>Je suis <strong>Rémi</strong>,</span><br>
@@ -275,10 +287,22 @@
 
 <p style="gap: 1em; font-size: 1em;">
 
-<a class="nav-link with-icon invert-colors" href="#" style="--color: #6e5494;">GitHub</a>
-<a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(275, 70%, 40%);">CodePen</a>
-<a class="nav-link with-icon invert-colors" href="#" style="--color: #0077B5;">LinkedIn</a>
-<a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(205, 99%, 55%);">Twitter</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: #6e5494;">
+  <svg viewBox="0 0 16 16"><use href="#github" /></svg>
+  GitHub
+</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(275, 70%, 40%);">
+  <svg viewBox="20 20 80 80"><use href="#codepen" /></svg>
+  CodePen
+</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: #0077B5;">
+  <svg viewBox="0 0 24 24"><use href="#linkedin" /></svg>
+  LinkedIn
+</a>
+<a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(205, 99%, 55%);">
+  <svg viewBox="60 60 340 340"><use href="#twitter" /></svg>
+  Twitter
+</a>
 
 <p style="gap: 1em; font-size: 1em; line-height: 1.6em; max-width: 95%; display: block; color: hsl(300, 30%, 90%);;">
 
