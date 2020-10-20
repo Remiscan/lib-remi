@@ -83,7 +83,7 @@
     --color: red;
     --background-color: hsl(300, 100%, 100%);
     --inactive-background-color:  hsl(300, 25%, 70%, .5);
-    --underline-width: max(4px, .2em);
+    --underline-width: max(3px, .2em);
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
     --padding-top: calc(1.5 * var(--underline-width));
@@ -168,7 +168,7 @@
     .nav-link.no-color {
       --gap: .25ch;
       --arrow-width: 1.5ch;
-      --arrow-color: plum;
+      --arrow-color: white;
 
       display: inline-grid;
       grid-template-columns: auto var(--arrow-width);
@@ -177,10 +177,13 @@
     }
 
     .nav-link.no-color::after {
+      --top: 5%;
+      --mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M 9 3 L 15 12 L 9 21' stroke='white' stroke-linecap='round' stroke-width='4' fill='transparent'/%3E%3C/svg%3E");
+
       content: '';
       display: block;
       width: 100%;
-      height: calc(100% - 2 * var(--padding-top));
+      height: calc(100% - 2 * var(--padding-top) - 2 * var(--top));
       grid-column: -2;
       background: var(--arrow-color);
       mask: var(--mask);
@@ -189,17 +192,13 @@
       -webkit-mask: var(--mask);
       -webkit-mask-size: auto 100%;
       -webkit-mask-position: center;
-      --mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M 9 3 L 15 12 L 9 21' stroke='white' stroke-linecap='round' stroke-width='4' fill='transparent'/%3E%3C/svg%3E");
       position: absolute;
-      top: var(--padding-top);
+      top: calc(var(--padding-top) + var(--top));
       right: 0;
-      /*transform: translateX(-.25ch);*/
       transition: transform .2s var(--easing-standard);
     }
 
     .nav-link.no-color:hover::after {
-      transform: translateX(0);
-
       --band-number: 6;
       --gradient: repeating-linear-gradient(to right,
         hsl(0, 100%, 80%) 0,
@@ -296,11 +295,11 @@
   CodePen
 </a>
 <a class="nav-link with-icon invert-colors" href="#" style="--color: #0077B5;">
-  <svg viewBox="0 0 24 24"><use href="#linkedin" /></svg>
+  <svg viewBox="-4 -4 34 34"><use href="#linkedin" /></svg>
   LinkedIn
 </a>
 <a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(205, 99%, 55%);">
-  <svg viewBox="60 60 340 340"><use href="#twitter" /></svg>
+  <svg viewBox="60 60 280 280"><use href="#twitter" /></svg>
   Twitter
 </a>
 
