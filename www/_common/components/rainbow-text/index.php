@@ -86,7 +86,9 @@
     --underline-width: max(3px, .2em);
     --animation-duration: .2s;
     --animation-easing: var(--easing-standard);
-    --padding-top: calc(1.5 * var(--underline-width));
+    --padding-top: max(calc(1.5 * var(--underline-width)), .3em);
+    --padding-left: max(calc(2 * var(--underline-width)), .4em);
+    --border-radius: max(calc(.5 * var(--underline-width)), .1em);
 
     font-weight: 600;
     text-decoration: none;
@@ -94,8 +96,8 @@
     position: relative;
     overflow-y: hidden;
     overflow-x: visible;
-    padding: var(--padding-top) calc(2 * var(--underline-width));
-    border-radius: calc(.5 * var(--underline-width));
+    padding: var(--padding-top) var(--padding-left);
+    border-radius: var(--border-radius);
   }
 
   @supports (background-clip: text) or (-webkit-background-clip: text) {
@@ -128,7 +130,7 @@
     transition: transform var(--animation-duration) var(--animation-easing),
                 background-color calc(0.5 * var(--animation-duration)) var(--easing-decelerate) calc(0.5 * var(--animation-duration));
     z-index: -1;
-    border-radius: calc(.5 * var(--underline-width));
+    border-radius: var(--border-radius);
   }
 
   .nav-link:hover,
@@ -198,7 +200,8 @@
       transition: transform .2s var(--easing-standard);
     }
 
-    .nav-link.no-color:hover::after {
+    .nav-link.no-color:hover::after,
+    .nav-link.no-color:focus::after {
       --band-number: 6;
       --gradient: repeating-linear-gradient(to right,
         hsl(0, 100%, 80%) 0,
@@ -232,6 +235,10 @@
     display: inline-grid;
     grid-template-columns: 2ch auto;
     gap: .75ch;
+  }
+
+  .no-underline {
+    --underline-width: -1px;
   }
 
 
@@ -276,7 +283,7 @@
 <p style="gap: 1em; font-size: 2em;">
 
 <a class="nav-link" href="#" style="--color: hsl(250, 100%, 40%);">Moi</a>
-<a class="nav-link" href="#" style="--color: hsl(170, 100%, 25%);">Projets</a>
+<a class="nav-link no-underline" href="#" style="--color: hsl(170, 100%, 25%);">Projets</a>
 <a class="nav-link" href="#" style="--color: hsl(25, 100%, 35%);">Articles</a>
 <a class="nav-link" href="#" style="--color: hsl(0, 0%, 35%);">Contact</a>
 
@@ -295,7 +302,7 @@
   CodePen
 </a>
 <a class="nav-link with-icon invert-colors" href="#" style="--color: #0077B5;">
-  <svg viewBox="-4 -4 34 34"><use href="#linkedin" /></svg>
+  <svg viewBox="-1 -1 30 30"><use href="#linkedin" /></svg>
   LinkedIn
 </a>
 <a class="nav-link with-icon invert-colors" href="#" style="--color: hsl(205, 99%, 55%);">
