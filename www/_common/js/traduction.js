@@ -43,12 +43,14 @@ export default class Traduction {
   async initLanguageButtons() {
     if (this.buttonsReady) return true;
     try {
-      Array.from(document.querySelectorAll('.bouton-langage')).forEach(bouton => {
-        bouton.addEventListener('click', async () => {
-          await this.switchLanguage(bouton.dataset.lang);
+      for (const bouton of [...document.querySelectorAll('.bouton-langage')]) {
+        bouton.addEventListener('click', async event => {
+          if (bouton.tagName == 'A') event.preventDefault();
+          await this.switchLanguage(bouton.dataset.lang || bouton.lang);
+          window.dispatchEvent(new Event('translate'));
           await this.traduire();
         });
-      });
+      }
       this.buttonsReady = true;
       return true;
     }
@@ -66,8 +68,7 @@ export default class Traduction {
   }
 
   // Change la langue paramétrée
-  async switchLanguage(lang = false)
-  {
+  async switchLanguage(lang = false) {
     try {
       let nextLanguage = lang;
       if (lang == false) {
@@ -105,28 +106,25 @@ export default class Traduction {
       if (element == document) document.documentElement.lang = this.language;
 
       // Dés/active les boutons de traduction
-      Array.from(element.querySelectorAll('[data-lang]')).forEach(bouton => {
-        if (bouton.dataset.lang == this.language)
-        {
+      for (const bouton of [...element.querySelectorAll('[data-lang]')]) {
+        if (bouton.dataset.lang == this.language) {
           bouton.disabled = true;
           bouton.tabIndex = -1;
-        }
-        else
-        {
+        } else {
           bouton.disabled = false;
           bouton.tabIndex = 0;
         }
-      });
+      }
 
       // Traduit les textes
-      Array.from(element.querySelectorAll('[data-string]')).forEach(e => {
+      for (const e of [...element.querySelectorAll('[data-string]')]) {
         e.innerHTML = this.getString(e.dataset.string);
-      });
+      }
 
       // Traduit les aria-labels
-      Array.from(element.querySelectorAll('[data-label]')).forEach(e => {
+      for (const e of [...element.querySelectorAll('[data-label]')]) {
         e.setAttribute('aria-label', this.getString(e.dataset.label));
-      });
+      }
 
       return true;
     }
