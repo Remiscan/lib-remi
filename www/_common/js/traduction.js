@@ -118,7 +118,8 @@ export default class Traduction {
 
       // Traduit les textes
       for (const e of [...element.querySelectorAll('[data-string]')]) {
-        e.innerHTML = this.getString(e.dataset.string);
+        if (e.tagName == 'IMG') e.alt = this.getString(e.dataset.string);
+        else                    e.innerHTML = this.getString(e.dataset.string);
       }
 
       // Traduit les aria-labels
