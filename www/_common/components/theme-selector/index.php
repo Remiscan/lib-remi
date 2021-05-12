@@ -1,4 +1,10 @@
 <style>
+  html {
+    --bg-color: skyblue;
+    --sunmoon-color: black;
+    --sunray-color: grey;
+  }
+
   @media (prefers-color-scheme: light) {
     html {
       --bg-color: skyblue;

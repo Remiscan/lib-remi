@@ -58,9 +58,6 @@ svg.dark #moon-hole>circle {
   transition-delay: .2s;
   transform: translate(0, 0);
 }
-svg:not(.animate) * {
-  transition: none !important;
-}
 
 .selector {
   display: none;

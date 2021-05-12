@@ -19,10 +19,7 @@ const html = `
 
 
 
-const wait = time => new Promise(resolve => setTimeout(resolve, time));
 let cssReady = false;
-const template = document.createElement('template');
-template.innerHTML = html;
 
 
 
@@ -51,17 +48,12 @@ class ThemeSelector extends HTMLElement {
     for (const choice of [...selector.querySelectorAll('input')]) {
       choice.addEventListener('change', async () => {
         // Animates the icon
-        svg.classList.add('animate');
         const chosenTheme = choice.value;
         if (Theme.resolve(chosenTheme) == 'dark') svg.classList.remove('dark');
         else                                      svg.classList.add('dark');
 
         // Sets the theme
         Theme.set(chosenTheme);
-        await wait(700);
-
-        // Re-enables the button
-        svg.classList.remove('animate');
       });
     }
   }
