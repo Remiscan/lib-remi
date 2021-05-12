@@ -36,15 +36,15 @@ const Theme = {
   get: () => currentTheme,
 
 
-  ////////////////////////////////////////////////////////////////////////////
-  // Determines which theme to appy, by translating 'auto' to its actual value
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Determines which theme will be applied, by translating 'auto' to its actual value
   resolve: (theme) => {
     return (theme == 'auto') ? Theme.osTheme() : (supportedThemes.includes(theme)) ? theme : defaultTheme;
   },
 
 
-  /////////////////////////////////////////////////////////////////////////
-  // Determines if the theme corresponds to the OS theme or if it's another
+  /////////////////////////////////////////////////////////////////////////////////
+  // Determines if the applied theme corresponds to the OS theme or if it's another
   unresolve: (theme) => {
     return (theme == Theme.osTheme()) ? 'auto' : (supportedThemes.includes(theme)) ? theme : 'auto';
   },

@@ -7,8 +7,7 @@
       </mask>
     </defs>
 
-    <circle id="sun" cx="60" cy="60" r="50" transform-origin="50% 50%" mask="url(#moon-hole)"/>
-    <g id="sun-rays" transform-origin="50% 50%">
+    <g class="sun-rays" transform-origin="50% 50%">
       <g class="ray" width="120" height="120" transform-origin="60 60" style="--n: 1">
         <path d="M 60 10 L 60 24" stroke-linecap="round" stroke-width="10"/>
       </g>
@@ -34,16 +33,24 @@
         <path d="M 60 13 L 60 19" stroke-linecap="round" stroke-width="10" transform="rotate(315 60 60)"/>
       </g>
     </g>
+    <circle class="sun" cx="60" cy="60" r="50" transform-origin="50% 50%" mask="url(#moon-hole)"/>
   </svg>
 </button>
 
 <div class="selector">
   <input type="radio" name="theme" id="theme-auto" value="auto" checked>
-  <label for="theme-auto" data-string="theme-auto"></label>
+  <label for="theme-auto">
+    <span class="theme-name" data-string="theme-auto">Auto</span>
+    <span class="theme-description" data-string="theme-auto-description">Suit vos paramètres système</span>
+  </label>
 
   <input type="radio" name="theme" id="theme-light" value="light">
-  <label for="theme-auto" data-string="theme-light"></label>
+  <label for="theme-light" data-string="theme-light">
+    <span class="theme-name" data-string="theme-light">Clair</span>
+  </label>
 
   <input type="radio" name="theme" id="theme-dark" value="dark">
-  <label for="theme-auto" data-string="theme-dark"></label>
+  <label for="theme-dark" data-string="theme-dark">
+    <span class="theme-name" data-string="theme-dark">Sombre</span>
+  </label>
 </div>

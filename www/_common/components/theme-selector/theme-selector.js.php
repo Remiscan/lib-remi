@@ -64,13 +64,6 @@ class ThemeSelector extends HTMLElement {
         svg.classList.remove('animate');
       });
     }
-
-    // Initializes theme
-    if (document.readyState != 'complete')
-      window.addEventListener('load', () => Theme.set());
-    else Theme.set();
-    if (Theme.resolve(Theme.get()) == 'dark') svg.classList.remove('dark');
-    else                                      svg.classList.add('dark');
   }
 }
 

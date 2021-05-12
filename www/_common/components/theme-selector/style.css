@@ -43,10 +43,10 @@ svg * {
 #moon-hole>circle {
   transform: translate(40%, -40%);
 }
-#sun {
+.sun {
   transform: scale(.5);
 }
-svg.dark #sun {
+svg.dark .sun {
   transform: scale(1);
 }
 svg.dark .ray {
@@ -64,9 +64,25 @@ svg:not(.animate) * {
 
 .selector {
   display: none;
+  grid-template-columns: auto 1fr;
   position: absolute;
+  left: 100%;
+  width: max-content;
+  max-width: calc(100vw - 1.2rem);
 }
 
 .selector.on {
   display: grid;
+}
+
+.selector>input {
+  grid-column: 1;
+  align-self: center;
+}
+
+.selector>label {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: repeat(auto-fill, 1fr);
 }

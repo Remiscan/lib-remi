@@ -1,11 +1,27 @@
 <style>
-  html.light {
+  @media (prefers-color-scheme: light) {
+    html {
+      --bg-color: skyblue;
+      --sunmoon-color: black;
+      --sunray-color: grey;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html {
+      --bg-color: darkblue;
+      --sunmoon-color: white;
+      --sunray-color: lightgrey;
+    }
+  }
+
+  html[data-theme="light"] {
     --bg-color: skyblue;
     --sunmoon-color: black;
     --sunray-color: grey;
   }
 
-  html.dark {
+  html[data-theme="dark"] {
     --bg-color: darkblue;
     --sunmoon-color: white;
     --sunray-color: lightgrey;
@@ -16,6 +32,7 @@
     display: grid;
     grid-template-rows: repeat(10, 5rem);
     grid-template-columns: repeat(10, 5rem);
+    color: var(--sunmoon-color);
   }
 
   theme-selector {
@@ -42,9 +59,8 @@
   ////////////////////////////////
   // Gère les changements de thème
   window.addEventListener('themechange', event => {
-    console.log('Theme change requested:', event.detail.theme, '/', event.detail.requestedTheme);
+    console.log('Theme change requested:', event.detail.theme, '/', event.detail.resolvedTheme);
     const html = document.documentElement;
-    html.classList.remove('light', 'dark');
-    html.classList.add(event.detail.resolvedTheme);
+    html.dataset.theme = event.detail.theme;
   });
 </script>
