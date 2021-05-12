@@ -1,72 +1,64 @@
-<style>
-  html {
-    --bg-color: skyblue;
-    --sunmoon-color: black;
-    --sunray-color: grey;
-  }
+<?php
+$theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' ? 'dark' : 'auto');
+?>
 
-  @media (prefers-color-scheme: light) {
-    html {
-      --bg-color: skyblue;
-      --sunmoon-color: black;
-      --sunray-color: grey;
-    }
-  }
+<html data-theme="<?=$theme?>">
 
-  @media (prefers-color-scheme: dark) {
-    html {
-      --bg-color: darkblue;
-      --sunmoon-color: white;
-      --sunray-color: lightgrey;
-    }
-  }
+  <head>
+    <style>
+      /*<?php ob_start();?>*/
+      html[data-theme="light"] {
+        --bg-color: skyblue;
+        --sunmoon-color: black;
+        --sunray-color: hsl(40, 100%, 10%);
+      }
 
-  html[data-theme="light"] {
-    --bg-color: skyblue;
-    --sunmoon-color: black;
-    --sunray-color: grey;
-  }
+      html[data-theme="dark"] {
+        --bg-color: darkblue;
+        --sunmoon-color: white;
+        --sunray-color: lemonchiffon;
+      }
+      /*<?php $body = ob_get_clean();
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
+      echo buildThemesStylesheet($body); ?>*/
 
-  html[data-theme="dark"] {
-    --bg-color: darkblue;
-    --sunmoon-color: white;
-    --sunray-color: lightgrey;
-  }
+      body {
+        background: var(--bg-color);
+        display: grid;
+        grid-template-rows: repeat(10, 5rem);
+        grid-template-columns: repeat(10, 5rem);
+        color: var(--sunmoon-color);
+      }
 
-  body {
-    background: var(--bg-color);
-    display: grid;
-    grid-template-rows: repeat(10, 5rem);
-    grid-template-columns: repeat(10, 5rem);
-    color: var(--sunmoon-color);
-  }
+      theme-selector {
+        grid-row: 3;
+        grid-column: 5;
+      }
+    </style>
+  </head>
 
-  theme-selector {
-    grid-row: 3;
-    grid-column: 5;
-  }
-</style>
+  <body>
+    <theme-selector></theme-selector>
 
-<body>
-  <theme-selector></theme-selector>
-</body>
+    <script type="module">
+      // ▼ ES modules cache-busted grâce à PHP
+      /*<?php ob_start();?>*/
 
-<script type="module">
-  // ▼ ES modules cache-busted grâce à PHP
-  /*<?php ob_start();?>*/
+      import '/_common/components/theme-selector/theme-selector.js.php';
 
-  import '/_common/components/theme-selector/theme-selector.js.php';
-
-  /*<?php $imports = ob_get_clean();
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-  echo versionizeFiles($imports, __DIR__); ?>*/
+      /*<?php $imports = ob_get_clean();
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+      echo versionizeFiles($imports, __DIR__); ?>*/
 
 
-  ////////////////////////////////
-  // Gère les changements de thème
-  window.addEventListener('themechange', event => {
-    console.log('Theme change requested:', event.detail.theme, '/', event.detail.resolvedTheme);
-    const html = document.documentElement;
-    html.dataset.theme = event.detail.theme;
-  });
-</script>
+      ////////////////////////////////
+      // Gère les changements de thème
+      window.addEventListener('themechange', event => {
+        console.log('Theme change requested:', event.detail.theme, '/', event.detail.resolvedTheme);
+        const html = document.documentElement;
+        html.dataset.theme = event.detail.theme;
+      });
+    </script>
+  </body>
+
+</html>
