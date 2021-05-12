@@ -31,33 +31,45 @@ svg * {
   transition: transform .5s ease,
               opacity .5s ease;
 }
+
 .ray {
   transition-delay: calc(.2s + var(--m, 0) * 60ms);
   transition-duration: .3s;
   transform: scale(1);
   opacity: 1;
 }
+
 .ray>path {
   stroke: var(--sunray-color, white);
 }
+
 #moon-hole>circle {
   transform: translate(40%, -40%);
+  transition-delay: 0;
 }
+
 .sun {
   transform: scale(.5);
 }
+
 svg.dark .sun {
   transform: scale(1);
 }
+
 svg.dark .ray {
   opacity: 0;
   transition-delay: calc(var(--n) * 30ms);
-  transform: scale(0);
+  transition-duration: .15s;
+  transition-timing-function: ease-in;
+  transform: scale(.5);
 }
+
 svg.dark #moon-hole>circle {
-  transition-delay: .2s;
+  transition-delay: .4s;
   transform: translate(0, 0);
 }
+
+/* Pop up */
 
 .selector {
   display: none;
@@ -80,6 +92,10 @@ svg.dark #moon-hole>circle {
 .selector>label {
   grid-column: 2;
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: 0 auto;
   grid-template-rows: repeat(auto-fill, 1fr);
+}
+
+.selector>label>span {
+  grid-column: 2;
 }
