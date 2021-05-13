@@ -1,9 +1,10 @@
 <button data-label="theme-button">
   <svg viewBox="0 0 120 120">
     <defs>
-      <mask id="moon-hole">
-        <rect x="0" y="0" width="120" height="120" fill="white"/>
-        <circle cx="90" cy="30" r="40" fill="black" transform-origin="120 0"/>
+      <mask id="sun-mask">
+        <rect x="0" y="0" width="120" height="120" fill="black"/>
+        <circle class="sun-size" cx="60" cy="60" r="50" fill="white" transform-origin="60 60"/>
+        <circle class="moon-hole" cx="90" cy="30" r="40" fill="black" transform-origin="120 0"/>
       </mask>
     </defs>
 
@@ -33,7 +34,7 @@
         <path d="M 60 13 L 60 19" stroke-linecap="round" stroke-width="10" transform="rotate(315 60 60)"/>
       </g>
     </g>
-    <circle class="sun" cx="60" cy="60" r="50" transform-origin="50% 50%" mask="url(#moon-hole)"/>
+    <rect class="sun" x="0" y="0" width="120" height="120" transform-origin="50% 50%" mask="url(#sun-mask)"/>
   </svg>
 </button>
 

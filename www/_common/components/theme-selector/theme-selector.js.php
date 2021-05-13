@@ -10,7 +10,7 @@ echo versionizeFiles($imports, __DIR__); ?>*/
 
 
 const css = `
-<?php include './style.css'; ?>
+<?php include './style.css.php'; ?>
 `;
 
 const html = `
@@ -60,22 +60,13 @@ class ThemeSelector extends HTMLElement {
 
     const button = this.querySelector('button');
     const selector = this.querySelector('.selector');
-    const svg = this.querySelector('svg');
 
     // Make theme-selector button clickable
     button.addEventListener('click', () => selector.classList.toggle('on'));
 
     // Make theme-selector options clickable
     for (const choice of [...selector.querySelectorAll('input')]) {
-      choice.addEventListener('change', async () => {
-        // Animates the icon
-        const chosenTheme = choice.value;
-        if (Theme.resolve(chosenTheme) == 'dark') svg.classList.remove('dark');
-        else                                      svg.classList.add('dark');
-
-        // Sets the theme
-        Theme.set(chosenTheme);
-      });
+      choice.addEventListener('change', async () => Theme.set(choice.value));
     }
 
     // Use a resize observer to correct the position of the options menu
