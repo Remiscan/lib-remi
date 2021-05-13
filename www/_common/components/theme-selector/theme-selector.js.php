@@ -28,7 +28,26 @@ class ThemeSelector extends HTMLElement {
     super();
   }
 
+  // Correctly position the options menu
+  fixSelectorPosition() {
+    const selector = this.querySelector('.selector');
+    const coords = selector.getBoundingClientRect();
+
+    let verticalPosition = 'bottom';
+    if (window.scrollY + coords.bottom > document.body.offsetHeight)      verticalPosition = 'top';
+    let horizontalPosition = 'center';
+    if (window.scrollX + coords.left < 0)                                 horizontalPosition = 'right';
+    else if (window.scrollX + coords.right > document.body.offsetWidth)   horizontalPosition = 'left';
+
+    selector.dataset.vertical = verticalPosition;
+    selector.dataset.horizontal = horizontalPosition;
+
+    console.log(coords, containerCoords);
+    console.log(verticalPosition, horizontalPosition);
+  }
+
   connectedCallback() {
+    // Add theme-selector CSS to the page
     if (!cssReady) {
       const head = document.querySelector('head');
       const style = document.createElement('style');
@@ -43,8 +62,10 @@ class ThemeSelector extends HTMLElement {
     const selector = this.querySelector('.selector');
     const svg = this.querySelector('svg');
 
+    // Make theme-selector button clickable
     button.addEventListener('click', () => selector.classList.toggle('on'));
 
+    // Make theme-selector options clickable
     for (const choice of [...selector.querySelectorAll('input')]) {
       choice.addEventListener('change', async () => {
         // Animates the icon
@@ -56,6 +77,10 @@ class ThemeSelector extends HTMLElement {
         Theme.set(chosenTheme);
       });
     }
+
+    // Use a resize observer to correct the position of the options menu
+    const observer = new ResizeObserver(this.fixSelectorPosition.bind(this));
+    observer.observe(document.body);
   }
 }
 

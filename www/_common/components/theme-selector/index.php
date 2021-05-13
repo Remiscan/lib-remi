@@ -25,14 +25,15 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
       body {
         background: var(--bg-color);
         display: grid;
-        grid-template-rows: repeat(10, 5rem);
-        grid-template-columns: repeat(10, 5rem);
+        grid-template-rows: repeat(15, 5rem);
+        grid-template-columns: repeat(30, 5rem);
         color: var(--sunmoon-color);
+        position: relative;
       }
 
       theme-selector {
-        grid-row: 3;
-        grid-column: 5;
+        grid-row: 10;
+        grid-column: 10;
       }
     </style>
   </head>
@@ -54,7 +55,7 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
       ////////////////////////////////
       // Gère les changements de thème
       window.addEventListener('themechange', event => {
-        console.log('Theme change requested:', event.detail.theme, '/', event.detail.resolvedTheme);
+        //console.log('Theme change requested:', event.detail.theme, '/', event.detail.resolvedTheme);
         const html = document.documentElement;
         html.dataset.theme = event.detail.theme;
       });

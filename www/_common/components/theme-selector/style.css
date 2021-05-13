@@ -30,13 +30,13 @@ svg {
 
 /* Animation */
 svg * {
-  transition: transform .5s ease,
-              opacity .5s ease;
+  transition: transform var(--duration, .5s) ease,
+              opacity var(--duration, .5s) ease;
 }
 
 .ray {
   transition-delay: calc(var(--moon-hole-disparition) + .2s + var(--m, 0) * 60ms);
-  transition-duration: .3s;
+  --duration: .3s;
   transform: scale(1);
   opacity: 1;
 }
@@ -47,6 +47,7 @@ svg * {
 
 #moon-hole>circle {
   transform: translate(40%, -40%);
+  --duration: var(--moon-hole-disparition);
 }
 
 .sun {
@@ -62,29 +63,37 @@ svg.dark .sun {
 svg.dark .ray {
   opacity: 0;
   transition-delay: calc(var(--n) * 30ms);
-  transition-duration: .15s;
+  --duration: .15s;
   transition-timing-function: ease-in;
   transform: scale(.5);
 }
 
 svg.dark #moon-hole>circle {
   transition-delay: .4s;
+  --duration: var(--moon-hole-apparition);
   transform: translate(0, 0);
 }
 
 /* Pop up */
 
 .selector {
-  display: none;
+  display: grid;
+  opacity: 0;
+  pointer-events: none;
   grid-template-columns: auto 1fr;
   position: absolute;
-  left: 100%;
+  top: 100%;
   width: max-content;
   max-width: calc(100vw - 1.2rem);
+  border: 2px solid var(--sunmoon-color);
+  grid-row: 1;
+  grid-column: 1;
 }
 
 .selector.on {
   display: grid;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .selector>input {
@@ -101,4 +110,19 @@ svg.dark #moon-hole>circle {
 
 .selector>label>span {
   grid-column: 2;
+}
+
+.selector[data-vertical="bottom"] {
+  top: 100%;
+}
+.selector[data-vertical="top"] {
+  top: unset;
+  bottom: 100%;
+}
+
+.selector[data-horizontal="left"] {
+  right: 0;
+}
+.selector[data-horizontal="right"] {
+  left: 0;
 }
