@@ -33,12 +33,69 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
 
       theme-selector {
         grid-row: 10;
-        grid-column: 10;
+        grid-column: 3;
       }
+
+      /*theme-selector .selector {
+        margin: .6rem;
+        border-radius: .6rem;
+        background-color: mediumslateblue;
+        display: grid;
+        grid-template-columns: 0 1fr;
+        grid-template-rows: repeat(3, 2rem);
+      }
+
+      input[type="radio"] {
+        height: 0;
+        width: 0;
+        opacity: 0;
+        margin: 0;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      input[type="radio"] + label {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto;
+      }
+
+      input[type="radio"] + label::before {
+        content: '';
+        display: block;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        border: 2px solid var(--sunray-color);
+        place-self: center;
+        grid-row: 1;
+        grid-column: 1;
+        margin: 0 .6rem;
+      }
+
+      input[type="radio"]:checked + label::after {
+        content: '';
+        display: block;
+        width: .6rem;
+        height: .4rem;
+        border: 2px solid var(--sunmoon-color);
+        border-top: none;
+        border-right: none;
+        transform: translateY(-25%) rotate(-45deg);
+        place-self: center;
+        grid-row: 1;
+        grid-column: 1;
+      }
+
+      input[type="radio"] + label>span {
+        margin: auto .6rem auto 0;
+      }*/
     </style>
   </head>
 
   <body>
+    <a href="#">Test link</a>
+    <button>Test button</button>
     <theme-selector></theme-selector>
 
     <script type="module">

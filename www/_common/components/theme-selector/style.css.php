@@ -143,53 +143,46 @@ theme-selector .ray {
 /* POP-UP */
 /**********/
 
-.selector {
+theme-selector>.selector {
   display: grid;
   opacity: 0;
   pointer-events: none;
   grid-template-columns: auto 1fr;
   position: absolute;
   top: 100%;
-  width: max-content;
-  max-width: calc(100vw - 1.2rem);
-  border: 2px solid var(--sunmoon-color);
   grid-row: 1;
   grid-column: 1;
 }
 
-.selector.on {
+theme-selector[open="true"]>.selector {
   display: grid;
   opacity: 1;
   pointer-events: auto;
 }
 
-.selector>input {
+theme-selector>.selector>input {
   grid-column: 1;
-  align-self: center;
 }
 
-.selector>label {
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: 0 auto;
-  grid-template-rows: repeat(auto-fill, 1fr);
-}
-
-.selector>label>span {
+theme-selector>.selector>label {
   grid-column: 2;
 }
 
-.selector[data-vertical="bottom"] {
+theme-selector>.selector>label>span {
+  grid-column: 2;
+}
+
+theme-selector>.selector[data-vertical="bottom"] {
   top: 100%;
 }
-.selector[data-vertical="top"] {
+theme-selector>.selector[data-vertical="top"] {
   top: unset;
   bottom: 100%;
 }
 
-.selector[data-horizontal="left"] {
-  right: 0;
+theme-selector>.selector[data-horizontal="left"] {
+  right: calc(1px * var(--shift));
 }
-.selector[data-horizontal="right"] {
-  left: 0;
+theme-selector>.selector[data-horizontal="right"] {
+  left: calc(1px * var(--shift));
 }
