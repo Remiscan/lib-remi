@@ -2,6 +2,7 @@ theme-selector {
   display: grid;
   place-items: center;
   position: relative;
+  overflow: hidden;
 }
 
 theme-selector>button {
@@ -162,8 +163,11 @@ theme-selector>.selector {
   grid-column: 1;
 }
 
+theme-selector[open="true"] {
+  overflow: visible;
+}
+
 theme-selector[open="true"]>.selector {
-  display: grid;
   opacity: 1;
   pointer-events: auto;
 }

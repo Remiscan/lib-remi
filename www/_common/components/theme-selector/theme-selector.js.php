@@ -9,6 +9,7 @@ const html = `
 
 
 let cssReady = false;
+let lastResizeTime = 0;
 const focusableQuery = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex], [contenteditable]';
 const stylesheetVersion = /*<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php'; echo '*'.'/\''.version(__DIR__, 'style.css.php').'\';/'.'*'; ?>*/
 
@@ -22,25 +23,40 @@ class ThemeSelector extends HTMLElement {
 
   //////////////////////////////////////
   // Correctly position the options menu
-  fixSelectorPosition() {
+  async fixSelectorPosition() {
+    // Wait until resizing is over
+    const attempt = Date.now();
+    lastResizeTime = attempt;
+    await new Promise(resolve => setTimeout(resolve, 100));
+    if (attempt != lastResizeTime) return;
+
     const selector = this.querySelector('.selector');
     const coords = selector.getBoundingClientRect();
     const button = this.querySelector('button');
-    const buttonWidth = button.getBoundingClientRect().width;
+    const buttonCoords = button.getBoundingClientRect();
 
+    // Cancel previous correction
+    selector.removeAttribute('data-vertical');
+    selector.removeAttribute('data-horizontal');
+    selector.style.setProperty('--shift', 0);
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    // Calculate new correction
     let verticalPosition = 'bottom';
-    if (window.scrollY + coords.bottom > document.body.offsetHeight)      verticalPosition = 'top';
+    if (window.scrollY + coords.bottom > document.body.offsetHeight)
+      verticalPosition = 'top';
     let horizontalPosition = 'center';
     let shift = 0; // sera négatif
     if (window.scrollX + coords.left < 0) {
       horizontalPosition = 'right';
-      shift = -.5 * (coords.width - buttonWidth) + window.scrollX - coords.left;
+      shift = -.5 * (coords.width - buttonCoords.width) + window.scrollX - coords.left;
     }
     else if (window.scrollX + coords.right > document.body.offsetWidth) {
       horizontalPosition = 'left';
-      shift = -.5 * (coords.width - buttonWidth) + window.scrollX + coords.right - document.body.offsetWidth;
+      shift = -.5 * (coords.width - buttonCoords.width) + window.scrollX + coords.right - document.body.offsetWidth;
     }
 
+    // Apply new correction
     selector.dataset.vertical = verticalPosition;
     selector.dataset.horizontal = horizontalPosition;
     selector.style.setProperty('--shift', shift);
@@ -101,18 +117,7 @@ class ThemeSelector extends HTMLElement {
     // Add theme-selector CSS to the page
     if (!cssReady) {
       const head = document.querySelector('head');
-      /*const firstStyleTag = document.querySelector('style');
-      const style = document.createElement('style');
-      style.innerHTML = css;
-      style.id = 'theme-selector-style';
-      if (!!firstStyleTag)  head.insertBefore(style, firstStyleTag);
-      else                  head.appendChild(style);*/
       const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
-      /*const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = `/_common/components/theme-selector/style--${stylesheetVersion}.css.php`;
-      if (!!firstStylesheet)  head.insertBefore(link, firstStylesheet);
-      else                    head.appendChild(link);*/
       const style = document.createElement('style');
       style.innerHTML = css;
       style.id = 'theme-selector-style';
@@ -145,9 +150,10 @@ class ThemeSelector extends HTMLElement {
       });
     }
 
-    // Use a resize observer to correct the position of the options menu
-    const observer = new ResizeObserver(this.fixSelectorPosition.bind(this));
-    observer.observe(document.body);
+    // Position the options menu correctly
+    this.fixSelectorPosition();
+    window.addEventListener('resize', this.fixSelectorPosition);
+    window.addEventListener('orientationchange', this.fixSelectorPosition);
 
     // Make menu elements un-focusable
     const focusableMenuElements = [...this.querySelectorAll(focusableQuery)];
