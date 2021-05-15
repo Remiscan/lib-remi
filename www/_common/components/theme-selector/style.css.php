@@ -160,6 +160,10 @@ theme-selector[open="true"]>.selector {
   pointer-events: auto;
 }
 
+theme-selector .selector-title {
+  grid-column: 1 / -1;
+}
+
 theme-selector>.selector>input {
   grid-column: 1;
 }
