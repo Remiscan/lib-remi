@@ -23,14 +23,14 @@ theme-selector>button {
 theme-selector svg {
   width: 100%;
   height: 100%;
-  fill: var(--sunmoon-color, white);
+  fill: var(--primary-color, var(--default-color));
   --sun-resize: .5s;
   --moon-hole-apparition: .5s;
   --moon-hole-disparition: .3s;
 }
 
 theme-selector .ray>path {
-  stroke: var(--sunray-color, white);
+  stroke: var(--secondary-color, var(--default-color));
 }
 
 theme-selector .sun-size,
@@ -50,6 +50,10 @@ theme-selector .moon-hole {
 /************************************/
 /* Thème clair - on affiche la lune */
 /************************************/
+
+theme-selector {
+  --default-color: black;
+}
 
 /* - Étape 1 : le soleil s'agrandit */
 theme-selector .sun-size {
@@ -80,6 +84,10 @@ theme-selector .moon-hole {
 /***************************************/
 /* Thème sombre - on affiche le soleil */
 /***************************************/
+
+theme-selector {
+  --default-color: white;
+}
 
 /* - Étape 1 : la lune devient soleil */
 theme-selector .moon-hole {
