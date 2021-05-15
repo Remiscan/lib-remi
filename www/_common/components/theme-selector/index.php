@@ -96,7 +96,7 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
   <body>
     <a href="#">Test link</a>
     <button>Test button</button>
-    <theme-selector></theme-selector>
+    <theme-selector position="right"></theme-selector>
 
     <script type="module">
       // ▼ ES modules cache-busted grâce à PHP

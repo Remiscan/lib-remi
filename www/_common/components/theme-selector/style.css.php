@@ -2,7 +2,6 @@ theme-selector {
   display: grid;
   place-items: center;
   position: relative;
-  overflow: hidden;
 }
 
 theme-selector>button {
@@ -38,6 +37,10 @@ theme-selector .sun-size,
 theme-selector .moon-hole {
   will-change: transform;
   transform-style: preserve-3d;
+}
+
+.unusable {
+  pointer-events: none !important;
 }
 
 
@@ -153,9 +156,7 @@ theme-selector .ray {
 /**********/
 
 theme-selector>.selector {
-  display: grid;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
   grid-template-columns: auto 1fr;
   position: absolute;
   top: 100%;
@@ -163,13 +164,8 @@ theme-selector>.selector {
   grid-column: 1;
 }
 
-theme-selector[open="true"] {
-  overflow: visible;
-}
-
 theme-selector[open="true"]>.selector {
-  opacity: 1;
-  pointer-events: auto;
+  display: grid;
 }
 
 theme-selector .selector-title {
@@ -188,17 +184,18 @@ theme-selector>.selector>label>span {
   grid-column: 2;
 }
 
-theme-selector>.selector[data-vertical="bottom"] {
+theme-selector[position="bottom"]>.selector {
   top: 100%;
 }
-theme-selector>.selector[data-vertical="top"] {
+theme-selector[position="top"]>.selector {
   top: unset;
   bottom: 100%;
 }
-
-theme-selector>.selector[data-horizontal="left"] {
-  right: calc(1px * var(--shift));
+theme-selector[position="left"]>.selector {
+  top: unset;
+  right: 100%;
 }
-theme-selector>.selector[data-horizontal="right"] {
-  left: calc(1px * var(--shift));
+theme-selector[position="right"]>.selector {
+  top: unset;
+  left: 100%;
 }
