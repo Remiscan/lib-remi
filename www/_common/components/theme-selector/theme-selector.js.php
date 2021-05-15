@@ -34,7 +34,6 @@ class ThemeSelector extends HTMLElement {
     }
     // Listens to inputs to close the menu
     const closeMenu = event => {
-      console.log(event);
       if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
       if (event.type != 'keydown' && event.path.includes(this)) return;
       event.stopPropagation();
