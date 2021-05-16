@@ -210,16 +210,19 @@ theme-selector[icon="reverse"] .ray {
 /**********/
 
 theme-selector>.selector {
-  display: none;
+  display: grid;
   grid-template-columns: auto 1fr;
   position: absolute;
   top: 100%;
   grid-row: 1;
   grid-column: 1;
+  opacity: 0;
+  pointer-events: none;
 }
 
 theme-selector[open="true"]>.selector {
-  display: grid;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 theme-selector .selector-title {
