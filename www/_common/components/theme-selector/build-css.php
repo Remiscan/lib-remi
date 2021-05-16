@@ -48,7 +48,7 @@
 
 function buildThemesStylesheet($body, $default = 'light')
 {
-  $regexp = '/(?:html|:root)\[data-theme="?light"?\](?<selector> .*)*\{(?<light>(?:.|\n|\r)*)\}(?:\n|\r| )*(?:html|:root)\[data-theme="?dark"?\]( .*)*\{(?<dark>(?:.|\n|\r)*)\}/';
+  $regexp = '/(?:html|:root)\[data-theme="?light"?\](?<selector> .*)*\{(?<light>(?:.|\n|\r)*?)\}(?:\n|\r| )*(?:html|:root)\[data-theme="?dark"?\]( .*)*\{(?<dark>(?:.|\n|\r)*?)\}/';
   preg_match_all($regexp, $body, $matches);
 
   $selector = str_replace(' ', '', $matches['selector'][0]) == '' ? ':root' : $matches['selector'][0];
