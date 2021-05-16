@@ -93,19 +93,16 @@ class ThemeSelector extends HTMLElement {
     });
 
     // Check the current selected theme, if any
-    const currentTheme = document.documentElement.dataset.theme || 'auto';
+    const root = document.documentElement;
+    const currentTheme = root.dataset.theme || 'auto';
     this.querySelector(`input[value="${currentTheme}"]`).checked = true;
 
     // Apply the choice of theme
     for (const choice of [...selector.querySelectorAll('input')]) {
       choice.addEventListener('change', async () => {
-        window.dispatchEvent(
-          new CustomEvent('themechange', {
-            detail: { 
-              theme: choice.value
-            }
-          })
-        );
+        root.dataset.theme = choice.value;
+        const themeEvent = new CustomEvent('themechange', { detail: {  theme: choice.value } });
+        window.dispatchEvent(themeEvent);
       });
     }
   }
