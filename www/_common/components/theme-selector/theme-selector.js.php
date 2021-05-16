@@ -68,6 +68,24 @@ class ThemeSelector extends HTMLElement {
   }
 
 
+  ///////////////////////////////////////////////
+  // Calculates which theme 'auto' corresponds to
+  static get osTheme() {
+    let osTheme;
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches)        osTheme = 'dark';
+    else if (window.matchMedia('(prefers-color-scheme: light)').matches)  osTheme = 'light';
+    return osTheme;
+  }
+  static get defaultTheme() {
+    if (this.getAttribute('default') == 'dark') return 'dark';
+    else                                        return 'light';
+  }
+  static resolve(theme) {
+    if (['light', 'dark'].includes(theme)) return theme;
+    return ThemeSelector.osTheme || ThemeSelector.defaultTheme;
+  }
+
+
   connectedCallback() {
     // Add theme-selector CSS to the page
     if (!cssReady) {
@@ -101,11 +119,14 @@ class ThemeSelector extends HTMLElement {
     for (const choice of [...selector.querySelectorAll('input')]) {
       choice.addEventListener('change', async () => {
         root.dataset.theme = choice.value;
-        const themeEvent = new CustomEvent('themechange', { detail: {  theme: choice.value } });
+        const themeEvent = new CustomEvent('themechange', { detail: {
+          theme: choice.value,
+          resolvedTheme: ThemeSelector.resolve(choice.value)
+        }});
         window.dispatchEvent(themeEvent);
       });
     }
   }
 }
 
-customElements.define("theme-selector", ThemeSelector);
+if (!customElements.get('theme-selector')) customElements.define('theme-selector', ThemeSelector);
