@@ -92,6 +92,10 @@ class ThemeSelector extends HTMLElement {
       else                                      this.open();
     });
 
+    // Check the current selected theme, if any
+    const currentTheme = document.documentElement.dataset.theme || 'auto';
+    this.querySelector(`input[value="${currentTheme}"]`).checked = true;
+
     // Apply the choice of theme
     for (const choice of [...selector.querySelectorAll('input')]) {
       choice.addEventListener('change', async () => {
