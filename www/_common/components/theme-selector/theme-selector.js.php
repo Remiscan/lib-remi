@@ -37,7 +37,8 @@ class ThemeSelector extends HTMLElement {
       if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
       if (event.type != 'keydown' && event.path.includes(this)) return;
       event.stopPropagation();
-      this.close();
+      const focus = (event.type == 'click' && event.target.matches(focusableQuery)) ? false : true;
+      this.close(focus);
       window.removeEventListener(event.type, closeMenu);
     };
     window.addEventListener('click', closeMenu);
@@ -51,7 +52,7 @@ class ThemeSelector extends HTMLElement {
 
   /////////////////////////
   // Close the options menu
-  close() {
+  close(focus = true) {
     // Restore previous focusability
     const focusableElements = [...document.querySelectorAll(focusableQuery)];
     for (const element of focusableElements) {
@@ -64,7 +65,7 @@ class ThemeSelector extends HTMLElement {
     // Hide the menu
     this.removeAttribute('open');
     // Place focus on the button
-    this.querySelector('button').focus();
+    if (focus) this.querySelector('button').focus();
   }
 
 
