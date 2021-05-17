@@ -37,7 +37,8 @@ class ThemeSelector extends HTMLElement {
       if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
       if (event.type != 'keydown' && event.path.includes(this)) return;
       event.stopPropagation();
-      const focus = (event.type == 'click' && event.target.matches(focusableQuery)) ? false : true;
+      const button = this.querySelector('button');
+      const focus = (event.type == 'click' && !event.path.includes(button)) ? false : true;
       this.close(focus);
       window.removeEventListener(event.type, closeMenu);
     };
@@ -61,11 +62,12 @@ class ThemeSelector extends HTMLElement {
       element.removeAttribute('data-previous-tabindex');
       //element.classList.remove('unusable');
     }
-    this.querySelector('button').tabIndex = 0;
+    const button = this.querySelector('button');
+    button.tabIndex = 0;
     // Hide the menu
     this.removeAttribute('open');
     // Place focus on the button
-    if (focus) this.querySelector('button').focus();
+    if (focus) button.focus();
   }
 
 
