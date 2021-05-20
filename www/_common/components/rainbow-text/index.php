@@ -322,6 +322,20 @@ Test de texte avec un <a class="with-icon" href="#">lien normal très très trè
   </g>
 </svg>
 
+<svg viewBox="6 3 18 21" style="width: 48px; height: 48px;">
+  <g>
+    <path d="M 9 6 L 15 12 L 9 18" stroke="white" stroke-linecap="round" stroke-width="4" fill="transparent"/>
+  </g>
+</svg>
+
+<svg viewBox="0 0 10 10" style="width: 48px; height: 48px; overflow: hidden;">
+  <g>
+    <circle cx="5" cy="5" r="5" stroke="transparent" fill="white"/>
+    <circle cx="5" cy="5" r="4" stroke="transparent" fill="red"/>
+    <circle cx="5" cy="5" r="3" stroke="transparent" fill="white"/>
+  </g>
+</svg>
+
 <script>
   function prepareRainbowText(conteneur, step = 0) {
     const random = Math.round(40 * Math.random());
