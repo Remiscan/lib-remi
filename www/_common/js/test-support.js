@@ -173,7 +173,7 @@ TestSupport.getSupportResults = function(testsToPerform) {
     
     var style = document.createElement('style');
     style.id = 'test-support-warning-style';
-    style.innerHTML = '#test-support-warning { display: block; position: absolute; z-index: 9999; width: 100%; height: 100%; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; color: black; padding: 20px; box-sizing: border-box; } p,ul { max-width: 700px; }';
+    style.innerHTML = '#test-support-warning { display: block; position: absolute; z-index: 9999; width: 100%; height: 100%; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #DCDCDC; color: #121212; padding: 20px; box-sizing: border-box; } @media (prefers-color-scheme: dark) { #test-support-warning { background: #121212; color: #DCDCDC; }} p,ul { max-width: 700px; }';
 
     document.getElementsByTagName("head")[0].appendChild(style);
     document.body.appendChild(warning);
