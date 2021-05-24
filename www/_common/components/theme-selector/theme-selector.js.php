@@ -27,7 +27,10 @@ class ThemeSelector extends HTMLElement {
     // Disable focus outside the menu
     const focusableElements = [...document.querySelectorAll(focusableQuery)];
     for (const element of focusableElements) {
-      if (this.contains(element)) continue;
+      if (this.contains(element)) {
+        if (element.tagName != 'BUTTON') element.tabIndex = 0;
+        continue;
+      }
       element.dataset.previousTabindex = element.tabIndex;
       element.tabIndex = -1;
       //element.classList.add('unusable');
@@ -57,7 +60,10 @@ class ThemeSelector extends HTMLElement {
     // Restore previous focusability
     const focusableElements = [...document.querySelectorAll(focusableQuery)];
     for (const element of focusableElements) {
-      if (this.contains(element)) continue;
+      if (this.contains(element)) {
+        if (element.tagName != 'BUTTON') element.tabIndex = -1;
+        continue;
+      }
       element.tabIndex = element.dataset.previousTabindex;
       element.removeAttribute('data-previous-tabindex');
       //element.classList.remove('unusable');
