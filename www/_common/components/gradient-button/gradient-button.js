@@ -118,7 +118,7 @@ class GradientButton extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['text', 'border-width'];
+    return ['type', 'text', 'border-width'];
   }
 
   update(attributes = GradientButton.observedAttributes) {
@@ -133,6 +133,11 @@ class GradientButton extends HTMLElement {
       because both text elements have different filters & shadows applied that
       don't transition as smoothly as the current opacity transition. This subtle
       but perceptible difference can be observed in the CSS-only version. */
+    }
+
+    type: {
+      const button = this.shadowRoot.querySelector('button');
+      button.type = this.getAttribute('type') || 'button';
     }
 
     const size = this.getBoundingClientRect();
