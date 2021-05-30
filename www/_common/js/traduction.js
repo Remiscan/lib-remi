@@ -106,7 +106,7 @@ export default class Traduction {
       if (element == document) document.documentElement.lang = this.language;
 
       // Dés/active les boutons de traduction
-      for (const bouton of [...element.querySelectorAll('[data-lang]')]) {
+      for (const bouton of [...element.querySelectorAll('button[data-lang]')]) {
         if (bouton.dataset.lang == this.language) {
           bouton.disabled = true;
           bouton.tabIndex = -1;
