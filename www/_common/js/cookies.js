@@ -1,10 +1,10 @@
 export default class Cookie {
-  constructor(name, value, path, maxAge = null) {
+  constructor(name, value, path, maxAge = null, consent = false) {
     this.name = name;
     this.value = value;
     this.path = path;
     this.maxAge = maxAge;
-    this.set();
+    if ((consent === true && Cookie.get('consent')) || consent === false) this.set();
   }
 
   set() {
@@ -13,14 +13,17 @@ export default class Cookie {
     document.cookie = `${this.name}=${this.value}; path=${this.path}; ${expiration};`
   }
 
-  delete() {
-    this.value = '';
-    this.maxAge = -1;
-    this.set();
+  static consent(path, bool) {
+    if (bool) return new Cookie('consent', '1', path, null);
+    else      return Cookie.delete('consent');
   }
 
   static get(name) {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
     return (match !== null) ? match[1] : null;
+  }
+
+  static delete(path, name) {
+    return new Cookie(name, '', path, -1);
   }
 }
