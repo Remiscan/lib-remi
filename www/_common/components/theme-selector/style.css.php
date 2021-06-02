@@ -211,7 +211,7 @@ theme-selector[icon="reverse"] .ray {
 
 theme-selector>.selector {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   position: absolute;
   top: 100%;
   grid-row: 1;
@@ -225,7 +225,8 @@ theme-selector[open="true"]>.selector {
   pointer-events: auto;
 }
 
-theme-selector .selector-title {
+theme-selector .selector-title,
+theme-selector .selector-cookie-notice {
   grid-column: 1 / -1;
 }
 
