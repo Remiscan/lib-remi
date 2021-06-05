@@ -46,8 +46,9 @@ export default class Traduction {
       for (const bouton of [...document.querySelectorAll('.bouton-langage')]) {
         bouton.addEventListener('click', async event => {
           if (bouton.tagName == 'A') event.preventDefault();
-          await this.switchLanguage(bouton.dataset.lang || bouton.lang);
-          window.dispatchEvent(new Event('translate'));
+          const lang = bouton.dataset.lang || bouton.lang;
+          await this.switchLanguage(lang);
+          window.dispatchEvent(new CustomEvent('translate', { detail: { lang: lang } }));
           await this.traduire();
         });
       }

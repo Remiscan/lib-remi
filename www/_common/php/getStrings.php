@@ -6,8 +6,8 @@ class Textes {
   public $strings;
   public $lang;
 
-  function __construct($app) {
-    $this->lang = httpLanguage();
+  function __construct($app, $lang = null) {
+    $this->lang = $lang ?? httpLanguage();
     $path = dirname(__DIR__, 2) . '/' . $app . '/strings.json';
     if (!file_exists($path)) throw new Exception('Fichier strings.json introuvable');
     $json = file_get_contents($path);
