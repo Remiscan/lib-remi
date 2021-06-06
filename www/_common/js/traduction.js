@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////////
 
 export default class Traduction {
-  constructor(app, path, defaultLanguage = 'fr') {
+  constructor(app, path, defaultLanguage = 'en') {
     this.app = app;
     this.path = path;
     this.Textes = {};
