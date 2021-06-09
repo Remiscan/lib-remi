@@ -4,6 +4,12 @@
 ///////////////////////////////////////////////////////////
 
 export default class Traduction {
+  /**
+   * Crée un module de traduction pour une application.
+   * @param {string} app - Nom de l'application à traduire
+   * @param {string} path - Chemin du fichier .json contenant les textes
+   * @param {string} defaultLanguage - Langage par défaut
+   */
   constructor(app, path, defaultLanguage = 'en') {
     this.app = app;
     this.path = path;
@@ -12,20 +18,31 @@ export default class Traduction {
     this.defaultLanguage = defaultLanguage;
     this.buttonsReady = false;
 
-    const localLang = localStorage.getItem(`${this.app}/langage`);
-    const httpLang = document.documentElement.dataset.httpLang;
-    const navLang = navigator.language;
-    if (localLang != null)
-      this.language = localLang
-    else if (httpLang)
-      this.language = httpLang;
-    else if (navLang != null)
-      this.language = navLang.substring(0, 2);
-    else
-      this.language = defaultLanguage;
+    const html = document.documentElement;
+    this.language = html.lang || html.dataset.userLang
+                              || localStorage.getItem(`${this.app}/langage`)
+                              || html.dataset.httpLang
+                              || navigator.language?.substring(0, 2)
+                              || defaultLanguage;
   }
 
-  // Initialise le module de traduction pour ${projet}
+
+  /** @returns {Promise.<string[]>} Liste des langages supportés par l'application. */
+  get supportedLanguages() {
+    return this.ready().then(() => Object.getOwnPropertyNames(this.Textes));
+  }
+
+  /** @returns {Node[]} Liste des boutons de changement de langue. */
+  get languageButtons() {
+    return [...document.querySelectorAll('button[data-lang]')];
+  }
+
+
+  /**
+   * Initialise le module de traduction en récupérant les textes.
+   * @returns {true} une fois initialisé.
+   * @throws si les textes n'ont pas pu être récupérés.
+   */
   async ready() {
     if (this.loaded === true) return true;
 
@@ -39,76 +56,80 @@ export default class Traduction {
     return true;
   }
 
-  // Initialise les boutons pour changer de langue
-  async initLanguageButtons() {
-    if (this.buttonsReady) return true;
-    try {
-      for (const bouton of [...document.querySelectorAll('.bouton-langage')]) {
-        bouton.addEventListener('click', async event => {
-          if (bouton.tagName == 'A') event.preventDefault();
-          const lang = bouton.dataset.lang || bouton.lang;
-          await this.switchLanguage(lang);
-          window.dispatchEvent(new CustomEvent('translate', { detail: { lang: lang } }));
-          await this.traduire();
-        });
-      }
-      this.buttonsReady = true;
-      return true;
+
+  /**
+   * Initialise les boutons de changement de langue.
+   */
+  initLanguageButtons() {
+    if (this.buttonsReady) return;
+    let translating = false;
+    for (const bouton of this.languageButtons) {
+      bouton.addEventListener('click', async event => {
+        if (translating) return;
+        translating = true;
+        if (bouton.tagName == 'A') event.preventDefault();
+        this.changeLanguage(bouton.dataset.lang || bouton.lang);
+        await this.traduire(document);
+        translating = false;
+      });
     }
-    catch(error) {
-      console.error(error);
-      return false;
-    }
+    this.buttonsReady = true;
+    return;
   }
 
-  // Récupère un string dans la langue paramétrée de manière synchrone
-  getString(id, lang = false) {
-    const language = lang || this.language;
-    if (!this.loaded) throw 'La Traduction n\'est pas prête';
-    return this.Textes[language][id] || this.Textes[this.defaultLanguage][id] || 'undefined string';
+
+  /**
+   * Change la langue sélectionnée par le module.
+   * @param {string} lang - Identifiant de la langue sélectionnée.
+   */
+  changeLanguage(lang) {
+    this.language = lang;
+    window.dispatchEvent(new CustomEvent('langchange', { detail: {
+      language: lang, lang: lang
+    }}));
   }
 
-  // Change la langue paramétrée
+  /** Alias asynchrone de changeLanguage pour des raisons de compatibilité. */
   async switchLanguage(lang = false) {
-    try {
-      let nextLanguage = lang;
-      if (lang == false) {
-        const supportedLanguages = await this.supportedLanguages;
-        const k = supportedLanguages.findIndex(l => l == this.language);
-        nextLanguage = supportedLanguages[(k + 1) % supportedLanguages.length];
-      }
-      this.language = nextLanguage;
-      return true;
-    }
-    catch(error) {
-      console.error(error);
-      return false;
-    }
+    return this.changeLanguage(lang);
   }
 
-  set language(lang) {
-    localStorage.setItem(`${this.app}/langage`, lang);
+
+  /**
+   * Récupère de manière synchrone un texte dans la langue sélectionnée.
+   * @param {string} id - Identifiant du texte à récupérer.
+   * @param {?string} lang - Identifiant de la langue sélectionnée.
+   * @returns {string} Le texte demandé.
+   */
+  getString(id, lang = this.language) {
+    if (!this.loaded) throw 'La Traduction n\'est pas prête';
+    return this.Textes[lang][id] || this.Textes[this.defaultLanguage][id] || 'undefined string';
   }
 
-  get language() {
-    return localStorage.getItem(`${this.app}/langage`) || this.defaultLanguage;
-  }
 
-  get supportedLanguages() {
-    return this.ready().then(() => Object.getOwnPropertyNames(this.Textes));
-  }
-
+  /**
+   * Traduit les textes d'un groupe d'éléments.
+   * @param {Node} element - Le parent des éléments à traduire.
+   * @param {string} language - Le langage dans lequel traduire les textes.
+   * @returns {boolean} selon la réussite de la traduction.
+   */
   async traduire(element = document, language = this.language) {
     try {
+      // Prépare le module de traduction s'il n'est pas déjà prêt
       await this.ready();
-      if (language != this.language) await this.switchLanguage(language);
+      this.initLanguageButtons();
+      if (language != this.language) this.changeLanguage(language);
+
+      // Détermine la langue qui sera utilisée
+      const supportedLanguages = await this.supportedLanguages;
+      const effectiveLanguage = supportedLanguages.includes(language) ? language : this.defaultLanguage;
 
       // <html lang>
-      if (element == document) document.documentElement.lang = this.language;
+      if (element == document) document.documentElement.lang = effectiveLanguage;
 
       // Dés/active les boutons de traduction
-      for (const bouton of [...element.querySelectorAll('button[data-lang]')]) {
-        if (bouton.dataset.lang == this.language) {
+      for (const bouton of this.languageButtons) {
+        if (bouton.dataset.lang == effectiveLanguage) {
           bouton.disabled = true;
           bouton.tabIndex = -1;
         } else {
@@ -128,6 +149,12 @@ export default class Traduction {
         e.setAttribute('aria-label', this.getString(e.dataset.label));
       }
 
+      window.dispatchEvent(new CustomEvent('translate', { detail: {
+        element: element,
+        lang: language,
+        language: language
+      }}));
+
       return true;
     }
     catch(error) {
@@ -142,7 +169,7 @@ export default class Traduction {
  *************************/
 
 /*
-import DefTraduction from '../../_common/js/traduction.js';
+import DefTraduction from '/_common/js/traduction.js';
 
 class ExtTraduction extends DefTraduction {
   constructor() {
