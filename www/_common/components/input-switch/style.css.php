@@ -86,6 +86,7 @@ input-switch>[role="switch"]::before {
 
 .input-switch-hints>span {
   font-size: calc(var(--width) / 4);
+  font-weight: 700;
   margin-right: calc(var(--dir) * 20%);
   position: relative;
 }
