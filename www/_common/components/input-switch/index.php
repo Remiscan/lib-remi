@@ -82,7 +82,7 @@
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
         input.addEventListener('switch', event => {
-          document.querySelector('.info').innerHTML = `${event.target.querySelector('button').id} turned ${event.detail.state}`;
+          document.querySelector('.info').innerHTML = `${event.target.shadowRoot.querySelector('button').id} turned ${event.detail.state}`;
         });
       }
     </script>

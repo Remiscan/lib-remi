@@ -1,25 +1,21 @@
-const css = `
-<?php include './style.css.php'; ?>
-`;
-
-const html = `
+const template = document.createElement('template');
+template.innerHTML = `
+<style><?php include './style.css.php'; ?></style>
 <?php include './element.html'; ?>
 `;
-
-
-
-let cssReady = false;
 
 
 
 class InputSwitch extends HTMLElement {
   constructor() {
     super();
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(template.content.cloneNode(true));
   }
 
 
   toggle() {
-    const button = this.querySelector('button');
+    const button = this.shadowRoot.querySelector('button');
     const checked = button.getAttribute('aria-checked') === 'true';
     const newState = !checked ? 'on' : 'off';
     button.setAttribute('aria-checked', !checked);
@@ -31,20 +27,7 @@ class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
-    // Add input-switch CSS to the page
-    if (!cssReady) {
-      const head = document.querySelector('head');
-      const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
-      const style = document.createElement('style');
-      style.innerHTML = css;
-      style.id = 'input-switch-style';
-      if (!!firstStylesheet)  head.insertBefore(style, firstStylesheet);
-      else                    head.appendChild(style);
-      cssReady = true;
-    }
-    this.innerHTML = html;
-
-    const button = this.querySelector('button');
+    const button = this.shadowRoot.querySelector('button');
     
     // Set initial state
     button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
@@ -58,8 +41,6 @@ class InputSwitch extends HTMLElement {
       event.stopPropagation();
       this.toggle();
     });
-
-    this.ready = true;
   }
 }
 

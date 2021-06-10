@@ -1,4 +1,4 @@
-input-switch {
+:host {
   aspect-ratio: 1 / 2;
   --width: 3.25rem;
   --height: calc(.5 * var(--width));
@@ -14,7 +14,7 @@ input-switch {
 }
 
 /*<?php ob_start();?>*/
-:root[data-theme="light"] input-switch {
+:root[data-theme="light"] :host {
   --off-bg-color: hsl(231, 0%, 50%);
   --on-bg-color: hsl(231, 40%, 50%);
   --handle-color: white;
@@ -22,7 +22,7 @@ input-switch {
   --on-text-color: var(--handle-color);
 }
 
-:root[data-theme="dark"] input-switch {
+:root[data-theme="dark"] :host {
   --off-bg-color: hsl(217, 0%, 55%);
   --on-bg-color: hsl(217, 89%, 75%);
   --handle-color: rgb(48, 48, 48);
@@ -33,7 +33,7 @@ input-switch {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
 echo buildThemesStylesheet($body); ?>*/
 
-input-switch>[role="switch"] {
+[role="switch"] {
   border: none;
   margin: 0;
   padding: 0;
@@ -52,7 +52,7 @@ input-switch>[role="switch"] {
   overflow: hidden;
 }
 
-input-switch>[role="switch"]::before {
+[role="switch"]::before {
 	content: '';
 	display: block;
 	grid-row: 1 / -1;
@@ -86,6 +86,7 @@ input-switch>[role="switch"]::before {
 }
 
 .input-switch-hints>span {
+  font-family: var(--font-family, 'system-ui');
   font-size: calc(var(--width) / 4);
   font-weight: var(--font-weight, 700);
 }
@@ -112,8 +113,8 @@ input-switch>[role="switch"]::before {
   --dir: 1;
 }
 
-input-switch[hint="text"] .input-switch-hints>span,
-input-switch[hint="icon"] .input-switch-hints>svg {
+:host([hint="text"]) .input-switch-hints>span,
+:host([hint="icon"]) .input-switch-hints>svg {
   display: block;
 }
 
@@ -130,19 +131,19 @@ input-switch[hint="icon"] .input-switch-hints>svg {
   z-index: 3;
 }
 
-input-switch>[role="switch"][aria-checked="true"]::before {
+[role="switch"][aria-checked="true"]::before {
   opacity: 1;
 }
 
-input-switch>[role="switch"][aria-checked="false"]>.input-switch-hints {
+[role="switch"][aria-checked="false"]>.input-switch-hints {
   transform: translateX(calc(-100% / 3));
 }
-input-switch>[role="switch"][aria-checked="true"]>.input-switch-hints {
+[role="switch"][aria-checked="true"]>.input-switch-hints {
   transform: translateX(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  input-switch {
+  :host {
     --duration: 0;
   }
 }
