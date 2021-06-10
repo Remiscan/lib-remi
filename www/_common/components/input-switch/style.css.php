@@ -9,6 +9,7 @@ input-switch {
   position: relative;
 
   --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --duration: .2s;
 }
 
 /*<?php ob_start();?>*/
@@ -60,7 +61,7 @@ input-switch>[role="switch"]::before {
   height: 100%;
 	background-color: var(--on-bg-color);
 	opacity: 0;
-  transition: opacity .2s var(--easing-decelerate);
+  transition: opacity var(--duration) var(--easing-decelerate);
   z-index: 1;
 }
 
@@ -69,7 +70,7 @@ input-switch>[role="switch"]>svg {
   z-index: 2;
   font-size: 0;
   opacity: 1;
-  transition: transform .2s var(--easing-decelerate), opacity .2s var(--easing-decelerate);
+  transition: transform var(--duration) var(--easing-decelerate), opacity var(--duration) var(--easing-decelerate);
 }
 
 input-switch>[role="switch"]>[data-state="on"] {
@@ -98,7 +99,7 @@ input-switch>[role="switch"]::after {
   transform: scale(.8);
   background-color: var(--handle-color);
 	border-radius: var(--height);
-  transition: transform .2s var(--easing-decelerate);
+  transition: transform var(--duration) var(--easing-decelerate);
   z-index: 3;
 }
 
@@ -115,5 +116,11 @@ input-switch>[role="switch"][aria-checked="true"]::after {
   opacity: 0;
   pointer-events: none;
   transform: translateX(calc(var(--dir) * 100%));
-  transition: transform 0s var(--easing-decelerate) .2s, opacity .2s var(--easing-decelerate);
+  transition: transform 0s var(--easing-decelerate) var(--duration), opacity var(--duration) var(--easing-decelerate);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input-switch {
+    --duration: 0;
+  }
 }
