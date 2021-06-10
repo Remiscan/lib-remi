@@ -76,20 +76,24 @@ input-switch>[role="switch"]::before {
   grid-template-rows: 100%;
   place-items: center;
   transition: transform var(--duration) var(--easing-standard);
-  z-index: 3;
+  z-index: 2;
 }
 
 .input-switch-hints>span,
 .input-switch-hints>svg {
   display: none;
-  z-index: 2;
+  transform: translateX(calc(-.1 * var(--dir) * var(--width) / 3));
 }
 
 .input-switch-hints>span {
   font-size: calc(var(--width) / 4);
-  font-weight: 700;
-  margin-right: calc(var(--dir) * 15%);
-  position: relative;
+  font-weight: var(--font-weight, 700);
+}
+
+.input-switch-hints>svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--stroke-width, 2);
 }
 
 .input-switch-hints>[data-state="on"] {
