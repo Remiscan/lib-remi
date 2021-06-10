@@ -44,15 +44,26 @@
         max-width: min(95%, 3 * (var(--cell-size) + 1rem));
         gap: 1rem;
       }
+
+      .info {
+        grid-column: 1 / -1;
+        padding: .5rem 1rem;
+        border-radius: 2rem;
+        background-color: var(--bg-color);
+        position: sticky;
+        z-index: 2;
+        top: .5rem;
+      }
     </style>
   </head>
 
   <body>
     <div>
+      <span class="info">Click a switch!</span>
       <?php for ($i = 0; $i < count($sizes); $i++) { $rem = $sizes[$i]; ?>
-      <input-switch state="<?=($i % 2 == 0) ? 'off' : 'on'?>" hint="icon" style="--width: <?=$rem?>rem;"></input-switch>
-      <input-switch state="<?=($i % 2 == 1) ? 'off' : 'on'?>" hint="text" style="--width: <?=$rem?>rem;"></input-switch>
-      <input-switch state="<?=($i % 2 == 0) ? 'off' : 'on'?>" style="--width: <?=$rem?>rem;"></input-switch>
+      <input-switch id="switch-<?=($i * 3)?>" state="<?=($i % 2 == 0) ? 'off' : 'on'?>" hint="icon" style="--width: <?=$rem?>rem;"></input-switch>
+      <input-switch id="switch-<?=($i * 3 + 1)?>" state="<?=($i % 2 == 1) ? 'off' : 'on'?>" hint="text" style="--width: <?=$rem?>rem;"></input-switch>
+      <input-switch id="switch-<?=($i * 3 + 2)?>" state="<?=($i % 2 == 0) ? 'off' : 'on'?>" style="--width: <?=$rem?>rem;"></input-switch>
       <?php } ?>
     </div>
 
@@ -63,10 +74,11 @@
       import '/_common/components/input-switch/input-switch--<?=$version?>.js.php';
 
 
-
-      document.querySelector('input-switch').addEventListener('switch', event => {
-        console.log(`Switch turned ${event.detail.state}`);
-      });
+      for (const input of [...document.querySelectorAll('input-switch')]) {
+        input.addEventListener('switch', event => {
+          document.querySelector('.info').innerHTML = `${event.target.querySelector('button').id} turned ${event.detail.state}`;
+        });
+      }
     </script>
   </body>
 
