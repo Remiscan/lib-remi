@@ -14,7 +14,7 @@ input-switch {
 
 /*<?php ob_start();?>*/
 :root[data-theme="light"] input-switch {
-  --off-bg-color: hsl(0, 0%, 61%);
+  --off-bg-color: hsl(231, 0%, 50%);
   --on-bg-color: hsl(231, 40%, 50%);
   --handle-color: white;
   --off-text-color: var(--handle-color);
@@ -22,7 +22,7 @@ input-switch {
 }
 
 :root[data-theme="dark"] input-switch {
-  --off-bg-color: hsl(0, 0%, 44%);
+  --off-bg-color: hsl(217, 0%, 55%);
   --on-bg-color: hsl(217, 89%, 75%);
   --handle-color: rgb(48, 48, 48);
   --off-text-color: var(--handle-color);
