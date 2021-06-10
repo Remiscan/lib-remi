@@ -8,7 +8,7 @@ input-switch {
   display: inline-block;
   position: relative;
 
-  --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
   --duration: .2s;
 }
 
@@ -60,7 +60,7 @@ input-switch>[role="switch"]::before {
   height: 100%;
 	background-color: var(--on-bg-color);
 	opacity: 0;
-  transition: opacity var(--duration) var(--easing-decelerate);
+  transition: opacity var(--duration) var(--easing-standard);
   z-index: 1;
 }
 
@@ -74,7 +74,7 @@ input-switch>[role="switch"]::before {
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 100%;
   place-items: center;
-  transition: transform var(--duration) var(--easing-decelerate);
+  transition: transform var(--duration) var(--easing-standard);
   z-index: 3;
 }
 
