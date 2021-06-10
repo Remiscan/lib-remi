@@ -1,4 +1,3 @@
-<?php $sizes = [12, 8, 4]; ?>
 <html>
 
   <head>
@@ -60,11 +59,18 @@
   <body>
     <div>
       <span class="info">Click a switch!</span>
-      <?php for ($i = 0; $i < count($sizes); $i++) { $rem = $sizes[$i]; ?>
-      <input-switch id="switch-<?=($i * 3)?>" state="<?=($i % 2 == 0) ? 'off' : 'on'?>" hint="icon" style="--width: <?=$rem?>rem;"></input-switch>
-      <input-switch id="switch-<?=($i * 3 + 1)?>" state="<?=($i % 2 == 1) ? 'off' : 'on'?>" hint="text" style="--width: <?=$rem?>rem;"></input-switch>
-      <input-switch id="switch-<?=($i * 3 + 2)?>" state="<?=($i % 2 == 0) ? 'off' : 'on'?>" style="--width: <?=$rem?>rem;"></input-switch>
-      <?php } ?>
+
+      <input-switch id="switch-0" state="off" hint="icon" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-1" state="on" hint="text" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-2" state="off" style="--width: 12rem;"></input-switch>
+
+      <input-switch id="switch-3" state="on" hint="icon" style="--width: 8rem;"></input-switch>
+      <input-switch id="switch-4" state="off" hint="text" style="--width: 8rem;"></input-switch>
+      <input-switch id="switch-5" state="on" style="--width: 8rem;"></input-switch>
+      
+      <input-switch id="switch-6" state="off" hint="icon" style="--width: 4rem; --stroke-width: 3;"></input-switch>
+      <input-switch id="switch-7" state="on" hint="text" style="--width: 4rem; --stroke-width: 3;"></input-switch>
+      <input-switch id="switch-8" state="off" style="--width: 4rem; --stroke-width: 3;"></input-switch>
     </div>
 
     <script type="module">
