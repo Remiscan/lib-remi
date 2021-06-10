@@ -14,7 +14,7 @@ input-switch {
 
 /*<?php ob_start();?>*/
 :root[data-theme="light"] input-switch {
-  --off-bg-color: hsla(231, 0%, 50%, .7);
+  --off-bg-color: hsl(0, 0%, 61%);
   --on-bg-color: hsl(231, 40%, 50%);
   --handle-color: white;
   --off-text-color: var(--handle-color);
@@ -22,7 +22,7 @@ input-switch {
 }
 
 :root[data-theme="dark"] input-switch {
-  --off-bg-color: hsla(217, 0%, 75%, .5);
+  --off-bg-color: hsl(0, 0%, 44%);
   --on-bg-color: hsl(217, 89%, 75%);
   --handle-color: rgb(48, 48, 48);
   --off-text-color: var(--handle-color);
@@ -67,10 +67,16 @@ input-switch>[role="switch"]::before {
 
 input-switch>[role="switch"]>span,
 input-switch>[role="switch"]>svg {
+  display: none;
   z-index: 2;
-  font-size: 0;
   opacity: 1;
   transition: transform var(--duration) var(--easing-decelerate), opacity var(--duration) var(--easing-decelerate);
+}
+
+input-switch>[role="switch"]>span {
+  font-size: calc(var(--width) / 4);
+  position: relative;
+  margin-right: calc(var(--dir) * 20%);
 }
 
 input-switch>[role="switch"]>[data-state="on"] {
@@ -87,6 +93,11 @@ input-switch>[role="switch"]>[data-state="off"] {
   color: var(--off-text-color);
   stroke: var(--off-text-color);
   --dir: 1;
+}
+
+input-switch[hint="text"]>[role="switch"]>span,
+input-switch[hint="icon"]>[role="switch"]>svg {
+  display: block;
 }
 
 input-switch>[role="switch"]::after {
