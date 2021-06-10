@@ -1,7 +1,7 @@
 <html>
 
   <head>
-    <meta name="viewport" content="initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {
@@ -46,14 +46,10 @@
     <input-switch state="off" style="--width: 1.2rem"></input-switch>
 
     <script type="module">
-      // ▼ ES modules cache-busted grâce à PHP
-      /*<?php ob_start();?>*/
+      <?php require_once dirname(__DIR__, 2) . '/php/version.php';
+      $version = version(__DIR__, ['input-switch.js.php', 'style.css.php']); ?>
 
-      import '/_common/components/input-switch/input-switch.js.php';
-
-      /*<?php $imports = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-      echo versionizeFiles($imports, __DIR__); ?>*/
+      import '/_common/components/input-switch/input-switch--<?=$version?>.js.php';
 
 
 
