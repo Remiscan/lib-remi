@@ -1,6 +1,6 @@
 :host {
   aspect-ratio: 1 / 2;
-  --width: 3.25rem;
+  --width: 4rem;
   --height: calc(.5 * var(--width));
   width: var(--width);
   height: var(--height);
