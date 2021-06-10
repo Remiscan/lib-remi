@@ -1,8 +1,15 @@
+const adopt = ('adoptedStyleSheets' in document);
 const template = document.createElement('template');
-template.innerHTML = `
-<style><?php include './style.css.php'; ?></style>
-<?php include './element.html'; ?>
-`;
+const css = `<?php include './style.css.php'; ?>`;
+
+let sheet;
+if (adopt) {
+  sheet = new CSSStyleSheet();
+  sheet.replaceSync(css);
+} else {
+  template.innerHTML += `<style>${css}</style>`;
+}
+template.innerHTML += `<?php include './element.html'; ?>`;
 
 
 
@@ -11,6 +18,7 @@ class InputSwitch extends HTMLElement {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(template.content.cloneNode(true));
+    if (adopt) this.shadow.adoptedStyleSheets = [sheet];
   }
 
 
@@ -28,10 +36,12 @@ class InputSwitch extends HTMLElement {
 
   connectedCallback() {
     const button = this.shadowRoot.querySelector('button');
-    
+
     // Set initial state
     button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
     this.removeAttribute('state');
+
+    // Move id to button (so that <label for="id"> would be properly associated to the button)
     const id = this.getAttribute('id');
     this.removeAttribute('id');
     if (id) button.setAttribute('id', id);
