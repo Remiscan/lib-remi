@@ -1,3 +1,4 @@
+<?php $sizes = [12, 8, 4]; ?>
 <html>
 
   <head>
@@ -7,48 +8,53 @@
       html[data-theme="light"] {
         color-scheme: light;
         --bg-color: rgb(224, 224, 224);
+        --text-color: black;
       }
 
       html[data-theme="dark"] {
         color-scheme: dark;
         --bg-color: rgb(34, 34, 34);
+        --text-color: white;
       }
       /*<?php $body = ob_get_clean();
       require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
       echo buildThemesStylesheet($body); ?>*/
 
+      html {
+        background: var(--bg-color);
+        height: 100%;
+        width: 100%;
+      }
+
       body {
         background: var(--bg-color);
-        display: grid;
-        color: var(--sunmoon-color);
+        display: flex;
         position: relative;
-        padding: 3rem;
-        gap: 1rem;
         font-family: system-ui;
+        color: var(--text-color);
+        padding: 1rem;
+      }
+
+      div {
+        margin: auto;
+        display: grid;
+        place-items: center;
+        --cell-size: 14rem;
+        grid-template-columns: repeat(auto-fit, var(--cell-size));
+        max-width: min(95%, 3 * (var(--cell-size) + 1rem));
+        gap: 1rem;
       }
     </style>
   </head>
 
   <body>
-    <input-switch state="off" hint="icon" id="test" style="--width: 18rem"></input-switch>
-    <input-switch state="on" hint="text" style="--width: 16.8rem"></input-switch>
-    <input-switch state="off" style="--width: 15.6rem"></input-switch>
-    <input-switch state="on" hint="icon" style="--width: 14.4rem"></input-switch>
-    <input-switch state="off" hint="text" style="--width: 13.2rem"></input-switch>
-    <input-switch state="on" style="--width: 12rem"></input-switch>
-    <input-switch state="off" hint="icon" style="--width: 10.8rem"></input-switch>
-    <input-switch state="on" hint="text" style="--width: 9.6rem"></input-switch>
-    <input-switch state="off" style="--width: 8.4rem"></input-switch>
-    <input-switch state="on" hint="icon" style="--width: 7.2rem"></input-switch>
-    <input-switch state="off" hint="text" style="--width: 6rem"></input-switch>
-    <input-switch state="on" style="--width: 4.8rem"></input-switch>
-    <input-switch state="off" hint="icon" style="--width: 3.6rem"></input-switch>
-    <input-switch state="off" hint="text" style="--width: 3.6rem"></input-switch>
-    <input-switch state="off" style="--width: 3.6rem"></input-switch>
-    <input-switch state="on" hint="icon" style="--width: 2.4rem"></input-switch>
-    <input-switch state="on" hint="text" style="--width: 2.4rem"></input-switch>
-    <input-switch state="on" style="--width: 2.4rem"></input-switch>
-    <input-switch state="off" style="--width: 1.2rem"></input-switch>
+    <div>
+      <?php for ($i = 0; $i < count($sizes); $i++) { $rem = $sizes[$i]; ?>
+      <input-switch state="<?=($i % 2 == 0) ? 'off' : 'on'?>" hint="icon" style="--width: <?=$rem?>rem;"></input-switch>
+      <input-switch state="<?=($i % 2 == 1) ? 'off' : 'on'?>" hint="text" style="--width: <?=$rem?>rem;"></input-switch>
+      <input-switch state="<?=($i % 2 == 0) ? 'off' : 'on'?>" style="--width: <?=$rem?>rem;"></input-switch>
+      <?php } ?>
+    </div>
 
     <script type="module">
       <?php require_once dirname(__DIR__, 2) . '/php/version.php';
