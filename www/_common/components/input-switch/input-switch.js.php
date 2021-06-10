@@ -31,7 +31,7 @@ class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
-    // Add theme-selector CSS to the page
+    // Add input-switch CSS to the page
     if (!cssReady) {
       const head = document.querySelector('head');
       const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
