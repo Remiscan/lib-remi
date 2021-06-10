@@ -7,6 +7,7 @@ input-switch {
 
   display: inline-block;
   position: relative;
+  contain: content;
 
   --easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
   --duration: .2s;
