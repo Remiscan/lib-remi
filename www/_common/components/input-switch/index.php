@@ -24,6 +24,7 @@
         position: relative;
         padding: 3rem;
         gap: 1rem;
+        font-family: system-ui;
       }
     </style>
   </head>
