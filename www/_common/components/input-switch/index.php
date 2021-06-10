@@ -1,6 +1,7 @@
 <html>
 
   <head>
+    <meta name="viewport" content="initial-scale=1">
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {
@@ -28,20 +29,20 @@
   </head>
 
   <body>
-    <input-switch state="off" id="test" style="--width: 18rem"></input-switch>
-    <input-switch state="on" style="--width: 16.8rem"></input-switch>
+    <input-switch state="off" hint="icon" id="test" style="--width: 18rem"></input-switch>
+    <input-switch state="on" hint="text" style="--width: 16.8rem"></input-switch>
     <input-switch state="off" style="--width: 15.6rem"></input-switch>
-    <input-switch state="on" style="--width: 14.4rem"></input-switch>
-    <input-switch state="off" style="--width: 13.2rem"></input-switch>
+    <input-switch state="on" hint="icon" style="--width: 14.4rem"></input-switch>
+    <input-switch state="off" hint="text" style="--width: 13.2rem"></input-switch>
     <input-switch state="on" style="--width: 12rem"></input-switch>
-    <input-switch state="off" style="--width: 10.8rem"></input-switch>
-    <input-switch state="on" style="--width: 9.6rem"></input-switch>
+    <input-switch state="off" hint="icon" style="--width: 10.8rem"></input-switch>
+    <input-switch state="on" hint="text" style="--width: 9.6rem"></input-switch>
     <input-switch state="off" style="--width: 8.4rem"></input-switch>
-    <input-switch state="on" style="--width: 7.2rem"></input-switch>
-    <input-switch state="off" style="--width: 6rem"></input-switch>
+    <input-switch state="on" hint="icon" style="--width: 7.2rem"></input-switch>
+    <input-switch state="off" hint="text" style="--width: 6rem"></input-switch>
     <input-switch state="on" style="--width: 4.8rem"></input-switch>
-    <input-switch state="off" style="--width: 3.6rem"></input-switch>
-    <input-switch state="on" style="--width: 2.4rem"></input-switch>
+    <input-switch state="off" hint="icon" style="--width: 3.6rem"></input-switch>
+    <input-switch state="on" hint="text" style="--width: 2.4rem"></input-switch>
     <input-switch state="off" style="--width: 1.2rem"></input-switch>
 
     <script type="module">

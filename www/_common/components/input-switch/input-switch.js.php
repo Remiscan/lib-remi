@@ -19,10 +19,11 @@ class InputSwitch extends HTMLElement {
 
 
   toggle() {
-    const state = this.getAttribute('state');
-    const newState = state == 'on' ? 'off' : 'on';
-    this.setAttribute('state', newState);
-    this.dispatchEvent(new CustomEvent('switch', { detail: { state: newState } }));
+    const button = this.querySelector('button');
+    const checked = button.getAttribute('aria-checked') === 'true';
+    const newState = !checked ? 'on' : 'off';
+    button.setAttribute('aria-checked', !checked);
+    this.dispatchEvent(new CustomEvent('switch', { detail: { checked: !checked, state: newState } }));
     this.dispatchEvent(new Event(`switch${newState}`));
   }
 
@@ -45,6 +46,7 @@ class InputSwitch extends HTMLElement {
     
     // Set initial state
     button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
+    this.removeAttribute('state');
     const id = this.getAttribute('id');
     this.removeAttribute('id');
     if (id) button.setAttribute('id', id);
@@ -56,21 +58,6 @@ class InputSwitch extends HTMLElement {
     });
 
     this.ready = true;
-  }
-
-
-  static get observedAttributes() {
-    return ['state'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue == newValue) return;
-    if (name == 'state') {
-      if (!this.ready) return;
-      const button = this.querySelector('button');
-      button.setAttribute('aria-checked', newValue == 'on');
-      return;
-    }
   }
 }
 
