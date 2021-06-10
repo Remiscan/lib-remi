@@ -1,9 +1,8 @@
 :host {
   aspect-ratio: 1 / 2;
   --width: 4rem;
-  --height: calc(.5 * var(--width));
   width: var(--width);
-  height: var(--height);
+  height: calc(.5 * var(--width));
 
   display: inline-block;
   position: relative;
@@ -48,7 +47,7 @@ echo buildThemesStylesheet($body); ?>*/
   grid-template-rows: 100%;
   width: 100%;
   height: 100%;
-  border-radius: var(--height);
+  border-radius: calc(.5 * var(--width));
   background-color: var(--off-bg-color);
   overflow: hidden;
 }
@@ -128,7 +127,7 @@ echo buildThemesStylesheet($body); ?>*/
   height: 100%;
   transform: scale(.8);
   background-color: var(--handle-color);
-	border-radius: var(--height);
+	border-radius: calc(.5 * var(--width));
   z-index: 3;
 }
 
