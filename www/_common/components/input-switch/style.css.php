@@ -11,6 +11,7 @@
 
   --easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
   --duration: .2s;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 }
 
 /*<?php ob_start();?>*/
@@ -86,7 +87,7 @@ echo buildThemesStylesheet($body); ?>*/
 }
 
 .input-switch-hints>span {
-  font-family: var(--font-family, 'system-ui');
+  font-family: var(--font-family);
   font-size: calc(var(--width) / 4);
   font-weight: var(--font-weight, 700);
 }
