@@ -43,7 +43,11 @@
     <input-switch state="off" hint="text" style="--width: 6rem"></input-switch>
     <input-switch state="on" style="--width: 4.8rem"></input-switch>
     <input-switch state="off" hint="icon" style="--width: 3.6rem"></input-switch>
+    <input-switch state="off" hint="text" style="--width: 3.6rem"></input-switch>
+    <input-switch state="off" style="--width: 3.6rem"></input-switch>
+    <input-switch state="on" hint="icon" style="--width: 2.4rem"></input-switch>
     <input-switch state="on" hint="text" style="--width: 2.4rem"></input-switch>
+    <input-switch state="on" style="--width: 2.4rem"></input-switch>
     <input-switch state="off" style="--width: 1.2rem"></input-switch>
 
     <script type="module">
