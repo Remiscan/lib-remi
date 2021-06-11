@@ -1,17 +1,10 @@
-const css = `
-<?php include './style.css.php'; ?>
-`;
-
-const html = `
-<?php include './element.html'; ?>
-`;
-
-
-
 let cssReady = false;
-let lastResizeTime = 0;
+const css = `<?php include './style.css.php'; ?>`;
+const html = `<?php include './element.html'; ?>`;
+
+
+
 const focusableQuery = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex], [contenteditable]';
-const stylesheetVersion = /*<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php'; echo '*'.'/\''.version(__DIR__, 'style.css.php').'\';/'.'*'; ?>*/
 
 
 
