@@ -2,12 +2,12 @@
 ***** EXAMPLE OF USE ******************
 ***************************************
 
-<fieldset role="tablist">
+<fieldset role="tablist" group="tabs-group-name">
   <legend data-string="tabs-group-name-label"></legend>
 
-  <tab-label group="tabs-group-name" controls="controlled-element-1-id" id="tab-1-id" active="true">Tab 1 name</tab-label>
-  <tab-label group="tabs-group-name" controls="controlled-element-2-id" id="tab-2-id">Tab 2 name</tab-label>
-  <tab-label group="tabs-group-name" controls="controlled-element-3-id" id="tab-3-id">Tab 3 name</tab-label>
+  <tab-label controls="controlled-element-1-id" active="true">Tab 1 name</tab-label>
+  <tab-label controls="controlled-element-2-id">Tab 2 name</tab-label>
+  <tab-label controls="controlled-element-3-id">Tab 3 name</tab-label>
 </fieldset>
 
 <div id="controlled-element-1-id"></div>
@@ -66,21 +66,22 @@ class TabLabel extends HTMLElement {
     for (const attr of [...this.attributes]) {
       switch (attr.name) {
         case 'group': input.setAttribute('name', attr.value); break;
-        case 'controls': input.setAttribute('aria-controls', attr.value); break;
+        case 'controls':
+          const id = `input-for-${attr.value}`;
+          input.setAttribute('id', id);
+          input.setAttribute('value', id);
+          label.setAttribute('for', id);
+          label.id = `${id}-label`;
+          input.setAttribute('aria-controls', attr.value);
+          break;
         case 'active':
           input.setAttribute('checked', attr.value !== 'false');
           this.removeAttribute('active');
           break;
-        case 'id': 
-          input.setAttribute('id', attr.value);
-          input.setAttribute('value', attr.value);
-          label.setAttribute('for', attr.value);
-          label.id = `${attr.value}-label`;
-          this.removeAttribute('id');
-          break;
-        default: input.setAttribute(attr.name, attr.value);
       }
     }
+
+    if (!input.getAttribute('name')) input.setAttribute('name', this.parentElement.dataset.group);
 
     const controlledElement = document.getElementById(this.getAttribute('controls'));
     controlledElement.setAttribute('aria-labelledby', label.id);
