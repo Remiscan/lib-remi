@@ -23,6 +23,8 @@ class SampleElement extends HTMLElement {
       cssReady = true;
     }
     this.innerHTML = html;
+
+    // Do other stuff here
   }
 }
 
