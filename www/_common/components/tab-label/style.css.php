@@ -1,5 +1,5 @@
 /*<?php ob_start();?>*/
-:root[data-theme="light"] tab-label {
+:root[data-theme="light"] tab-label, [role="tablist"] {
   --on-bg-color: hsl(231, 40%, 50%);
   --hover-bg-color: hsl(231, 40%, 50%, .3);
   --active-bg-color: hsl(231, 40%, 50%, .6);
@@ -7,7 +7,7 @@
   --on-text-color: white;
 }
 
-:root[data-theme="dark"] tab-label {
+:root[data-theme="dark"] tab-label, [role="tablist"] {
   --on-bg-color: hsl(217, 89%, 75%);
   --hover-bg-color: hsl(217, 89%, 75%, .3);
   --active-bg-color: hsl(217, 89%, 75%, .6);
@@ -29,6 +29,8 @@ tab-label {
   padding: 0;
   border: none;
   gap: .6rem;
+  padding: 0 .6rem;
+  box-shadow: inset 0 -1px 0 var(--on-bg-color);
 }
 
 [role="tablist"]>legend {
