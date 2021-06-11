@@ -5,9 +5,9 @@
 <fieldset role="tablist" group="tabs-group-name">
   <legend data-string="tabs-group-name-label"></legend>
 
-  <tab-label controls="controlled-element-1-id" active="true">Tab 1 name</tab-label>
-  <tab-label controls="controlled-element-2-id">Tab 2 name</tab-label>
-  <tab-label controls="controlled-element-3-id">Tab 3 name</tab-label>
+  <tab-label controls="controlled-element-1-id" label="Tab 1 name" active="true"></tab-label>
+  <tab-label controls="controlled-element-2-id" label="Tab 2 name"></tab-label>
+  <tab-label controls="controlled-element-3-id" label="Tab 3 name"></tab-label>
 </fieldset>
 
 <div id="controlled-element-1-id"></div>
@@ -16,9 +16,9 @@
 
 ***** or ******************************
 
-<div group="tabs-group-name" id="controlled-element-1-id"></div>
-<div group="tabs-group-name" id="controlled-element-2-id" hidden></div>
-<div group="tabs-group-name" id="controlled-element-3-id" hidden></div>
+<tab-label group="tabs-group-name" controls="controlled-element-1-id" label="Tab 1 name" active="true"></tab-label>
+<tab-label group="tabs-group-name" controls="controlled-element-2-id" label="Tab 2 name"></tab-label>
+<tab-label group="tabs-group-name" controls="controlled-element-3-id" label="Tab 3 name"></tab-label>
 
 <div id="controlled-element-1-id"></div>
 <div id="controlled-element-2-id" hidden></div>
@@ -82,6 +82,9 @@ class TabLabel extends HTMLElement {
           label.setAttribute('for', id);
           label.id = `${id}-label`;
           this.input.setAttribute('aria-controls', attr.value);
+          break;
+        case 'label':
+          if (label.innerHTML == '') label.innerHTML = attr.value;
           break;
         case 'active':
           this.input.setAttribute('checked', attr.value !== 'false');
