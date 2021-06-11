@@ -1,3 +1,5 @@
+<?php require_once dirname(__DIR__, 2) . '/php/version.php';
+$version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
 <html>
 
   <head>
@@ -33,16 +35,18 @@
         color: var(--text-color);
         padding: 1rem;
       }
+
+      <?php include __DIR__ . '/style.css.php'; ?>
     </style>
   </head>
 
   <body>
-    <fieldset role="tablist">
+    <fieldset role="tablist" data-group="tabs-group-name">
       <legend data-string="tabs-group-name-label"></legend>
 
-      <tab-label group="tabs-group-name" controls="controlled-element-1-id" id="tab-1-id" active="true">Tab 1 name</tab-label>
-      <tab-label group="tabs-group-name" controls="controlled-element-2-id" id="tab-2-id">Tab 2 name</tab-label>
-      <tab-label group="tabs-group-name" controls="controlled-element-3-id" id="tab-3-id">Tab 3 name</tab-label>
+      <tab-label controls="controlled-element-1-id" active="true">Tab 1 name</tab-label>
+      <tab-label controls="controlled-element-2-id">Tab 2 name</tab-label>
+      <tab-label controls="controlled-element-3-id">Tab 3 name</tab-label>
     </fieldset>
 
     <div id="controlled-element-1-id">Content 1</div>
@@ -50,14 +54,7 @@
     <div id="controlled-element-3-id" hidden>Content 3</div>
 
     <script type="module">
-      // ▼ ES modules cache-busted grâce à PHP
-      /*<?php ob_start();?>*/
-
-      import '/_common/components/tab-label/tab-label.js.php';
-
-      /*<?php $imports = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-      echo versionizeFiles($imports, __DIR__); ?>*/
+      import '/_common/components/tab-label/tab-label--<?=$version?>.js.php';
     </script>
   </body>
 
