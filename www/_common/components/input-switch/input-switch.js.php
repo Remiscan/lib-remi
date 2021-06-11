@@ -5,7 +5,6 @@ const css = `<?php include './style.css.php'; ?>`;
 let sheet;
 if (adopt) {
   sheet = new CSSStyleSheet();
-  sheet.replaceSync(css);
 } else {
   template.innerHTML += `<style>${css}</style>`;
 }
@@ -35,6 +34,9 @@ class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
+    // Parse CSS on first connection
+    if (sheet?.cssRules.length === 0) sheet.replaceSync(css);
+
     const button = this.shadowRoot.querySelector('button');
 
     // Set initial state
