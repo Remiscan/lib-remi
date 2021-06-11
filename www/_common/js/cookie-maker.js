@@ -24,15 +24,13 @@ export default function CookieMaker(path, noConsent = []) {
      * @param {boolean} consent - Whether to ask for consent before creating the cookie.
      */
     constructor(name, value, options = {}) {
-      if (!this.noConsent.includes(name) && Number(localStorage.getItem(`${path}/consent-cookie-${names[0]}`)) !== 1) return;
-
-      const expiration = options.session ? '' : options.maxAge ? `max-age=${options.maxAge}`
-                                              : options.expires ? `expires=${options.expires}`
-                                              : `expires=${new Date(2147483647000).toUTCString()}`;
-      const sameSite = options.sameSite ? `samesite=${options.sameSite}` : `samesite=lax`;
-      const secure = options.secure === false ? '' : 'secure;'
-      
-      document.cookie = `${name}=${value};path=${this.path};${expiration};${sameSite};${secure}`
+      this.name = name;
+      this.value = value;
+      this.expiration = options.session ? '' : options.maxAge ? `max-age=${options.maxAge}`
+                                             : options.expires ? `expires=${options.expires}`
+                                             : `expires=${new Date(2147483647000).toUTCString()}`;
+      this.sameSite = options.sameSite || 'lax';
+      this.secure = options.secure === false ? '' : 'secure';
     }
 
     /** @returns {string} The path to which cookies will be restricted. */
@@ -42,33 +40,42 @@ export default function CookieMaker(path, noConsent = []) {
     static get noConsent() { return noConsent; }
 
 
+    /** Sets the cookie. */
+    set() {
+      if (!this.noConsent.includes(this.name) && Number(localStorage.getItem(`${this.path}/consent-cookie-${this.name}`)) !== 1) return;
+      document.cookie = `${this.name}=${this.value};path=${this.path};${this.expiration};${this.sameSite};${this.secure}`;
+    }
+
+
     /**
-     * 
+     * Waits for user consent before setting a cookie.
      * @param {string} name - Name of the cookie.
      * @param {*} value - Value of the cookie.
      * @param {CookieOptions} options - Other cookie parameters.
      * @returns {Cookie} The created cookie.
      */
-    static async set(name, value, options = {}) {
-      const userConsent = await this.prompt(name);
+    static async propose(name, value, options = {}) {
+      const cookie = new Cookie(name, value, options);
+      const userConsent = await this.prompt(cookie);
       try {
-        if (userConsent) return new Cookie(name, value, options);
+        if (userConsent) cookie.set();
         else throw `The user did not authorise this cookie ("${name}")`;
       } catch (error) {}
     }
 
 
     /**
-     * Asks for user consent before creating cookies.
+     * Asks for user consent about a cookie.
      * @param  {...string} names - Names of the cookies the user should consent to.
      * @returns {boolean[]} Array of user responses.
      */
-    static async prompt(...names) {
+    static async prompt(...cookies) {
       // If we're asking the user to consent to a single cookie and he already did so, don't ask again.
-      if (names.length === 1 && Number(localStorage.getItem(`${path}/consent-cookie-${names[0]}`)) === 1)
+      if (cookies.length === 1 && Number(localStorage.getItem(`${this.path}/consent-cookie-${cookies[0].name}`)) === 1)
         return [true];
 
       // Prepares the request for user consent.
+      const names = cookies.map(c => c.name);
       const popup = document.createElement('cookie-prompt');
       popup.setAttribute('cookies', JSON.stringify(names));
       await Traduction.translate(popup);
