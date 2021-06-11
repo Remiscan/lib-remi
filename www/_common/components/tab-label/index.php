@@ -58,24 +58,24 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
     <fieldset role="tablist" data-group="tabs-group-name">
       <legend data-string="tabs-group-name-label"></legend>
 
-      <tab-label controls="controlled-element-1-id" active="true">Tab 1 name</tab-label>
-      <tab-label controls="controlled-element-2-id">Tab 2 name</tab-label>
-      <tab-label controls="controlled-element-3-id">Tab 3 name</tab-label>
+      <tab-label controls="controlled-element-1-id" label="Tab 1 name" active="true"></tab-label>
+      <tab-label controls="controlled-element-2-id" label="Tab 2 name"></tab-label>
+      <tab-label controls="controlled-element-3-id" label="Tab 3 name"></tab-label>
     </fieldset>
 
-    <div id="controlled-element-1-id">Content 1</div>
+    <div id="controlled-element-1-id" hidden>Content 1</div>
     <div id="controlled-element-2-id" hidden>Content 2</div>
     <div id="controlled-element-3-id" hidden>Content 3</div>
 
     <hr>
 
     <div class="tab-group">
-      <tab-label group="no-fieldset" controls="controlled-element-4-id" active="true">Tab 4</tab-label>
-      <tab-label group="no-fieldset" controls="controlled-element-5-id">Tab 5</tab-label>
-      <tab-label group="no-fieldset" controls="controlled-element-6-id">Tab 6</tab-label>
+      <tab-label group="no-fieldset" controls="controlled-element-4-id" label="Tab 4" active="true"></tab-label>
+      <tab-label group="no-fieldset" controls="controlled-element-5-id" label="Tab 5"></tab-label>
+      <tab-label group="no-fieldset" controls="controlled-element-6-id" label="Tab 6"></tab-label>
     </div>
 
-    <div id="controlled-element-4-id">Content 4</div>
+    <div id="controlled-element-4-id" hidden>Content 4</div>
     <div id="controlled-element-5-id" hidden>Content 5</div>
     <div id="controlled-element-6-id" hidden>Content 6</div>
 
