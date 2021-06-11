@@ -14,6 +14,16 @@
 <div id="controlled-element-2-id" hidden></div>
 <div id="controlled-element-3-id" hidden></div>
 
+***** or ******************************
+
+<div group="tabs-group-name" id="controlled-element-1-id"></div>
+<div group="tabs-group-name" id="controlled-element-2-id" hidden></div>
+<div group="tabs-group-name" id="controlled-element-3-id" hidden></div>
+
+<div id="controlled-element-1-id"></div>
+<div id="controlled-element-2-id" hidden></div>
+<div id="controlled-element-3-id" hidden></div>
+
 **************************************/
 
 
