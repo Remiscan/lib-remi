@@ -69,7 +69,6 @@ class TabLabel extends HTMLElement {
         case 'controls':
           const id = `input-for-${attr.value}`;
           input.setAttribute('id', id);
-          input.setAttribute('value', id);
           label.setAttribute('for', id);
           label.id = `${id}-label`;
           input.setAttribute('aria-controls', attr.value);
