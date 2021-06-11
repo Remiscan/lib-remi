@@ -40,15 +40,12 @@ class TabLabel extends HTMLElement {
   }
 
 
-  updateGroup(name) {
-    const tabs = [...document.querySelectorAll(`input[name="${name}"]`)];
-    for (const tab of tabs) {
+  toggle() {
+    if (!this.tabs) this.tabs = [...document.querySelectorAll(`input[name="${this.group}"]`)];
+    for (const tab of this.tabs) {
       const element = document.getElementById(tab.getAttribute('aria-controls'));
-      if (tab.checked) {
-        element.removeAttribute('hidden');
-      } else {
-        element.setAttribute('hidden', 'hidden');
-      }
+      if (tab.checked)  element.removeAttribute('hidden');
+      else              element.setAttribute('hidden', 'hidden');
     }
   }
 
@@ -72,32 +69,39 @@ class TabLabel extends HTMLElement {
     label.innerHTML = content;
 
     // Pass the correct attributes to the input[type="radio"]
-    const input = this.querySelector('input[role="tab"]');
+    this.input = this.querySelector('input[role="tab"]');
     for (const attr of [...this.attributes]) {
       switch (attr.name) {
-        case 'group': input.setAttribute('name', attr.value); break;
+        case 'group':
+          this.group = attr.value;
+          this.input.setAttribute('name', attr.value);
+          break;
         case 'controls':
           const id = `input-for-${attr.value}`;
-          input.setAttribute('id', id);
+          this.input.setAttribute('id', id);
           label.setAttribute('for', id);
           label.id = `${id}-label`;
-          input.setAttribute('aria-controls', attr.value);
+          this.input.setAttribute('aria-controls', attr.value);
           break;
         case 'active':
-          input.setAttribute('checked', attr.value !== 'false');
+          this.input.setAttribute('checked', attr.value !== 'false');
           this.removeAttribute('active');
           break;
       }
     }
 
-    if (!input.getAttribute('name')) input.setAttribute('name', this.parentElement.dataset.group);
+    if (!this.input.getAttribute('name')) {
+      this.group = this.parentElement.dataset.group;
+      this.input.setAttribute('name', this.group);
+    }
 
-    const controlledElement = document.getElementById(this.getAttribute('controls'));
-    controlledElement.setAttribute('aria-labelledby', label.id);
-    controlledElement.setAttribute('role', 'tabpanel');
+    this.controlledElement = document.getElementById(this.getAttribute('controls'));
+    this.controlledElement.setAttribute('aria-labelledby', label.id);
+    this.controlledElement.setAttribute('role', 'tabpanel');
+    if (!this.input.checked)  this.controlledElement.setAttribute('hidden', 'hidden');
+    else                      this.controlledElement.removeAttribute('hidden');
     
-    this.updateGroup(input.name);
-    input.addEventListener('change', () => this.updateGroup(input.name));
+    this.input.addEventListener('change', () => this.toggle());
   }
 }
 
