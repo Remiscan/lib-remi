@@ -60,17 +60,13 @@
     <div>
       <span class="info">Click a switch!</span>
 
-      <input-switch id="switch-0" state="off" hint="icon" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-0" state="off" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
       <input-switch id="switch-1" state="on" hint="text" style="--width: 12rem;"></input-switch>
       <input-switch id="switch-2" state="off" style="--width: 12rem;"></input-switch>
 
-      <input-switch id="switch-3" state="on" hint="icon" style="--width: 8rem;"></input-switch>
-      <input-switch id="switch-4" state="off" hint="text" style="--width: 8rem;"></input-switch>
-      <input-switch id="switch-5" state="on" style="--width: 8rem;"></input-switch>
-      
-      <input-switch id="switch-6" state="off" hint="icon" style="--width: 4rem; --stroke-width: 3;"></input-switch>
-      <input-switch id="switch-7" state="on" hint="text" style="--width: 4rem; --stroke-width: 3;"></input-switch>
-      <input-switch id="switch-8" state="off" style="--width: 4rem; --stroke-width: 3;"></input-switch>
+      <input-switch id="switch-3" state="on" hint="icon"></input-switch>
+      <input-switch id="switch-4" state="off" hint="text"></input-switch>
+      <input-switch id="switch-5" state="on"></input-switch>
     </div>
 
     <script type="module">
