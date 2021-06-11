@@ -18,6 +18,11 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
 echo buildThemesStylesheet($body); ?>*/
 
+tab-label {
+  display: grid;
+  place-items: center;
+}
+
 [role="tablist"] {
   display: flex;
   margin: 0;
