@@ -37,6 +37,20 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
       }
 
       <?php include __DIR__ . '/style.css.php'; ?>
+
+      .tab-group {
+        display: flex;
+        margin: 0;
+        padding: 0;
+        border: none;
+        gap: .6rem;
+      }
+
+      hr {
+        width: 100%;
+        height: 1.2rem;
+        border: 0;
+      }
     </style>
   </head>
 
@@ -52,6 +66,18 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
     <div id="controlled-element-1-id">Content 1</div>
     <div id="controlled-element-2-id" hidden>Content 2</div>
     <div id="controlled-element-3-id" hidden>Content 3</div>
+
+    <hr>
+
+    <div class="tab-group">
+      <tab-label group="no-fieldset" controls="controlled-element-4-id" active="true">Tab 4</tab-label>
+      <tab-label group="no-fieldset" controls="controlled-element-5-id">Tab 5</tab-label>
+      <tab-label group="no-fieldset" controls="controlled-element-6-id">Tab 6</tab-label>
+    </div>
+
+    <div id="controlled-element-4-id">Content 4</div>
+    <div id="controlled-element-5-id" hidden>Content 5</div>
+    <div id="controlled-element-6-id" hidden>Content 6</div>
 
     <script type="module">
       import '/_common/components/tab-label/tab-label--<?=$version?>.js.php';
