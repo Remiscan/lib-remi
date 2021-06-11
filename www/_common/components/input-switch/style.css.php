@@ -94,7 +94,7 @@ echo buildThemesStylesheet($body); ?>*/
 .input-switch-hints>svg {
   width: 100%;
   height: 100%;
-  stroke-width: var(--stroke-width, 2);
+  stroke-width: var(--stroke-width, 3);
 }
 
 .input-switch-hints>[data-state="on"] {
