@@ -29,7 +29,7 @@
         background: var(--bg-color);
         display: flex;
         position: relative;
-        font-family: system-ui;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
         color: var(--text-color);
         padding: 1rem;
       }
