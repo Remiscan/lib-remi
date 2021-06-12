@@ -51,12 +51,12 @@ class InputSwitch extends HTMLElement {
 
         // Clicking on the label toggles the switch
         const labelDown = event => {
-          if (event.path.includes(this.button)) return;
+          if (event.composedPath().includes(this.button)) return;
           this.moving = false;
         };
         const labelUp = event => {
           event.preventDefault();
-          if (event.path.includes(this.button) || this.moving) return;
+          if (event.composedPath().includes(this.button) || this.moving) return;
           this.toggle();
         };
         label.addEventListener('mousedown', labelDown);
