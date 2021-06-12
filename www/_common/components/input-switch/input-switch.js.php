@@ -42,7 +42,16 @@ class InputSwitch extends HTMLElement {
     this.button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
     this.removeAttribute('state');
 
+    // Gets the object containing the clientX and clientY coordinates of an event
+    const getTouch = event => {
+      switch (event.type) {
+        case 'touchstart': case 'touchmove': return event.touches[0];
+        case 'mousedown': case 'mousemove': return event;
+      }
+    };
+
     // If <label for="id"> exists, use it to label the button
+    // and make it clickable.
     if (this.getAttribute('label') === null) {
       const id = this.getAttribute('id');
       const label = document.querySelector(`label[for="${id}"]`);
@@ -51,18 +60,33 @@ class InputSwitch extends HTMLElement {
 
         // Clicking on the label toggles the switch
         const labelDown = event => {
+          const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
+          const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
+
           if (event.composedPath().includes(this.button)) return;
           this.moving = false;
+
+          // Swiping on the label (or selecting its text) shouldn't toggle the switch
+          let cancel = false;
+          const iniX = getTouch(event).clientX;
+          const labelMove = event => {
+            if (!cancel & Math.abs(iniX - getTouch(event).clientX) > 5) cancel = true;
+          }
+          const labelUp = event => {
+            event.preventDefault();
+            if (event.composedPath().includes(this.button) || this.moving || cancel) return;
+            this.toggle();
+
+            window.removeEventListener(moveEvent, labelMove);
+            window.removeEventListener(endEvent, labelUp);
+          };
+
+          window.addEventListener(moveEvent, labelMove);
+          window.addEventListener(endEvent, labelUp);
         };
-        const labelUp = event => {
-          event.preventDefault();
-          if (event.composedPath().includes(this.button) || this.moving) return;
-          this.toggle();
-        };
+
         label.addEventListener('mousedown', labelDown);
         label.addEventListener('touchstart', labelDown);
-        label.addEventListener('mouseup', labelUp);
-        label.addEventListener('touchend', labelUp);
       }
     }
 
@@ -70,13 +94,6 @@ class InputSwitch extends HTMLElement {
     const startHandle = event => {
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
-      // Gets the object containing the clientX and clientY coordinates of the event
-      const getTouch = event => {
-        switch (event.type) {
-          case 'touchstart': case 'touchmove': return event.touches[0];
-          case 'mousedown': case 'mousemove': return event;
-        }
-      };
       
       this.moving = false;
       let durationChanged = false;
@@ -127,7 +144,6 @@ class InputSwitch extends HTMLElement {
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
-
       }
 
       window.addEventListener(moveEvent, moveHandle);
