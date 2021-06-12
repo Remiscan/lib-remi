@@ -88,14 +88,11 @@ class InputSwitch extends HTMLElement {
       const initialTouch = getCoords(event);
 
       // Ratio of (distance moved) / (button width)
-      const updateRatio = touch => {
-        switch (initialRatio) {
-          case 1: return Math.max(0, Math.min(1 - (touch.x - initialTouch.x) / width, 1));
-          case 0: return Math.max(0, Math.min((initialTouch.x - touch.x) / width, 1));
-        }
-      };
+      const updateDistance = touch => Math.max(-1, Math.min((touch.x - initialTouch.x) / width, 1));
+      const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
       const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
       let lastTouch = initialTouch;
+      let maxDistance = 0;
 
       const moveHandle = event => {
         // Disable transition, the handle should follow the finger/cursor immediately
@@ -106,8 +103,10 @@ class InputSwitch extends HTMLElement {
 
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
+        const distance = updateDistance(lastTouch);
+        maxDistance = Math.max(Math.abs(distance), maxDistance);
         // Safety margin to differentiate a click and a drag
-        if (!this.moving && Math.abs(initialRatio - ratio) > 0.1) this.moving = true;
+        if (!this.moving && Math.abs(distance) > 0.1) this.moving = true;
         this.button.style.setProperty('--trans-ratio', ratio);
       };
 
@@ -119,11 +118,12 @@ class InputSwitch extends HTMLElement {
         this.button.style.removeProperty('--duration');
         this.button.style.removeProperty('--trans-ratio');
 
-        const ratio = updateRatio(lastTouch);
+        const distance = updateDistance(lastTouch);
         // If it's a drag and it moved to the other side of the switch
-        if (Math.abs(initialRatio - ratio) > 0.5) this.toggle();
+        const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
+        if (Math.abs(distance) > 0.5 && correctDirection) this.toggle();
         // If it's a click (under safety margin)
-        else if (Math.abs(initialRatio - ratio) <= 0.1) this.toggle();
+        else if (maxDistance <= 0.1) this.toggle();
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
