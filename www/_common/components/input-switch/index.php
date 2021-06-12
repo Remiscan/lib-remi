@@ -79,9 +79,9 @@
     <div>
       <span class="info"><strong>Flip a switch!</strong><br>Click or drag.</span>
 
-      <input-switch id="switch-0" label="Switch 0" state="off" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
+      <input-switch id="switch-0" label="Switch 0" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
       <input-switch id="switch-1" label="Switch 1" state="on" hint="text" style="--width: 12rem;"></input-switch>
-      <input-switch id="switch-2" label="Switch 2" state="off" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-2" label="Switch 2" style="--width: 12rem;"></input-switch>
 
       <label for="switch-3">
         Switch 3
@@ -90,9 +90,9 @@
 
       <label for="switch-4">
         Switch 4
-        <input-switch id="switch-4" state="off" hint="text"></input-switch>
+        <input-switch id="switch-4" hint="text"></input-switch>
       </label>
-      
+
       <label for="switch-5">
         Switch 5
         <input-switch id="switch-5" state="on"></input-switch>
