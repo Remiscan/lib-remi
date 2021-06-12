@@ -1,3 +1,14 @@
+// ▼ ES modules cache-busted grâce à PHP
+/*<?php ob_start();?>*/
+
+import '/_common/components/cookie-consent-mini/cookie-consent-mini.js.php';
+
+/*<?php $imports = ob_get_clean();
+require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+echo versionizeFiles($imports, __DIR__); ?>*/
+
+
+
 /**
  * Creates a Cookie class for a specific app.
  * @param {string} path - Path to which the cookie will be restricted.
@@ -39,82 +50,101 @@ export default function CookieMaker(path, noConsent = []) {
     /** @returns {string[]} List of cookies which do not require consent. */
     static get noConsent() { return noConsent; }
 
+    /** 
+     * Gets the previous user response about a particular cookie.
+     * @param {string} name - Name of the cookie.
+     * @returns {number} The previous user response for a particular cookie.
+     */
+    static previousDecision(name) { return localStorage.getItem(`${this.path}/consent-cookie-${name}`); }
+
 
     /** Sets the cookie. */
-    set() {
-      if (!this.noConsent.includes(this.name) && Number(localStorage.getItem(`${this.path}/consent-cookie-${this.name}`)) !== 1) return;
+    set(force = false) {
+      if (!force && !Cookie.noConsent.includes(this.name) && Cookie.previousDecision(this.name) != 1)
+        throw `The user did not authorise this cookie ("${this.name}")`;
       document.cookie = `${this.name}=${this.value};path=${this.path};${this.expiration};${this.sameSite};${this.secure}`;
     }
 
 
     /**
-     * Waits for user consent before setting a cookie.
+     * Waits for user consent then sets a cookie.
      * @param {string} name - Name of the cookie.
      * @param {*} value - Value of the cookie.
      * @param {CookieOptions} options - Other cookie parameters.
      * @returns {Cookie} The created cookie.
      */
-    static async propose(name, value, options = {}) {
+    static async submit(name, value, options = {}) {
       const cookie = new Cookie(name, value, options);
       const userConsent = await this.prompt(cookie);
       try {
         if (userConsent) cookie.set();
         else throw `The user did not authorise this cookie ("${name}")`;
-      } catch (error) {}
+      } catch (error) { console.log(error); }
     }
 
 
     /**
      * Asks for user consent about a cookie.
-     * @param  {...string} names - Names of the cookies the user should consent to.
+     * @param  {Cookie} cookie - Cookie the user should consent to.
      * @returns {boolean[]} Array of user responses.
      */
-    static async prompt(...cookies) {
+    static async prompt(cookie) {
       // If we're asking the user to consent to a single cookie and he already did so, don't ask again.
-      if (cookies.length === 1 && Number(localStorage.getItem(`${this.path}/consent-cookie-${cookies[0].name}`)) === 1)
-        return [true];
+      const previousResponse = Cookie.previousDecision(cookie.name);
+      if (previousResponse !== null) return !!previousResponse;
 
       // Prepares the request for user consent.
-      const names = cookies.map(c => c.name);
-      const popup = document.createElement('cookie-prompt');
-      popup.setAttribute('cookies', JSON.stringify(names));
-      await Traduction.translate(popup);
+      const popup = document.createElement('cookie-consent-mini');
+      popup.setAttribute('open', false);
+      popup.setAttribute('cookie', cookie.name);
+      popup.setAttribute('value', cookie.value);
       
       // Displays the request for user consent, with an animation managed by the cookie-prompt element itself.
+      const previousPrompt = document.querySelector(`cookie-consent-mini[cookie="${cookie.name}"]`);
+      if (previousPrompt) await Cookie.unprompt(cookie.name);
       document.body.appendChild(popup);
+      await new Promise(resolve => setTimeout(resolve, 10));
       popup.setAttribute('open', true);
 
       // A "cookieconsent" event will be sent for each cookie name if:
       // - names.length === 1 and the user gave an answer,
       // - names.length > 1 and the user clicked the cross or outside of the prompt to exit it.
-      const promises = [];
-      for (const name of names) {
-        const promise = new Promise(resolve => {
-          // If this cookie does not require consent, don't ask.
-          if (this.noConsent.includes()) return resolve(true);
+      const promise = new Promise(resolve => {
+        // If this cookie does not require consent, don't ask.
+        if (this.noConsent.includes()) return resolve(true);
 
-          // If this cookie requires consent, listen for the user's response.
-          window.addEventListener('cookieconsent', event => {
-            if (event.detail.name != name) return;
-            if (event.detail.consent === true) {
-              localStorage.setItem(`${path}/consent-cookie-${name}`, 1);
-              return resolve(true);
-            }
-            else {
-              localStorage.setItem(`${path}/consent-cookie-${name}`, 0);
-              return resolve(false);
-            }
-          });
+        // If this cookie requires consent, listen for the user's response.
+        window.addEventListener('cookieconsent', event => {
+          if (event.detail.name != cookie.name) return;
+          if (event.detail.consent === true) {
+            localStorage.setItem(`${this.path}/consent-cookie-${cookie.name}`, 1);
+            return resolve(true);
+          }
+          else {
+            localStorage.setItem(`${this.path}/consent-cookie-${cookie.name}`, 0);
+            return resolve(false);
+          }
         });
-        promises.push(promise);
-      }
+      });
 
-      const responses = await Promise.all(promises);
+      const response = await promise;
 
       // The cookie-prompt element removes itself after its closing animation ends.
-      popup.setAttribute('open', false);
+      Cookie.unprompt(cookie.name);
       
-      return responses;
+      return response;
+    }
+
+
+    static async unprompt(name) {
+      const popup = document.querySelector(`cookie-consent-mini[cookie="${name}"]`);
+      if (!popup) return;
+      if (popup.getAttribute('open') === 'true') {
+        popup.removeAttribute('open');
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+      popup.remove();
+      return;
     }
 
 
@@ -147,8 +177,10 @@ export default function CookieMaker(path, noConsent = []) {
      * Deletes a certain cookie.
      * @param {*} name - Name of the cookie.
      */
-    static delete(path, name) {
-      new Cookie(name, '', path, -1);
+    static delete(name) {
+      Cookie.unprompt(name);
+      const cookie = new Cookie(name, '', { maxAge: -1 });
+      cookie.set(true);
     }
   };
 }
