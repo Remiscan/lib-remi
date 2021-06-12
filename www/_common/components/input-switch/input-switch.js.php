@@ -147,7 +147,10 @@ class InputSwitch extends HTMLElement {
           this.toggle();
         }
         // If it's a click (under safety margin)
-        else if (maxDistance <= 0.1) this.toggle();
+        else {
+          this.button.style.removeProperty('--duration');
+          if (maxDistance <= 0.1) this.toggle();
+        }
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
