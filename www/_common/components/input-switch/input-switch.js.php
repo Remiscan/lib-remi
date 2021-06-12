@@ -92,11 +92,14 @@ class InputSwitch extends HTMLElement {
 
     // Make switch clickable and touchmoveable
     const startHandle = event => {
+      const time = Date.now();
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
       
       this.moving = false;
       let durationChanged = false;
+      this.button.style.removeProperty('--duration');
+      this.button.style.removeProperty('--easing');
 
       const coords = this.getBoundingClientRect();
       const width = 0.5 * coords.width * (1 - .2 * .5);
@@ -131,14 +134,18 @@ class InputSwitch extends HTMLElement {
         event.preventDefault();
 
         // Re-enable transition
-        durationChanged = false;
-        this.button.style.removeProperty('--duration');
         this.button.style.removeProperty('--trans-ratio');
-
         const distance = updateDistance(lastTouch);
+
         // If it's a drag and it moved to the other side of the switch
         const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
-        if (Math.abs(distance) > 0.5 && correctDirection) this.toggle();
+        if (Math.abs(distance) > 0.5 && correctDirection) {
+          // Calculate the remaining animation time based on the current speed
+          const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
+          this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
+          this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
+          this.toggle();
+        }
         // If it's a click (under safety margin)
         else if (maxDistance <= 0.1) this.toggle();
 

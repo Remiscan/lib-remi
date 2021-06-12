@@ -9,6 +9,8 @@
   contain: content;
 
   --easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --easing: var(--easing-standard);
   --duration: .2s;
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 }
@@ -63,7 +65,7 @@ echo buildThemesStylesheet($body); ?>*/
   height: 100%;
 	background-color: var(--on-bg-color);
 	opacity: calc(1 - var(--trans-ratio));
-  transition: opacity var(--duration) var(--easing-standard);
+  transition: opacity var(--duration) var(--easing);
   will-change: opacity;
   z-index: 1;
 }
@@ -78,7 +80,7 @@ echo buildThemesStylesheet($body); ?>*/
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 100%;
   place-items: center;
-  transition: transform var(--duration) var(--easing-standard);
+  transition: transform var(--duration) var(--easing);
   z-index: 2;
   transform: translateX(calc(-100% * var(--trans-ratio) / 3));
   will-change: transform;
