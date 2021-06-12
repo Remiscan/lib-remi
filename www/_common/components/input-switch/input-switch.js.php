@@ -92,7 +92,7 @@ class InputSwitch extends HTMLElement {
 
     // Make switch clickable and touchmoveable
     const startHandle = event => {
-      const time = Date.now();
+      let time = Date.now();
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
       
@@ -112,6 +112,7 @@ class InputSwitch extends HTMLElement {
       const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
       const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
       let lastTouch = initialTouch;
+      let lastDistance = 0;
       let maxDistance = 0;
       let frameReady = true;
 
@@ -128,6 +129,8 @@ class InputSwitch extends HTMLElement {
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
         const distance = updateDistance(lastTouch);
+        if (Math.sign(distance) != Math.sign(lastDistance)) time = Date.now();
+        lastDistance = distance;
         maxDistance = Math.max(Math.abs(distance), maxDistance);
         // Safety margin to differentiate a click and a drag
         if (!this.moving && Math.abs(distance) > 0.1) this.moving = true;
