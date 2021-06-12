@@ -129,6 +129,7 @@ class InputSwitch extends HTMLElement {
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
         const distance = updateDistance(lastTouch);
+        // Restart timer when direction changes, to save only the inertia of the last move
         if (Math.sign(distance) != Math.sign(lastDistance)) time = Date.now();
         lastDistance = distance;
         maxDistance = Math.max(Math.abs(distance), maxDistance);
