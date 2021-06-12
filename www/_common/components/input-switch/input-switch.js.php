@@ -92,6 +92,7 @@ class InputSwitch extends HTMLElement {
 
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
+        if (!this.moving && Math.abs(initialRatio - ratio) > 0.1) this.moving = true;
         button.style.setProperty('--trans-ratio', ratio);
       };
 
@@ -100,10 +101,7 @@ class InputSwitch extends HTMLElement {
         button.style.removeProperty('--duration');
         button.style.removeProperty('--trans-ratio');
         const ratio = updateRatio(lastTouch);
-        if (Math.abs(initialRatio - ratio) > 0.5) {
-          this.moving = true;
-          this.toggle();
-        }
+        if (Math.abs(initialRatio - ratio) > 0.5) this.toggle();
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
