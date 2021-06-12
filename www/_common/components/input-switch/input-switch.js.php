@@ -57,7 +57,6 @@ class InputSwitch extends HTMLElement {
     });
 
     // Make switch touchmoveable
-    const handle = this.shadowRoot.querySelector('.input-switch-handle');
     const startHandle = event => {
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
@@ -114,8 +113,8 @@ class InputSwitch extends HTMLElement {
       window.addEventListener(endEvent, endHandle);
     };
 
-    handle.addEventListener('mousedown', startHandle);
-    handle.addEventListener('touchstart', startHandle);
+    button.addEventListener('mousedown', startHandle);
+    button.addEventListener('touchstart', startHandle);
   }
 }
 

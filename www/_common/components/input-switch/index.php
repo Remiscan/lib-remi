@@ -51,14 +51,18 @@
         background-color: var(--bg-color);
         position: sticky;
         z-index: 2;
-        top: .5rem;
+        text-align: center;
+      }
+
+      strong {
+        font-size: 2em;
       }
     </style>
   </head>
 
   <body>
     <div>
-      <span class="info">Click a switch!</span>
+      <span class="info"><strong>Flip a switch!</strong><br>Click or drag.<br>Last action: <span class="action"> - </span></span>
 
       <input-switch id="switch-0" state="off" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
       <input-switch id="switch-1" state="on" hint="text" style="--width: 12rem;"></input-switch>
@@ -78,7 +82,7 @@
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
         input.addEventListener('switch', event => {
-          document.querySelector('.info').innerHTML = `${event.target.shadowRoot.querySelector('button').id} turned ${event.detail.state}`;
+          document.querySelector('.action').innerHTML = `${event.target.shadowRoot.querySelector('button').id} turned ${event.detail.state}`;
         });
       }
     </script>
