@@ -113,8 +113,12 @@ class InputSwitch extends HTMLElement {
       const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
       let lastTouch = initialTouch;
       let maxDistance = 0;
+      let frameReady = true;
 
       const moveHandle = event => {
+        if (!frameReady) return;
+        frameReady = false;
+
         // Disable transition, the handle should follow the finger/cursor immediately
         if (!durationChanged) {
           durationChanged = true;
@@ -128,17 +132,17 @@ class InputSwitch extends HTMLElement {
         // Safety margin to differentiate a click and a drag
         if (!this.moving && Math.abs(distance) > 0.1) this.moving = true;
         this.button.style.setProperty('--trans-ratio', ratio);
+
+        requestAnimationFrame(() => { frameReady = true });
       };
 
       const endHandle = event => {
         event.preventDefault();
-
-        // Re-enable transition
-        this.button.style.removeProperty('--trans-ratio');
         const distance = updateDistance(lastTouch);
 
         // If it's a drag and it moved to the other side of the switch
         const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
+        this.button.style.removeProperty('--trans-ratio');
         if (Math.abs(distance) > 0.5 && correctDirection) {
           // Calculate the remaining animation time based on the current speed
           const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
