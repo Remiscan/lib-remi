@@ -79,21 +79,22 @@ class InputSwitch extends HTMLElement {
             if (event.composedPath().includes(this.button) || this.moving || cancel) return;
             this.toggle();
 
-            window.removeEventListener(moveEvent, labelMove);
+            window.removeEventListener(moveEvent, labelMove, { passive: true });
             window.removeEventListener(endEvent, labelUp);
           };
 
-          window.addEventListener(moveEvent, labelMove);
+          window.addEventListener(moveEvent, labelMove, { passive: true });
           window.addEventListener(endEvent, labelUp);
         };
 
-        label.addEventListener('mousedown', labelDown);
-        label.addEventListener('touchstart', labelDown);
+        label.addEventListener('mousedown', labelDown, { passive: true });
+        label.addEventListener('touchstart', labelDown, { passive: true });
       }
     }
 
     // Make switch clickable and touchmoveable
     const startHandle = event => {
+      event.preventDefault();
       let time = Date.now();
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
@@ -119,6 +120,7 @@ class InputSwitch extends HTMLElement {
       let frameReady = true;
 
       const moveHandle = event => {
+        event.preventDefault();
         if (!frameReady) return;
         frameReady = false;
 
