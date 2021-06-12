@@ -18,14 +18,15 @@ class InputSwitch extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(template.content.cloneNode(true));
     if (adopt) this.shadow.adoptedStyleSheets = [sheet];
+    this.button = this.shadowRoot.querySelector('button');
+    this.moving = false;
   }
 
 
   toggle() {
-    const button = this.shadowRoot.querySelector('button');
-    const checked = button.getAttribute('aria-checked') === 'true';
+    const checked = this.button.getAttribute('aria-checked') === 'true';
     const newState = !checked ? 'on' : 'off';
-    button.setAttribute('aria-checked', !checked);
+    this.button.setAttribute('aria-checked', !checked);
     
     // Dispatches switch and switchon / switchoff events on the input-switch element.
     this.dispatchEvent(new CustomEvent('switch', { detail: { checked: !checked, state: newState } }));
@@ -37,29 +38,38 @@ class InputSwitch extends HTMLElement {
     // Parse CSS on first connection
     if (sheet?.cssRules.length === 0) sheet.replaceSync(css);
 
-    const button = this.shadowRoot.querySelector('button');
-
     // Set initial state
-    button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
+    this.button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
     this.removeAttribute('state');
 
-    // Move id to button (so that <label for="id"> would be properly associated to the button)
-    const id = this.getAttribute('id');
-    this.removeAttribute('id');
-    if (id) button.setAttribute('id', id);
+    // If <label for="id"> exists, use it to label the button
+    if (this.getAttribute('label') === null) {
+      const id = this.getAttribute('id');
+      const label = document.querySelector(`label[for="${id}"]`);
+      if (label) {
+        this.button.setAttribute('aria-label', label.innerText);
 
-    // Make switch clickable
-    this.moving = false;
-    button.addEventListener('click', event => {
-      if (this.moving) return;
-      event.stopPropagation();
-      this.toggle();
-    });
+        // Clicking on the label toggles the switch
+        const labelDown = event => {
+          if (event.path.includes(this.button)) return;
+          this.moving = false;
+        };
+        const labelUp = event => {
+          if (event.path.includes(this.button) || this.moving) return;
+          this.toggle();
+        };
+        label.addEventListener('mousedown', labelDown);
+        label.addEventListener('touchstart', labelDown);
+        label.addEventListener('mouseup', labelUp);
+        label.addEventListener('touchend', labelUp);
+      }
+    }
 
-    // Make switch touchmoveable
+    // Make switch clickable and touchmoveable
     const startHandle = event => {
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
+      // Gets the object containing the clientX and clientY coordinates of the event
       const getTouch = event => {
         switch (event.type) {
           case 'touchstart': case 'touchmove': return event.touches[0];
@@ -72,47 +82,70 @@ class InputSwitch extends HTMLElement {
 
       const coords = this.getBoundingClientRect();
       const width = 0.5 * coords.width * (1 - .2 * .5);
+      // Gets the coordinates of the event relative to the button
       const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
       const initialTouch = getCoords(event);
 
+      // Ratio of (distance moved) / (button width)
       const updateRatio = touch => {
         switch (initialRatio) {
           case 1: return Math.max(0, Math.min(1 - (touch.x - initialTouch.x) / width, 1));
           case 0: return Math.max(0, Math.min((initialTouch.x - touch.x) / width, 1));
         }
       };
-      const initialRatio = Number(button.getAttribute('aria-checked') != 'true');
+      const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
       let lastTouch = initialTouch;
 
       const moveHandle = event => {
+        // Disable transition, the handle should follow the finger/cursor immediately
         if (!durationChanged) {
           durationChanged = true;
-          button.style.setProperty('--duration', 0);
+          this.button.style.setProperty('--duration', 0);
         }
 
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
+        // Safety margin to differentiate a click and a drag
         if (!this.moving && Math.abs(initialRatio - ratio) > 0.1) this.moving = true;
-        button.style.setProperty('--trans-ratio', ratio);
+        this.button.style.setProperty('--trans-ratio', ratio);
       };
 
       const endHandle = event => {
+        // Re-enable transition
         durationChanged = false;
-        button.style.removeProperty('--duration');
-        button.style.removeProperty('--trans-ratio');
+        this.button.style.removeProperty('--duration');
+        this.button.style.removeProperty('--trans-ratio');
+
         const ratio = updateRatio(lastTouch);
+        // If it's a drag and it moved to the other side of the switch
         if (Math.abs(initialRatio - ratio) > 0.5) this.toggle();
+        // If it's a click (under safety margin)
+        else if (Math.abs(initialRatio - ratio) <= 0.1) this.toggle();
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
+
       }
 
       window.addEventListener(moveEvent, moveHandle);
       window.addEventListener(endEvent, endHandle);
     };
 
-    button.addEventListener('mousedown', startHandle);
-    button.addEventListener('touchstart', startHandle);
+    this.button.addEventListener('mousedown', startHandle);
+    this.button.addEventListener('touchstart', startHandle);
+  }
+
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    if (name === 'label') {
+      this.button.setAttribute('aria-label', newValue);
+    }
+  }
+
+
+  static get observedAttributes() {
+    return ['label'];
   }
 }
 

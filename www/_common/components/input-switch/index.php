@@ -65,6 +65,13 @@
       strong {
         font-size: 2em;
       }
+
+      label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: .6rem;
+      }
     </style>
   </head>
 
@@ -72,13 +79,24 @@
     <div>
       <span class="info"><strong>Flip a switch!</strong><br>Click or drag.</span>
 
-      <input-switch id="switch-0" state="off" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
-      <input-switch id="switch-1" state="on" hint="text" style="--width: 12rem;"></input-switch>
-      <input-switch id="switch-2" state="off" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-0" label="Switch 0" state="off" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
+      <input-switch id="switch-1" label="Switch 1" state="on" hint="text" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-2" label="Switch 2" state="off" style="--width: 12rem;"></input-switch>
 
-      <input-switch id="switch-3" state="on" hint="icon"></input-switch>
-      <input-switch id="switch-4" state="off" hint="text"></input-switch>
-      <input-switch id="switch-5" state="on"></input-switch>
+      <label for="switch-3">
+        Switch 3
+        <input-switch id="switch-3" state="on" hint="icon"></input-switch>
+      </label>
+
+      <label for="switch-4">
+        Switch 4
+        <input-switch id="switch-4" state="off" hint="text"></input-switch>
+      </label>
+      
+      <label for="switch-5">
+        Switch 5
+        <input-switch id="switch-5" state="on"></input-switch>
+      </label>
 
       <span class="action">...</span>
     </div>
@@ -93,7 +111,7 @@
       for (const input of [...document.querySelectorAll('input-switch')]) {
         input.addEventListener('switch', event => {
           document.querySelector('.action').classList.add('on');
-          document.querySelector('.action').innerHTML = `${event.target.shadowRoot.querySelector('button').id} turned ${event.detail.state}`;
+          document.querySelector('.action').innerHTML = `${event.target.shadowRoot.querySelector('button').getAttribute('aria-label')} turned ${event.detail.state}`;
         });
       }
     </script>
