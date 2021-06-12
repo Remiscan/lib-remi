@@ -53,6 +53,62 @@ class InputSwitch extends HTMLElement {
       event.stopPropagation();
       this.toggle();
     });
+
+    // Make switch touchmoveable
+    const handle = this.shadowRoot.querySelector('.input-switch-handle');
+    const startHandle = event => {
+      const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
+      const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
+      const getTouch = event => {
+        switch (event.type) {
+          case 'touchstart': case 'touchmove': return event.touches[0];
+          case 'mousedown': case 'mousemove': return event;
+        }
+      };
+      
+      let durationChanged = false;
+
+      const coords = this.getBoundingClientRect();
+      const width = 0.5 * coords.width * (1 - .2 * .5);
+      const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
+      const initialTouch = getCoords(event);
+
+      const updateRatio = touch => {
+        switch (initialRatio) {
+          case 1: return Math.max(0, Math.min(1 - (touch.x - initialTouch.x) / width, 1));
+          case 0: return Math.max(0, Math.min((initialTouch.x - touch.x) / width, 1));
+        }
+      };
+      const initialRatio = Number(button.getAttribute('aria-checked') != 'true');
+      let lastTouch = initialTouch;
+
+      const moveHandle = event => {
+        if (!durationChanged) {
+          durationChanged = true;
+          button.style.setProperty('--duration', 0);
+        }
+        lastTouch = getCoords(event);
+        const ratio = updateRatio(lastTouch);
+        button.style.setProperty('--trans-ratio', ratio);
+      };
+
+      const endHandle = event => {
+        durationChanged = false;
+        button.style.removeProperty('--duration');
+        button.style.removeProperty('--trans-ratio');
+        const ratio = updateRatio(lastTouch);
+        if (Math.abs(initialRatio - ratio) > 0.5) this.toggle();
+
+        window.removeEventListener(moveEvent, moveHandle);
+        window.removeEventListener(endEvent, endHandle);
+      }
+
+      window.addEventListener(moveEvent, moveHandle);
+      window.addEventListener(endEvent, endHandle);
+    };
+
+    handle.addEventListener('mousedown', startHandle);
+    handle.addEventListener('touchstart', startHandle);
   }
 }
 
