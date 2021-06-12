@@ -65,6 +65,8 @@ class InputSwitch extends HTMLElement {
 
           if (event.composedPath().includes(this.button)) return;
           this.moving = false;
+          this.button.style.removeProperty('--duration');
+          this.button.style.removeProperty('--easing');
 
           // Swiping on the label (or selecting its text) shouldn't toggle the switch
           let cancel = false;
