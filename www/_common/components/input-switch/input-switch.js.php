@@ -55,6 +55,7 @@ class InputSwitch extends HTMLElement {
           this.moving = false;
         };
         const labelUp = event => {
+          event.preventDefault();
           if (event.path.includes(this.button) || this.moving) return;
           this.toggle();
         };
@@ -111,6 +112,8 @@ class InputSwitch extends HTMLElement {
       };
 
       const endHandle = event => {
+        event.preventDefault();
+
         // Re-enable transition
         durationChanged = false;
         this.button.style.removeProperty('--duration');
