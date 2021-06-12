@@ -49,7 +49,9 @@ class InputSwitch extends HTMLElement {
     if (id) button.setAttribute('id', id);
 
     // Make switch clickable
+    this.moving = false;
     button.addEventListener('click', event => {
+      if (this.moving) return;
       event.stopPropagation();
       this.toggle();
     });
@@ -66,6 +68,7 @@ class InputSwitch extends HTMLElement {
         }
       };
       
+      this.moving = false;
       let durationChanged = false;
 
       const coords = this.getBoundingClientRect();
@@ -87,6 +90,7 @@ class InputSwitch extends HTMLElement {
           durationChanged = true;
           button.style.setProperty('--duration', 0);
         }
+
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
         button.style.setProperty('--trans-ratio', ratio);
@@ -97,7 +101,10 @@ class InputSwitch extends HTMLElement {
         button.style.removeProperty('--duration');
         button.style.removeProperty('--trans-ratio');
         const ratio = updateRatio(lastTouch);
-        if (Math.abs(initialRatio - ratio) > 0.5) this.toggle();
+        if (Math.abs(initialRatio - ratio) > 0.5) {
+          this.moving = true;
+          this.toggle();
+        }
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
