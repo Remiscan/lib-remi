@@ -145,10 +145,9 @@ class InputSwitch extends HTMLElement {
           this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
           this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
           this.toggle();
-        }
-        // If it's a click (under safety margin)
-        else {
+        } else {
           this.button.style.removeProperty('--duration');
+          // If it's a click (under safety margin)
           if (maxDistance <= 0.1) this.toggle();
         }
 
