@@ -32,6 +32,9 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
         color: var(--text-color);
         padding: 1rem;
+        height: 100%;
+        box-sizing: border-box;
+        margin: 0;
       }
 
       div {
@@ -40,8 +43,8 @@
         place-items: center;
         --cell-size: 14rem;
         grid-template-columns: repeat(auto-fit, var(--cell-size));
-        max-width: min(95%, 3 * (var(--cell-size) + 1rem));
         gap: 1rem;
+        max-width: min(95%, 3 * (var(--cell-size) + 1rem));
       }
 
       .info, .action {
