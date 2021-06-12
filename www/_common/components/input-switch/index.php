@@ -44,14 +44,22 @@
         gap: 1rem;
       }
 
-      .info {
+      .info, .action {
         grid-column: 1 / -1;
         padding: .5rem 1rem;
         border-radius: 2rem;
         background-color: var(--bg-color);
-        position: sticky;
         z-index: 2;
         text-align: center;
+      }
+
+      .action {
+        position: sticky;
+        bottom: .6rem;
+        opacity: 0;
+      }
+      .action.on {
+        opacity: 1;
       }
 
       strong {
@@ -62,7 +70,7 @@
 
   <body>
     <div>
-      <span class="info"><strong>Flip a switch!</strong><br>Click or drag.<br>Last action: <span class="action"> - </span></span>
+      <span class="info"><strong>Flip a switch!</strong><br>Click or drag.</span>
 
       <input-switch id="switch-0" state="off" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
       <input-switch id="switch-1" state="on" hint="text" style="--width: 12rem;"></input-switch>
@@ -71,6 +79,8 @@
       <input-switch id="switch-3" state="on" hint="icon"></input-switch>
       <input-switch id="switch-4" state="off" hint="text"></input-switch>
       <input-switch id="switch-5" state="on"></input-switch>
+
+      <span class="action">...</span>
     </div>
 
     <script type="module">
@@ -82,6 +92,7 @@
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
         input.addEventListener('switch', event => {
+          document.querySelector('.action').classList.add('on');
           document.querySelector('.action').innerHTML = `${event.target.shadowRoot.querySelector('button').id} turned ${event.detail.state}`;
         });
       }
