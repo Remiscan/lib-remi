@@ -66,7 +66,7 @@
       }
 
       strong {
-        font-size: 2em;
+        font-size: 1.6em;
       }
 
       label {
