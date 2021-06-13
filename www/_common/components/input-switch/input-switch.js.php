@@ -161,7 +161,7 @@ class InputSwitch extends HTMLElement {
       };
 
       const endHandle = event => {
-        event.preventDefault();
+        event.preventDefault(); // Note: will prevent click event after touchend but not after mouseup
         const distance = updateDistance(lastTouch);
 
         // If it's a drag and it moved to the other side of the switch
@@ -173,17 +173,19 @@ class InputSwitch extends HTMLElement {
           const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
           this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
           this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
+          if (event.type === 'touchend') this.toggle();
         } else {
           this.button.style.removeProperty('--duration');
           // If it's not a click (over safety margin)
           if (maxDistance > 0.1) this.dont = true;
+          else if (event.type === 'touchend') this.toggle();
         }
 
-        window.removeEventListener(moveEvent, moveHandle);
+        window.removeEventListener(moveEvent, moveHandle, { passive: false });
         window.removeEventListener(endEvent, endHandle);
       };
 
-      window.addEventListener(moveEvent, moveHandle);
+      window.addEventListener(moveEvent, moveHandle, { passive: false });
       window.addEventListener(endEvent, endHandle);
     };
 
