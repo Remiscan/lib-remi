@@ -100,10 +100,13 @@ class InputSwitch extends HTMLElement {
       }
     }
 
-    // Make switch clickable and touchmoveable
+    // Make switch touchmoveable
     const startHandle = event => {
       event.preventDefault();
+      this.press = true; // whether style variables will not need to be reset
+      this.dont = false; // whether the click should be prevented
       let time = Date.now();
+
       const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
       const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
       
@@ -170,16 +173,15 @@ class InputSwitch extends HTMLElement {
           const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
           this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
           this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
-          this.toggle();
         } else {
           this.button.style.removeProperty('--duration');
-          // If it's a click (under safety margin)
-          if (maxDistance <= 0.1) this.toggle();
+          // If it's not a click (over safety margin)
+          if (maxDistance > 0.1) this.dont = true;
         }
 
         window.removeEventListener(moveEvent, moveHandle);
         window.removeEventListener(endEvent, endHandle);
-      }
+      };
 
       window.addEventListener(moveEvent, moveHandle);
       window.addEventListener(endEvent, endHandle);
@@ -187,6 +189,22 @@ class InputSwitch extends HTMLElement {
 
     this.button.addEventListener('mousedown', startHandle);
     this.button.addEventListener('touchstart', startHandle);
+
+    // Toggle on click (manual or keyboard)
+    const clickHandle = event => {
+      // If a mouseup / touchend event says so, don't do anything
+      if (this.dont) this.dont = false;
+      else {
+        // If no mousedown / touchstart event happened before click, reset style variables
+        if (!this.press) {
+          this.button.style.removeProperty('--duration');
+          this.button.style.removeProperty('--easing');
+        }
+        this.press = false;
+        this.toggle();
+      }
+    }
+    this.button.addEventListener('click', clickHandle);
   }
 
 
