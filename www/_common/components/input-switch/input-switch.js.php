@@ -74,17 +74,20 @@ class InputSwitch extends HTMLElement {
           const labelMove = event => {
             if (!cancel & Math.abs(iniX - getTouch(event).clientX) > 5) cancel = true;
           }
+          const labelStop = event => { if (event.target != label) cancel = true };
           const labelUp = event => {
             event.preventDefault();
             if (event.composedPath().includes(this.button) || this.moving || cancel) return;
             this.toggle();
 
+            window.removeEventListener('touchstart', labelStop);
             window.removeEventListener(moveEvent, labelMove, { passive: true });
-            window.removeEventListener(endEvent, labelUp);
+            label.removeEventListener(endEvent, labelUp);
           };
 
+          window.addEventListener('touchstart', labelStop);
           window.addEventListener(moveEvent, labelMove, { passive: true });
-          window.addEventListener(endEvent, labelUp);
+          label.addEventListener(endEvent, labelUp);
         };
 
         label.addEventListener('mousedown', labelDown, { passive: true });
