@@ -28,9 +28,8 @@ class InputSwitch extends HTMLElement {
     const newState = !checked ? 'on' : 'off';
     this.button.setAttribute('aria-checked', !checked);
     
-    // Dispatches switch and switchon / switchoff events on the input-switch element.
+    // Dispatches a switch event on the input-switch element
     this.dispatchEvent(new CustomEvent('switch', { detail: { checked: !checked, state: newState } }));
-    this.dispatchEvent(new Event(`switch${newState}`));
   }
 
 
