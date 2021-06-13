@@ -41,7 +41,7 @@
         margin: auto;
         display: grid;
         place-items: center;
-        --cell-size: 14rem;
+        --cell-size: 13rem;
         grid-template-columns: repeat(auto-fit, var(--cell-size));
         gap: 1rem;
         max-width: min(95%, 3 * (var(--cell-size) + 1rem));
