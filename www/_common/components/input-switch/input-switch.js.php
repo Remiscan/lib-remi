@@ -71,10 +71,15 @@ class InputSwitch extends HTMLElement {
           // Swiping on the label (or selecting its text) shouldn't toggle the switch
           let cancel = false;
           const iniX = getTouch(event).clientX;
+
           const labelMove = event => {
             if (!cancel & Math.abs(iniX - getTouch(event).clientX) > 5) cancel = true;
           }
-          const labelStop = event => { if (event.target != label) cancel = true };
+
+          const labelStop = event => {
+            if (event.target != label) cancel = true;
+          };
+          
           const labelUp = event => {
             event.preventDefault();
             if (event.composedPath().includes(this.button) || this.moving || cancel) return;
@@ -109,7 +114,8 @@ class InputSwitch extends HTMLElement {
 
       const coords = this.getBoundingClientRect();
       const width = 0.5 * coords.width * (1 - .2 * .5);
-      // Gets the coordinates of the event relative to the button
+      
+      // Gets the coordinates of an event relative to the button
       const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
       const initialTouch = getCoords(event);
 
@@ -117,6 +123,7 @@ class InputSwitch extends HTMLElement {
       const updateDistance = touch => Math.max(-1, Math.min((touch.x - initialTouch.x) / width, 1));
       const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
       const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
+
       let lastTouch = initialTouch;
       let lastDistance = 0;
       let maxDistance = 0;
@@ -136,10 +143,13 @@ class InputSwitch extends HTMLElement {
         lastTouch = getCoords(event);
         const ratio = updateRatio(lastTouch);
         const distance = updateDistance(lastTouch);
+
         // Restart timer when direction changes, to save only the inertia of the last move
         if (Math.sign(distance) != Math.sign(lastDistance)) time = Date.now();
+
         lastDistance = distance;
         maxDistance = Math.max(Math.abs(distance), maxDistance);
+
         // Safety margin to differentiate a click and a drag
         if (!this.moving && Math.abs(distance) > 0.1) this.moving = true;
         this.button.style.setProperty('--trans-ratio', ratio);
@@ -154,6 +164,7 @@ class InputSwitch extends HTMLElement {
         // If it's a drag and it moved to the other side of the switch
         const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
         this.button.style.removeProperty('--trans-ratio');
+        
         if (Math.abs(distance) > 0.5 && correctDirection) {
           // Calculate the remaining animation time based on the current speed
           const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
