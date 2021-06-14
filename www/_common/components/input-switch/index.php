@@ -75,6 +75,10 @@
         align-items: center;
         gap: .6rem;
       }
+
+      input-switch[disabled] {
+        opacity: .5;
+      }
     </style>
   </head>
 
