@@ -172,12 +172,12 @@ class InputSwitch extends HTMLElement {
           const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
           this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
           this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
-          if (event.type === 'touchend') this.toggle();
+          if (event.type === 'touchend') this.button.click();
         } else {
           this.button.style.removeProperty('--duration');
           // If it's not a click (over safety margin)
           if (maxDistance > 0.1) this.dont = true;
-          else if (event.type === 'touchend') this.toggle();
+          else if (event.type === 'touchend') this.button.click();
         }
 
         window.removeEventListener(moveEvent, moveHandle, { passive: false });
@@ -214,11 +214,18 @@ class InputSwitch extends HTMLElement {
     if (name === 'label') {
       this.button.setAttribute('aria-label', newValue);
     }
+    else if (name === 'disabled') {
+      if (newValue !== null && newValue !== 'false') {
+        this.button.setAttribute('disabled', 'true');
+      } else {
+        this.button.removeAttribute('disabled');
+      }
+    }
   }
 
 
   static get observedAttributes() {
-    return ['label'];
+    return ['label', 'disabled'];
   }
 }
 
