@@ -215,11 +215,8 @@ class InputSwitch extends HTMLElement {
       this.button.setAttribute('aria-label', newValue);
     }
     else if (name === 'disabled') {
-      if (newValue !== null) {
-        this.button.setAttribute('disabled', 'true');
-      } else {
-        this.button.removeAttribute('disabled');
-      }
+      if (newValue !== null) this.button.setAttribute('disabled', 'true');
+      else this.button.removeAttribute('disabled');
     }
   }
 
