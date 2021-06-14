@@ -162,11 +162,10 @@ class InputSwitch extends HTMLElement {
       const endHandle = event => {
         event.preventDefault(); // Note: will prevent click event after touchend but not after mouseup
         const distance = updateDistance(lastTouch);
+        this.button.style.removeProperty('--trans-ratio');
 
         // If it's a drag and it moved to the other side of the switch
         const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
-        this.button.style.removeProperty('--trans-ratio');
-        
         if (Math.abs(distance) > 0.5 && correctDirection) {
           // Calculate the remaining animation time based on the current speed
           const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
