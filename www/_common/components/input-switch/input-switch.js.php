@@ -172,6 +172,8 @@ class InputSwitch extends HTMLElement {
           this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
           this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
           if (event.type === 'touchend') this.button.click();
+          // If dragged outside of the button, no click event will be dispatched on it
+          else if (!event.composedPath().includes(this.button)) this.button.click();
         } else {
           this.button.style.removeProperty('--duration');
           // If it's not a click (over safety margin)
