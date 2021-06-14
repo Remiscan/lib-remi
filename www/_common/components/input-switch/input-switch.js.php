@@ -84,14 +84,14 @@ class InputSwitch extends HTMLElement {
             if (event.composedPath().includes(this.button) || this.moving || cancel) return;
             this.toggle();
 
-            window.removeEventListener('touchstart', labelStop);
+            window.removeEventListener('touchstart', labelStop, { passive: true });
             window.removeEventListener(moveEvent, labelMove, { passive: true });
-            label.removeEventListener(endEvent, labelUp);
+            label.removeEventListener(endEvent, labelUp, { passive: false });
           };
 
-          window.addEventListener('touchstart', labelStop);
+          window.addEventListener('touchstart', labelStop, { passive: true });
           window.addEventListener(moveEvent, labelMove, { passive: true });
-          label.addEventListener(endEvent, labelUp);
+          label.addEventListener(endEvent, labelUp, { passive: false });
         };
 
         label.addEventListener('mousedown', labelDown, { passive: true });
@@ -182,15 +182,15 @@ class InputSwitch extends HTMLElement {
         }
 
         window.removeEventListener(moveEvent, moveHandle, { passive: false });
-        window.removeEventListener(endEvent, endHandle);
+        window.removeEventListener(endEvent, endHandle, { passive: false });
       };
 
       window.addEventListener(moveEvent, moveHandle, { passive: false });
-      window.addEventListener(endEvent, endHandle);
+      window.addEventListener(endEvent, endHandle, { passive: false });
     };
 
-    this.button.addEventListener('mousedown', startHandle);
-    this.button.addEventListener('touchstart', startHandle);
+    this.button.addEventListener('mousedown', startHandle, { passive: false });
+    this.button.addEventListener('touchstart', startHandle, { passive: false });
 
     // Toggle on click (manual or keyboard)
     const clickHandle = event => {
