@@ -94,6 +94,8 @@ export default function CookieMaker(path, noConsent = []) {
       if (previousResponse !== null) return !!previousResponse;
 
       // Prepares the request for user consent.
+      const container = document.querySelector('.cookie-consent-container');
+      if (!container) return false;
       const popup = document.createElement('cookie-consent-mini');
       popup.setAttribute('open', false);
       popup.setAttribute('cookie', cookie.name);
@@ -102,7 +104,8 @@ export default function CookieMaker(path, noConsent = []) {
       // Displays the request for user consent, with an animation managed by the cookie-prompt element itself.
       const previousPrompt = document.querySelector(`cookie-consent-mini[cookie="${cookie.name}"]`);
       if (previousPrompt) await Cookie.unprompt(cookie.name);
-      document.body.appendChild(popup);
+      container.appendChild(popup);
+      container.dataset.children = (container.dataset.children || 0) + 1;
       await new Promise(resolve => setTimeout(resolve, 10));
       popup.setAttribute('open', true);
 
@@ -137,8 +140,10 @@ export default function CookieMaker(path, noConsent = []) {
 
 
     static async unprompt(name) {
+      const container = document.querySelector('.cookie-consent-container');
       const popup = document.querySelector(`cookie-consent-mini[cookie="${name}"]`);
       if (!popup) return;
+      container.dataset.children = container.dataset.children - 1;
       if (popup.getAttribute('open') === 'true') {
         popup.removeAttribute('open');
         await new Promise(resolve => setTimeout(resolve, 200));
