@@ -34,7 +34,7 @@ export default class Traduction {
 
   /** @returns {Node[]} Liste des boutons de changement de langue. */
   get languageButtons() {
-    return [...document.querySelectorAll('button[data-lang]')];
+    return [...document.querySelectorAll('[data-lang]')];
   }
 
 
@@ -65,6 +65,7 @@ export default class Traduction {
     let translating = false;
     for (const bouton of this.languageButtons) {
       bouton.addEventListener('click', async event => {
+        event.preventDefault();
         if (translating) return;
         translating = true;
         if (bouton.tagName == 'A') event.preventDefault();
@@ -130,10 +131,10 @@ export default class Traduction {
       // Dés/active les boutons de traduction
       for (const bouton of this.languageButtons) {
         if (bouton.dataset.lang == effectiveLanguage) {
-          bouton.disabled = true;
+          bouton.setAttribute('disabled', 'true');
           bouton.tabIndex = -1;
         } else {
-          bouton.disabled = false;
+          bouton.removeAttribute('disabled');
           bouton.tabIndex = 0;
         }
       }
