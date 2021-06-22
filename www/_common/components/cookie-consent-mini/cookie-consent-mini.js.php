@@ -26,7 +26,8 @@ class CookieConsentMini extends HTMLElement {
 
     // Populate cookie info message
     const info = this.querySelector('.cookie-consent-mini-info');
-    info.innerHTML = info.innerHTML.replace('{{word}}', this.getAttribute('value'));
+    info.innerHTML = info.innerHTML.replace('{{name}}', this.getAttribute('cookie'));
+    info.innerHTML = info.innerHTML.replace('{{content}}', this.getAttribute('value'));
 
     // Listen to button clicks
     const buttonYes = this.querySelector('.cookie-consent-mini-button-yes');
