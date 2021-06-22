@@ -1,9 +1,13 @@
 <head>
   <meta charset="utf-8">
-  <script src="gradient-button.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <?php require_once dirname(__DIR__, 2) . '/php/version.php';
+  $version = version(__DIR__, ['gradient-button.js.php', 'style.css']); ?>
+  <script src="gradient-button--<?=$version?>.js.php"></script>
 </head>
 
 <style>
+  * { -webkit-tap-highlight-color: transparent; }
   html, body {
     height: 100%;
     margin: 0;
@@ -83,18 +87,18 @@
 
 <p>
 
-<gradient-button text="Hello !" border-width="2"></gradient-button>
-<gradient-button text="How are you?" border-width="2"></gradient-button>
-<gradient-button text="This is" border-width="2"></gradient-button>
-<gradient-button text="gradient-button" border-width="2"></gradient-button>
+<gradient-button>Hello !</gradient-button>
+<gradient-button>How are you?</gradient-button>
+<gradient-button>This is</gradient-button>
+<gradient-button>gradient-button</gradient-button>
 
 <p>
 
-<gradient-button text="No border"></gradient-button>
-<gradient-button text="1px border" border-width="1"></gradient-button>
-<gradient-button text="3px border" border-width="3"></gradient-button>
+<gradient-button border-width="0">No border</gradient-button>
+<gradient-button border-width="1">1px border</gradient-button>
+<gradient-button border-width="3">3px border</gradient-button>
 
 <p>
 
-<gradient-button text="Small padding" border-width="2" style="--padding: .25em .5em;"></gradient-button>
-<gradient-button text="Big padding" border-width="2" style="--padding: .75em 1.5em;"></gradient-button>
+<gradient-button style="--padding: .25em .5em;">Small padding</gradient-button>
+<gradient-button style="--padding: .75em 1.5em;">Big padding</gradient-button>

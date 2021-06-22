@@ -4,7 +4,7 @@ button {
   /* Background & text gradient */
   --gradient: linear-gradient(to right, royalblue 0% 100%);
   /* Border width */
-  --border-width: 0;
+  --border-width: 2;
   /* Padding around text */
   --padding: .5em 1em;
   /* Color of text on hover */
@@ -17,6 +17,8 @@ button {
   --hover-text-shadow: 0 0 2px rgba(0, 0, 0, .7);
   /* Filter applied to text */
   --text-filter: brightness(1);
+  /* Transition duration */
+  --transition-duration: .1s;
   
   -webkit-appearance: none;
   appearance: none;
@@ -56,13 +58,15 @@ button::before {
   top: 0;
   left: 0;
   opacity: 0;
-  transition: opacity .1s linear;
+  transition: opacity var(--transition-duration) linear;
   color: white;
   user-select: none;
   z-index: 0;
 }
 
-button:hover::before {
+button:hover::before,
+button:focus::before,
+button:active::before {
   opacity: 1;
 }
 
@@ -74,12 +78,15 @@ button>span {
   filter: drop-shadow(var(--text-shadow)) var(--text-filter);
 }
 
-button:hover>span {
+button:hover>span,
+button:focus>span,
+button:active>span {
   color: var(--hover-text-color);
   filter: drop-shadow(var(--hover-text-shadow));
 }
 
 button:active::before {
+  transition-duration: 0s;
   background-image: var(--active-background-overlay), var(--gradient);
 }
 
@@ -172,18 +179,18 @@ p {
 
 <p>
 
-<button style="--border-width: 2"><span>Hello!</span></button>
-<button style="--border-width: 2"><span>How are you?</span></button>
-<button style="--border-width: 2"><span>This is</span></button>
-<button style="--border-width: 2"><span>gradient-button</span></button>
+<button><span>Hello!</span></button>
+<button><span>How are you?</span></button>
+<button><span>This is</span></button>
+<button><span>gradient-button</span></button>
 
 <p>
 
-<button><span>no border</span></button>
+<button style="--border-width: 0"><span>no border</span></button>
 <button style="--border-width: 1"><span>1px border</span></button>
 <button style="--border-width: 3"><span>3px border</span></button>
 
 <p>
 
-<button style="--border-width: 2; --padding: .25em .5em;"><span>Small padding</span></button>
-<button style="--border-width: 2; --padding: .75em 1.5em;"><span>Big padding</span></button>
+<button style="--padding: .25em .5em;"><span>Small padding</span></button>
+<button style="--padding: .75em 1.5em;"><span>Big padding</span></button>
