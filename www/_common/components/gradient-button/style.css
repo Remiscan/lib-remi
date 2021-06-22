@@ -23,6 +23,10 @@
   --transition-duration: .1s;
 }
 
+:host(:not([text])) {
+  opacity: 0;
+}
+
 /* Native button functionality */
 button {
   grid-row: 1;
