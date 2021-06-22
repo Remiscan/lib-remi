@@ -3,6 +3,10 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
 <html>
 
   <head>
+    <style id="tab-label-style" data-method="manual">
+      <?php include 'style.css.php'; ?>
+    </style>
+
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {
@@ -65,8 +69,8 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
       }
 
       /* Prevent flash of unstyled tabs */
-      fieldset { border: none; }
-      tab-label:not([label]) { opacity: 0; }
+      /*fieldset { border: none; }
+      tab-label:not([label]) { opacity: 0; }*/
     </style>
   </head>
 
