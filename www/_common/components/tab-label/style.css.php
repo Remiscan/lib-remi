@@ -1,5 +1,5 @@
 /*<?php ob_start();?>*/
-:root[data-theme="light"] tab-label, [role="tablist"] {
+:root[data-theme="light"] [role="tablist"] {
   --on-bg-color: hsl(231, 40%, 50%);
   --hover-bg-color: hsl(231, 40%, 50%, .3);
   --active-bg-color: hsl(231, 40%, 50%, .4);
@@ -7,7 +7,7 @@
   --on-text-color: white;
 }
 
-:root[data-theme="dark"] tab-label, [role="tablist"] {
+:root[data-theme="dark"] [role="tablist"] {
   --on-bg-color: hsl(217, 89%, 75%);
   --hover-bg-color: hsl(217, 89%, 75%, .3);
   --active-bg-color: hsl(217, 89%, 75%, .4);
@@ -36,6 +36,10 @@ echo buildThemesStylesheet($body); ?>*/
 tab-label {
   display: grid;
   place-items: center;
+}
+
+tab-label:not([label]) {
+  opacity: 0;
 }
 
 input[type=radio][role="tab"] {

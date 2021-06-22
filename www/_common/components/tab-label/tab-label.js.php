@@ -37,6 +37,7 @@ const html = `<?php include './element.html'; ?>`;
 class TabLabel extends HTMLElement {
   constructor() {
     super();
+    this.ready = false;
   }
 
 
@@ -50,9 +51,19 @@ class TabLabel extends HTMLElement {
   }
 
 
+  update(attributes = TabLabel.observedAttributes) {
+    if (!this.ready) return;
+
+    label: {
+      if (!attributes.includes('label')) break label;
+      this.label.innerHTML = this.getAttribute('label');
+    }
+  }
+
+
   connectedCallback() {
     // Add CSS to the page
-    if (!cssReady) {
+    if (!document.getElementById('tab-label-style')) {
       const head = document.querySelector('head');
       const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
       const style = document.createElement('style');
@@ -60,13 +71,12 @@ class TabLabel extends HTMLElement {
       style.id = 'tab-label-style';
       if (!!firstStylesheet)  head.insertBefore(style, firstStylesheet);
       else                    head.appendChild(style);
-      cssReady = true;
     }
-    const content = this.innerHTML;
+    const content = this.innerText;
     this.innerHTML = html;
 
-    const label = this.querySelector('label');
-    label.innerHTML = content;
+    this.label = this.querySelector('label');
+    if (content) this.setAttribute('label', content);
 
     // Pass the correct attributes to the input[type="radio"]
     this.input = this.querySelector('input[role="tab"]');
@@ -79,12 +89,9 @@ class TabLabel extends HTMLElement {
         case 'controls':
           const id = `input-for-${attr.value}`;
           this.input.setAttribute('id', id);
-          label.setAttribute('for', id);
-          label.id = `${id}-label`;
+          this.label.setAttribute('for', id);
+          this.label.id = `${id}-label`;
           this.input.setAttribute('aria-controls', attr.value);
-          break;
-        case 'label':
-          if (label.innerHTML == '') label.innerHTML = attr.value;
           break;
         case 'active':
           this.input.setAttribute('checked', attr.value !== 'false');
@@ -99,12 +106,25 @@ class TabLabel extends HTMLElement {
     }
 
     this.controlledElement = document.getElementById(this.getAttribute('controls'));
-    this.controlledElement.setAttribute('aria-labelledby', label.id);
+    this.controlledElement.setAttribute('aria-labelledby', this.label.id);
     this.controlledElement.setAttribute('role', 'tabpanel');
     if (!this.input.checked)  this.controlledElement.setAttribute('hidden', 'hidden');
     else                      this.controlledElement.removeAttribute('hidden');
     
     this.input.addEventListener('change', () => this.toggle());
+    this.ready = true;
+    this.update();
+  }
+
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue == newValue) return;
+    this.update([name]);
+  }
+
+
+  static get observedAttributes() {
+    return ['label'];
   }
 }
 
