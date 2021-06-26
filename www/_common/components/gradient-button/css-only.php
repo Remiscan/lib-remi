@@ -15,10 +15,6 @@ button {
   --text-shadow: 0 0 0 transparent;
   /* Shadow around text on hover */
   --hover-text-shadow: 0 0 2px rgba(0, 0, 0, .7);
-  /* Filter applied to text */
-  --text-filter: brightness(1);
-  /* Transition duration */
-  --transition-duration: .1s;
   
   -webkit-appearance: none;
   appearance: none;
@@ -26,67 +22,30 @@ button {
   border: calc(1px * var(--border-width)) solid;
   border-image: var(--gradient) var(--border-width);
   color: transparent;
-  cursor: pointer;
   position: relative;
   display: grid;
   place-items: center;
   margin: 0;
-  padding: 0;
+  padding: var(--padding);
   font: inherit;
-}
 
-button>span,
-button::before {
   background-image: var(--gradient);
   background-size: calc(100% + 2px * var(--border-width)) calc(100% + 2px * var(--border-width));
   background-position: calc(-1px * var(--border-width)) calc(-1px * var(--border-width));
-
-  grid-row: 1;
-  grid-column: 1;
-  width: 100%;
-  height: 100%;
-  padding: var(--padding);
-  box-sizing: border-box;
-}
-
-button::before {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity var(--transition-duration) linear;
-  color: white;
-  user-select: none;
-  z-index: 0;
-}
-
-button:hover::before,
-button:focus::before,
-button:active::before {
-  opacity: 1;
-}
-
-button>span {
   -webkit-background-clip: text;
   background-clip: text;
-  position: relative;
-  transition: color .1s linear;
-  filter: drop-shadow(var(--text-shadow)) var(--text-filter);
 }
 
-button:hover>span,
-button:focus>span,
-button:active>span {
+button:hover,
+button:focus,
+button:active {
   color: var(--hover-text-color);
-  filter: drop-shadow(var(--hover-text-shadow));
+  text-shadow: var(--hover-text-shadow);
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
-button:active::before {
-  transition-duration: 0s;
+button:active {
   background-image: var(--active-background-overlay), var(--gradient);
 }
 
@@ -171,26 +130,33 @@ p {
   align-items: center;
   flex-wrap: wrap;
 }
+
+a {
+  color: white;
+  opacity: .7;
+  position: absolute;
+  bottom: 1em;
+}
 </style>
 
 <p>
 
-<button><span>This is CSS-only</span></button>
+<button>Hello!</button>
+<button>How are you?</button>
+<button>This is</button>
+<button>gradient-button</button>
 
 <p>
 
-<button><span>Hello!</span></button>
-<button><span>How are you?</span></button>
-<button><span>This is</span></button>
-<button><span>gradient-button</span></button>
+<button style="--border-width: 0">No border</button>
+<button style="--border-width: 1">1px border</button>
+<button style="--border-width: 3">3px border</button>
 
 <p>
 
-<button style="--border-width: 0"><span>no border</span></button>
-<button style="--border-width: 1"><span>1px border</span></button>
-<button style="--border-width: 3"><span>3px border</span></button>
+<button style="--padding: .25em .5em;">Small padding</button>
+<button style="--padding: .75em 1.5em;">Big padding</button>
 
 <p>
-
-<button style="--padding: .25em .5em;"><span>Small padding</span></button>
-<button style="--padding: .75em 1.5em;"><span>Big padding</span></button>
+  
+<a href="./" target="_parent">Custom element version (with JS-generated SVG mask, rounded corners & transitions ✨)</a>

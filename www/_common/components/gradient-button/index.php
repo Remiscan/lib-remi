@@ -30,6 +30,12 @@
     align-items: center;
     flex-wrap: wrap;
   }
+  a {
+    color: white;
+    opacity: .7;
+    position: absolute;
+    bottom: 1em;
+  }
 
   gradient-button {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
@@ -102,3 +108,7 @@
 
 <gradient-button style="--padding: .25em .5em;">Small padding</gradient-button>
 <gradient-button style="--padding: .75em 1.5em;">Big padding</gradient-button>
+
+<p>
+  
+<a href="./css-only.php" target="_parent">CSS only version (without rounded corners 😢)</a>
