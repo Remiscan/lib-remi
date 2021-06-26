@@ -45,8 +45,15 @@ class TabLabel extends HTMLElement {
     if (!this.tabs) this.tabs = [...document.querySelectorAll(`input[name="${this.group}"]`)];
     for (const tab of this.tabs) {
       const element = document.getElementById(tab.getAttribute('aria-controls'));
-      if (tab.checked)  element.removeAttribute('hidden');
-      else              element.setAttribute('hidden', 'hidden');
+      if (tab.checked) {
+        element.removeAttribute('hidden');
+        element.setAttribute('tabindex', 0);
+        tab.setAttribute('aria-selected', 'true');
+      } else {
+        element.setAttribute('hidden', 'hidden');
+        element.setAttribute('tabindex', -1);
+        tab.setAttribute('aria-selected', 'false');
+      }
     }
   }
 
@@ -78,6 +85,10 @@ class TabLabel extends HTMLElement {
     this.label = this.querySelector('label');
     if (content) this.setAttribute('label', content);
 
+    this.controlledElement = document.getElementById(this.getAttribute('controls'));
+    this.controlledElement.setAttribute('role', 'tabpanel');
+    this.controlledElement.setAttribute('tabindex', -1);
+
     // Pass the correct attributes to the input[type="radio"]
     this.input = this.querySelector('input[role="tab"]');
     for (const attr of [...this.attributes]) {
@@ -95,6 +106,8 @@ class TabLabel extends HTMLElement {
           break;
         case 'active':
           this.input.setAttribute('checked', attr.value !== 'false');
+          this.input.setAttribute('aria-selected', attr.value !== 'false');
+          this.controlledElement.setAttribute('tabindex', 0);
           this.removeAttribute('active');
           break;
       }
@@ -105,9 +118,7 @@ class TabLabel extends HTMLElement {
       this.input.setAttribute('name', this.group);
     }
 
-    this.controlledElement = document.getElementById(this.getAttribute('controls'));
     this.controlledElement.setAttribute('aria-labelledby', this.label.id);
-    this.controlledElement.setAttribute('role', 'tabpanel');
     if (!this.input.checked)  this.controlledElement.setAttribute('hidden', 'hidden');
     else                      this.controlledElement.removeAttribute('hidden');
     
