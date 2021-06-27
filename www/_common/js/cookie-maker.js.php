@@ -114,7 +114,7 @@ export default function CookieMaker(path, noConsent = []) {
       // - names.length > 1 and the user clicked the cross or outside of the prompt to exit it.
       const promise = new Promise(resolve => {
         // If this cookie does not require consent, don't ask.
-        if (this.noConsent.includes()) return resolve(true);
+        if (this.noConsent.includes(cookie.name)) return resolve(true);
 
         // If this cookie requires consent, listen for the user's response.
         window.addEventListener('cookieconsent', event => {
