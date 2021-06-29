@@ -39,6 +39,8 @@
 
       remiscan-logo {
         --width: 8rem;
+        --background-color: orange;
+        --text-color: blue;
       }
 
       .rainbow-text,

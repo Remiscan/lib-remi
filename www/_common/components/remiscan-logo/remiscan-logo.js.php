@@ -1,49 +1,28 @@
-const adopt = ('adoptedStyleSheets' in document);
-const template = document.createElement('template');
+const module = 'remiscan-logo';
 const css = `<?php include './style.css.php'; ?>`;
-
-let sheet;
-if (adopt) {
-  sheet = new CSSStyleSheet();
-} else {
-  template.innerHTML += `<style>${css}</style>`;
-}
-template.innerHTML += `<?php include './logo.svg'; ?>`;
+const html = `<?php include './logo.svg'; ?>`;
 
 
 
 class RemiscanLogo extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(template.content.cloneNode(true));
-    if (adopt) this.shadow.adoptedStyleSheets = [sheet];
-    this.text = this.shadow.querySelector('.text');
-    this.background = this.shadow.querySelector('.background');
   }
 
 
   connectedCallback() {
-    // Parse CSS on first connection
-    if (sheet?.cssRules.length === 0) sheet.replaceSync(css);
-  }
-
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (oldValue === newValue) return;
-
-    if (name === 'background-color') {
-      this.background.setAttribute('fill', newValue);
+    // Add CSS to the page
+    if (!document.querySelector(`style[data-module="${module}"],link[rel="stylesheet"][data-module="${module}"],link[as="style"][data-module="${module}"]`)) {
+      const head = document.querySelector('head');
+      const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
+      const style = document.createElement('style');
+      style.innerHTML = css;
+      style.dataset.module = module;
+      if (!!firstStylesheet)  head.insertBefore(style, firstStylesheet);
+      else                    head.appendChild(style);
     }
-    else if (name === 'text-color') {
-      this.text.setAttribute('fill', newValue);
-    }
-  }
-
-
-  static get observedAttributes() {
-    return ['background-color', 'text-color'];
+    this.innerHTML = html;
   }
 }
 
-if (!customElements.get('remiscan-logo')) customElements.define('remiscan-logo', RemiscanLogo);
+if (!customElements.get(module)) customElements.define(module, RemiscanLogo);
