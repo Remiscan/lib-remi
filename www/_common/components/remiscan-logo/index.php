@@ -1,3 +1,4 @@
+<?php require_once dirname(__DIR__, 2) . '/php/version.php'; ?>
 <html>
 
   <head>
@@ -94,7 +95,7 @@
         mask-size: 100% 100%;
         -webkit-mask-image: var(--mask);
         -webkit-mask-size: 100% 100%;
-        --mask: url('./logo.svg');
+        --mask: url('/_common/components/remiscan-logo/logo--<?=version(__DIR__, 'logo.svg')?>.svg#remiscan-logo-mask');
       }
     </style>
   </head>
@@ -104,10 +105,7 @@
     <div class="rainbow-bg"></div>
 
     <script type="module">
-      <?php require_once dirname(__DIR__, 2) . '/php/version.php';
-      $version = version(__DIR__, ['remiscan-logo.js.php']); ?>
-
-      import '/_common/components/remiscan-logo/remiscan-logo--<?=$version?>.js.php';
+      import '/_common/components/remiscan-logo/remiscan-logo--<?=version(__DIR__, 'remiscan-logo.js.php')?>.js.php';
     </script>
   </body>
 
