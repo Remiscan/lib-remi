@@ -40,8 +40,8 @@
 
       remiscan-logo {
         --width: 8rem;
-        --background-color: orange;
-        --text-color: blue;
+        --background-color: indigo;
+        --text-color: aquamarine;
       }
 
       .rainbow-text,
@@ -95,13 +95,13 @@
         mask-size: 100% 100%;
         -webkit-mask-image: var(--mask);
         -webkit-mask-size: 100% 100%;
-        --mask: url('/_common/components/remiscan-logo/logo--<?=version(__DIR__, 'logo.svg')?>.svg#remiscan-logo-mask');
+        --mask: url('/_common/components/remiscan-logo/logo--<?=version(__DIR__, 'logo.svg')?>.svg');
       }
     </style>
   </head>
 
   <body>
-    <remiscan-logo background-color="orange" text-color="aquamarine"></remiscan-logo>
+    <remiscan-logo></remiscan-logo>
     <div class="rainbow-bg"></div>
 
     <script type="module">
