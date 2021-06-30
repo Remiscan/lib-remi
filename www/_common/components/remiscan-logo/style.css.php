@@ -12,3 +12,7 @@ remiscan-logo .background {
 remiscan-logo .text {
   fill: var(--text-color, black);
 }
+
+remiscan-logo>a {
+  text-decoration: none;
+}

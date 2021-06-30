@@ -1,6 +1,6 @@
 const module = 'remiscan-logo';
 const css = `<?php include './style.css.php'; ?>`;
-const html = `<?php include './logo.svg'; ?>`;
+const html = `<a href="https://remiscan.fr"><?php include './logo.svg'; ?></a>`;
 
 
 
