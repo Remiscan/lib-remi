@@ -103,6 +103,7 @@
   <body>
     <remiscan-logo></remiscan-logo>
     <div class="rainbow-bg"></div>
+    <a href="https://remiscan.fr" class="rainbow-bg" style="width: 32rem; height: 16rem;"></a>
 
     <script type="module">
       import '/_common/components/remiscan-logo/remiscan-logo--<?=version(__DIR__, 'remiscan-logo.js.php')?>.js.php';
