@@ -17,6 +17,11 @@ class ThemeSelector extends HTMLElement {
   ////////////////////////
   // Open the options menu
   open() {
+    // Correctly check the current theme if it has been changed by another selector
+    const root = document.documentElement;
+    const currentTheme = root.dataset.theme || 'auto';
+    this.querySelector(`input[value="${currentTheme}"]`).checked = true;
+
     // Disable focus outside the menu
     const focusableElements = [...document.querySelectorAll(focusableQuery)];
     for (const element of focusableElements) {
@@ -28,6 +33,7 @@ class ThemeSelector extends HTMLElement {
       element.tabIndex = -1;
       //element.classList.add('unusable');
     }
+
     // Listens to inputs to close the menu
     const closeMenu = event => {
       if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
@@ -117,8 +123,16 @@ class ThemeSelector extends HTMLElement {
     const currentTheme = root.dataset.theme || 'auto';
     this.querySelector(`input[value="${currentTheme}"]`).checked = true;
 
+    // Get a unique name for this theme-selector if there are several
+    const themeSelectors = document.querySelectorAll('theme-selector');
+    let name = 'theme';
+    for (const [k, themeSelector] of Object.entries(themeSelectors)) {
+      if (themeSelector == this) name = `theme-${k}`;
+    }
+
     // Apply the choice of theme
     for (const choice of [...selector.querySelectorAll('input')]) {
+      choice.name = name;
       choice.addEventListener('change', async () => {
         root.dataset.theme = choice.value;
         const themeEvent = new CustomEvent('themechange', { detail: {
