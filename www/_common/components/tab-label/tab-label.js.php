@@ -2,7 +2,7 @@
 ***** EXAMPLE OF USE ******************
 ***************************************
 
-<fieldset role="tablist" group="tabs-group-name">
+<fieldset role="tablist" data-group="tabs-group-name">
   <legend data-string="tabs-group-name-label"></legend>
 
   <tab-label controls="controlled-element-1-id" label="Tab 1 name" active="true"></tab-label>
@@ -49,6 +49,7 @@ class TabLabel extends HTMLElement {
         element.removeAttribute('hidden');
         element.setAttribute('tabindex', 0);
         tab.setAttribute('aria-selected', 'true');
+        window.dispatchEvent(new CustomEvent('tabchange', { detail: { group: this.group, value: tab.value } }));
       } else {
         element.setAttribute('hidden', 'hidden');
         element.setAttribute('tabindex', -1);
@@ -103,6 +104,7 @@ class TabLabel extends HTMLElement {
           this.label.setAttribute('for', id);
           this.label.id = `${id}-label`;
           this.input.setAttribute('aria-controls', attr.value);
+          this.input.setAttribute('value', attr.value);
           break;
         case 'active':
           this.input.setAttribute('checked', attr.value !== 'false');
