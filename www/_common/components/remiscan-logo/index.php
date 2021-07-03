@@ -29,6 +29,7 @@
       body {
         background: var(--bg-color);
         display: flex;
+        flex-direction: column;
         position: relative;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
         color: var(--text-color);
@@ -101,6 +102,7 @@
   </head>
 
   <body>
+    <remiscan-logo style="--width: 4rem;"></remiscan-logo>
     <remiscan-logo></remiscan-logo>
     <div class="rainbow-bg"></div>
     <a href="https://remiscan.fr" class="rainbow-bg" style="width: 32rem; height: 16rem;"></a>
