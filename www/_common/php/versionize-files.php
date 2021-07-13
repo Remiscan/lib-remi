@@ -47,13 +47,14 @@
 
 require_once __DIR__ . '/version.php';
 require_once __DIR__ . '/resolvePath.php';
+require_once __DIR__ . '/ModuleList.php';
 
 function versionizeFiles($body, $fromDir = __DIR__)
 {
   $extensions = ['\.html', '\.css', '\.json', '\.js', '(?:\.js|\.css)\.php'];
   $regexps = [
-    '/(?:from|import) +\'((?:.*\/)([^\/]+)(\.js(?:\.php)?))\';/',
-    '/(?:src|href) *= *"((?:[^"]*\/)?([^\/<>]+)(' . implode('|', $extensions) . '))"/'
+    '/(?:from|import) +?\'((?:.*?\/)([^\/]+?)(\.js(?:\.php)?))\';/',
+    '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)(' . implode('|', $extensions) . '))"/'
   ];
   $allMatches = ['full' => [], 'path' => [], 'filename' => [], 'fileext' => []];
 
@@ -78,8 +79,11 @@ function versionizeFiles($body, $fromDir = __DIR__)
     );
 
     $Path = new FilePath($match['path'], $fromDir);
-
-    $version = version($Path->resolve(false, 'root'), $Path->file());
+    $LinkedModules = new ModuleList($Path);
+    $version = 0;
+    foreach($LinkedModules->toArray(false) as $ModulePath) {
+      $version = max($version, version($ModulePath->resolve(false, 'root'), $ModulePath->file()));
+    }
 
     $body = str_replace(
       $match['path'],
