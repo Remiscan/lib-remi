@@ -1,12 +1,12 @@
 <?php
 class FilePath {
-  public $startingFolder;
-  public $unresolved;
+  private $startingDirectory;
+  private $unresolved;
   private $parts;
 
   function __construct($path, $fromDir = __DIR__) {
     $this->unresolved = $path;
-    $this->startingFolder = $fromDir;
+    $this->startingDirectory = $fromDir;
 
     $pathArray = explode('/', $path);
 
@@ -45,20 +45,20 @@ class FilePath {
 
     if ($type == 'relative') {
       $match = preg_match(
-        '/^' . preg_quote($this->startingFolder, '/') . '/',
+        '/^' . preg_quote($this->startingDirectory, '/') . '/',
         $rootPath
       );
-      if ($match === 1)         return str_replace($this->startingFolder, '.', $rootPath);
-      else                      return $path;
+      if ($match === 1)      return str_replace($this->startingDirectory, '.', $rootPath);
+      else                   return $path;
     }   
 
-    if ($type == 'absolute')    return $path;
-    else                        return $rootPath;
+    if ($type == 'absolute') return $path;
+    else                     return $rootPath;
   }
 
   public function directory($root = false) {
-    if ($root)    return $this->resolve(false, 'root');
-    else          return $this->resolve(false, 'absolute');
+    if ($root) return $this->resolve(false, 'root');
+    else       return $this->resolve(false, 'absolute');
   }
 
   public function file() {
