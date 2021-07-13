@@ -54,7 +54,8 @@ function versionizeFiles($body, $fromDir = __DIR__)
   $extensions = ['\.html', '\.css', '\.json', '\.js', '(?:\.js|\.css)\.php'];
   $regexps = [
     '/(?:from|import) +?\'((?:.*?\/)([^\/]+?)(\.js(?:\.php)?))\';/',
-    '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)(' . implode('|', $extensions) . '))"/'
+    '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)(' . implode('|', $extensions) . '))"/',
+    '/(?:new Worker\()\'((?:.*?\/)([^\/]+?)(\.js(?:\.php)?))\'/'
   ];
   $allMatches = ['full' => [], 'path' => [], 'filename' => [], 'fileext' => []];
 
