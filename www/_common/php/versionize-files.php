@@ -80,6 +80,9 @@ function versionizeFiles($body, $fromDir = __DIR__)
     );
 
     $Path = new FilePath($match['path'], $fromDir);
+
+    // The version of a module has to depend on all other modules it imports, because its file contains their version number.
+    // So this is needed for now, but won't be once import maps can be used in all browsers!
     $LinkedModules = new ModuleList($Path);
     $version = 0;
     foreach($LinkedModules->toArray(false) as $ModulePath) {
