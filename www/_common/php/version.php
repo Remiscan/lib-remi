@@ -21,6 +21,6 @@ function version($dir = __DIR__, $arrayChemins = false)
         $versionFichiers = $date_fichier;
     }
   }
-  $versionFichiers = date('Y.m.d_H.i.s', $versionFichiers);
+  //$versionFichiers = date('Y.m.d_H.i.s', $versionFichiers);
   return $versionFichiers;
 }
