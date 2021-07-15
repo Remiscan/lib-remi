@@ -17,39 +17,27 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
     '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)\.('.$extensions.'))"/',
     '/(?:url\()\'((?:.*?\/)([^\/]+?)\.('.$extensions.'))\'/'
   ];
-  $allMatches = ['full' => [], 'path' => [], 'filename' => [], 'fileext' => []];
 
   foreach($regexps as $regex) {
     preg_match_all($regex, $body, $matches);
     for ($i = 0; $i < count($matches[0]); $i++) {
-      $allMatches['full'][] = $matches[0][$i];
-      $allMatches['path'][] = $matches[1][$i];
-      $allMatches['filename'][] = $matches[2][$i];
-      $allMatches['fileext'][] = $matches[3][$i];
+      $path = $matches[1][$i];
+      $filename = $matches[2][$i];
+      $fileext = $matches[3][$i];
+
+      $Path = new FilePath($path, $fromDir);
+
+      // The version of a module has to depend on all other modules it imports, because its file contains their version number.
+      // So this is needed for now, but won't be once import maps can be used in all browsers!
+      $LinkedModules = new ModuleList($Path);
+      $version = $LinkedModules->toHash();
+
+      $body = str_replace(
+        $path,
+        $Path->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext,
+        $body
+      );
     }
-  }
-
-  $n = count($allMatches['full']);
-  for ($i = 0; $i < $n; $i++) {
-    $match = array(
-      'full' => $allMatches['full'][$i],
-      'path' => $allMatches['path'][$i],
-      'filename' => $allMatches['filename'][$i],
-      'fileext' => $allMatches['fileext'][$i]
-    );
-
-    $Path = new FilePath($match['path'], $fromDir);
-
-    // The version of a module has to depend on all other modules it imports, because its file contains their version number.
-    // So this is needed for now, but won't be once import maps can be used in all browsers!
-    $LinkedModules = new ModuleList($Path);
-    $version = $LinkedModules->toHash();
-
-    $body = str_replace(
-      $match['path'],
-      $Path->resolve(false, 'absolute') . '/' . $match['filename'] . '--' . $version . '.' . $match['fileext'],
-      $body
-    );
   }
 
   return $body;
