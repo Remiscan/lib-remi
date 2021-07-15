@@ -43,10 +43,7 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
     // The version of a module has to depend on all other modules it imports, because its file contains their version number.
     // So this is needed for now, but won't be once import maps can be used in all browsers!
     $LinkedModules = new ModuleList($Path);
-    $version = 0;
-    foreach($LinkedModules->toArray(false) as $ModulePath) {
-      $version = max($version, version($ModulePath->resolve(false, 'root'), $ModulePath->file()));
-    }
+    $version = $LinkedModules->toHash();
 
     $body = str_replace(
       $match['path'],
@@ -77,10 +74,10 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
 //
 //        returns:
 //
-//    import { ... } from '/_common/abc--1564499867.js';
+//    import { ... } from '/_common/abc--72c6b344.js';
 //    ...
-//    import './abc--1564499867.js.php';
-//    new Worker('worker-link--1564499867.js');
+//    import './abc--72c6b344.js.php';
+//    new Worker('worker-link--72c6b344.js');
 
 
 // Example 2: versionize links in a HTML (.php) file:

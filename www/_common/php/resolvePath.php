@@ -3,6 +3,7 @@ class FilePath {
   private $startingDirectory;
   private $unresolved;
   private $parts;
+  private $hash;
 
   function __construct($path, $fromDir = __DIR__) {
     $this->unresolved = $path;
@@ -63,5 +64,13 @@ class FilePath {
 
   public function file() {
     return $this->parts['file'];
+  }
+
+  public function setHash($hash) {
+    $this->hash = $hash;
+  }
+
+  public function hash() {
+    return $this->hash;
   }
 }
