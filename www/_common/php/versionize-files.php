@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/version.php';
 require_once __DIR__ . '/resolvePath.php';
-require_once __DIR__ . '/ModuleList.php';
 
 
 
@@ -12,10 +11,11 @@ require_once __DIR__ . '/ModuleList.php';
 function versionizeFiles(string $body, string $fromDir = __DIR__): string {
   $extensions = 'css|css\.php|js|js\.php|json|htm|svg|ico|webp|png|jpe?g|gif|mp4'; // same as in .htaccess
   $regexps = [
-    '/(?:from|import) +?\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\';/',
-    '/(?:new Worker\()\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\'/',
-    '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)\.('.$extensions.'))"/',
-    '/(?:url\()\'((?:.*?\/)([^\/]+?)\.('.$extensions.'))\'/'
+    '/(?:from|import) +?\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\';/',        // import statements
+    '/(?:new Worker\()\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\'/',           // Worker creation
+    '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)\.('.$extensions.'))"/', // src or href HTML attributes
+    '/(?:url\()\'((?:.*?\/)([^\/]+?)\.('.$extensions.'))\'/',               // CSS URLs
+    '/"[\w-]+": +"((?:.*?\/)([^\/]+?)\.('.$extensions.'))"/'                // import maps
   ];
 
   foreach($regexps as $regex) {
@@ -26,15 +26,12 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
       $fileext = $matches[3][$i];
 
       $Path = new FilePath($path, $fromDir);
-
-      // The version of a module has to depend on all other modules it imports, because its file contains their version number.
-      // So this is needed for now, but won't be once import maps can be used in all browsers!
-      $LinkedModules = new ModuleList($Path);
-      $version = $LinkedModules->toHash();
+      $version = hash('crc32b', $Path->resolve(true, 'absolute'));
+      $versionizedPath = $Path->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext;
 
       $body = str_replace(
         $path,
-        $Path->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext,
+        $versionizedPath,
         $body
       );
     }
