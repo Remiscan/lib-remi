@@ -89,12 +89,11 @@ echo buildThemesStylesheet($body); ?>*/
 .input-switch-hints>span {
   display: block;
   transform: translateX(calc(-.1 * var(--dir) * var(--width) / 3));
-}
-
-.input-switch-hints>span {
   font-family: var(--font-family);
   font-size: calc(var(--width) / 4);
   font-weight: var(--font-weight, 700);
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .input-switch-hints>span[data-state]>svg {
