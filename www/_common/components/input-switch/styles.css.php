@@ -86,9 +86,8 @@ echo buildThemesStylesheet($body); ?>*/
   will-change: transform;
 }
 
-.input-switch-hints>span,
-.input-switch-hints>svg[data-state] {
-  display: none;
+.input-switch-hints>span {
+  display: block;
   transform: translateX(calc(-.1 * var(--dir) * var(--width) / 3));
 }
 
@@ -98,9 +97,12 @@ echo buildThemesStylesheet($body); ?>*/
   font-weight: var(--font-weight, 700);
 }
 
-.input-switch-hints>svg[data-state] {
+.input-switch-hints>span[data-state]>svg {
   width: 100%;
   height: 100%;
+}
+
+.input-switch-hints svg.default-icon {
   stroke-width: var(--stroke-width, 3);
 }
 
@@ -118,11 +120,6 @@ echo buildThemesStylesheet($body); ?>*/
   color: var(--off-text-color);
   stroke: var(--off-text-color);
   --dir: 1;
-}
-
-:host([hint="text"]) .input-switch-hints>span,
-:host([hint="icon"]) .input-switch-hints>svg {
-  display: block;
 }
 
 .input-switch-handle {

@@ -80,6 +80,14 @@
         opacity: .5;
       }
     </style>
+
+    <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
+    <script type="esms-options">
+    {
+      "polyfillEnable": ["css-modules", "json-modules"]
+    }
+    </script>
+    <script defer src="../../polyfills/es-module-shims.js"></script>
   </head>
 
   <body>
@@ -97,7 +105,7 @@
 
       <label for="switch-4">
         Switch 4
-        <input-switch id="switch-4" hint="text"></input-switch>
+        <input-switch id="switch-4" hint="text yes no"></input-switch>
       </label>
 
       <label for="switch-5">
@@ -112,7 +120,7 @@
       <?php require_once dirname(__DIR__, 2) . '/php/version.php';
       $version = version(__DIR__, ['input-switch.js.php', 'style.css.php']); ?>
 
-      import '/_common/components/input-switch/input-switch--<?=$version?>.js.php';
+      import '/_common/components/input-switch/input-switch--<?=$version?>.js';
 
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
