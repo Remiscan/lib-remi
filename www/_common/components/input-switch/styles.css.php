@@ -86,14 +86,13 @@ echo buildThemesStylesheet($body); ?>*/
   will-change: transform;
 }
 
-.input-switch-hints>span {
-  display: block;
+.input-switch-hints>span[data-state] {
+  display: grid;
   --side-margin: calc(.1 * var(--width) / 3);
-  transform: translateX(calc(-1 * var(--dir) * var(--side-margin)));
   font-family: var(--font-family);
   font-size: calc(var(--width) / 4);
   font-weight: var(--font-weight, 700);
-  max-width: calc(100% - 2 * var(--side-margin));
+  max-width: 100%;
   max-height: 100%;
   overflow: hidden;
 }
@@ -101,6 +100,20 @@ echo buildThemesStylesheet($body); ?>*/
 .input-switch-hints>span[data-state]>svg {
   width: 100%;
   height: 100%;
+}
+
+.input-switch-hints>span[data-state="on"] {
+  place-items: start;
+}
+.input-switch-hints>span[data-state="off"] {
+  place-items: end;
+}
+
+.input-switch-hints>span[data-state="on"]>* {
+  padding-left: var(--side-margin);
+}
+.input-switch-hints>span[data-state="off"]>* {
+  padding-right: var(--side-margin);
 }
 
 .input-switch-hints svg.default-icon {
@@ -112,7 +125,6 @@ echo buildThemesStylesheet($body); ?>*/
   grid-column: 1;
   color: var(--on-text-color);
   stroke: var(--on-text-color);
-  --dir: -1;
 }
 
 .input-switch-hints>[data-state="off"] {
@@ -120,7 +132,6 @@ echo buildThemesStylesheet($body); ?>*/
   grid-column: 3;
   color: var(--off-text-color);
   stroke: var(--off-text-color);
-  --dir: 1;
 }
 
 .input-switch-handle {

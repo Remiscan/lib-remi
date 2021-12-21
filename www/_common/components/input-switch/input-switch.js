@@ -196,8 +196,8 @@ export default class InputSwitch extends HTMLElement {
           case 'text': {
             const textOn = hints[1] || 'On';
             const textOff = hints[2] || 'Off';
-            this.shadowRoot.querySelector('[data-state="on"]').innerHTML = textOn;
-            this.shadowRoot.querySelector('[data-state="off"]').innerHTML = textOff;
+            this.shadowRoot.querySelector('[data-state="on"]').innerHTML = `<span>${textOn}</span>`;
+            this.shadowRoot.querySelector('[data-state="off"]').innerHTML = `<span>${textOff}</span>`;
           } break;
           case 'icon': {
             const iconOn = `<svg viewBox="0 0 24 24" class="default-icon"><path d="M 6 12 L 10 16 L 18 8" fill="transparent"/></svg>`;
