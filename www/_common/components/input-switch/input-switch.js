@@ -39,11 +39,11 @@ export default class InputSwitch extends HTMLElement {
 
   // Pressing Space or Enter while the switch is focused toggles it
   onKeyDown(event) {
-    console.log(event);
     switch (event.code) {
       case 'Space':
       case 'Enter':
       case 'NumpadEnter':
+        event.preventDefault();
         this.button.click();
         break;
     }
