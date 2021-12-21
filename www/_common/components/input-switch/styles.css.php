@@ -88,12 +88,14 @@ echo buildThemesStylesheet($body); ?>*/
 
 .input-switch-hints>span {
   display: block;
-  transform: translateX(calc(-.1 * var(--dir) * var(--width) / 3));
+  --side-margin: calc(.1 * var(--width) / 3);
+  transform: translateX(calc(-1 * var(--dir) * var(--side-margin)));
   font-family: var(--font-family);
   font-size: calc(var(--width) / 4);
   font-weight: var(--font-weight, 700);
-  max-width: 100%;
+  max-width: calc(100% - 2 * var(--side-margin));
   max-height: 100%;
+  overflow: hidden;
 }
 
 .input-switch-hints>span[data-state]>svg {
