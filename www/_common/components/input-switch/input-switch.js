@@ -23,7 +23,6 @@ export default class InputSwitch extends HTMLElement {
     this.button = this.shadowRoot.querySelector('button');
     this.moving = false;
     this.handlers = {
-      keyDown: () => {},
       labelDown: () => {},
       start: () => {}
     };
