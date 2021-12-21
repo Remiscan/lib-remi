@@ -169,6 +169,17 @@ export default class InputSwitch extends HTMLElement {
   }
 
 
+  get checked() {
+    return this.button.getAttribute('aria-checked') === 'true';
+  }
+
+  set checked(value) {
+    const checked = this.button.getAttribute('aria-checked') === 'true';
+    if (checked === value) return;
+    this.toggle();
+  }
+
+
   update(attr, newValue) {
     switch (attr) {
       case 'label':
@@ -208,10 +219,10 @@ export default class InputSwitch extends HTMLElement {
     if (sheet?.cssRules.length === 0) sheet.replaceSync(css);
 
     // Set initial state
-    this.button.setAttribute('aria-checked', this.getAttribute('state') == 'on');
+    this.button.setAttribute('aria-checked', this.getAttribute('state') === 'on');
     this.removeAttribute('state');
 
-    // Active les attributs de départ
+    // Sets initial attributes
     for (const attr of InputSwitch.observedAttributes) {
       this.update(attr, this.getAttribute(attr));
     }
