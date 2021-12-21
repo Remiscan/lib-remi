@@ -37,19 +37,6 @@ export default class InputSwitch extends HTMLElement {
   }
 
 
-  // Pressing Space or Enter while the switch is focused toggles it
-  onKeyDown(event) {
-    switch (event.code) {
-      case 'Space':
-      case 'Enter':
-      case 'NumpadEnter':
-        event.preventDefault();
-        this.button.click();
-        break;
-    }
-  }
-
-
   // Clicking on the label toggles the switch
   onLabelDown(event) {
     const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
@@ -226,8 +213,6 @@ export default class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
-    this.setAttribute('tabindex', '0');
-
     // Set initial state
     this.button.setAttribute('aria-checked', this.getAttribute('state') === 'on');
     this.removeAttribute('state');
@@ -236,10 +221,6 @@ export default class InputSwitch extends HTMLElement {
     for (const attr of InputSwitch.observedAttributes) {
       this.update(attr, this.getAttribute(attr));
     }
-
-    // Enable keyboard use of the switch
-    this.handlers.keyDown = this.onKeyDown.bind(this);
-    this.addEventListener('keydown', this.handlers.keyDown);
 
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.
@@ -280,7 +261,6 @@ export default class InputSwitch extends HTMLElement {
 
 
   disconnectedCallback() {
-    this.removeEventListener('keydown', this.handlers.keyDown);
     const id = this.getAttribute('id');
     const label = document.querySelector(`label[for="${id}"]`);
     if (label) {

@@ -31,6 +31,17 @@
   }
 }
 
+:host(:focus-within) {
+  outline: 5px auto Highlight;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: 1px;
+}
+
+[role="switch"]:focus,
+[role="switch"]:focus-visible {
+  outline: none;
+}
+
 [role="switch"] {
   border: none;
   margin: 0;
