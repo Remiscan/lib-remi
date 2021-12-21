@@ -35,7 +35,7 @@ export default class InputSwitch extends HTMLElement {
     this.button.setAttribute('aria-checked', !checked);
     
     // Dispatches a switch event on the input-switch element
-    this.dispatchEvent(new CustomEvent('switch', { detail: { checked: !checked, state: newState } }));
+    this.dispatchEvent(new Event('change', { bubbles: true, cancelable: false }));
   }
 
 

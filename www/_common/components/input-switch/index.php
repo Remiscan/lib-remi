@@ -124,9 +124,9 @@
 
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
-        input.addEventListener('switch', event => {
+        input.addEventListener('change', event => {
           document.querySelector('.action').classList.add('on');
-          document.querySelector('.action').innerHTML = `${event.target.shadowRoot.querySelector('button').getAttribute('aria-label')} turned ${event.detail.state}`;
+          document.querySelector('.action').innerHTML = `${event.currentTarget.shadowRoot.querySelector('button').getAttribute('aria-label')} turned ${event.currentTarget.checked ? 'on' : 'off'}`;
         });
       }
     </script>
