@@ -23,6 +23,7 @@ export default class InputSwitch extends HTMLElement {
     this.button = this.shadowRoot.querySelector('button');
     this.moving = false;
     this.handlers = {
+      keyDown: () => {},
       labelDown: () => {},
       start: () => {}
     };
@@ -33,6 +34,19 @@ export default class InputSwitch extends HTMLElement {
     const checked = this.button.getAttribute('aria-checked') === 'true';
     this.button.setAttribute('aria-checked', !checked);
     this.dispatchEvent(new Event('change', { bubbles: true, cancelable: false }));
+  }
+
+
+  // Pressing Space or Enter while the switch is focused toggles it
+  onKeyDown(event) {
+    console.log(event);
+    switch (event.code) {
+      case 'Space':
+      case 'Enter':
+      case 'NumpadEnter':
+        this.button.click();
+        break;
+    }
   }
 
 
@@ -212,8 +226,7 @@ export default class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
-    // Parse CSS on first connection
-    if (sheet?.cssRules.length === 0) sheet.replaceSync(css);
+    this.setAttribute('tabindex', '0');
 
     // Set initial state
     this.button.setAttribute('aria-checked', this.getAttribute('state') === 'on');
@@ -223,6 +236,10 @@ export default class InputSwitch extends HTMLElement {
     for (const attr of InputSwitch.observedAttributes) {
       this.update(attr, this.getAttribute(attr));
     }
+
+    // Enable keyboard use of the switch
+    this.handlers.keyDown = this.onKeyDown.bind(this);
+    this.addEventListener('keydown', this.handlers.keyDown);
 
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.
@@ -263,6 +280,7 @@ export default class InputSwitch extends HTMLElement {
 
 
   disconnectedCallback() {
+    this.removeEventListener('keydown', this.handlers.keyDown);
     const id = this.getAttribute('id');
     const label = document.querySelector(`label[for="${id}"]`);
     if (label) {

@@ -1,6 +1,6 @@
 const template = document.createElement('template');
 template.innerHTML = `
-<button type="button" role="switch" aria-checked="false">
+<button type="button" role="switch" aria-checked="false" tabindex="-1">
   <span class="input-switch-hints" aria-hidden="true">
     <span data-state="on"></span>
     <svg class="input-switch-handle" viewBox="0 0 24 24">
