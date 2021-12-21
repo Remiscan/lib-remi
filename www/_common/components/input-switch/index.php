@@ -118,7 +118,7 @@
 
     <script type="module">
       <?php require_once dirname(__DIR__, 2) . '/php/version.php';
-      $version = version(__DIR__, ['input-switch.js.php', 'style.css.php']); ?>
+      $version = version(__DIR__, ['input-switch.js', 'styles.css.php']); ?>
 
       import '/_common/components/input-switch/input-switch--<?=$version?>.js';
 
