@@ -19,6 +19,26 @@
       require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
       echo buildThemesStylesheet($body); ?>*/
 
+      /*<?php ob_start();?>*/
+      :root[data-theme="light"] input-switch {
+        --off-bg-color: hsl(231, 0%, 50%);
+        --on-bg-color: hsl(231, 40%, 50%);
+        --handle-color: white;
+        --off-text-color: var(--handle-color);
+        --on-text-color: var(--handle-color);
+      }
+
+      :root[data-theme="dark"] input-switch {
+        --off-bg-color: hsl(217, 0%, 55%);
+        --on-bg-color: hsl(217, 89%, 75%);
+        --handle-color: rgb(48, 48, 48);
+        --off-text-color: var(--handle-color);
+        --on-text-color: var(--handle-color);
+      }
+      /*<?php $body = ob_get_clean();
+      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
+      echo buildThemesStylesheet($body); ?>*/
+
       html {
         background: var(--bg-color);
         height: 100%;

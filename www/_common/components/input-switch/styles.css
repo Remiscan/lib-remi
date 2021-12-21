@@ -13,10 +13,7 @@
   --easing: var(--easing-standard);
   --duration: .2s;
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-}
 
-/*<?php ob_start();?>*/
-:root[data-theme="light"] :host {
   --off-bg-color: hsl(231, 0%, 50%);
   --on-bg-color: hsl(231, 40%, 50%);
   --handle-color: white;
@@ -24,16 +21,15 @@
   --on-text-color: var(--handle-color);
 }
 
-:root[data-theme="dark"] :host {
-  --off-bg-color: hsl(217, 0%, 55%);
-  --on-bg-color: hsl(217, 89%, 75%);
-  --handle-color: rgb(48, 48, 48);
-  --off-text-color: var(--handle-color);
-  --on-text-color: var(--handle-color);
+@media (prefers-color-scheme: dark) {
+  :host {
+    --off-bg-color: hsl(217, 0%, 55%);
+    --on-bg-color: hsl(217, 89%, 75%);
+    --handle-color: rgb(48, 48, 48);
+    --off-text-color: var(--handle-color);
+    --on-text-color: var(--handle-color);
+  }
 }
-/*<?php $body = ob_get_clean();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-echo buildThemesStylesheet($body); ?>*/
 
 [role="switch"] {
   border: none;

@@ -1,4 +1,4 @@
-import sheet from './styles.css.php' assert { type: 'css' };
+import sheet from './styles.css' assert { type: 'css' };
 import template from './template.js';
 
 
