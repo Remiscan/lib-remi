@@ -182,6 +182,9 @@ export default class InputSwitch extends HTMLElement {
       case 'label':
         this.button.setAttribute('aria-label', newValue);
         break;
+      case 'labelledby':
+        this.button.setAttribute('aria-labelledby', newValue);
+        break;
       case 'disabled':
         if (newValue !== null) this.button.setAttribute('disabled', 'true');
         else                   this.button.removeAttribute('disabled');
@@ -278,7 +281,7 @@ export default class InputSwitch extends HTMLElement {
 
 
   static get observedAttributes() {
-    return ['label', 'disabled', 'hint'];
+    return ['label', 'labelledby', 'disabled', 'hint'];
   }
 }
 
