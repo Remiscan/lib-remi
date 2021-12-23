@@ -62,6 +62,7 @@ export default class InputSwitch extends HTMLElement {
     const labelUp = event => {
       event.preventDefault();
       if (event.composedPath().includes(this.button) || this.moving || cancel) return;
+      this.button.focus();
       this.toggle();
 
       window.removeEventListener('touchstart', labelStop, { passive: true });
@@ -77,7 +78,9 @@ export default class InputSwitch extends HTMLElement {
 
   // Make switch touchmoveable
   onStart(event) {
+    this.button.focus();
     event.preventDefault();
+    
     this.press = true; // whether style variables will not need to be reset
     this.dont = false; // whether the click should be prevented
     let time = Date.now();
