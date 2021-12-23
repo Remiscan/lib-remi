@@ -183,10 +183,10 @@ export default class InputSwitch extends HTMLElement {
   update(attr, newValue) {
     switch (attr) {
       case 'label':
-        this.button.setAttribute('aria-label', newValue);
+        if (newValue) this.button.setAttribute('aria-label', newValue);
         break;
       case 'labelledby':
-        this.button.setAttribute('aria-labelledby', newValue);
+        if (newValue) this.button.setAttribute('aria-labelledby', newValue);
         break;
       case 'disabled':
         if (newValue !== null) this.button.setAttribute('disabled', 'true');
