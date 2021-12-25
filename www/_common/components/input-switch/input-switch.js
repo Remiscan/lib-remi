@@ -222,11 +222,6 @@ export default class InputSwitch extends HTMLElement {
     this.button.setAttribute('aria-checked', this.getAttribute('state') === 'on');
     this.removeAttribute('state');
 
-    // Sets initial attributes
-    for (const attr of InputSwitch.observedAttributes) {
-      this.update(attr, this.getAttribute(attr));
-    }
-
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.
     if (this.getAttribute('label') === null) {
