@@ -16,8 +16,6 @@ class GradientButton extends HTMLElement {
   }
 
   update(attributes = GradientButton.observedAttributes) {
-    if (!this.ready) return;
-
     text: {
       if (!attributes.includes('text')) break text;
       for (const span of Array.from(this.shadowRoot.querySelectorAll('.text'))) {
@@ -46,9 +44,6 @@ class GradientButton extends HTMLElement {
   }
 
   connectedCallback() {
-    this.ready = true;
-    this.update();
-
     // Detect initial text from <gradient-button> content instead of text attribute
     window.addEventListener('DOMContentLoaded', () => {
       if (!this.innerHTML) return;
@@ -62,4 +57,5 @@ class GradientButton extends HTMLElement {
     this.update([name]);
   }
 }
+
 if (!customElements.get('gradient-button')) customElements.define('gradient-button', GradientButton);
