@@ -60,10 +60,10 @@ export default class InputSwitch extends HTMLElement {
     };
     
     const labelUp = event => {
-      event.preventDefault();
+      event.preventDefault(); // Note: will prevent click event after touchend but not after mouseup
       if (event.composedPath().includes(this.button) || this.moving || cancel) return;
       this.button.focus();
-      this.toggle();
+      this.toggle(); // Toggle instead of click, to work after a small move that canceled the previous click
 
       window.removeEventListener('touchstart', labelStop, { passive: true });
       window.removeEventListener(moveEvent, labelMove, { passive: true });
@@ -111,7 +111,7 @@ export default class InputSwitch extends HTMLElement {
     let frameReady = true;
 
     const moveHandle = event => {
-      event.preventDefault();
+      event.preventDefault(); // Prevents scrolling
       if (!frameReady) return;
       frameReady = false;
 
