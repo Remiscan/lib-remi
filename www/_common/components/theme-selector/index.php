@@ -5,6 +5,8 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
 <html data-theme="<?=$theme?>">
 
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {
