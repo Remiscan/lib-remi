@@ -19,6 +19,7 @@
   --handle-color: white;
   --off-text-color: var(--handle-color);
   --on-text-color: var(--handle-color);
+  --focus-color: black;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,6 +29,7 @@
     --handle-color: rgb(48, 48, 48);
     --off-text-color: var(--handle-color);
     --on-text-color: var(--handle-color);
+    --focus-color: white;
   }
 }
 
@@ -156,6 +158,18 @@
   height: 100%;
   z-index: 3;
   fill: var(--handle-color);
+}
+
+.focus-dot {
+  fill: var(--focus-color);
+  display: none;
+}
+
+[role="switch"]:focus .focus-dot {
+  display: block;
+}
+[role="switch"]:focus:not(:focus-visible) .focus-dot {
+  display: none;
 }
 
 [role="switch"][aria-checked="false"] {
