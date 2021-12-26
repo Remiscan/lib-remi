@@ -39,7 +39,7 @@
 }
 
 /* Try this out when :has is supported */
-@supports selector(:host(:has(> button:focus-visible))) {
+@supports selector(:host(:has(button:focus-visible))) {
   :host(:has(button:focus:not(:focus-visible))) {
     outline: none;
   }
