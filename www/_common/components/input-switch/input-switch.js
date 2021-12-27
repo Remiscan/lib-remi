@@ -60,10 +60,13 @@ export default class InputSwitch extends HTMLElement {
     };
     
     const labelUp = event => {
-      event.preventDefault(); // Note: will prevent click event after touchend but not after mouseup
-      if (event.composedPath().includes(this.button) || this.moving || cancel) return;
-      this.button.focus();
-      this.toggle(); // Toggle instead of click, to work after a small move that canceled the previous click
+      if (event.type === 'touchend') {
+        event.preventDefault(); // Prevents mouseup event which would fire labelUp again
+      }
+      if (!(event.composedPath().includes(this.button) || this.moving || cancel)) {
+        this.button.focus();
+        this.toggle(); // Toggle instead of click, to work after a small move that canceled the previous click
+      }
 
       window.removeEventListener('touchstart', labelStop, { passive: true });
       window.removeEventListener(moveEvent, labelMove, { passive: true });
@@ -78,17 +81,21 @@ export default class InputSwitch extends HTMLElement {
 
   // Make switch touchmoveable
   onStart(event) {
-    this.button.focus();
-    event.preventDefault();
+    this.defaultPrevented = false; // whether event.preventDefault has been called during this click
+    if (event.type === 'touchstart') {
+      event.preventDefault(); // Prevents lag before first touchmove event
+      this.defaultPrevented = true;
+    }
     
-    this.press = true; // whether style variables will not need to be reset
-    this.dont = false; // whether the click should be prevented
+    this.lastClickWasManual = true; // Whether the last click was manual (true) or through the element.click() method.
+                                    // If false, style variables will be reset.
+    this.cancelNextClick = false; // whether the click should be prevented
     let time = Date.now();
 
     const moveEvent = event.type == 'touchstart' ? 'touchmove' : 'mousemove';
     const endEvent = event.type == 'touchstart' ? 'touchend' : 'mouseup';
     
-    this.moving = false;
+    this.moving = false; // whether the user is dragging the handle
     let durationChanged = false;
     this.button.style.removeProperty('--duration');
     this.button.style.removeProperty('--easing');
@@ -111,7 +118,10 @@ export default class InputSwitch extends HTMLElement {
     let frameReady = true;
 
     const moveHandle = event => {
-      event.preventDefault(); // Prevents scrolling
+      if (event.type === 'touchmove') {
+        event.preventDefault(); // Prevents scrolling (and subsequent mouse events)
+        this.defaultPrevented = true;
+      }
       if (!frameReady) return;
       frameReady = false;
 
@@ -139,9 +149,9 @@ export default class InputSwitch extends HTMLElement {
     };
 
     const endHandle = event => {
-      event.preventDefault(); // Note: will prevent click event after touchend but not after mouseup
       const distance = updateDistance(lastTouch);
       this.button.style.removeProperty('--trans-ratio');
+      let simulateClick = this.defaultPrevented;
 
       // If it's a drag and it moved to the other side of the switch
       const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
@@ -150,22 +160,25 @@ export default class InputSwitch extends HTMLElement {
         const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
         this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
         this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
-        if (event.type === 'touchend') this.button.click();
         // If dragged outside of the button, no click event will be dispatched on it
-        else if (!event.composedPath().includes(this.button)) this.button.click();
+        if (!event.composedPath().includes(this.button)) simulateClick = true;
       } else {
         this.button.style.removeProperty('--duration');
         // If it's not a click (over safety margin)
-        if (maxDistance > 0.1) this.dont = true;
-        else if (event.type === 'touchend') this.button.click();
+        if (maxDistance > 0.1) this.cancelNextClick = true;
+      }
+
+      if (simulateClick) {
+        this.button.click();
+        this.button.focus();
       }
 
       window.removeEventListener(moveEvent, moveHandle, { passive: false });
-      window.removeEventListener(endEvent, endHandle, { passive: false });
+      window.removeEventListener(endEvent, endHandle, { passive: true });
     };
 
     window.addEventListener(moveEvent, moveHandle, { passive: false });
-    window.addEventListener(endEvent, endHandle, { passive: false });
+    window.addEventListener(endEvent, endHandle, { passive: true });
   }
 
 
@@ -239,20 +252,20 @@ export default class InputSwitch extends HTMLElement {
 
     // Make switch touchmoveable
     this.handlers.start = this.onStart.bind(this);
-    this.button.addEventListener('mousedown', this.handlers.start, { passive: false });
+    this.button.addEventListener('mousedown', this.handlers.start, { passive: true });
     this.button.addEventListener('touchstart', this.handlers.start, { passive: false });
 
     // Toggle on click (manual or keyboard)
     const clickHandle = event => {
       // If a mouseup / touchend event says so, don't do anything
-      if (this.dont) this.dont = false;
+      if (this.cancelNextClick) this.cancelNextClick = false;
       else {
         // If no mousedown / touchstart event happened before click, reset style variables
-        if (!this.press) {
+        if (!this.lastClickWasManual) {
           this.button.style.removeProperty('--duration');
           this.button.style.removeProperty('--easing');
         }
-        this.press = false;
+        this.lastClickWasManual = false;
         this.toggle();
       }
     }
@@ -267,7 +280,7 @@ export default class InputSwitch extends HTMLElement {
       label.removeEventListener('mousedown', this.handlers.labelDown, { passive: true });
       label.removeEventListener('touchstart', this.handlers.labelDown, { passive: true });
     }
-    this.button.removeEventListener('mousedown', this.handlers.start, { passive: false });
+    this.button.removeEventListener('mousedown', this.handlers.start, { passive: true });
     this.button.removeEventListener('touchstart', this.handlers.start, { passive: false });
   }
 
