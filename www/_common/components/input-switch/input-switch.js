@@ -16,7 +16,7 @@ const getTouch = event => {
 export default class InputSwitch extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow = this.attachShadow({ mode: 'open', delegatesFocus: true });
     this.shadow.appendChild(template.content.cloneNode(true));
     this.shadow.adoptedStyleSheets = [sheet];
     
