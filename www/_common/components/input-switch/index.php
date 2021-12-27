@@ -113,7 +113,7 @@
 
   <body>
     <div>
-      <span class="info"><strong>Flip a switch!</strong><br>Click or drag.</span>
+      <span class="info"><strong><a href="#">Flip a switch!</a></strong><br>Click or drag.</span>
 
       <input-switch id="switch-0" label="Switch 0" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
       <input-switch id="switch-1" label="Switch 1" state="on" hint="text" style="--width: 12rem;"></input-switch>
