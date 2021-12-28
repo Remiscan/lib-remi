@@ -244,7 +244,7 @@ export default class InputSwitch extends HTMLElement {
 
   connectedCallback() {
     // Set initial state
-    this.button.setAttribute('aria-checked', this.getAttribute('checked') === 'true');
+    this.button.setAttribute('aria-checked', this.getAttribute('checked') !== null);
     this.removeAttribute('checked');
 
     // If <label for="id"> exists, use it to label the button
