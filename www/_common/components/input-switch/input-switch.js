@@ -208,14 +208,14 @@ export default class InputSwitch extends HTMLElement {
   update(attr, newValue) {
     switch (attr) {
       case 'label':
-        if (newValue) this.button.setAttribute('aria-label', newValue);
+        this.button.setAttribute('aria-label', newValue || '');
         break;
       case 'labelledby':
-        if (newValue) this.button.setAttribute('aria-labelledby', newValue);
+        const labelText = document.getElementById(newValue)?.innerText || '';
+        this.button.setAttribute('aria-label', labelText);
         break;
       case 'disabled':
-        if (newValue !== null) this.disabled = true;
-        else                   this.disabled = false;
+        this.disabled = newValue !== null;
         break;
       case 'hint': {
         const hints = (newValue || '').split(' ');
@@ -253,7 +253,7 @@ export default class InputSwitch extends HTMLElement {
       const id = this.getAttribute('id');
       const label = document.querySelector(`label[for="${id}"]`);
       if (label) {
-        this.button.setAttribute('aria-label', label.innerText);
+        this.button.setAttribute('aria-label', label.innerText); // aria-labelledby doesn't work through shadow DOM
 
         // Clicking on the label toggles the switch
         this.handlers.labelDown = this.onLabelDown.bind(this);
