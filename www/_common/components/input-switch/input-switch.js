@@ -102,13 +102,15 @@ export default class InputSwitch extends HTMLElement {
 
     const coords = this.getBoundingClientRect();
     const width = 0.5 * coords.width * (1 - .2 * .5);
+    const textDir = this.rtl ? -1 : 1;
+    this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
     
     // Gets the coordinates of an event relative to the button
     const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
     const initialTouch = getCoords(event);
 
     // Ratio of (distance moved) / (button width)
-    const updateDistance = touch => Math.max(-1, Math.min((touch.x - initialTouch.x) / width, 1));
+    const updateDistance = touch => textDir * Math.max(-1, Math.min((touch.x - initialTouch.x) / width, 1));
     const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
     const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
 
@@ -204,6 +206,10 @@ export default class InputSwitch extends HTMLElement {
     }
   }
 
+  get rtl() {
+    return getComputedStyle(this.button).getPropertyValue('direction') === 'rtl';
+  }
+
 
   update(attr, newValue) {
     switch (attr) {
@@ -243,9 +249,12 @@ export default class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
+    this.button.style.setProperty('--duration', 0);
+
     // Set initial state
     this.button.setAttribute('aria-checked', this.getAttribute('checked') !== null);
     this.removeAttribute('checked');
+    this.button.style.setProperty('--dir', this.rtl ? -1 : 1); // for broswers that don't support the :dir() pseudo-class
 
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.
@@ -282,6 +291,8 @@ export default class InputSwitch extends HTMLElement {
       }
     }
     this.button.addEventListener('click', clickHandle);
+
+    this.button.style.removeProperty('--duration');
   }
 
 

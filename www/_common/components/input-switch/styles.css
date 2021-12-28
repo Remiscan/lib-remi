@@ -62,6 +62,12 @@
   overflow: hidden;
 
   --trans-ratio: 0;
+  --dir: 1;
+  --dir-ratio: calc(var(--dir) * var(--trans-ratio));
+}
+
+[role="switch"]:dir(rtl) {
+  --dir: -1;
 }
 
 [role="switch"]::before {
@@ -90,7 +96,7 @@
   place-items: center;
   transition: transform var(--duration) var(--easing);
   z-index: 2;
-  transform: translateX(calc(-100% * var(--trans-ratio) / 3));
+  transform: translateX(calc(-100% * var(--dir-ratio) / 3));
   will-change: transform;
 }
 
@@ -117,11 +123,19 @@
   place-items: end;
 }
 
+.input-switch-hints>span>* {
+  --padding-left: 0;
+  --padding-right: 0;
+  padding: 0 var(--padding-right) 0 var(--padding-left);
+}
+
 .input-switch-hints>span[data-state="on"]>* {
-  padding-left: var(--side-margin);
+  --padding-left: calc((1 + var(--dir)) * .5 * var(--side-margin));
+  --padding-right: calc((1 - var(--dir)) * .5 * var(--side-margin));
 }
 .input-switch-hints>span[data-state="off"]>* {
-  padding-right: var(--side-margin);
+  --padding-left: calc((1 - var(--dir)) * .5 * var(--side-margin));
+  --padding-right: calc((1 + var(--dir)) * .5 * var(--side-margin));
 }
 
 .input-switch-hints svg.default-icon {

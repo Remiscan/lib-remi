@@ -130,7 +130,7 @@
         <input-switch id="switch-3" checked hint="icon"></input-switch>
       </label>
 
-      <label for="switch-4">
+      <label for="switch-4" dir="rtl">
         Switch 4
         <input-switch id="switch-4" hint="text yes no"></input-switch>
       </label>
