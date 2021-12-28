@@ -30,8 +30,8 @@ export default class InputSwitch extends HTMLElement {
 
 
   toggle() {
-    const checked = this.button.getAttribute('aria-checked') === 'true';
-    this.button.setAttribute('aria-checked', !checked);
+    if (this.disabled) return;
+    this.button.setAttribute('aria-checked', !this.checked);
     this.dispatchEvent(new Event('change', { bubbles: true, cancelable: false }));
   }
 
@@ -192,6 +192,18 @@ export default class InputSwitch extends HTMLElement {
     this.toggle();
   }
 
+  get disabled() {
+    return this.button.getAttribute('disabled') !== null;
+  }
+
+  set disabled(value) {
+    if (value === true) {
+      this.button.setAttribute('disabled', 'true');
+    } else {
+      this.button.removeAttribute('disabled');
+    }
+  }
+
 
   update(attr, newValue) {
     switch (attr) {
@@ -202,8 +214,8 @@ export default class InputSwitch extends HTMLElement {
         if (newValue) this.button.setAttribute('aria-labelledby', newValue);
         break;
       case 'disabled':
-        if (newValue !== null) this.button.setAttribute('disabled', 'true');
-        else                   this.button.removeAttribute('disabled');
+        if (newValue !== null) this.disabled = true;
+        else                   this.disabled = false;
         break;
       case 'hint': {
         const hints = (newValue || '').split(' ');
@@ -232,8 +244,8 @@ export default class InputSwitch extends HTMLElement {
 
   connectedCallback() {
     // Set initial state
-    this.button.setAttribute('aria-checked', this.getAttribute('state') === 'on');
-    this.removeAttribute('state');
+    this.button.setAttribute('aria-checked', this.getAttribute('checked') === 'true');
+    this.removeAttribute('checked');
 
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.

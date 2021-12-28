@@ -92,6 +92,10 @@
         opacity: 1;
       }
 
+      a {
+        color: currentColor;
+      }
+
       strong {
         font-size: 1.6em;
       }
@@ -115,15 +119,15 @@
 
   <body>
     <div>
-      <span class="info"><strong><a href="#">Flip a switch!</a></strong><br>Click or drag.</span>
+      <span class="info"><a href="#"><strong>Flip a switch!</strong></a><br>Click or drag.</span>
 
       <input-switch id="switch-0" label="Switch 0" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
-      <input-switch id="switch-1" label="Switch 1" state="on" hint="text" style="--width: 12rem;"></input-switch>
+      <input-switch id="switch-1" label="Switch 1" checked="true" hint="text" style="--width: 12rem;"></input-switch>
       <input-switch id="switch-2" label="Switch 2" style="--width: 12rem;"></input-switch>
 
       <label for="switch-3">
         Switch 3
-        <input-switch id="switch-3" state="on" hint="icon"></input-switch>
+        <input-switch id="switch-3" checked="true" hint="icon"></input-switch>
       </label>
 
       <label for="switch-4">
@@ -133,7 +137,7 @@
 
       <label for="switch-5">
         Switch 5
-        <input-switch id="switch-5" state="on"></input-switch>
+        <input-switch id="switch-5" checked="true" disabled></input-switch>
       </label>
 
       <span class="action">...</span>
