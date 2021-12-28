@@ -76,6 +76,7 @@
   background-color: var(--off-bg-color);
   overflow: hidden;
 
+  touch-action: none;
   --ratio: 0;
   --dir: 1;
   --transform-ratio: calc(var(--dir) * var(--ratio));
