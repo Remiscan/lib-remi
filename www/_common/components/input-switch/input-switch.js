@@ -145,14 +145,14 @@ export default class InputSwitch extends HTMLElement {
 
       // Safety margin to differentiate a click and a drag
       if (!this.moving && Math.abs(distance) > 0.1) this.moving = true;
-      this.button.style.setProperty('--trans-ratio', ratio);
+      this.button.style.setProperty('--ratio', ratio);
 
       requestAnimationFrame(() => { frameReady = true });
     };
 
     const endHandle = event => {
       const distance = updateDistance(lastTouch);
-      this.button.style.removeProperty('--trans-ratio');
+      this.button.style.removeProperty('--ratio');
       let simulateClick = this.defaultPrevented;
 
       // If it's a drag and it moved to the other side of the switch
