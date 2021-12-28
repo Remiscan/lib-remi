@@ -22,7 +22,7 @@
 
       /*<?php ob_start();?>*/
       :root[data-theme="light"] input-switch {
-        --off-bg-color: hsl(231, 0%, 50%);
+        --off-bg-color: #828282;
         --on-bg-color: hsl(231, 40%, 50%);
         --handle-color: #ebebeb;
         --handle-hover-color: #ddd;
@@ -33,7 +33,7 @@
       }
 
       :root[data-theme="dark"] input-switch {
-        --off-bg-color: hsl(217, 0%, 55%);
+        --off-bg-color: #929292;
         --on-bg-color: hsl(217, 89%, 75%);
         --handle-color: rgb(48, 48, 48);
         --handle-hover-color: #3a3a3a;
