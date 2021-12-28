@@ -249,17 +249,17 @@ export default class InputSwitch extends HTMLElement {
 
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.
-    if (this.getAttribute('label') === null) {
-      const id = this.getAttribute('id');
-      const label = document.querySelector(`label[for="${id}"]`);
-      if (label) {
+    const id = this.getAttribute('id');
+    const label = document.querySelector(`label[for="${id}"]`);
+    if (label) {
+      if (this.getAttribute('label') === null) {
         this.button.setAttribute('aria-label', label.innerText); // aria-labelledby doesn't work through shadow DOM
-
-        // Clicking on the label toggles the switch
-        this.handlers.labelDown = this.onLabelDown.bind(this);
-        label.addEventListener('mousedown', this.handlers.labelDown, { passive: true });
-        label.addEventListener('touchstart', this.handlers.labelDown, { passive: true });
       }
+
+      // Clicking on the label toggles the switch
+      this.handlers.labelDown = this.onLabelDown.bind(this);
+      label.addEventListener('mousedown', this.handlers.labelDown, { passive: true });
+      label.addEventListener('touchstart', this.handlers.labelDown, { passive: true });
     }
 
     // Make switch touchmoveable
