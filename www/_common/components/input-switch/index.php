@@ -24,17 +24,23 @@
       :root[data-theme="light"] input-switch {
         --off-bg-color: hsl(231, 0%, 50%);
         --on-bg-color: hsl(231, 40%, 50%);
-        --handle-color: white;
+        --handle-color: #ebebeb;
+        --handle-hover-color: #ddd;
+        --handle-active-color: #fff;
         --off-text-color: var(--handle-color);
         --on-text-color: var(--handle-color);
+        --focus-color: black;
       }
 
       :root[data-theme="dark"] input-switch {
         --off-bg-color: hsl(217, 0%, 55%);
         --on-bg-color: hsl(217, 89%, 75%);
         --handle-color: rgb(48, 48, 48);
+        --handle-hover-color: #3a3a3a;
+        --handle-active-color: #222;
         --off-text-color: var(--handle-color);
         --on-text-color: var(--handle-color);
+        --focus-color: white;
       }
       /*<?php $body = ob_get_clean();
       require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
@@ -103,11 +109,7 @@
     </style>
 
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
-    <script type="esms-options">
-    {
-      "polyfillEnable": ["css-modules", "json-modules"]
-    }
-    </script>
+    <script type="esms-options">{ "polyfillEnable": ["css-modules", "json-modules"] }</script>
     <script defer src="../../polyfills/es-module-shims.js"></script>
   </head>
 

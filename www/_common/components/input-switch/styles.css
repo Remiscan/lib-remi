@@ -17,7 +17,9 @@
 
   --off-bg-color: hsl(231, 0%, 50%);
   --on-bg-color: hsl(231, 40%, 50%);
-  --handle-color: white;
+  --handle-color: #ebebeb;
+  --handle-hover-color: #ddd;
+  --handle-active-color: #fff;
   --off-text-color: var(--handle-color);
   --on-text-color: var(--handle-color);
   --focus-color: black;
@@ -28,6 +30,8 @@
     --off-bg-color: hsl(217, 0%, 55%);
     --on-bg-color: hsl(217, 89%, 75%);
     --handle-color: rgb(48, 48, 48);
+    --handle-hover-color: #3a3a3a;
+    --handle-active-color: #222;
     --off-text-color: var(--handle-color);
     --on-text-color: var(--handle-color);
     --focus-color: white;
@@ -145,6 +149,13 @@
   height: 100%;
   z-index: 3;
   fill: var(--handle-color);
+}
+
+[role="switch"]:hover .input-switch-handle {
+  fill: var(--handle-hover-color);
+}
+[role="switch"]:active .input-switch-handle {
+  fill: var(--handle-active-color);
 }
 
 .focus-dot {
