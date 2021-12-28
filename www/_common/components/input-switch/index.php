@@ -46,6 +46,19 @@
       require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
       echo buildThemesStylesheet($body); ?>*/
 
+      @media (forced-colors: active) {
+        input-switch {
+          --off-bg-color: ButtonFace;
+          --on-bg-color: Highlight;
+          --handle-color: ButtonText;
+          --handle-hover-color: Highlight;
+          --handle-active-color: Highlight;
+          --off-text-color: ButtonText;
+          --on-text-color: Canvas;
+          --focus-color: Highlight;
+        }
+      }
+
       html {
         background: var(--bg-color);
         height: 100%;

@@ -38,6 +38,21 @@
   }
 }
 
+@media (forced-colors: active) {
+  :host {
+    -ms-high-contrast-adjust: none;
+    forced-color-adjust: none;
+    --off-bg-color: ButtonFace;
+    --on-bg-color: Highlight;
+    --handle-color: ButtonText;
+    --handle-hover-color: Highlight;
+    --handle-active-color: Highlight;
+    --off-text-color: ButtonText;
+    --on-text-color: Canvas;
+    --focus-color: Highlight;
+  }
+}
+
 [role="switch"]:focus,
 [role="switch"]:focus-visible {
   outline: none;
@@ -82,6 +97,35 @@
   transition: opacity var(--duration) var(--easing);
   will-change: opacity;
   z-index: 1;
+}
+
+@media (forced-colors: active) {
+  [role="switch"] {
+    border: 2px solid ButtonText;
+  }
+
+  [role="switch"][aria-checked="true"] {
+    background-color: var(--on-bg-color);
+    border-color: var(--on-bg-color);
+  }
+
+  [role="switch"][aria-checked="true"] .input-switch-handle {
+    fill: var(--on-text-color);
+  }
+
+  [role="switch"]:not(:disabled):is(:hover, :active) {
+    background-color: var(--off-bg-color);
+    border-color: var(--on-bg-color);
+    --on-text-color: var(--off-text-color);
+  }
+
+  [role="switch"]:not(:disabled):is(:hover, :active) .input-switch-handle {
+    fill: var(--off-text-color);
+  }
+
+  [role="switch"]::before {
+    display: none;
+  }
 }
 
 .input-switch-hints {
