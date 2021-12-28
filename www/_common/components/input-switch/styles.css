@@ -114,13 +114,13 @@
     fill: var(--on-text-color);
   }
 
-  [role="switch"]:not(:disabled):is(:hover, :active) {
+  [role="switch"]:not(:disabled):is(:hover, :active, .active) {
     background-color: var(--off-bg-color);
     border-color: var(--on-bg-color);
     --on-text-color: var(--off-text-color);
   }
 
-  [role="switch"]:not(:disabled):is(:hover, :active) .input-switch-handle {
+  [role="switch"]:not(:disabled):is(:hover, :active, .active) .input-switch-handle {
     fill: var(--off-text-color);
   }
 
@@ -213,7 +213,7 @@
 [role="switch"]:not(:disabled):hover .input-switch-handle {
   fill: var(--handle-hover-color);
 }
-[role="switch"]:not(:disabled):active .input-switch-handle {
+[role="switch"]:not(:disabled):is(:active, .active) .input-switch-handle {
   fill: var(--handle-active-color);
 }
 

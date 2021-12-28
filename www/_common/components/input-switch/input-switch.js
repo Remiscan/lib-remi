@@ -85,6 +85,7 @@ export default class InputSwitch extends HTMLElement {
     if (event.type === 'touchstart') {
       event.preventDefault(); // Prevents lag before first touchmove event
       this.defaultPrevented = true;
+      this.button.classList.add('active');
     }
     
     this.lastClickWasManual = true; // Whether the last click was manual (true) or through the element.click() method.
@@ -153,6 +154,7 @@ export default class InputSwitch extends HTMLElement {
     const endHandle = event => {
       const distance = updateDistance(lastTouch);
       this.button.style.removeProperty('--ratio');
+      if (event.type === 'touchend') this.button.classList.remove('active');
       let simulateClick = this.defaultPrevented;
 
       // If it's a drag and it moved to the other side of the switch
