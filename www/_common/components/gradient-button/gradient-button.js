@@ -1,14 +1,14 @@
-const template = document.createElement('template');
-template.innerHTML = `
-<style><?php include 'style.css'; ?></style>
-<?php include 'element.html'; ?>
-`;
+import sheet from 'styles' assert { type: 'css' };
+import template from 'template';
+
+
 
 class GradientButton extends HTMLElement {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(template.content.cloneNode(true));
+    this.shadow.adoptedStyleSheets = [sheet];
   }
 
   static get observedAttributes() {
@@ -44,12 +44,7 @@ class GradientButton extends HTMLElement {
   }
 
   connectedCallback() {
-    // Detect initial text from <gradient-button> content instead of text attribute
-    window.addEventListener('DOMContentLoaded', () => {
-      if (!this.innerHTML) return;
-      this.setAttribute('text', this.innerHTML);
-      this.innerHTML = '';
-    });
+    
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
