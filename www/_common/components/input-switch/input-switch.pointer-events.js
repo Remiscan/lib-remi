@@ -4,16 +4,6 @@ import template from './template.js';
 
 
 
-// Gets the object containing the clientX and clientY coordinates of an event
-const getTouch = event => {
-  switch (event.type) {
-    case 'touchstart': case 'touchmove': return event.touches[0];
-    case 'mousedown': case 'mousemove': case 'pointerdown': case 'pointermove': return event;
-  }
-};
-
-
-
 export default class InputSwitch extends HTMLElement {
   constructor() {
     super();
@@ -39,8 +29,6 @@ export default class InputSwitch extends HTMLElement {
 
   // Clicking on the label toggles the switch
   onLabelDown(event) {
-    const moveEvent = 'pointermove';//event.type == 'touchstart' ? 'touchmove' : 'mousemove';
-    const endEvent = 'pointerup';//event.type == 'touchstart' ? 'touchend' : 'mouseup';
     const label = event.currentTarget;
 
     if (event.composedPath().includes(this.button)) return;
@@ -51,10 +39,10 @@ export default class InputSwitch extends HTMLElement {
 
     // Swiping on the label (or selecting its text) shouldn't toggle the switch
     let cancel = false;
-    const iniX = getTouch(event).clientX;
+    const iniX = event.clientX;
 
     const labelMove = event => {
-      if (!cancel & Math.abs(iniX - getTouch(event).clientX) > 5) cancel = true;
+      if (!cancel & Math.abs(iniX - event.clientX) > 5) cancel = true;
     }
 
     const labelStop = event => {
@@ -72,32 +60,24 @@ export default class InputSwitch extends HTMLElement {
 
       label.releasePointerCapture(event.pointerId);
       label.removeEventListener('touchstart', labelStop, { passive: true });
-      label.removeEventListener(moveEvent, labelMove, { passive: true });
-      label.removeEventListener(endEvent, labelUp, { passive: false });
+      label.removeEventListener('pointermove', labelMove, { passive: true });
+      label.removeEventListener('pointerup', labelUp, { passive: false });
     };
 
     label.addEventListener('touchstart', labelStop, { passive: true });
-    label.addEventListener(moveEvent, labelMove, { passive: true });
-    label.addEventListener(endEvent, labelUp, { passive: false });
+    label.addEventListener('pointermove', labelMove, { passive: true });
+    label.addEventListener('pointerup', labelUp, { passive: false });
   }
 
 
   // Make switch touchmoveable
   onStart(event) {
-    this.defaultPrevented = false; // whether event.preventDefault has been called during this click
-    /*if (event.type === 'touchstart') {
-      event.preventDefault(); // Prevents lag before first touchmove event
-      this.defaultPrevented = true;
-    }*/
     this.button.setPointerCapture(event.pointerId);
     
     this.lastClickWasManual = true; // Whether the last click was manual (true) or through the element.click() method.
                                     // If false, style variables will be reset.
     this.cancelNextClick = false; // whether the click should be prevented
     let time = Date.now();
-
-    const moveEvent = 'pointermove';//event.type == 'touchstart' ? 'touchmove' : 'mousemove';
-    const endEvent = 'pointerup';//event.type == 'touchstart' ? 'touchend' : 'mouseup';
     
     this.moving = false; // whether the user is dragging the handle
     let durationChanged = false;
@@ -110,7 +90,7 @@ export default class InputSwitch extends HTMLElement {
     this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
     
     // Gets the coordinates of an event relative to the button
-    const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
+    const getCoords = touch => { return { x: touch.clientX - coords.x, y: touch.clientY - coords.y } };
     const initialTouch = getCoords(event);
 
     // Ratio of (distance moved) / (button width)
@@ -124,10 +104,6 @@ export default class InputSwitch extends HTMLElement {
     let frameReady = true;
 
     const moveHandle = event => {
-      /*if (event.type === 'touchmove') {
-        event.preventDefault(); // Prevents scrolling (and subsequent mouse events)
-        this.defaultPrevented = true;
-      }*/
       if (!frameReady) return;
       frameReady = false;
 
@@ -157,7 +133,6 @@ export default class InputSwitch extends HTMLElement {
     const endHandle = event => {
       const distance = updateDistance(lastTouch);
       this.button.style.removeProperty('--ratio');
-      let simulateClick = this.defaultPrevented;
 
       // If it's a drag and it moved to the other side of the switch
       const correctDirection = (Math.sign(distance) === -1 && initialRatio === 0) || (Math.sign(distance) === 1 && initialRatio === 1);
@@ -166,46 +141,22 @@ export default class InputSwitch extends HTMLElement {
         const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
         this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
         this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
-        // If dragged outside of the button, no click event will be dispatched on it
-        //if (!event.composedPath().includes(this.button)) simulateClick = true;
       } else {
         this.button.style.removeProperty('--duration');
         // If it's not a click (over safety margin)
         if (maxDistance > 0.1) this.cancelNextClick = true;
       }
 
-      if (simulateClick) {
-        this.button.click();
-        this.button.focus();
-      }
-
-      let pointerId = event.pointerId;
-      const clickHandle = event => {
-        console.log('click');
-        if (event.pointerId === pointerId || typeof event.pointerId === 'undefined') {
-          console.log('same pointer');
-          if (!event.composedPath().includes(this.button)) {
-            console.log('click on other element', event.target);
-            this.button.click();
-            this.button.focus();
-          } else {
-            console.log('click on same element');
-          }
-        } else {
-          console.log('different pointer', pointerId, event.pointerId);
-        }
-
-        window.removeEventListener('click', clickHandle);
-      }
-
       this.button.releasePointerCapture(event.pointerId);
-      window.addEventListener('click', clickHandle);
-      this.button.removeEventListener(moveEvent, moveHandle, { passive: true });
-      this.button.removeEventListener(endEvent, endHandle, { passive: true });
+      this.button.removeEventListener('pointermove', moveHandle, { passive: true });
+      this.button.removeEventListener('pointerup', endHandle, { passive: true });
     };
 
-    this.button.addEventListener(moveEvent, moveHandle, { passive: true });
-    this.button.addEventListener(endEvent, endHandle, { passive: true });
+    this.button.addEventListener('pointermove', moveHandle, { passive: true });
+    this.button.addEventListener('pointerup', endHandle, { passive: true });
+    for (const type of ['pointerover', 'pointerenter', 'pointercancel', 'pointerout', 'pointerleave', 'gotpointercapture', 'lostpointercapture', 'pointerdown', 'pointermove', 'pointerup', 'click']) {
+      this.button.addEventListener(type, event => console.log(event.type, Date.now()));
+    }
   }
 
 
@@ -293,20 +244,18 @@ export default class InputSwitch extends HTMLElement {
       // Clicking on the label toggles the switch
       this.handlers.labelDown = this.onLabelDown.bind(this);
       label.addEventListener('pointerdown', this.handlers.labelDown, { passive: true });
-      //label.addEventListener('touchstart', this.handlers.labelDown, { passive: true });
     }
 
     // Make switch touchmoveable
     this.handlers.start = this.onStart.bind(this);
     this.button.addEventListener('pointerdown', this.handlers.start, { passive: true });
-    //this.button.addEventListener('touchstart', this.handlers.start, { passive: false });
 
     // Toggle on click (manual or keyboard)
-    const clickHandle = event => {
-      // If a mouseup / touchend event says so, don't do anything
+    const clickHandle = event => {     
+      // If a pointerup event says so, don't do anything
       if (this.cancelNextClick) this.cancelNextClick = false;
       else {
-        // If no mousedown / touchstart event happened before click, reset style variables
+        // If no pointerdown event happened before click, reset style variables
         if (!this.lastClickWasManual) {
           this.button.style.removeProperty('--duration');
           this.button.style.removeProperty('--easing');
@@ -314,6 +263,8 @@ export default class InputSwitch extends HTMLElement {
         this.lastClickWasManual = false;
         this.toggle();
       }
+
+      if (!event.pointerId) this.button.focus();
     }
     this.button.addEventListener('click', clickHandle);
 
@@ -324,12 +275,8 @@ export default class InputSwitch extends HTMLElement {
   disconnectedCallback() {
     const id = this.getAttribute('id');
     const label = document.querySelector(`label[for="${id}"]`);
-    if (label) {
-      label.removeEventListener('pointerdown', this.handlers.labelDown, { passive: true });
-      //label.removeEventListener('touchstart', this.handlers.labelDown, { passive: true });
-    }
+    if (label) label.removeEventListener('pointerdown', this.handlers.labelDown, { passive: true });
     this.button.removeEventListener('pointerdown', this.handlers.start, { passive: true });
-    //this.button.removeEventListener('touchstart', this.handlers.start, { passive: false });
   }
 
 
