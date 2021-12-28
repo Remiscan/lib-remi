@@ -151,10 +151,10 @@
   fill: var(--handle-color);
 }
 
-[role="switch"]:not([disabled]):hover .input-switch-handle {
+[role="switch"]:not(:disabled):hover .input-switch-handle {
   fill: var(--handle-hover-color);
 }
-[role="switch"]:not([disabled]):active .input-switch-handle {
+[role="switch"]:not(:disabled):active .input-switch-handle {
   fill: var(--handle-active-color);
 }
 
