@@ -101,7 +101,7 @@
 
 @media (forced-colors: active) {
   [role="switch"] {
-    border: 2px solid ButtonText;
+    border: 2px solid var(--handle-color);
   }
 
   [role="switch"][aria-checked="true"] {
