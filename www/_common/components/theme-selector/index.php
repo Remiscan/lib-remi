@@ -2,6 +2,7 @@
 $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' ? 'dark' : 'auto');
 ?>
 
+<!doctype html>
 <html data-theme="<?=$theme?>">
 
   <head>

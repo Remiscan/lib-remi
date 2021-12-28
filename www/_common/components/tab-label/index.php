@@ -1,5 +1,6 @@
 <?php require_once dirname(__DIR__, 2) . '/php/version.php';
 $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
+<!doctype html>
 <html>
 
   <head>
