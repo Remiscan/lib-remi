@@ -77,14 +77,15 @@
         margin: 0;
       }
 
-      div {
+      .container {
         margin: auto;
         display: grid;
         place-items: center;
         --cell-size: 13rem;
         grid-template-columns: repeat(auto-fit, var(--cell-size));
         gap: 1rem;
-        max-width: min(95%, 3 * (var(--cell-size) + 1rem));
+        width: min(95%, 3 * (var(--cell-size) + 1rem));
+        justify-content: center;
       }
 
       .info, .action {
@@ -126,12 +127,12 @@
     </style>
 
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
-    <script type="esms-options">{ "polyfillEnable": ["css-modules", "json-modules"] }</script>
+    <script>window.esmsInitOptions = { polyfillEnable: ['css-modules'] }</script>
     <script defer src="../../polyfills/es-module-shims.js"></script>
   </head>
 
   <body>
-    <div>
+    <div class="container">
       <span class="info"><a href="#"><strong>Flip a switch!</strong></a><br>Click or drag.</span>
 
       <input-switch id="switch-0" label="Switch 0" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>
