@@ -1,0 +1,77 @@
+@property --border-image-width {
+  syntax: '<integer>'; /* Value will be rounded! */
+  initial-value: 0;
+  inherits: true;
+}
+
+.gradient-button {
+  display: inline-grid;
+  position: relative;
+  font-family: system-ui;
+  font-weight: 600;
+
+  /* --- Customizable properties --- */
+  /* Background & text gradient */
+  --gradient: linear-gradient(to right, royalblue 0% 100%);
+  /* Padding around text */
+  --padding: .5em 1em;
+  /* Color of text on hover */
+  --hover-text-color: white;
+  /* Overlay over background on click */
+  --active-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
+  /* Shadow around text */
+  --text-shadow: 0 0 0 transparent;
+  /* Shadow around text on hover */
+  --hover-text-shadow: 0 0 2px rgba(0, 0, 0, .7);
+  /* Filter applied to text */
+  --text-filter: brightness(1);
+  /* Transition duration */
+  --transition-duration: .1s;
+
+  --sqrt: 1.41421356237;
+  --border-image-width: calc(var(--sqrt) * var(--border-width) + .5); /* +.5 to round to superior integer */
+
+  grid-row: 1;
+  grid-column: 1;
+  -webkit-appearance: none;
+  appearance: none;
+
+  background-image: var(--gradient);
+  background-size: calc(100% + 2px * var(--border-image-width)) calc(100% + 2px * var(--border-image-width));
+  background-position: calc(-1px * var(--border-image-width)) calc(-1px * var(--border-image-width));
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  border: none;
+  /*border-radius: var(--border-radius);*/
+  font: inherit;
+  padding: var(--padding);
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.gradient-button::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: calc(-1px * var(--border-image-width));
+  left: calc(-1px * var(--border-image-width));
+  width: 100%;
+  height: 100%;
+  border: calc(1px * var(--border-image-width)) solid;
+  border-image-source: var(--gradient);
+  border-image-slice: var(--border-image-width);
+  /*-webkit-mask: paint(gradientBorder);
+  -webkit-mask-size: 100% 100%;
+  mask: paint(gradientBorder);
+  mask-size: 100% 100%;*/
+}
+
+.gradient-button:hover {
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--hover-text-color);
+  text-shadow: var(--hover-text-shadow);
+}
