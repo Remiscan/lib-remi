@@ -162,9 +162,11 @@
 
     <script type="module">
       <?php require_once dirname(__DIR__, 2) . '/php/version.php';
-      $version = version(__DIR__, ['input-switch.js', 'styles.css.php']); ?>
+      $version = version(__DIR__, ['input-switch.js', 'styles.css.php']);
+      $suffix = (isset($_GET['events']) && $_GET['events'] == 'pointer') ? '.pointer-events' : '';
+      ?>
 
-      import '/_common/components/input-switch/input-switch--<?=$version?>.js';
+      import '/_common/components/input-switch/input-switch<?=$suffix?>--<?=$version?>.js';
 
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
