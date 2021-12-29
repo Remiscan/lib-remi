@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+<title>&lt;gradient-button&gt; (CSS-only)</title>
 
 <style>
 button {

@@ -6,6 +6,8 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>&lt;tab-label&gt;</title>
+    
     <style id="tab-label-style" data-method="manual">
       <?php include 'style.css.php'; ?>
     </style>

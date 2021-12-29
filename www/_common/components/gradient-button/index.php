@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>&lt;gradient-button&gt;</title>
 
   <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
   <script type="esms-options">{ "polyfillEnable": ["css-modules", "json-modules"] }</script>
