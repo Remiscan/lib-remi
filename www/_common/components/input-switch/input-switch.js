@@ -4,14 +4,7 @@ import template from './template.js';
 
 
 // Gets the object containing the clientX and clientY coordinates of an event
-const getTouch = event => {
-  switch (event.type) {
-    case 'touchstart': case 'touchmove': return event.touches[0];
-    case 'mousedown': case 'mousemove': return event;
-  }
-};
-
-
+const getTouch = event => event.touches?.[0] ?? event;
 
 export default class InputSwitch extends HTMLElement {
   constructor() {
