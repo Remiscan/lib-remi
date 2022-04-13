@@ -22,6 +22,11 @@ class SampleElement extends HTMLElement {
     this.appendChild(template.content.cloneNode(true));
 
     // Do other stuff here
+
+    this.ready = true;
+    for (const attr of SampleElement.observedAttributes) {
+      this.update(attr, '', this.getAttribute(attr));
+    }
   }
 
 
@@ -31,4 +36,4 @@ class SampleElement extends HTMLElement {
   }
 }
 
-if (!customElements.get(sample-element)) customElements.define(sample-element, SampleElement);
+if (!customElements.get('sample-element')) customElements.define('sample-element', SampleElement);
