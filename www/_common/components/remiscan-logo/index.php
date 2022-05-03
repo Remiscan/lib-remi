@@ -46,8 +46,6 @@
 
       body {
         background: var(--bg-color);
-        display: flex;
-        flex-direction: column;
         position: relative;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
         color: var(--text-color);
