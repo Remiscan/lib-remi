@@ -1,18 +1,18 @@
-remiscan-logo {
+:host {
   aspect-ratio: 2 / 1;
   --width: 5rem;
   width: var(--width);
   height: calc(.5 * var(--width));
 }
 
-remiscan-logo .background {
+.background {
   fill: var(--background-color, transparent);
 }
 
-remiscan-logo .text {
+.text {
   fill: var(--text-color, black);
 }
 
-remiscan-logo>a {
+a {
   text-decoration: none;
 }

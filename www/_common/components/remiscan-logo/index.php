@@ -7,6 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;remiscan-logo&gt;</title>
 
+    <!-- Import map -->
+    <script defer src="/_common/polyfills/adoptedStyleSheets.min.js"></script>
+    <script>window.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'] }</script>
+    <script defer src="/_common/polyfills/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "remiscan-logo": "/_common/components/remiscan-logo/remiscan-logo.js",
+        "remiscan-logo-styles": "/_common/components/remiscan-logo/styles.css",
+        "remiscan-logo-template": "/_common/components/remiscan-logo/template.js.php"
+      }
+    }
+    </script>
+
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {
@@ -112,7 +126,7 @@
     <a href="https://remiscan.fr" class="rainbow-bg" style="width: 32rem; height: 16rem;"></a>
 
     <script type="module">
-      import '/_common/components/remiscan-logo/remiscan-logo--<?=version(__DIR__, 'remiscan-logo.js.php')?>.js.php';
+      import 'remiscan-logo';
     </script>
   </body>
 
