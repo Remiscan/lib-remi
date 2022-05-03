@@ -4,7 +4,7 @@ theme-selector {
   position: relative;
 }
 
-theme-selector>button {
+theme-selector > button {
   border: none;
   background-color: transparent;
   padding: 0;
@@ -29,7 +29,7 @@ theme-selector svg {
   --moon-hole-disparition: .3s;
 }
 
-theme-selector .ray>path {
+theme-selector .ray > path {
   stroke: var(--secondary-color, var(--default-color));
 }
 
@@ -39,7 +39,7 @@ theme-selector .moon-hole {
   transform-style: preserve-3d;
 }
 
-.unusable {
+theme-selector .unusable {
   pointer-events: none !important;
 }
 
@@ -209,7 +209,7 @@ theme-selector[icon="reverse"] .ray {
 /* POP-UP */
 /**********/
 
-theme-selector>.selector {
+theme-selector > .selector {
   display: grid;
   grid-template-columns: auto 1fr auto;
   position: absolute;
@@ -220,7 +220,7 @@ theme-selector>.selector {
   pointer-events: none;
 }
 
-theme-selector[open="true"]>.selector {
+theme-selector[open="true"] > .selector {
   opacity: 1;
   pointer-events: auto;
 }
@@ -230,30 +230,30 @@ theme-selector .selector-cookie-notice {
   grid-column: 1 / -1;
 }
 
-theme-selector>.selector>input {
+theme-selector > .selector > input {
   grid-column: 1;
 }
 
-theme-selector>.selector>label {
+theme-selector > .selector > label {
   grid-column: 2;
 }
 
-theme-selector>.selector>label>span {
+theme-selector > .selector > label > span {
   grid-column: 2;
 }
 
-theme-selector[position="bottom"]>.selector {
+theme-selector[position="bottom"] > .selector {
   top: 100%;
 }
-theme-selector[position="top"]>.selector {
+theme-selector[position="top"] > .selector {
   top: unset;
   bottom: 100%;
 }
-theme-selector[position="left"]>.selector {
+theme-selector[position="left"] > .selector {
   top: unset;
   right: 100%;
 }
-theme-selector[position="right"]>.selector {
+theme-selector[position="right"] > .selector {
   top: unset;
   left: 100%;
 }

@@ -1,0 +1,19 @@
+{
+  "fr": {
+    "change-theme": "Changer le thème (auto, sombre ou clair)",
+    "selector-title": "Apparence",
+    "theme-auto": "Automatique",
+    "theme-light": "Claire",
+    "theme-dark": "Sombre",
+    "cookie-notice": "* Ce choix sera stocké dans un cookie."
+  },
+  
+  "en": {
+    "change-theme": "Change theme (auto, dark or light)",
+    "selector-title": "Appearance",
+    "theme-auto": "Automatic",
+    "theme-light": "Light",
+    "theme-dark": "Dark",
+    "cookie-notice": "* This choice will be stored in a cookie."
+  }
+}

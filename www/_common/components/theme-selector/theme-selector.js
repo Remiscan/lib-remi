@@ -1,6 +1,6 @@
-let cssReady = false;
-const css = `<?php include './style.css.php'; ?>`;
-const html = `<?php include './element.html'; ?>`;
+import strings from 'theme-selector-strings' assert { type: 'json' };
+import sheet from 'theme-selector-styles' assert { type: 'css' };
+import template from 'theme-selector-template';
 
 
 
@@ -11,6 +11,7 @@ const focusableQuery = 'a[href], area[href], input:not([disabled]), select:not([
 class ThemeSelector extends HTMLElement {
   constructor() {
     super();
+    this.openHandler = () => {};
   }
 
 
@@ -95,24 +96,26 @@ class ThemeSelector extends HTMLElement {
 
 
   connectedCallback() {
-    // Add theme-selector CSS to the page
-    if (!cssReady) {
-      const head = document.querySelector('head');
-      const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
-      const style = document.createElement('style');
-      style.innerHTML = css;
-      style.id = 'theme-selector-style';
-      if (!!firstStylesheet)  head.insertBefore(style, firstStylesheet);
-      else                    head.appendChild(style);
-      cssReady = true;
-    }
-    this.innerHTML = html;
-
+    // Add HTML and CSS to the element
+    if (!document.adoptedStyleSheets.includes(sheet))
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    this.appendChild(template.content.cloneNode(true));
+    
     const button = this.querySelector('button');
     const selector = this.querySelector('.selector');
 
+    // Translate element content
+    const lang = document.documentElement.lang || 'en';
+    for (const e of [...this.querySelectorAll('[data-string]')]) {
+      if (e.tagName == 'IMG') e.alt = strings[lang][e.dataset.string];
+      else                    e.innerHTML = strings[lang][e.dataset.string];
+    }
+    for (const e of [...this.querySelectorAll('[data-label]')]) {
+      e.setAttribute('aria-label', strings[lang][e.dataset.label]);
+    }
+
     // Make theme-selector button clickable
-    button.addEventListener('click', event => {
+    button.addEventListener('click', this.openHandler = event => {
       event.stopPropagation();
       if (this.getAttribute('open') == 'true')  this.close();
       else                                      this.open();
@@ -142,6 +145,12 @@ class ThemeSelector extends HTMLElement {
         window.dispatchEvent(themeEvent);
       });
     }
+  }
+
+
+  disconnectedCallback() {
+    const button = this.querySelector('button');
+    button.removeEventListener('click', this.openHandler);
   }
 }
 
