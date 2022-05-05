@@ -1,10 +1,7 @@
 import strings from 'theme-selector-strings' assert { type: 'json' };
 import sheet from 'theme-selector-styles' assert { type: 'css' };
 import template from 'theme-selector-template';
-
-
-
-const focusableQuery = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex], [contenteditable]';
+import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
 
 
@@ -24,16 +21,7 @@ class ThemeSelector extends HTMLElement {
     this.querySelector(`input[value="${currentTheme}"]`).checked = true;
 
     // Disable focus outside the menu
-    const focusableElements = [...document.querySelectorAll(focusableQuery)];
-    for (const element of focusableElements) {
-      if (this.contains(element)) {
-        if (element.tagName != 'BUTTON') element.tabIndex = 0;
-        continue;
-      }
-      element.dataset.previousTabindex = element.tabIndex;
-      element.tabIndex = -1;
-      //element.classList.add('unusable');
-    }
+    trapFocusIn(this);
 
     // Listens to inputs to close the menu
     const closeMenu = event => {
@@ -58,16 +46,8 @@ class ThemeSelector extends HTMLElement {
   // Close the options menu
   close(focus = true) {
     // Restore previous focusability
-    const focusableElements = [...document.querySelectorAll(focusableQuery)];
-    for (const element of focusableElements) {
-      if (this.contains(element)) {
-        if (element.tagName != 'BUTTON') element.tabIndex = -1;
-        continue;
-      }
-      element.tabIndex = element.dataset.previousTabindex;
-      element.removeAttribute('data-previous-tabindex');
-      //element.classList.remove('unusable');
-    }
+    releaseFocusFrom(this, { exceptions: [this.querySelector('button')] });
+    
     const button = this.querySelector('button');
     button.tabIndex = 0;
     // Hide the menu
@@ -145,6 +125,9 @@ class ThemeSelector extends HTMLElement {
         window.dispatchEvent(themeEvent);
       });
     }
+
+    // Disable focusability inside the theme-selector
+    disableFocusInside(this, { exceptions: [this.querySelector('button')] });
   }
 
 

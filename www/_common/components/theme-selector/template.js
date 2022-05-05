@@ -43,18 +43,18 @@ template.innerHTML = `
   <div class="selector">
     <span class="selector-title" data-string="selector-title"></span>
 
-    <input type="radio" name="theme" id="theme-auto" value="auto" tabIndex="-1" checked>
+    <input type="radio" name="theme" id="theme-auto" value="auto" checked>
     <label for="theme-auto">
       <span class="theme-name" data-string="theme-auto"></span>
     </label>
 
-    <input type="radio" name="theme" id="theme-light" value="light" tabIndex="-1">
+    <input type="radio" name="theme" id="theme-light" value="light">
     <label for="theme-light">
       <span class="theme-name" data-string="theme-light"></span>
       <span class="theme-cookie-star">*</span>
     </label>
 
-    <input type="radio" name="theme" id="theme-dark" value="dark" tabIndex="-1">
+    <input type="radio" name="theme" id="theme-dark" value="dark">
     <label for="theme-dark">
       <span class="theme-name" data-string="theme-dark"></span>
       <span class="theme-cookie-star">*</span>
