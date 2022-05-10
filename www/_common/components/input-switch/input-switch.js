@@ -80,6 +80,8 @@ export default class InputSwitch extends HTMLElement {
       this.defaultPrevented = true;
       this.button.classList.add('active');
     }
+
+    if (this.disabled) return;
     
     this.lastClickWasManual = true; // Whether the last click was manual (true) or through the element.click() method.
                                     // If false, style variables will be reset.
