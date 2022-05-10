@@ -126,6 +126,13 @@
 
       input-switch[disabled] {
         opacity: .5;
+        /*--mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2' width='2' height='2'%3E%3Crect x='0' y='0' width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
+        -webkit-mask-image: var(--mask);
+        mask-image: var(--mask);
+        -webkit-mask-repeat: repeat;
+        mask-repeat: repeat;
+        -webkit-mask-size: 2px 2px;
+        mask-size: 2px 2px;*/
       }
     </style>
 
