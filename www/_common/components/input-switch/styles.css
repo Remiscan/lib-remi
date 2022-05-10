@@ -104,11 +104,16 @@
 @media (forced-colors: active) {
   [role="switch"] {
     border: 2px solid var(--handle-color);
+    background-color: var(--off-bg-color);
   }
 
   [role="switch"][aria-checked="true"] {
-    background-color: var(--on-bg-color);
     border-color: var(--on-bg-color);
+    background-color: var(--on-bg-color);
+  }
+
+  [role="switch"][aria-checked="true"] .input-switch-bg {
+    background-color: var(--on-bg-color);
   }
 
   [role="switch"][aria-checked="true"] .input-switch-handle {
@@ -121,11 +126,32 @@
     --on-text-color: var(--off-text-color);
   }
 
+  [role="switch"]:not(:disabled):is(:hover, :active, .active) .input-switch-bg {
+    background-color: var(--off-bg-color);
+  }
+
   [role="switch"]:not(:disabled):is(:hover, :active, .active) .input-switch-handle {
     fill: var(--off-text-color);
   }
 
   .input-switch-bg::before {
+    display: none;
+  }
+
+  .focus-dot {
+    display: none;
+    fill: var(--off-bg-color);
+  }
+  [role="switch"][aria-checked="true"] .focus-dot {
+    fill: var(--on-bg-color);
+  }
+  [role="switch"]:not(:disabled):is(:hover, :active, .active) .focus-dot {
+    fill: var(--off-bg-color);
+  }
+  [role="switch"]:focus .focus-dot {
+    display: block;
+  }
+  [role="switch"]:focus:not(:focus-visible) .focus-dot {
     display: none;
   }
 }
@@ -216,15 +242,6 @@
 }
 [role="switch"]:not(:disabled):is(:active, .active) .input-switch-handle {
   fill: var(--handle-active-color);
-}
-
-.focus-dot {
-  fill: var(--focus-color);
-  display: none;
-}
-
-[role="switch"]:focus .focus-dot {
-  display: none;
 }
 
 [role="switch"][aria-checked="false"] {
