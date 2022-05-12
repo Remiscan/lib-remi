@@ -44,8 +44,10 @@ export default class InputSwitch extends HTMLElement {
     let cancel = false;
     const iniX = getTouch(event).clientX;
 
+    const clickSafetyMargin = 2; // px
+
     const labelMove = event => {
-      if (!cancel & Math.abs(iniX - getTouch(event).clientX) > 5) cancel = true;
+      if (!cancel & Math.abs(iniX - getTouch(event).clientX) > clickSafetyMargin) cancel = true;
     }
 
     const labelStop = event => {
@@ -115,7 +117,7 @@ export default class InputSwitch extends HTMLElement {
     let maxDistance = 0;
     let frameReady = true;
 
-    const clickSafetyMargin = 0.035; // ~=2px at default size
+    const clickSafetyMargin = 0.035; // % of width ~=2px at default size
 
     const moveHandle = event => {
       if (event.type === 'touchmove') {
