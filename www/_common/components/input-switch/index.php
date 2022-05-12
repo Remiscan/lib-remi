@@ -136,9 +136,24 @@
       }
     </style>
 
+    <!-- ▼ Fichiers cache-busted grâce à PHP -->
+    <!--<?php ob_start();?>-->
+
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { polyfillEnable: ['css-modules'] }</script>
     <script defer src="../../polyfills/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "input-switch-styles": "/_common/components/input-switch/styles.css",
+        "input-switch-template": "/_common/components/input-switch/template.js"
+      }
+    }
+    </script>
+
+    <!--<?php $imports = ob_get_clean();
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+    echo versionizeFiles($imports, __DIR__); ?>-->
   </head>
 
   <body>

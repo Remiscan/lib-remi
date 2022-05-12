@@ -1,5 +1,16 @@
-import sheet from './styles.css' assert { type: 'css' };
-import template from './template.js';
+/* Use with this import map :
+<script type="importmap">
+{
+  "imports": {
+    "input-switch-styles": "/_common/components/input-switch/styles.css",
+    "input-switch-template": "/_common/components/input-switch/template.js"
+  }
+}
+</script>
+*/
+
+import sheet from 'input-switch-styles' assert { type: 'css' };
+import template from 'input-switch-template';
 
 
 
