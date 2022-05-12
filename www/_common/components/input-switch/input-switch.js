@@ -17,6 +17,9 @@ import template from 'input-switch-template';
 // Gets the object containing the clientX and clientY coordinates of an event
 const getTouch = event => event.touches?.[0] ?? event;
 
+// How many pixels the finger must move to consider it an intentional drag
+const intentionalDragLimit = 3; // pixels
+
 export default class InputSwitch extends HTMLElement {
   constructor() {
     super();
@@ -55,7 +58,7 @@ export default class InputSwitch extends HTMLElement {
     let cancel = false;
     const iniX = getTouch(event).clientX;
 
-    const clickSafetyMargin = 2; // px
+    const clickSafetyMargin = intentionalDragLimit; // px
 
     const labelMove = event => {
       if (!cancel & Math.abs(iniX - getTouch(event).clientX) > clickSafetyMargin) cancel = true;
@@ -110,7 +113,7 @@ export default class InputSwitch extends HTMLElement {
     this.button.style.removeProperty('--easing');
 
     const coords = this.getBoundingClientRect();
-    const width = 0.5 * coords.width * (1 - .2 * .5);
+    const slidableWidth = 0.5 * coords.width * (1 - .2 * .5);
     const textDir = this.rtl ? -1 : 1;
     this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
     
@@ -118,17 +121,18 @@ export default class InputSwitch extends HTMLElement {
     const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
     const initialTouch = getCoords(event);
 
-    // Ratio of (distance moved) / (button width)
-    const updateDistance = touch => textDir * Math.max(-1, Math.min((touch.x - initialTouch.x) / width, 1));
-    const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
+    // Ratio of (distance moved) / (slidable width)
     const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
+    const updateDistance = touch => textDir * Math.max(-1, Math.min((touch.x - initialTouch.x) / slidableWidth, 1));
+    const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
+    
 
     let lastTouch = initialTouch;
     let lastDistance = 0;
     let maxDistance = 0;
     let frameReady = true;
 
-    const clickSafetyMargin = 0.035; // % of width ~=2px at default size
+    const clickSafetyMargin = intentionalDragLimit / slidableWidth; // % of slidable width
 
     const moveHandle = event => {
       if (event.type === 'touchmove') {
