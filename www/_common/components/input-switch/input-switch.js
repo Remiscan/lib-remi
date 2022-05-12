@@ -115,6 +115,8 @@ export default class InputSwitch extends HTMLElement {
     let maxDistance = 0;
     let frameReady = true;
 
+    const clickSafetyMargin = 0.035; // ~=2px at default size
+
     const moveHandle = event => {
       if (event.type === 'touchmove') {
         event.preventDefault(); // Prevents scrolling (and subsequent mouse events)
@@ -140,7 +142,7 @@ export default class InputSwitch extends HTMLElement {
       maxDistance = Math.max(Math.abs(distance), maxDistance);
 
       // Safety margin to differentiate a click and a drag
-      if (!this.moving && Math.abs(distance) > 0.1) this.moving = true;
+      if (!this.moving && Math.abs(distance) > clickSafetyMargin) this.moving = true;
       this.button.style.setProperty('--ratio', ratio);
 
       requestAnimationFrame(() => { frameReady = true });
@@ -164,7 +166,7 @@ export default class InputSwitch extends HTMLElement {
       } else {
         this.button.style.removeProperty('--duration');
         // If it's not a click (over safety margin)
-        if (maxDistance > 0.1) this.cancelNextClick = true;
+        if (maxDistance > clickSafetyMargin) this.cancelNextClick = true;
       }
 
       if (simulateClick) {
