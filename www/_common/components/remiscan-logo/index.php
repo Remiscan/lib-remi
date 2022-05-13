@@ -148,6 +148,7 @@
     <remiscan-logo background="indigo" text-color="aquamarine"></remiscan-logo>
     <remiscan-logo background="linear-gradient(to right, red, blue)" text-gradient="linear-gradient(to right, pink, green, pink)"></remiscan-logo>
     <remiscan-logo></remiscan-logo>
+    <remiscan-logo style="--width: 32rem;"></remiscan-logo>
 
     <p> Not the custom component:</p>
 

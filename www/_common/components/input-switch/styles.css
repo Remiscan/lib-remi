@@ -246,9 +246,11 @@
 
 [role="switch"][aria-checked="false"] {
   --ratio: 1;
+  --current-color: var(--off-bg-color);
 }
 [role="switch"][aria-checked="true"] {
   --ratio: 0;
+  --current-color: var(--on-bg-color);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -124,16 +124,45 @@
         gap: .6rem;
       }
 
+      input-switch[disabled]::part(button) {
+        cursor: not-allowed;
+      }
+
       input-switch[disabled] {
         opacity: .5;
-        /*--mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2' width='2' height='2'%3E%3Crect x='0' y='0' width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
+      }
+
+      input-switch[disabled]::part(handle-container) {
+        /*--mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2' width='3' height='2'%3E%3Crect x='0' y='0' width='2' height='2' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
         -webkit-mask-image: var(--mask);
         mask-image: var(--mask);
         -webkit-mask-repeat: repeat;
         mask-repeat: repeat;
-        -webkit-mask-size: 2px 2px;
-        mask-size: 2px 2px;*/
+        -webkit-mask-size: 3px 3px;
+        mask-size: 3px 3px;*/
       }
+
+      /*input-switch[disabled]::part(button) {
+        border: 2px solid var(--disabled-color);
+        background: transparent;
+        cursor: not-allowed;
+      }
+
+      input-switch[disabled]::part(background) {
+        background: transparent;
+      }
+
+      input-switch[disabled]::part(background)::before {
+        display: none;
+      }
+
+      input-switch[disabled]::part(handle) {
+        fill: var(--disabled-color);
+      }
+
+      input-switch[disabled]::part(focus-dot) {
+        display: none;
+      }*/
     </style>
 
     <!-- ▼ Fichiers cache-busted grâce à PHP -->
