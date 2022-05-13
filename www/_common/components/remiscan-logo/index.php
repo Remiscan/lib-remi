@@ -114,6 +114,27 @@
         -webkit-mask-size: 100% 100%;
         --mask: url('/_common/components/remiscan-logo/logo--<?=version(__DIR__, 'logo.svg')?>.svg');
       }
+
+      .remiscan-logo-template {
+        display: inline-block;
+        position: relative;
+        background: var(--background, transparent);
+      }
+
+      .remiscan-logo-template > div {
+        display: none;
+      }
+
+      @supports (mask: url('')) or (-webkit-mask-image: url('')) {
+        .remiscan-logo-template > div {
+          display: block;
+        }
+
+        .remiscan-logo-template > span {
+          font-size: 0;
+          position: absolute;
+        }
+      }
     </style>
   </head>
 
@@ -122,6 +143,10 @@
     <remiscan-logo></remiscan-logo>
     <div class="rainbow-bg"></div>
     <a href="https://remiscan.fr" class="rainbow-bg" style="width: 32rem; height: 16rem;"></a>
+    <a href="https://remiscan.fr" class="remiscan-logo-template">
+      <span>remiscan</span>
+      <div class="rainbow-bg" aria-hidden="true"></div>
+    </a>
 
     <script type="module">
       import 'remiscan-logo';
