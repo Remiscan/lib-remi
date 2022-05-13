@@ -1,3 +1,17 @@
+/* Use with this import map:
+<script type="importmap">
+{
+  "imports": {
+    "theme-selector": "/_common/components/theme-selector/theme-selector.js",
+    "trap-focus": "/_common/js/trap-focus.js",
+    "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
+    "theme-selector-strings": "/_common/components/theme-selector/strings.json",
+    "theme-selector-template": "/_common/components/theme-selector/template.js",
+  }
+}
+</script>
+*/
+
 import strings from 'theme-selector-strings' assert { type: 'json' };
 import sheet from 'theme-selector-styles' assert { type: 'css' };
 import template from 'theme-selector-template';

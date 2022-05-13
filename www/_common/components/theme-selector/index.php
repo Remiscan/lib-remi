@@ -1,5 +1,5 @@
 <?php
-$theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' ? 'dark' : 'auto');
+$theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($_COOKIE['theme'] == 'dark' ? 'dark' : 'auto')) : 'auto';
 ?>
 
 <!doctype html>
@@ -9,6 +9,29 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;theme-selector&gt;</title>
+
+    <!-- ▼ Fichiers cache-busted grâce à PHP -->
+    <!--<?php ob_start();?>-->
+
+    <!-- Import map -->
+    <script defer src="/_common/polyfills/adoptedStyleSheets.min.js"></script>
+    <script>window.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'] }</script>
+    <script defer src="/_common/polyfills/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "theme-selector": "/_common/components/theme-selector/theme-selector.js",
+        "trap-focus": "/_common/js/trap-focus.js",
+        "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
+        "theme-selector-strings": "/_common/components/theme-selector/strings.json",
+        "theme-selector-template": "/_common/components/theme-selector/template.js",
+      }
+    }
+    </script>
+
+    <!--<?php $imports = ob_get_clean();
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+    echo versionizeFiles($imports, __DIR__); ?>-->
 
     <style>
       /*<?php ob_start();?>*/
@@ -104,14 +127,7 @@ $theme = $_COOKIE['theme'] == 'light' ? 'light' : ($_CCOOKIE['theme'] == 'dark' 
     <theme-selector position="right"></theme-selector>
 
     <script type="module">
-      // ▼ ES modules cache-busted grâce à PHP
-      /*<?php ob_start();?>*/
-
-      import '/_common/components/theme-selector/theme-selector.js.php';
-
-      /*<?php $imports = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-      echo versionizeFiles($imports, __DIR__); ?>*/
+      import 'theme-selector';
 
 
       ////////////////////////////////
