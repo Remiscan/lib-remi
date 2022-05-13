@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;remiscan-logo&gt;</title>
 
+    <!-- ▼ Fichiers cache-busted grâce à PHP -->
+    <!--<?php ob_start();?>-->
+
     <!-- Import map -->
     <script defer src="/_common/polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'] }</script>
@@ -15,11 +18,15 @@
     {
       "imports": {
         "remiscan-logo": "/_common/components/remiscan-logo/remiscan-logo.js",
-        "remiscan-logo-styles": "/_common/components/remiscan-logo/styles.css",
-        "remiscan-logo-template": "/_common/components/remiscan-logo/template.js.php"
+        "remiscan-logo-styles": "/_common/components/remiscan-logo/styles.css.php",
+        "remiscan-logo-template": "/_common/components/remiscan-logo/template.js"
       }
     }
     </script>
+
+    <!--<?php $imports = ob_get_clean();
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+    echo versionizeFiles($imports, __DIR__); ?>-->
 
     <style>
       /*<?php ob_start();?>*/
@@ -57,8 +64,6 @@
 
       remiscan-logo {
         --width: 8rem;
-        --background-color: indigo;
-        --text-color: aquamarine;
       }
 
       .rainbow-text,
@@ -139,8 +144,13 @@
   </head>
 
   <body>
-    <remiscan-logo style="--width: 4rem;"></remiscan-logo>
+    <remiscan-logo background="indigo" text-color="aquamarine" style="--width: 4rem;"></remiscan-logo>
+    <remiscan-logo background="indigo" text-color="aquamarine"></remiscan-logo>
+    <remiscan-logo background="linear-gradient(to right, red, blue)" text-gradient="linear-gradient(to right, pink, green, pink)"></remiscan-logo>
     <remiscan-logo></remiscan-logo>
+
+    <p> Not the custom component:</p>
+
     <div class="rainbow-bg"></div>
     <a href="https://remiscan.fr" class="rainbow-bg" style="width: 32rem; height: 16rem;"></a>
     <a href="https://remiscan.fr" class="remiscan-logo-template">
