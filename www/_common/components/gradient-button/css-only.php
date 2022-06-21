@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>&lt;gradient-button&gt; (CSS-only)</title>
 
 <style>
