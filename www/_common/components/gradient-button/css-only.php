@@ -12,13 +12,9 @@ button {
   /* Padding around text */
   --padding: .5em 1em;
   /* Color of text on hover */
-  --hover-text-color: white;
+  --hover-text-color: black;
   /* Overlay over background on click */
   --active-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
-  /* Shadow around text */
-  --text-shadow: 0 0 0 transparent;
-  /* Shadow around text on hover */
-  --hover-text-shadow: 0 0 2px rgba(0, 0, 0, .7);
   
   -webkit-appearance: none;
   appearance: none;
@@ -44,7 +40,6 @@ button:hover,
 button:focus,
 button:active {
   color: var(--hover-text-color);
-  text-shadow: var(--hover-text-shadow);
   -webkit-background-clip: unset;
   background-clip: unset;
 }
@@ -59,20 +54,18 @@ button {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
   font-weight: 600;
   margin: .5em;
+  --hover-text-color: black;
 }
 
 button:nth-of-type(4n+1) {
   --gradient: linear-gradient(135deg,
-    black 0% calc(1 * 100% / 9),
-    #72501E calc(2 * 100% / 9),
-    #D12D1F calc(3 * 100% / 9),
-    #EF9236 calc(4 * 100% / 9),
-    #FCED4F calc(5 * 100% / 9),
-    #3A7F30 calc(6 * 100% / 9),
-    #1C50F6 calc(7 * 100% / 9),
-    #6B1783 calc(8 * 100% / 9) 100%
+    #ff5d4b calc(1 * 100% / 7),
+    #ff8d00 calc(2 * 100% / 7),
+    #ffee00 calc(3 * 100% / 7),
+    #51b859 calc(4 * 100% / 7),
+    #5997ff calc(5 * 100% / 7),
+    #d36ee7 calc(6 * 100% / 7) 100%
   );
-  --text-filter: brightness(1.5);
 }
 
 button:nth-of-type(4n+2) {
@@ -83,28 +76,25 @@ button:nth-of-type(4n+2) {
     #EAAEBA calc(3 * 100% / 4),
     #7CCDF6 100%
   );
-  --hover-text-color: black;
-  --hover-text-shadow: none;
 }
 
 button:nth-of-type(4n+3) {
   --gradient: linear-gradient(to bottom,
-    #C42B70 0%,
-    #925394 35% 65%,
-    #1137A3 100%
+    #f95f9c 0%,
+    #c583c7 35% 65%,
+    #6999ff 100%
   );
-  --text-filter: brightness(1.5);
 }
 
 button:nth-of-type(4n+4) {
   --gradient: linear-gradient(135deg,
-    #C33D1E 0% calc(1 * 100% / 8),
-    #DF7C3D calc(2 * 100% / 8),
+    #f86e4f 0% calc(1 * 100% / 8),
+    #e48142 calc(2 * 100% / 8),
     #F19E63 calc(3 * 100% / 8),
     #FFFFFF calc(4 * 100% / 8),
-    #C269A2 calc(5 * 100% / 8),
-    #A85C8E calc(6 * 100% / 8),
-    #951F60 calc(7 * 100% / 8) 100%
+    #d67bb5 calc(5 * 100% / 8),
+    #d080b3 calc(6 * 100% / 8),
+    #e86ea9 calc(7 * 100% / 8) 100%
   );
 }
 
