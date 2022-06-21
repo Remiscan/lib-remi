@@ -10,15 +10,9 @@
   /* Padding around text */
   --padding: .5em 1em;
   /* Color of text on hover */
-  --hover-text-color: white;
+  --hover-text-color: black;
   /* Overlay over background on click */
   --active-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
-  /* Shadow around text */
-  --text-shadow: 0 0 0 transparent;
-  /* Shadow around text on hover */
-  --hover-text-shadow: 0 0 2px rgba(0, 0, 0, .7);
-  /* Filter applied to text */
-  --text-filter: brightness(1);
   /* Transition duration */
   --transition-duration: .1s;
 }
@@ -40,12 +34,14 @@ button {
   margin: 0;
   display: grid;
   place-items: center;
+  border-radius: var(--border-radius);
+  outline-offset: 1px;
 }
 
 /* Border and text sharing the same gradient */
 .border,
 .gradient-text,
-.hover-text {
+.hover-bg {
   display: block;
   width: 100%;
   height: 100%;
@@ -69,39 +65,59 @@ button {
   display: grid;
   place-items: center;
   z-index: 1;
-  position: relative;
-  filter: drop-shadow(var(--text-shadow)) var(--text-filter);
-}
-
-.hover-text {
-  color: var(--hover-text-color);
-  display: grid;
-  place-items: center;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity var(--transition-duration) linear;
   user-select: none;
 }
 
-.text {
-  padding: var(--padding);
-  white-space: nowrap;
+.hover-bg {
+  transition: opacity var(--transition-duration) linear;
+  border-radius: var(--border-radius);
+  z-index: 2;
 }
 
-.hover-text>.text {
-  filter: drop-shadow(var(--hover-text-shadow));
+button:not(:hover):not(:focus):not(:active) > .hover-bg {
+  opacity: 0;
 }
 
-button:hover>.hover-text,
-button:focus>.hover-text,
-button:active>.hover-text {
-  opacity: 1;
+button:active > .hover-bg {
+  background-image: var(--active-background-overlay), var(--gradient);
 }
 
-button:active>.hover-text {
+.hover-text {
+  display: block;
+  width: 100%;
+  height: 100%;
+  grid-row: 1;
+  grid-column: 1;
+  box-sizing: border-box;
+
+  color: var(--hover-text-color);
+  display: grid;
+  place-items: center;
+  z-index: 3;
+  transition: color var(--transition-duration) linear;
+}
+
+button:not(:hover):not(:focus):not(:active) > .hover-text {
+  --hover-text-color: transparent;
+}
+
+button:active > .hover-text {
   transition-duration: 0s;
 }
 
-button:active>.hover-text {
-  background-image: var(--active-background-overlay), var(--gradient);
+.text {
+  white-space: nowrap;
+}
+
+.gradient-text > .text {
+  padding: var(--padding);
+  margin: var(--border-width);
+}
+
+.length-checker {
+  display: block;
+  height: 0;
+  width: var(--length, 0);
+  position: absolute;
+  pointer-events: none;
 }
