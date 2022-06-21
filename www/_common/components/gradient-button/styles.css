@@ -7,6 +7,8 @@
   /* --- Customizable properties --- */
   /* Background & text gradient */
   --gradient: linear-gradient(to right, royalblue 0% 100%);
+  /* Width of the gradient border */
+  --border-width: 2px;
   /* Padding around text */
   --padding: .5em 1em;
   /* Color of text on hover */
@@ -114,10 +116,10 @@ button:active > .hover-text {
   margin: var(--border-width);
 }
 
-.length-checker {
+.border-width-checker {
   display: block;
   height: 0;
-  width: var(--length, 0);
+  width: var(--border-width, 0);
   position: absolute;
   pointer-events: none;
 }

@@ -118,10 +118,10 @@
 
 <p>
 
-<gradient-button border-width="0" text="No border"></gradient-button>
-<gradient-button border-width="1" text="1px border"></gradient-button>
-<gradient-button border-width=".2em" text="0.2em border"></gradient-button>
-<gradient-button border-width=".5rem" text="0.5rem border"></gradient-button>
+<gradient-button style="--border-width: 0;" text="No border"></gradient-button>
+<gradient-button style="--border-width: 1px;" text="1px border"></gradient-button>
+<gradient-button style="--border-width: .2em;" text="0.2em border"></gradient-button>
+<gradient-button style="--border-width: .5rem;" text="0.5rem border"></gradient-button>
 
 <p>
 

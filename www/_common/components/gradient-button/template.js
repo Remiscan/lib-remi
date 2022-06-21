@@ -7,7 +7,7 @@ template.innerHTML = `
   </span>
   <span class="hover-bg" part="hover-bg" aria-hidden="true"></span>
   <span class="hover-text text" part="hover-text text"></span>
-  <span class="length-checker" aria-hidden="true"></span>
+  <span class="border-width-checker" aria-hidden="true"></span>
 </button>
 `;
 
