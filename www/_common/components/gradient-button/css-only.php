@@ -103,6 +103,7 @@ button:nth-of-type(4n+4) {
 html, body {
   height: 100%;
   margin: 0;
+  color-scheme: light dark;
 }
 
 body {

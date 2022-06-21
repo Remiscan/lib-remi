@@ -33,6 +33,7 @@
   html, body {
     height: 100%;
     margin: 0;
+    color-scheme: light dark;
   }
   body {
     background-color: hsl(250, 40%, 30%);
