@@ -1,0 +1,69 @@
+:host {
+  display: inline-grid;
+  position: relative;
+  font-family: system-ui;
+  font-weight: 600;
+
+  --button-color: lightgrey;
+  color: black;
+  --border-radius: 2em;
+  --hover-color: rgb(0, 0, 0, .1);
+  --active-color: rgb(255, 255, 255, .1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --button-color: dimgrey;
+    color: white;
+    --hover-color: rgb(255, 255, 255, .1);
+    --active-color: rgb(0, 0, 0, .1);
+  }
+}
+
+button,
+.dots-container {
+  grid-row: 1;
+  grid-column: 1;
+  display: grid;
+  place-items: center;
+  border-radius: var(--border-radius);
+}
+
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  outline-offset: 1px;
+  background-color: var(--button-color);
+}
+
+.dots-container {
+  grid-template-columns: 1fr 1fr 1fr;
+  overflow: hidden;
+  display: none;
+}
+
+.dot {
+  aspect-ratio: 1;
+  height: 100%;
+  background-color: var(--button-color);
+  border-radius: 50%;
+  transform: scale(1.42);
+}
+
+button:hover {
+  background-image: linear-gradient(var(--hover-color) 0% 100%);
+}
+
+button:active {
+  background-image: linear-gradient(var(--active-color) 0% 100%);
+}
+
+.text {
+  white-space: nowrap;
+  padding: .5em 1em;
+}
