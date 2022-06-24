@@ -155,4 +155,4 @@ a {
 
 <p>
   
-<a href="./" target="_parent">Custom element version (with JS-generated SVG mask, rounded corners & transitions ✨)</a>
+<a href="./">Custom element version (with JS-generated SVG mask, rounded corners & transitions ✨)</a>

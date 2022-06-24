@@ -129,4 +129,4 @@
 
 <p>
   
-<a href="./css-only.php" target="_parent">CSS only version (without rounded corners 😢)</a>
+<a href="./css-only.php">CSS only version (without rounded corners 😢)</a>
