@@ -150,8 +150,8 @@ a {
 
 <p>
 
-<button style="--padding: .25em .5em;">Small padding</button>
-<button style="--padding: .75em 1.5em;">Big padding</button>
+<button style="--padding: .25em .5em;">Smaller padding</button>
+<button style="--padding: .75em 1.5em;">Bigger padding</button>
 
 <p>
   
