@@ -49,8 +49,6 @@
           overflow-x: auto;
         }
 
-        h1 {}
-
         ul {
           width: max-content;
           padding: 0;
@@ -63,7 +61,6 @@
         }
       }
     </style>
-    <base target="iframe">
   </head>
 
   <body>
