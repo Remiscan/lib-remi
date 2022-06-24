@@ -15,12 +15,14 @@
         height: 100%;
         margin: 0;
         display: grid;
-        grid-template-columns: 15rem 1fr;
+        grid-template-columns: auto 1fr;
         grid-template-rows: 1fr;
       }
 
       nav {
         font-size: 1.2rem;
+        padding: .5rem;
+        box-sizing: border-box;
       }
 
       h1 {
