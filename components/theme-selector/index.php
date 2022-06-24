@@ -24,7 +24,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         "trap-focus": "/_common/js/trap-focus.js",
         "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
         "theme-selector-strings": "/_common/components/theme-selector/strings.json",
-        "theme-selector-template": "/_common/components/theme-selector/template.js",
+        "theme-selector-template": "/_common/components/theme-selector/template.js"
       }
     }
     </script>
@@ -36,13 +36,15 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {
-        --bg-color: skyblue;
+        color-scheme: light;
+        --bg-color: #eee;
         --sunmoon-color: black;
         --sunray-color: hsl(40, 100%, 10%);
       }
 
       html[data-theme="dark"] {
-        --bg-color: darkblue;
+        color-scheme: dark;
+        --bg-color: #111;
         --sunmoon-color: white;
         --sunray-color: lemonchiffon;
       }
@@ -50,78 +52,35 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
       echo buildThemesStylesheet($body); ?>*/
 
+      html, body {
+        height: 100%;
+      }
+
       body {
         background: var(--bg-color);
         display: grid;
-        grid-template-rows: repeat(15, 5rem);
-        grid-template-columns: repeat(30, 5rem);
+        grid-template-rows: auto 1fr;
         color: var(--sunmoon-color);
         position: relative;
+        gap: .5rem;
+        place-items: start;
+      }
+
+      body > * {
+        grid-row: 1;
       }
 
       theme-selector {
-        grid-row: 10;
-        grid-column: 3;
-      }
-
-      /*theme-selector .selector {
-        margin: .6rem;
-        border-radius: .6rem;
-        background-color: mediumslateblue;
-        display: grid;
-        grid-template-columns: 0 1fr;
-        grid-template-rows: repeat(3, 2rem);
-      }
-
-      input[type="radio"] {
-        height: 0;
-        width: 0;
-        opacity: 0;
-        margin: 0;
-        pointer-events: none;
-        position: absolute;
-      }
-
-      input[type="radio"] + label {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        grid-template-rows: auto;
-      }
-
-      input[type="radio"] + label::before {
-        content: '';
-        display: block;
-        width: 1rem;
-        height: 1rem;
-        border-radius: 50%;
-        border: 2px solid var(--sunray-color);
+        grid-row: 2;
+        grid-column: 1 / -1;
+        width: 5rem;
         place-self: center;
-        grid-row: 1;
-        grid-column: 1;
-        margin: 0 .6rem;
       }
-
-      input[type="radio"]:checked + label::after {
-        content: '';
-        display: block;
-        width: .6rem;
-        height: .4rem;
-        border: 2px solid var(--sunmoon-color);
-        border-top: none;
-        border-right: none;
-        transform: translateY(-25%) rotate(-45deg);
-        place-self: center;
-        grid-row: 1;
-        grid-column: 1;
-      }
-
-      input[type="radio"] + label>span {
-        margin: auto .6rem auto 0;
-      }*/
     </style>
   </head>
 
   <body>
+    <span>Test text.</span>
     <a href="#">Test link</a>
     <button>Test button</button>
     <theme-selector position="right"></theme-selector>
