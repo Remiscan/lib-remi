@@ -53,6 +53,7 @@
     padding: .3em .6em;
     border: 1px solid var(--on-bg-color);
     color: var(--off-text-color);
+    border-radius: 5px 5px 0 0;
   }
 
   input[type=radio][role="tab"] + label:hover {
