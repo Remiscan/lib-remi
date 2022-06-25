@@ -1,6 +1,6 @@
 <?php
 /** Computes the version of a list of files, relative to the given directory. */
-function version($dir = __DIR__, $arrayChemins = false, $method = 'date')
+function version($dir = __DIR__, $arrayChemins = false, $method = 'hash')
 {
   if ($arrayChemins) $listeFichiers = (array) $arrayChemins;
   else               $listeFichiers = array_diff(scandir($dir), array('..', '.'));
@@ -8,7 +8,7 @@ function version($dir = __DIR__, $arrayChemins = false, $method = 'date')
   // Initialize version
   $versionFichiers = match($method) {
     'date', 'pretty-date' => 0,
-    'hash' => ''
+    'hash' => []
   };
 
   // Compute version
@@ -22,8 +22,8 @@ function version($dir = __DIR__, $arrayChemins = false, $method = 'date')
           if ($date_fichier > $versionFichiers) $versionFichiers = $date_fichier;
           break;
         case 'hash':
-          $hash = hash('crc32b', $path);
-          $versionFichiers .= $hash;
+          $hash = hash_file('crc32b', $path);
+          $versionFichiers[] = $hash;
       }
     }
   }
@@ -31,7 +31,7 @@ function version($dir = __DIR__, $arrayChemins = false, $method = 'date')
   // Parse version
   $versionFichiers = match($method) {
     'pretty-date' => date('Y.m.d_H.i.s', $versionFichiers),
-    'hash' => hash('crc32b', $versionFichiers),
+    'hash' => count($versionFichiers) > 1 ? hash('crc32b', implode($versionFichiers)) : ($versionFichiers[0] ?? 'doesnotexist'),
     default => $versionFichiers
   };
 
