@@ -174,6 +174,7 @@
     <script type="importmap">
     {
       "imports": {
+        "input-switch": "/_common/components/input-switch/input-switch.js",
         "input-switch-styles": "/_common/components/input-switch/styles.css",
         "input-switch-template": "/_common/components/input-switch/template.js"
       }
@@ -212,13 +213,7 @@
     </div>
 
     <script type="module">
-      <?php require_once dirname(__DIR__, 2) . '/php/version.php';
-      $version = version(__DIR__, ['input-switch.js', 'styles.css.php']);
-      $suffix = (isset($_GET['events']) && $_GET['events'] == 'pointer') ? '.pointer-events' : '';
-      ?>
-
-      import '/_common/components/input-switch/input-switch<?=$suffix?>--<?=$version?>.js';
-
+      import 'input-switch';
 
       for (const input of [...document.querySelectorAll('input-switch')]) {
         input.addEventListener('change', event => {

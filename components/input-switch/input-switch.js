@@ -2,6 +2,7 @@
 <script type="importmap">
 {
   "imports": {
+    "input-switch": "/_common/components/input-switch/input-switch.js",
     "input-switch-styles": "/_common/components/input-switch/styles.css",
     "input-switch-template": "/_common/components/input-switch/template.js"
   }
