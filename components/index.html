@@ -27,6 +27,19 @@
         overflow-y: auto;
       }
 
+      ul {
+        padding-inline-start: 30px;
+      }
+
+      ul > li {
+        margin: .5em 0;
+      }
+
+      a[aria-current] {
+        color: white;
+        text-decoration: none;
+      }
+
       h1 {
         display: inline-block;
         margin: .5rem;
@@ -79,6 +92,32 @@
       </ul>
     </nav>
 
-    <iframe name="iframe" src="preview.html"></iframe>
+    <iframe name="iframe" src="preview.html" title="Selected component preview"></iframe>
+
+    <script type="module">
+      const links = [...document.querySelector('nav').querySelectorAll('a')];
+      const iframe = document.querySelector('iframe');
+
+      const styleCurrentLink = component => {
+        for (const link of links) {
+          if (link.innerHTML === component) {
+            link.setAttribute('aria-current', 'page');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        }
+      };
+
+      // Change title and update link styles on component choice
+      iframe.addEventListener('load', event => {
+        const component = iframe.contentWindow.location.href.split('/').at(-2);
+        history.replaceState({ component }, '');
+
+        // Title
+        if (component !== 'components') document.title = `<${component}> - My web components`;
+        else                            document.title = `My web components`;
+        styleCurrentLink(component);
+      });
+    </script>
   </body>
 </html>
