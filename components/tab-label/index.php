@@ -93,6 +93,10 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
         height: 1.2rem;
         border: 0;
       }
+
+      p {
+        margin: 0;
+      }
     </style>
   </head>
 
