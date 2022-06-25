@@ -29,6 +29,7 @@ button {
   margin: 0;
   padding: var(--padding);
   font: inherit;
+  outline-offset: 3px;
 
   background-image: var(--gradient);
   background-size: calc(100% + 2px * var(--border-width)) calc(100% + 2px * var(--border-width));
