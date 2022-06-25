@@ -112,11 +112,11 @@
       iframe.addEventListener('load', event => {
         const component = iframe.contentWindow.location.href.split('/').at(-2);
         history.replaceState({ component }, '');
+        styleCurrentLink(component);
 
         // Title
         if (component !== 'components') document.title = `<${component}> - My web components`;
         else                            document.title = `My web components`;
-        styleCurrentLink(component);
       });
     </script>
   </body>
