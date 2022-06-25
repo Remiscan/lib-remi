@@ -1,6 +1,6 @@
 <?php
 /** Computes the version of a list of files, relative to the given directory. */
-function version($dir = __DIR__, $arrayChemins = false, $method = 'hash')
+function version($dir = __DIR__, $arrayChemins = false, $method = 'date')
 {
   if ($arrayChemins) $listeFichiers = (array) $arrayChemins;
   else               $listeFichiers = array_diff(scandir($dir), array('..', '.'));
