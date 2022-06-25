@@ -83,7 +83,7 @@
       <remiscan-logo background="indigo" text-color="aquamarine" style="--width: 4rem;"></remiscan-logo>
       <remiscan-logo background="indigo" text-color="aquamarine"></remiscan-logo>
       <remiscan-logo background="linear-gradient(to right, indigo, darkblue)" text-gradient="linear-gradient(to right, palegreen, moccasin)"></remiscan-logo>
-      <remiscan-logo style="--width: 16rem;" animate="true"></remiscan-logo>
+      <remiscan-logo style="--width: 16rem;" animate></remiscan-logo>
     </p>
 
     <script type="module">
