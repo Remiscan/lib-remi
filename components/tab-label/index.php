@@ -95,6 +95,11 @@
       p {
         margin: 0;
       }
+
+      /* Prevent flash on unstyled content */
+      [role="tablist"]:has(tab-label:not(:defined)) {
+        display: none;
+      }
     </style>
   </head>
 
