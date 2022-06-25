@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/version.php';
 require_once __DIR__ . '/resolvePath.php';
 
 
@@ -26,7 +25,7 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
       $fileext = $matches[3][$i];
 
       $Path = new FilePath($path, $fromDir);
-      $version = hash('crc32b', $Path->resolve(true, 'absolute'));
+      $version = hash_file('crc32b', $_SERVER['DOCUMENT_ROOT'] . $Path->resolve(true, 'absolute'));
       $versionizedPath = $Path->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext;
 
       $body = str_replace(
