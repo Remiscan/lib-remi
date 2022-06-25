@@ -52,7 +52,7 @@
   }
   p {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
@@ -87,6 +87,6 @@
 
 <p>
 
+<loader-button text="Test" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
 <loader-button text="Start loading" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
-<loader-button text="Start loading" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
-<loader-button text="Start loading" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
+<loader-button text="Start loading stuff" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
