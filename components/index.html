@@ -115,8 +115,11 @@
         styleCurrentLink(component);
 
         // Title
-        if (component !== 'components') document.title = `<${component}> - My web components`;
-        else                            document.title = `My web components`;
+        if (component && component !== 'components') {
+          document.title = `<${component}> - My web components`;
+        } else {
+          document.title = `My web components`;
+        }
       });
     </script>
   </body>
