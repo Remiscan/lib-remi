@@ -37,7 +37,7 @@ button {
   display: grid;
   place-items: center;
   border-radius: var(--border-radius);
-  outline-offset: 1px;
+  outline-offset: 3px;
 }
 
 /* Border and text sharing the same gradient */
