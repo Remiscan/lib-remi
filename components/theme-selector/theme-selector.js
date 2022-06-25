@@ -39,11 +39,12 @@ class ThemeSelector extends HTMLElement {
 
     // Listens to inputs to close the menu
     const closeMenu = event => {
+      const eventPath = event.composedPath();
       if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
-      if (event.type != 'keydown' && event.path.includes(this)) return;
+      if (event.type != 'keydown' && eventPath.includes(this)) return;
       event.stopPropagation();
       const button = this.querySelector('button');
-      const focus = (event.type == 'click' && !event.path.includes(button)) ? false : true;
+      const focus = (event.type == 'click' && !eventPath.includes(button)) ? false : true;
       this.close(focus);
       window.removeEventListener(event.type, closeMenu);
     };
