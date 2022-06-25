@@ -60,103 +60,31 @@
         height: 100%;
         box-sizing: border-box;
         margin: 0;
+        display: grid;
+        place-items: center;
+      }
+
+      p {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        justify-content: center;
+        align-items: center;
       }
 
       remiscan-logo {
         --width: 8rem;
       }
-
-      .rainbow-text,
-      strong {
-        font-weight: 600;
-        color: var(--text-color);
-      }
-
-      .rainbow-bg {
-        --main-gradient-bands: 6;
-        --main-gradient: repeating-linear-gradient(to right,
-          hsl(0, 100%, 90%) 0,
-          hsl(39, 100%, 90%) calc(1 * 100% / var(--main-gradient-bands)),
-          hsl(60, 100%, 90%) calc(2 * 100% / var(--main-gradient-bands)),
-          hsl(120, 100%, 90%) calc(3 * 100% / var(--main-gradient-bands)),
-          hsl(240, 100%, 90%) calc(4 * 100% / var(--main-gradient-bands)),
-          hsl(300, 100%, 90%) calc(5 * 100% / var(--main-gradient-bands)),
-          hsl(0, 100%, 90%) calc(6 * 100% / var(--main-gradient-bands))
-        );
-        background-image: var(--main-gradient);
-        background-size: calc(var(--main-gradient-bands) * 50%) 100%;
-        background-position: 0 0;
-        background-repeat: repeat;
-        animation: rainbow-text-animation 40s linear infinite;
-      }
-
-      @supports (background-clip: text) or (-webkit-background-clip: text) {
-        .rainbow-text,
-        strong {
-          background-image: var(--main-gradient);
-          background-size: calc(var(--main-gradient-bands) * 50%) 100%;
-          background-position: 0 0;
-          background-repeat: repeat;
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          animation: rainbow-text-animation 40s linear infinite;
-        }
-      }
-
-      @keyframes rainbow-text-animation {
-        0% { background-position: 0 0; }
-        100% { background-position: calc(100% * var(--main-gradient-bands)) 0; }
-      }
-
-      .rainbow-bg {
-        display: block;
-        width: 8rem;
-        height: 4rem;
-        mask: var(--mask);
-        mask-size: 100% 100%;
-        -webkit-mask-image: var(--mask);
-        -webkit-mask-size: 100% 100%;
-        --mask: url('/_common/components/remiscan-logo/logo--<?=version(__DIR__, 'logo.svg')?>.svg');
-      }
-
-      .remiscan-logo-template {
-        display: inline-block;
-        position: relative;
-        background: var(--background, transparent);
-      }
-
-      .remiscan-logo-template > div {
-        display: none;
-      }
-
-      @supports (mask: url('')) or (-webkit-mask-image: url('')) {
-        .remiscan-logo-template > div {
-          display: block;
-        }
-
-        .remiscan-logo-template > span {
-          font-size: 0;
-          position: absolute;
-        }
-      }
     </style>
   </head>
 
   <body>
-    <remiscan-logo background="indigo" text-color="aquamarine" style="--width: 4rem;"></remiscan-logo>
-    <remiscan-logo background="indigo" text-color="aquamarine"></remiscan-logo>
-    <remiscan-logo background="linear-gradient(to right, indigo, darkblue)" text-gradient="linear-gradient(to right, palegreen, moccasin)"></remiscan-logo>
-    <remiscan-logo style="--width: 16rem;" animate="true"></remiscan-logo>
-
-    <p> Not the custom component:</p>
-
-    <div class="rainbow-bg"></div>
-    <a href="https://remiscan.fr" class="rainbow-bg" style="width: 32rem; height: 16rem;"></a>
-    <a href="https://remiscan.fr" class="remiscan-logo-template">
-      <span>remiscan</span>
-      <div class="rainbow-bg" aria-hidden="true"></div>
-    </a>
+    <p>
+      <remiscan-logo background="indigo" text-color="aquamarine" style="--width: 4rem;"></remiscan-logo>
+      <remiscan-logo background="indigo" text-color="aquamarine"></remiscan-logo>
+      <remiscan-logo background="linear-gradient(to right, indigo, darkblue)" text-gradient="linear-gradient(to right, palegreen, moccasin)"></remiscan-logo>
+      <remiscan-logo style="--width: 16rem;" animate="true"></remiscan-logo>
+    </p>
 
     <script type="module">
       import 'remiscan-logo';
