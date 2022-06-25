@@ -1,3 +1,17 @@
+/* Use with this import map:
+<script type="importmap">
+{
+  "imports": {
+    "tab-label": "/_common/components/tab-label/tab-label.js",
+    "tab-label-styles": "/_common/components/tab-label/styles.css",
+    "tab-label-template": "/_common/components/tab-label/template.js"
+  }
+}
+</script>
+*/
+
+
+
 /**************************************
 ***** EXAMPLE OF USE ******************
 ***************************************
@@ -28,9 +42,8 @@
 
 
 
-let cssReady = false;
-const css = `<?php include './style.css.php'; ?>`;
-const html = `<?php include './element.html'; ?>`;
+import sheet from 'tab-label-styles' assert { type: 'css' };
+import template from 'tab-label-template';
 
 
 
@@ -59,32 +72,24 @@ class TabLabel extends HTMLElement {
   }
 
 
-  update(attributes = TabLabel.observedAttributes) {
+  update(attr) {
     if (!this.ready) return;
 
-    label: {
-      if (!attributes.includes('label')) break label;
-      this.label.innerHTML = this.getAttribute('label');
+    switch (attr) {
+      case 'label': {
+        this.label.innerHTML = this.getAttribute('label');
+      } break;
     }
   }
 
 
   connectedCallback() {
-    // Add CSS to the page
-    if (!document.getElementById('tab-label-style')) {
-      const head = document.querySelector('head');
-      const firstStylesheet = document.querySelector('link[rel="stylesheet"], style');
-      const style = document.createElement('style');
-      style.innerHTML = css;
-      style.id = 'tab-label-style';
-      if (!!firstStylesheet)  head.insertBefore(style, firstStylesheet);
-      else                    head.appendChild(style);
-    }
-    const content = this.innerText;
-    this.innerHTML = html;
+    // Add HTML and CSS to the element
+    if (!document.adoptedStyleSheets.includes(sheet))
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+    this.appendChild(template.content.cloneNode(true));
 
     this.label = this.querySelector('label');
-    if (content) this.setAttribute('label', content);
 
     this.controlledElement = document.getElementById(this.getAttribute('controls'));
     this.controlledElement.setAttribute('role', 'tabpanel');
@@ -125,14 +130,17 @@ class TabLabel extends HTMLElement {
     else                      this.controlledElement.removeAttribute('hidden');
     
     this.input.addEventListener('change', () => this.toggle());
+
     this.ready = true;
-    this.update();
+    for (const attr of TabLabel.observedAttributes) {
+      this.update(attr);
+    }
   }
 
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(attr, oldValue, newValue) {
     if (oldValue == newValue) return;
-    this.update([name]);
+    this.update(attr);
   }
 
 

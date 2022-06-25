@@ -7,10 +7,31 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;tab-label&gt;</title>
+
+    <!-- ▼ Fichiers cache-busted grâce à PHP -->
+    <!--<?php ob_start();?>-->
+
+    <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
+    <script type="esms-options">{ "polyfillEnable": ["css-modules", "json-modules"] }</script>
+    <script defer src="../../polyfills/es-module-shims.js"></script>
     
-    <style id="tab-label-style" data-method="manual">
-      <?php include 'style.css.php'; ?>
-    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "tab-label": "/_common/components/tab-label/tab-label.js",
+        "tab-label-styles": "/_common/components/tab-label/styles.css",
+        "tab-label-template": "/_common/components/tab-label/template.js"
+      }
+    }
+    </script>
+
+    <!--<?php $imports = ob_get_clean();
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+    echo versionizeFiles($imports, __DIR__); ?>-->
+
+    <script type="module">
+      import 'tab-label';
+    </script>
 
     <style>
       /*<?php ob_start();?>*/
@@ -72,10 +93,6 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
         height: 1.2rem;
         border: 0;
       }
-
-      /* Prevent flash of unstyled tabs */
-      /*fieldset { border: none; }
-      tab-label:not([label]) { opacity: 0; }*/
     </style>
   </head>
 
@@ -89,8 +106,7 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
     </fieldset>
 
     <div id="controlled-element-11-id" hidden>
-      <p>As you can see in the HTML code, the tab title can either be placed in the label attribute, or directly between the tab-label tags.
-      <p>This row of tab uses the first method.
+      <p>Testing tab groups with data-group attribute on fieldset.
     </div>
     <div id="controlled-element-12-id" hidden>Content 1.2</div>
     <div id="controlled-element-13-id" hidden>Content 1.3</div>
@@ -101,14 +117,13 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
     <fieldset role="tablist" data-group="tabs-group-2-name" style="--hue: 100">
       <legend data-string="tabs-group-name-label"></legend>
 
-      <tab-label controls="controlled-element-21-id" active="true">Tab 2.1</tab-label>
-      <tab-label controls="controlled-element-22-id" >Tab 2.2</tab-label>
-      <tab-label controls="controlled-element-23-id" >Tab 2.3</tab-label>
+      <tab-label controls="controlled-element-21-id" active="true" label="Tab 2.1"></tab-label>
+      <tab-label controls="controlled-element-22-id" label="Tab 2.2"></tab-label>
+      <tab-label controls="controlled-element-23-id" label="Tab 2.3"></tab-label>
     </fieldset>
 
     <div id="controlled-element-21-id" hidden>
-      <p>As you can see in the HTML code, the tab title can either be placed in the label attribute, or directly between the tab-label tags.
-      <p>This row of tab uses the last method, which causes a quick flash of unstyled text. Use <code>tab-label:not([label]) { opacity: 0; }</code> in your CSS to prevent that.
+      <p>Testing tab group with data-group attribute on fieldset.
     </div>
     <div id="controlled-element-22-id" hidden>Content 2.2</div>
     <div id="controlled-element-23-id" hidden>Content 2.3</div>
@@ -121,13 +136,11 @@ $version = version(__DIR__, ['tab-label.js.php', 'style.css.php']); ?>
       <tab-label group="no-fieldset" controls="controlled-element-33-id" label="Tab 3.3"></tab-label>
     </div>
 
-    <div id="controlled-element-31-id" hidden>Content 3.1</div>
+    <div id="controlled-element-31-id" hidden>
+      <p>Testing tab group with group attribute on the individual tabs.
+    </div>
     <div id="controlled-element-32-id" hidden>Content 3.2</div>
     <div id="controlled-element-33-id" hidden>Content 3.3</div>
-
-    <script type="module">
-      import '/_common/components/tab-label/tab-label--<?=$version?>.js.php';
-    </script>
   </body>
 
 </html>
