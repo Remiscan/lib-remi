@@ -1,5 +1,10 @@
-sample-element {
-  --rules: 'here';
-}
+/* Use a layer to give lesser priority to these styles. */
+@layer sample-element {
 
-/* Every rule must be in a sample-element>whatever selector */
+  sample-element {
+    --rules: 'here';
+  }
+
+  /* Every rule must be in a sample-element>whatever selector */
+
+}
