@@ -260,5 +260,10 @@ theme-selector > button {
     left: 100%;
   }
 
+  theme-selector:not([cookie]) .theme-cookie-star,
+  theme-selector:not([cookie]) .selector-cookie-notice {
+    display: none;
+  }
+
 
 }
