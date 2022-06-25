@@ -113,10 +113,8 @@ a {
 
 .rainbow-bg {
   background-image: var(--text-gradient, var(--main-gradient));
-  background-size: calc(var(--main-gradient-bands) * 50%) 100%;
   background-position: 0 0;
   background-repeat: repeat;
-  animation: rainbow-text-animation 40s linear infinite;
 
   mask: var(--mask);
   mask-size: 100% 100%;
@@ -127,6 +125,11 @@ a {
   display: none;
   width: 100%;
   height: 100%;
+}
+
+:host([animate]) .rainbow-bg {
+  background-size: calc(var(--main-gradient-bands) * 50%) 100%;
+  animation: rainbow-text-animation 40s linear infinite;
 }
 
 :host([text-color]) .rainbow-bg {

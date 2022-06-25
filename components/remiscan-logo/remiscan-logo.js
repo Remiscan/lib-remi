@@ -24,13 +24,18 @@ class RemiscanLogo extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['text-color', 'text-gradient', 'background'];
+    return ['text-color', 'text-gradient', 'background', 'animate'];
   }
 
   attributeChangedCallback(attr, oldValue, newValue) {
-    const link = this.shadow.querySelector('a');
-    if (newValue) link.style.setProperty(`--${attr}`, newValue);
-    else          link.style.removeProperty(`--${attr}`);
+    switch (attr) {
+      case 'animate': break;
+      default: {
+        const link = this.shadow.querySelector('a');
+        if (newValue) link.style.setProperty(`--${attr}`, newValue);
+        else          link.style.removeProperty(`--${attr}`);
+      }
+    }
   }
 }
 
