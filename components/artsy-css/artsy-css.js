@@ -17,11 +17,15 @@ const observer = new ResizeObserver(entries => {
   for (const entry of entries) {
     if (entry.borderBoxSize) {
       const element = entry.target;
-      if (element.observedOnce) {
-        element.init();
-        element.make();
+      const time = Date.now();
+      if (element.lastObserved) {
+        setTimeout(() => {
+          if (element.lastObserved > time) return;
+          element.init();
+          element.make();
+        }, 100);
       }
-      element.observedOnce = true;
+      element.lastObserved = time;
     }
   }
 });
@@ -34,7 +38,7 @@ class ArtsyCss extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.adoptedStyleSheets = [sheet];
 
-    this.observedOnce = false;
+    this.lastObserved = 0;
     this.initialized = false;
     this.columns = 0;
     this.rows = 0;
@@ -69,7 +73,6 @@ class ArtsyCss extends HTMLElement {
   make() {
     if (!this.initialized) return;
 
-    //if (this.lastMade > Date.now() - (this.columns + this.rows + 80) * 10) return;
     this.lastMade = Date.now();
 
     let cells = [...this.shadow.querySelectorAll('.cell')];
@@ -170,7 +173,7 @@ class ArtsyCss extends HTMLElement {
       this.make();
     });
 
-    // Re-calculate size when border-width changes
+    // Re-draw when size changes
     observer.observe(this);
   }
 
