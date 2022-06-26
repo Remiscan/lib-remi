@@ -113,16 +113,22 @@
       // Change title and update link styles on component choice
       iframe.addEventListener('load', event => {
         const component = iframe.contentWindow.location.href.split('/').at(-2);
-        history.replaceState({ component }, '');
+        const isHomePage = !component || component === 'components';
+
+        history.replaceState({ component }, '', isHomePage ? '' : `#${component}`);
         styleCurrentLink(component);
 
         // Title
-        if (component && component !== 'components') {
-          document.title = `<${component}> - My web components`;
-        } else {
+        if (isHomePage) {
           document.title = `My web components`;
+        } else {
+          document.title = `<${component}> - My web components`;
         }
       });
+
+      // Navigate to current hash component on initial load
+      const startComponent = location.hash.replace('#', '');
+      if (startComponent) iframe.src = `./${startComponent}`;
     </script>
   </body>
 </html>
