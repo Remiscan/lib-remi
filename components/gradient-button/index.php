@@ -12,20 +12,24 @@
   
   <!-- ▼ Fichiers cache-busted grâce à PHP -->
   <!--<?php ob_start();?>-->
+  
   <script type="importmap">
   {
     "imports": {
-      "gradient-button-styles": "./styles.css",
-      "gradient-button-template": "./template.js"
+      "gradient-button": "/_common/components/gradient-button/gradient-button.js",
+      "gradient-button-styles": "/_common/components/gradient-button/styles.css",
+      "gradient-button-template": "/_common/components/gradient-button/template.js"
     }
   }
   </script>
-  <script type="module">
-    import './gradient-button.js';
-  </script>
+
   <!--<?php $imports = ob_get_clean();
   require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
   echo versionizeFiles($imports, __DIR__); ?>-->
+
+  <script type="module">
+    import 'gradient-button';
+  </script>
 </head>
 
 <style>
