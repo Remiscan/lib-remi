@@ -3,8 +3,7 @@
 {
   "imports": {
     "artsy-css": "/_common/components/artsy-css/artsy-css.js",
-    "artsy-css-styles": "/_common/components/artsy-css/styles.css",
-    "artsy-css-template": "/_common/components/artsy-css/template.js"
+    "artsy-css-styles": "/_common/components/artsy-css/styles.css"
   }
 }
 </script>
