@@ -12,6 +12,8 @@
   position: absolute;
   --start-row: 1;
   --start-col: 1;
+  --base-hue: 260;
+  --max-hue-spread: 30;
 }
 
 :host([filter]) {
@@ -27,6 +29,7 @@
   --diff-row: calc(var(--row) - var(--start-row));
   --diff-col: calc(var(--col) - var(--start-col));
   --diff: calc(var(--row) + var(--col) - 2);
+  --hue: calc(var(--base-hue) + var(--hue-spread-coeff) * var(--max-hue-spread));
 }
 
 @supports (--diff: max(1, -1)) {

@@ -109,12 +109,6 @@ class ArtsyCss extends HTMLElement {
   }
 
   editCell(cell, edit = false) {
-    const row = Number(cell.dataset.row);
-    const col = Number(cell.dataset.column);
-
-    const hueDiff = 20;
-    const minHue = 0;
-    const maxHue = 360;
     const borderStyles = ['dotted', 'dashed', 'solid', 'double'];
 
     const x = 100 * Math.random();
@@ -125,18 +119,12 @@ class ArtsyCss extends HTMLElement {
       cell.classList.remove('hidden');
     }
 
-    //cell.style.setProperty('--random-order', Math.round((this.rows + this.columns) * Math.random()));
+    const hueSpreadCoeff = Math.round(100 * (-1 + 2 * Math.random())) / 100;
+    cell.style.setProperty('--hue-spread-coeff', hueSpreadCoeff);
 
     switch (this.type) {
       case 'border':
       case 'labyrinth': {
-        //const coeff = hueDiff * Math.round(-1 + 2 * Math.random());
-
-        const hue = Math.round(
-          minHue + ((row + col) / (this.rows + this.columns)) * maxHue
-          + hueDiff
-        );
-        cell.style.setProperty('--hue', 250 + hue % 30);
         cell.style.setProperty('--scale', Math.round(100 * (.6 + 2 * .4 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - 1 * Math.random())) / 100);
         cell.style.setProperty('--rotation', Math.round(4 * Math.random()));
@@ -150,15 +138,6 @@ class ArtsyCss extends HTMLElement {
       } break;
 
       case 'diamond': {
-        //const coeff = hueDiff * Math.round(-1 + 2 * Math.random());
-        //const r = Number(Math.round(1.2 * Math.random()) != 0);
-
-        const hue = Math.round(
-          minHue + ((row + col) / (this.rows + this.columns)) * maxHue
-          + hueDiff
-        );
-        
-        cell.style.setProperty('--hue', 250 + hue % 30);
         cell.style.setProperty('--scale', Math.round(100 * (.6 - .5 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - 1 * Math.random())) / 100);
         cell.style.setProperty('--rotation', Math.round(4 * Math.random()));
@@ -167,15 +146,6 @@ class ArtsyCss extends HTMLElement {
       } break;
 
       case 'square': {
-        //const coeff = hueDiff * Math.round(-1 + 2 * Math.random());
-        //const r = Number(Math.round(1.2 * Math.random()) != 0);
-        
-        const hue = Math.round(
-          minHue + ((row + col) / (this.rows + this.columns)) * maxHue
-          + hueDiff
-        );
-        
-        cell.style.setProperty('--hue', 250 + hue % 30);
         cell.style.setProperty('--scale', Math.round(100 * (2 - 1.5 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - .5 * Math.random())) / 100);
         cell.style.setProperty('--rotation', Math.round(360 * Math.random()));

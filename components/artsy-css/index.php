@@ -50,6 +50,23 @@
       document.querySelector('.frequency-value').innerHTML = `${value}%`;
     });
 
+    // Base hue of cells
+    const hueInput = document.querySelector('input#hue');
+    hueInput.addEventListener('change', () => {
+      const value = hueInput.value;
+      container.style.setProperty('--base-hue', value);
+      document.querySelector('.hue-value').innerHTML = `${value}°`;
+      document.body.style.setProperty('--hue', value);
+    });
+
+    // Max hue spread of cells
+    const hueSpreadInput = document.querySelector('input#hue-spread');
+    hueSpreadInput.addEventListener('change', () => {
+      const value = hueSpreadInput.value;
+      container.style.setProperty('--max-hue-spread', value);
+      document.querySelector('.hue-spread-value').innerHTML = `${value}°`;
+    });
+
     // Order of cell updates
     const inputOrdre = document.querySelector('input#order');
     inputOrdre.addEventListener('change', () => {
@@ -84,9 +101,11 @@
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
     place-items: center;
-    background-color: #190D19;
+    --hue: 260;
+    background-color: hsl(var(--hue), 30%, 8%);
     overflow: hidden;
     color: white;
+    accent-color: hsl(var(--hue), 100%, 80%);
   }
 
   artsy-css {
@@ -99,7 +118,7 @@
     grid-column: 1;
     place-self: start;
     z-index: 2;
-    background-color: rgb(0, 0, 0, .3);
+    background-color: rgb(0, 0, 0, .6);
     padding: 10px;
     border-radius: 0 0 20px 0;
     display: flex;
@@ -131,6 +150,18 @@
     <label for="frequency">Frequency:</label>
     <input type="range" id="frequency" min="0" max="100" step="1" value="100">
     <span class="frequency-value">100%</span>
+  </p>
+
+  <p>
+    <label for="hue">Hue:</label>
+    <input type="range" id="hue" min="0" max="360" step="1" value="260">
+    <span class="hue-value">260°</span>
+  </p>
+
+  <p>
+    <label for="hue-spread">Max hue spread:</label>
+    <input type="range" id="hue-spread" min="0" max="360" step="1" value="30">
+    <span class="hue-spread-value">30°</span>
   </p>
 
   <p>
