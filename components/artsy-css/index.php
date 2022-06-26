@@ -47,6 +47,9 @@
     frequencyInput.addEventListener('change', () => {
       const value = frequencyInput.value;
       container.setAttribute('frequency', value);
+    });
+    frequencyInput.addEventListener('input', () => {
+      const value = frequencyInput.value;
       document.querySelector('.frequency-value').innerHTML = `${value}%`;
     });
 
@@ -55,15 +58,21 @@
     hueInput.addEventListener('change', () => {
       const value = hueInput.value;
       container.style.setProperty('--base-hue', value);
-      document.querySelector('.hue-value').innerHTML = `${value}°`;
       document.body.style.setProperty('--hue', value);
     });
+    hueInput.addEventListener('input', () => {
+      const value = hueInput.value;
+      document.querySelector('.hue-value').innerHTML = `${value}°`;
+    })
 
     // Max hue spread of cells
     const hueSpreadInput = document.querySelector('input#hue-spread');
     hueSpreadInput.addEventListener('change', () => {
       const value = hueSpreadInput.value;
       container.style.setProperty('--max-hue-spread', value);
+    });
+    hueSpreadInput.addEventListener('input', () => {
+      const value = hueSpreadInput.value;
       document.querySelector('.hue-spread-value').innerHTML = `${value}°`;
     });
 
@@ -160,7 +169,7 @@
 
   <p>
     <label for="hue-spread">Max hue spread:</label>
-    <input type="range" id="hue-spread" min="0" max="360" step="1" value="30">
+    <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
     <span class="hue-spread-value">30°</span>
   </p>
 
