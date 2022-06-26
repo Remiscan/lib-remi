@@ -1,0 +1,106 @@
+@keyframes rotate {
+  0% { transform: rotate(0) }
+  100% { transform: rotate(360deg) }
+}
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), var(--cell-size));
+  grid-template-rows: repeat(var(--rows), var(--cell-size));
+  position: absolute;
+  --start-row: 1;
+  --start-col: 1;
+}
+
+:host([filter]) {
+  filter: url('filter.php#wow') blur(.5px);
+}
+
+.cell {
+  display: grid;
+  place-items: center;
+  position: relative;
+  grid-row: var(--row);
+  grid-column: var(--col);
+  --diff-row: calc(var(--row) - var(--start-row));
+  --diff-col: calc(var(--col) - var(--start-col));
+  --diff: calc(var(--row) + var(--col) - 2);
+}
+
+@supports (--diff: max(1, -1)) {
+  .cell {
+    --diff: calc(
+      max(var(--diff-row), -1 * var(--diff-row)) 
+      + max(var(--diff-col), -1 * var(--diff-col))
+    );
+  }
+}
+
+.cell::after {
+  content: '';
+  display: block;
+  transition: all .5s ease;
+  transition-delay: calc((var(--diff) * .01s));
+}
+
+:host([order="random"]) > .cell::after {
+  transition-delay: calc(var(--random-order) * .01s);
+}
+
+:host([type="border"]) > .cell::after {
+  width: 100%;
+  height: 0;
+  border-top: 4px var(--border-style) hsl(var(--hue), 100%, 50%);
+  opacity: var(--opacity, 1);
+  transform-origin: center center;
+  transform: 
+    translate3D(var(--decalage-x), var(--decalage-y), 0) 
+    scale(var(--scale, 1)) 
+    rotate(calc(-45deg + var(--rotation) * 90deg));
+}
+
+:host([type="labyrinth"]) > .cell::after {
+  width: 100%;
+  height: 0;
+  border-top: 2px solid hsl(var(--hue), 100%, 50%);
+  --scale: var(--labyrinth-scale);
+  transform-origin: center center;
+  transform: 
+    scale(var(--scale, 1)) 
+    rotate(calc(-45deg + var(--rotation) * 90deg));
+}
+
+:host([type="diamond"]) > .cell::after {
+  width: 100%;
+  height: 100%;
+  background-color: hsl(var(--hue), 100%, 50%);
+  opacity: var(--opacity, 1);
+  transform-origin: center center;
+  transform: 
+    translate3D(var(--decalage-x), var(--decalage-y), 0) 
+    scale(var(--scale, 1)) 
+    rotate(calc(-45deg + var(--rotation) * 90deg));
+}
+
+:host([type="square"]) > .cell::after {
+  width: 100%;
+  height: calc(var(--height) * 100%);
+  box-shadow: 0 0 0 calc(var(--epaisseur) * 1px) hsl(var(--hue), 100%, 50%);
+  opacity: var(--opacity, 1);
+  transform-origin: center center;
+  transform: 
+    translate3D(var(--decalage-x), var(--decalage-y), 0) 
+    scale(var(--scale, 1)) 
+    rotate(calc(var(--rotation) * 1deg));
+}
+
+:host([filter]) > .cell::after {
+  transform: none;
+  background-color: hsl(var(--hue), 80%, 30%);
+}
+
+.cell.hidden::after {
+  opacity: 0 !important;
+}
