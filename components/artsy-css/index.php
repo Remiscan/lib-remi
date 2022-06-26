@@ -36,19 +36,11 @@
 
     // Type of effect
     const select = document.getElementById('effect-selection');
-    select.value = container.getAttribute('type'); // initial value
-    select.addEventListener('click', event => event.stopPropagation());
+    select.value = container.getAttribute('type'); // take initial value from the element itself
     select.addEventListener('input', () => {
       container.setAttribute('previous-type', container.getAttribute('type'));
       container.setAttribute('type', select.value);
     });
-
-    // Order of cell updates
-    /*const inputOrdre = document.querySelector('input#ordre');
-    inputOrdre.addEventListener('change', () => {
-      if (inputOrdre.checked) container.setAttribute('order', 'random');=
-      else container.setAttribute('order', 'normal');
-    });*/
 
     // Scarcity of cells
     const scarcityInput = document.querySelector('input#scarcity');
@@ -56,22 +48,19 @@
       container.setAttribute('scarcity', scarcityInput.value);
     });
 
+    // Order of cell updates
+    const inputOrdre = document.querySelector('input#order');
+    inputOrdre.addEventListener('change', () => {
+      if (!inputOrdre.checked) container.setAttribute('order', 'random');
+      else container.setAttribute('order', 'normal');
+    });
+
     // Apply filter over the element
     const inputFiltre = document.querySelector('input#filter');
-    inputFiltre.addEventListener('click', event => event.stopPropagation());
     inputFiltre.addEventListener('change', () => {
       if (inputFiltre.checked) container.setAttribute('filter', '');
       else container.removeAttribute('filter');
     });
-    
-    /*let previousTarget = null;
-    let previousAnim = 0;
-    conteneur.addEventListener('mousemove', event => {
-      if (event.target == previousTarget || previousAnim >= Date.now() + 100) return;
-      previousTarget = event.target;
-      previousAnim = Date.now();
-      requestAnimationFrame(() => container.editCell(event.target));
-    });*/
   </script>
 </head>
 
@@ -136,14 +125,12 @@
     </select>
   </p>
 
-  <!--
-  <p>
-    <input type="checkbox" id="ordre"><label for="ordre">Random order</label>
-  </p>
-  </div>-->
-
   <p>
     <label for="scarcity">Scarcity:</label><input type="number" id="scarcity" min="1" max="100" step="1" value="1">
+  </p>
+
+  <p>
+    <input type="checkbox" id="order" checked><label for="order">Cell updates spread from click</label>
   </p>
 
   <p>
