@@ -94,7 +94,8 @@ class ThemeSelector extends HTMLElement {
     // Add HTML and CSS to the element
     if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-    this.appendChild(template.content.cloneNode(true));
+    if (!this.innerHTML)
+      this.appendChild(template.content.cloneNode(true));
     
     const button = this.querySelector('button');
     const selector = this.querySelector('.selector');

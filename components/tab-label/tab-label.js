@@ -87,7 +87,8 @@ class TabLabel extends HTMLElement {
     // Add HTML and CSS to the element
     if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-    this.appendChild(template.content.cloneNode(true));
+    if (!this.innerHTML)
+      this.appendChild(template.content.cloneNode(true));
 
     this.label = this.querySelector('label');
 
