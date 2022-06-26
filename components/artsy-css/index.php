@@ -42,10 +42,12 @@
       container.setAttribute('type', select.value);
     });
 
-    // Scarcity of cells
-    const scarcityInput = document.querySelector('input#scarcity');
-    scarcityInput.addEventListener('change', () => {
-      container.setAttribute('scarcity', scarcityInput.value);
+    // Frequency of cells
+    const frequencyInput = document.querySelector('input#frequency');
+    frequencyInput.addEventListener('change', () => {
+      const value = frequencyInput.value;
+      container.setAttribute('frequency', value);
+      document.querySelector('.frequency-value').innerHTML = `${value}%`;
     });
 
     // Order of cell updates
@@ -126,14 +128,18 @@
   </p>
 
   <p>
-    <label for="scarcity">Scarcity:</label><input type="number" id="scarcity" min="1" max="100" step="1" value="1">
+    <label for="frequency">Frequency:</label>
+    <input type="range" id="frequency" min="0" max="100" step="1" value="100">
+    <span class="frequency-value">100%</span>
   </p>
 
   <p>
-    <input type="checkbox" id="order" checked><label for="order">Cell updates spread from click</label>
+    <input type="checkbox" id="order" checked>
+    <label for="order">Cell updates spread from click</label>
   </p>
 
   <p>
-    <input type="checkbox" id="filter"><label for="filter">Weird filter</label>
+    <input type="checkbox" id="filter">
+    <label for="filter">Weird filter</label>
   </p>
 </div>

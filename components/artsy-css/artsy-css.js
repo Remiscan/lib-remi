@@ -39,9 +39,18 @@ class ArtsyCss extends HTMLElement {
     this.initialized = false;
     this.columns = 0;
     this.rows = 0;
-    this.cellSize = 40;
     this.lastMade = 0;
     this.clickHandler = () => {};
+
+    this.cellSize = ArtsyCss.defaultValue('cell-size');
+    this.frequency = ArtsyCss.defaultValue('frequency');
+  }
+
+  static defaultValue(prop) {
+    switch (prop) {
+      case 'cell-size': return 40;
+      case 'frequency': return 100;
+    }
   }
 
   init() {
@@ -54,9 +63,13 @@ class ArtsyCss extends HTMLElement {
     this.style.setProperty('--cell-size', `${this.cellSize}px`);
     this.style.setProperty('--columns', this.columns);
     this.style.setProperty('--rows', this.rows);
+
+    this.initialized = true;
   }
 
   make() {
+    if (!this.initialized) return;
+
     //if (this.lastMade > Date.now() - (this.columns + this.rows + 80) * 10) return;
     this.lastMade = Date.now();
 
@@ -104,9 +117,10 @@ class ArtsyCss extends HTMLElement {
     const maxHue = 360;
     const borderStyles = ['dotted', 'dashed', 'solid', 'double'];
 
-    const x = Math.round(Math.random() * (this.scarcity - 1));
-    if (this.scarcity > 1 && x > 0) {
-      return cell.classList.add('hidden');
+    const x = 100 * Math.random();
+    if (x > this.frequency) {
+      cell.classList.add('hidden');
+      return;
     } else {
       cell.classList.remove('hidden');
     }
@@ -189,8 +203,6 @@ class ArtsyCss extends HTMLElement {
 
     // Re-calculate size when border-width changes
     observer.observe(this);
-
-    this.initialized = true;
   }
 
   disconnectedCallback() {
@@ -199,7 +211,7 @@ class ArtsyCss extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['type', 'scarcity'];
+    return ['type', 'cell-size', 'frequency'];
   }
 
   attributeChangedCallback(attr, oldValue, newValue) {
@@ -209,13 +221,19 @@ class ArtsyCss extends HTMLElement {
       case 'type':
         this.type = newValue;
         break;
-      
-      case 'scarcity':
-        this.scarcity = isNaN(Number(newValue)) ? 1 : Number(newValue);
+
+      case 'cell-size':
+        this.cellSize = isNaN(Number(newValue)) ? ArtsyCss.defaultValue('cell-size')
+                                                : (Math.max(0, Number(newValue)) || ArtsyCss.defaultValue('cell-size'));
+        break;
+
+      case 'frequency':
+        this.frequency = isNaN(Number(newValue)) ? ArtsyCss.defaultValue('frequency')
+                                                 : Math.max(0, Math.min(Number(newValue), 100));
         break;
     }
 
-    if (this.initialized) this.make();
+    this.make();
   }
 }
 
