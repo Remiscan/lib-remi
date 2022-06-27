@@ -60,11 +60,11 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       body {
         background: var(--bg-color);
         display: grid;
-        grid-template-rows: auto 1fr;
         color: var(--sunmoon-color);
         position: relative;
         gap: .5rem;
-        place-items: start;
+        place-items: center;
+        font-family: system-ui;
       }
 
       body > * {
@@ -72,28 +72,38 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       }
 
       theme-selector {
-        grid-row: 2;
-        grid-column: 1 / -1;
         width: 5rem;
-        place-self: center;
+      }
+
+      theme-selector .selector-title {
+        font-size: 1.2em;
+      }
+
+      theme-selector > .selector {
+        font-size: 1.2rem;
+        border: 1px solid currentColor;
+        padding: 5px 10px;
+        border-radius: 10px;
+        width: max-content;
+        transform: translateY(-.2rem);
+        transition: opacity .2s ease,
+                    transform .2s ease;
+      }
+
+      theme-selector[open="true"] > .selector {
+        transform: translateY(0);
       }
     </style>
   </head>
 
   <body>
-    <span>Test text.</span>
-    <a href="#">Test link</a>
-    <button>Test button</button>
-    <theme-selector position="right"></theme-selector>
+    <theme-selector position="bottom"></theme-selector>
 
     <script type="module">
       import 'theme-selector';
 
-
-      ////////////////////////////////
-      // Gère les changements de thème
+      // Detects theme changes
       window.addEventListener('themechange', event => {
-        //console.log('Theme change requested:', event.detail.theme, '/', event.detail.resolvedTheme);
         const html = document.documentElement;
         html.dataset.theme = event.detail.theme;
       });
