@@ -129,56 +129,67 @@
     background-color: rgb(0, 0, 0, .6);
     padding: 10px;
     border-radius: 0 0 20px 0;
+    box-sizing: border-box;
+  }
+
+  .options-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid currentColor;
   }
 
-  .options > p {
+  .options-content > p {
     margin: 0;
   }
 </style>
 
 <artsy-css type="diamond"></artsy-css>
 
-<div class="options">
-  <p>Click anywhere to randomize the cells.</p>
+<details class="options" open>
+  <summary>Options</summary>
 
-  <p>
-    <label for="effect-selection">Type:</label>
-    <select id="effect-selection">
-      <option value="diamond">Diamonds</option>
-      <option value="square">Squares</option>
-      <option value="labyrinth">Labyrinth</option>
-      <option value="border">Borders</option>
-    </select>
-  </p>
+  <div class="options-content">
+    <p>Click anywhere to randomize the cells.</p>
 
-  <p>
-    <label for="frequency">Frequency:</label>
-    <input type="range" id="frequency" min="0" max="100" step="1" value="100">
-    <span class="frequency-value">100%</span>
-  </p>
+    <p>
+      <label for="effect-selection">Type:</label>
+      <select id="effect-selection">
+        <option value="diamond">Diamonds</option>
+        <option value="square">Squares</option>
+        <option value="labyrinth">Labyrinth</option>
+        <option value="border">Borders</option>
+      </select>
+    </p>
 
-  <p>
-    <label for="hue">Hue:</label>
-    <input type="range" id="hue" min="0" max="360" step="1" value="260">
-    <span class="hue-value">260°</span>
-  </p>
+    <p>
+      <label for="frequency">Frequency:</label>
+      <input type="range" id="frequency" min="0" max="100" step="1" value="100">
+      <span class="frequency-value">100%</span>
+    </p>
 
-  <p>
-    <label for="hue-spread">Max hue spread:</label>
-    <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
-    <span class="hue-spread-value">30°</span>
-  </p>
+    <p>
+      <label for="hue">Hue:</label>
+      <input type="range" id="hue" min="0" max="360" step="1" value="260">
+      <span class="hue-value">260°</span>
+    </p>
 
-  <p>
-    <input type="checkbox" id="order" checked>
-    <label for="order">Cell updates spread from click</label>
-  </p>
+    <p>
+      <label for="hue-spread">Max hue spread:</label>
+      <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
+      <span class="hue-spread-value">30°</span>
+    </p>
 
-  <p>
-    <input type="checkbox" id="filter">
-    <label for="filter">Weird filter</label>
-  </p>
-</div>
+    <p>
+      <input type="checkbox" id="order" checked>
+      <label for="order">Cell updates spread from click</label>
+    </p>
+
+    <p>
+      <input type="checkbox" id="filter">
+      <label for="filter">Weird filter</label>
+    </p>
+  </div>
+</details>
