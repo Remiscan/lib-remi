@@ -65,6 +65,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         gap: .5rem;
         place-items: center;
         font-family: system-ui;
+        margin: 0;
       }
 
       body > * {
