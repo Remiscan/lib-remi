@@ -73,10 +73,13 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       theme-selector {
         width: 5rem;
+        transform: translateY(calc(-0.5 * (44px * 3 + 10px * 2 + 1.4rem)));
       }
 
       theme-selector .selector-title {
-        font-size: 1.2em;
+        font-size: 1.4rem;
+        border-bottom: 1px solid;
+        padding-bottom: 10px;
       }
 
       theme-selector > .selector {
@@ -92,6 +95,16 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       theme-selector[open="true"] > .selector {
         transform: translateY(0);
+      }
+
+      theme-selector > .selector > input {
+        width: 1.5em;
+        margin-right: 10px;
+      }
+
+      theme-selector > .selector > input + label {
+        height: 44px;
+        line-height: 44px;
       }
     </style>
   </head>
