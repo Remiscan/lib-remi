@@ -34,6 +34,17 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
     echo versionizeFiles($imports, __DIR__); ?>-->
 
+    <!--<?php ob_start();?>-->
+    
+    <link rel="modulepreload" href="/_common/components/theme-selector/theme-selector.js">
+    <link rel="modulepreload" href="/_common/js/trap-focus.js">
+    <link rel="modulepreload" href="/_common/components/theme-selector/template.js">
+    <!-- CSS modules not supported in modulepreload yet 😢 -->
+    
+    <!--<?php $imports = ob_get_clean();
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+    echo versionizeFiles($imports, __DIR__); ?>-->
+
     <style>
       /*<?php ob_start();?>*/
       html[data-theme="light"] {

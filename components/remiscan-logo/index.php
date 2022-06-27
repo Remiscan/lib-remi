@@ -9,11 +9,10 @@
 
     <!-- ▼ Fichiers cache-busted grâce à PHP -->
     <!--<?php ob_start();?>-->
-
-    <!-- Import map -->
-    <script defer src="/_common/polyfills/adoptedStyleSheets.min.js"></script>
-    <script>window.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'] }</script>
-    <script defer src="/_common/polyfills/es-module-shims.js"></script>
+  
+    <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
+    <script>window.esmsInitOptions = { "polyfillEnable": ["css-modules", "json-modules"] }</script>
+    <script defer src="../../polyfills/es-module-shims.js"></script>
     
     <script type="importmap">
     {
@@ -24,7 +23,17 @@
       }
     }
     </script>
-
+  
+    <!--<?php $imports = ob_get_clean();
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
+    echo versionizeFiles($imports, __DIR__); ?>-->
+  
+    <!--<?php ob_start();?>-->
+  
+    <link rel="modulepreload" href="/_common/components/remiscan-logo/remiscan-logo.js">
+    <link rel="modulepreload" href="/_common/components/remiscan-logo/template.js">
+    <!-- CSS modules not supported in modulepreload yet 😢 -->
+  
     <!--<?php $imports = ob_get_clean();
     require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
     echo versionizeFiles($imports, __DIR__); ?>-->
