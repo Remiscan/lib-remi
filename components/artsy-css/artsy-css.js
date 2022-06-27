@@ -40,8 +40,6 @@ class ArtsyCss extends HTMLElement {
 
     this.lastObserved = 0;
     this.initialized = false;
-    this.columns = 0;
-    this.rows = 0;
     this.lastMade = 0;
     this.clickHandler = () => {};
 
@@ -91,11 +89,7 @@ class ArtsyCss extends HTMLElement {
 
   make() {
     if (!this.initialized) return;
-
     this.lastMade = Date.now();
-
-    let cells = [...this.shadow.querySelectorAll('.cell')];
-    const edit = cells.length > 0;
 
     if (this.type === 'labyrinth') {
       const scale = (Math.sqrt(2) * this.cellSize + 2 * 1) / this.cellSize;
