@@ -13,6 +13,7 @@
   --start-col: 1;
   --base-hue: 260;
   --max-hue-spread: 30;
+  --cell-delay: .01s;
 }
 
 :host([filter]) {
@@ -48,7 +49,7 @@
     background-color 0s linear,
     border-top 0s linear,
     box-shadow 0s linear;
-  transition-delay: calc((var(--diff) * .01s));
+  transition-delay: calc((var(--diff) * var(--cell-delay)));
 }
 
 :host([order="random"]) > .cell::after {
