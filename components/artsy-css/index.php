@@ -127,17 +127,19 @@
     place-self: start;
     z-index: 2;
     background-color: rgb(0, 0, 0, .6);
-    padding: 10px;
     border-radius: 0 0 20px 0;
     box-sizing: border-box;
+  }
+
+  .options > summary {
+    padding: 10px;
   }
 
   .options-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 10px;
-    padding-top: 10px;
+    padding: 10px;
     border-top: 1px solid currentColor;
   }
 
