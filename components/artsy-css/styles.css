@@ -42,7 +42,7 @@
 .cell::after {
   content: '';
   display: block;
-  transition: all .5s ease;
+  transition: transform .5s ease, opacity .5s ease;
   transition-delay: calc((var(--diff) * .01s));
 }
 
