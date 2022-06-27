@@ -78,8 +78,8 @@
     // Order of cell updates
     const inputOrdre = document.querySelector('input#order');
     inputOrdre.addEventListener('change', () => {
-      if (!inputOrdre.checked) container.setAttribute('order', 'random');
-      else container.setAttribute('order', 'normal');
+      if (inputOrdre.checked) container.setAttribute('order', 'from-click');
+      else container.removeAttribute('order');
     });
 
     // Apply filter over the element
@@ -148,7 +148,7 @@
   }
 </style>
 
-<artsy-css type="diamond"></artsy-css>
+<artsy-css type="diamond" order="from-click"></artsy-css>
 
 <details class="options" open>
   <summary>Options</summary>

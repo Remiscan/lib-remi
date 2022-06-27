@@ -49,11 +49,14 @@
     background-color 0s linear,
     border-top 0s linear,
     box-shadow 0s linear;
+}
+
+:host([order="from-click"]) > .cell::after {
   transition-delay: calc((var(--diff) * var(--cell-delay)));
 }
 
 :host([order="random"]) > .cell::after {
-  transition-delay: calc(var(--random-order) * .01s);
+  transition-delay: calc(var(--random-order) * var(--cell-delay));
 }
 
 :host([type="border"]) > .cell::after {
