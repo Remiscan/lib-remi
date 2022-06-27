@@ -80,18 +80,19 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       theme-selector .selector-title {
         font-size: 1.4rem;
         border-bottom: 1px solid;
-        padding-bottom: 10px;
+        padding: 10px;
       }
 
       theme-selector > .selector {
         font-size: 1.2rem;
         border: 1px solid currentColor;
-        padding: 5px 10px;
         border-radius: 10px;
         width: max-content;
         transform: translateY(-.2rem);
         transition: opacity .2s ease,
                     transform .2s ease;
+        margin-top: 10px;
+        overflow: hidden;
       }
 
       theme-selector[open="true"] > .selector {
@@ -100,12 +101,17 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       theme-selector > .selector > input {
         width: 1.5em;
-        margin-right: 10px;
+        margin: 10px;
+        margin-right: 0;
       }
 
       theme-selector > .selector > input + label {
+        box-sizing: border-box;
         height: 44px;
-        line-height: 44px;
+        padding: 10px;
+        display: grid;
+        align-content: center;
+        justify-content: start;
       }
     </style>
   </head>
