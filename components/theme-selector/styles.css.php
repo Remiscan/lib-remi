@@ -8,6 +8,7 @@ theme-selector > button {
   text-transform: none;
   -webkit-appearance: button;
   cursor: pointer;
+  color-scheme: light dark;
 
   display: grid;
   width: 100%;
