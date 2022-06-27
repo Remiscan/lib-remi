@@ -58,6 +58,7 @@ class ArtsyCss extends HTMLElement {
 
   init() {
     this.shadow.innerHTML = '';
+    this.cells = [];
 
     const size = { width: this.scrollWidth, height: this.scrollHeight };
     this.columns = Math.ceil(size.width / this.cellSize);
@@ -66,6 +67,24 @@ class ArtsyCss extends HTMLElement {
     this.style.setProperty('--cell-size', `${this.cellSize}px`);
     this.style.setProperty('--columns', this.columns);
     this.style.setProperty('--rows', this.rows);
+
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.columns; col++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+
+        const currentRow = row % (this.rows + 1) + 1;
+        cell.style.setProperty('--row', currentRow);
+        cell.dataset.row = currentRow;
+
+        const currentCol = col % (this.columns + 1) + 1;
+        cell.style.setProperty('--col', currentCol);
+        cell.dataset.column = currentCol;
+
+        this.cells.push(cell);
+        this.shadow.appendChild(cell);
+      }
+    }
 
     this.initialized = true;
   }
@@ -83,34 +102,14 @@ class ArtsyCss extends HTMLElement {
       this.style.setProperty('--labyrinth-scale', scale);
     }
 
-    if (edit) {
-      for (const cell of cells) {
-        this.editCell(cell, edit);
-      }
-    } else {
-      for (let row = 0; row < this.rows; row++) {
-        for (let col = 0; col < this.columns; col++) {
-          const cell = document.createElement('div');
-          cell.classList.add('cell');
-
-          const currentRow = row % (this.rows + 1) + 1;
-          cell.style.setProperty('--row', currentRow);
-          cell.dataset.row = currentRow;
-
-          const currentCol = col % (this.columns + 1) + 1;
-          cell.style.setProperty('--col', currentCol);
-          cell.dataset.column = currentCol;
-
-          this.editCell(cell, edit);
-          this.shadow.appendChild(cell);
-        }
-      }
+    for (const cell of this.cells) {
+      this.editCell(cell);
     }
 
     this.removeAttribute('previous-type');
   }
 
-  editCell(cell, edit = false) {
+  editCell(cell) {
     const borderStyles = ['dotted', 'dashed', 'solid', 'double'];
 
     const x = 100 * Math.random();
@@ -125,19 +124,6 @@ class ArtsyCss extends HTMLElement {
     cell.style.setProperty('--hue-spread-coeff', hueSpreadCoeff);
 
     switch (this.type) {
-      case 'border':
-      case 'labyrinth': {
-        cell.style.setProperty('--scale', Math.round(100 * (.6 + 2 * .4 * Math.random())) / 100);
-        cell.style.setProperty('--opacity', Math.round(100 * (1 - 1 * Math.random())) / 100);
-        cell.style.setProperty('--rotation', Math.round(4 * Math.random()));
-
-        if (!edit || (this.getAttribute('previous-type') && this.type !== this.getAttribute('previous-type'))) {
-          cell.style.setProperty('--border-style', borderStyles[Math.round((borderStyles.length - 1) * Math.random())]);
-        }
-
-        cell.style.setProperty('--decalage-x', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
-        cell.style.setProperty('--decalage-y', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
-      } break;
 
       case 'diamond': {
         cell.style.setProperty('--scale', Math.round(100 * (.6 - .5 * Math.random())) / 100);
@@ -156,6 +142,21 @@ class ArtsyCss extends HTMLElement {
         cell.style.setProperty('--height', Math.round(100 * (0.5 + 0.5 * Math.random())) / 100);
         cell.style.setProperty('--epaisseur', Math.round(2 + 1 * Math.random()));
       } break;
+
+      case 'labyrinth':
+      case 'border': {
+        cell.style.setProperty('--scale', Math.round(100 * (.6 + 2 * .4 * Math.random())) / 100);
+        cell.style.setProperty('--opacity', Math.round(100 * (1 - 1 * Math.random())) / 100);
+        cell.style.setProperty('--rotation', Math.round(4 * Math.random()));
+
+        if (this.getAttribute('previous-type') && this.type !== this.getAttribute('previous-type')) {
+          cell.style.setProperty('--border-style', borderStyles[Math.round((borderStyles.length - 1) * Math.random())]);
+        }
+
+        cell.style.setProperty('--decalage-x', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
+        cell.style.setProperty('--decalage-y', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
+      } break;
+      
     }
 
   }
