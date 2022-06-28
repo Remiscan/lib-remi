@@ -21,17 +21,19 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
   foreach($regexps as $regex) {
     preg_match_all($regex, $body, $matches);
     for ($i = 0; $i < count($matches[0]); $i++) {
+      $expr = $matches[0][$i];
       $path = $matches[1][$i];
       $filename = $matches[2][$i];
       $fileext = $matches[3][$i];
 
-      $Path = new FilePath($path, $fromDir);
-      $version = version($_SERVER['DOCUMENT_ROOT'], $Path->resolve(true, 'absolute'));
-      $versionizedPath = $Path->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext;
+      $RealPath = new FilePath($path, $fromDir);
+      $version = version($_SERVER['DOCUMENT_ROOT'], $RealPath->resolve(true, 'absolute'));
+      $versionizedPath = $RealPath->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext;
+      $versionizedExpr = str_replace($path, $versionizedPath, $expr);
 
       $body = str_replace(
-        $path,
-        $versionizedPath,
+        $expr,
+        $versionizedExpr,
         $body
       );
     }
