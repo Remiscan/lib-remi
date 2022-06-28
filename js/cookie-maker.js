@@ -58,17 +58,10 @@ export default function CookieMaker(path, noConsent = []) {
     /** @returns {string[]} List of cookies which do not require consent. */
     static get noConsent() { return noConsent; }
 
-    /** 
-     * Gets the previous user response about a particular cookie.
-     * @param {string} name - Name of the cookie.
-     * @returns {number} The previous user response for a particular cookie.
-     */
-    static previousDecision(name) { return localStorage.getItem(`${this.path}/consent-cookie-${name}`); }
-
 
     /** Sets the cookie. */
     set(force = false) {
-      if (!force && !Cookie.noConsent.includes(this.name) && Cookie.previousDecision(this.name) != 1)
+      if (!force && !Cookie.noConsent.includes(this.name) && !Cookie.getSavedConsent(this.name))
         throw `The user did not authorise this cookie ("${this.name}")`;
       document.cookie = `${this.name}=${this.value};path=${this.path};${this.expiration};${this.sameSite};${this.secure}`;
     }
@@ -104,7 +97,7 @@ export default function CookieMaker(path, noConsent = []) {
     async prompt(reprompt) {
       // If we're asking the user to consent to a single cookie and he already did so, don't ask again.
       if (!reprompt) {
-        const previousResponse = Cookie.previousDecision(this.name);
+        const previousResponse = Cookie.getSavedConsent(this.name);
         if (previousResponse !== null) return !!previousResponse;
       }
 
@@ -135,14 +128,9 @@ export default function CookieMaker(path, noConsent = []) {
         // If this cookie requires consent, listen for the user's response.
         window.addEventListener('cookieconsent', event => {
           if (event.detail.name != this.name) return;
-          if (event.detail.consent === true) {
-            localStorage.setItem(`${this.path}/consent-cookie-${this.name}`, 1);
-            return resolve(true);
-          }
-          else {
-            localStorage.setItem(`${this.path}/consent-cookie-${this.name}`, 0);
-            return resolve(false);
-          }
+          Cookie.setSavedConsent(this.name, event.detail.consent);
+          if (event.detail.consent === true) return resolve(true);
+          else                               return resolve(false);
         });
       });
 
@@ -166,6 +154,32 @@ export default function CookieMaker(path, noConsent = []) {
       }
       popup.remove();
       return;
+    }
+
+
+    static get savePath() {
+      return `${Cookie.path}/cookie-consent`;
+    }
+
+
+    static get savedConsentList() {
+      return JSON.parse(localStorage.getItem(Cookie.savePath) || '[]');
+    }
+
+
+    static setSavedConsent(name, consent) {
+      const savedConsent = Cookie.savedConsentList;
+      const nameIndex = savedConsent.findIndex(e => e.name === name);
+      const toSave = { name, consent: Number(consent) };
+      if (nameIndex >= 0) savedConsent[nameIndex] = toSave;
+      else                savedConsent.push(toSave);
+      localStorage.setItem(Cookie.savePath, JSON.stringify(savedConsent));
+    }
+
+    static getSavedConsent(name) {
+      const savedConsent = Cookie.savedConsentList;
+      const consent = Boolean(savedConsent.find(e => e.name === name).consent);
+      return consent;
     }
 
 
