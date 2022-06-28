@@ -1,15 +1,4 @@
-/* Use with this import map:
-<script type="importmap">
-{
-  "imports": {
-    "cookie-consent-prompt": "/_common/components/cookie-consent-prompt/cookie-consent-prompt.js",
-    "cookie-consent-prompt-styles": "/_common/components/cookie-consent-prompt/styles.css",
-    "cookie-consent-prompt-strings": "/_common/components/cookie-consent-prompt/strings.json",
-    "cookie-consent-prompt-template": "/_common/components/cookie-consent-prompt/template.js"
-  }
-}
-</script>
-*/
+// See /_common/js/cookie-maker.js for how to use.
 
 //import strings from 'theme-selector-strings' assert { type: 'json' };
 import sheet from 'cookie-consent-prompt-styles' assert { type: 'css' };
