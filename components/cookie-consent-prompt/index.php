@@ -117,7 +117,7 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
       import CookieMaker from 'cookie-maker';
       import 'cookie-consent-prompt';
 
-      const Cookie = new CookieMaker('/_common/components/');
+      const Cookie = new CookieMaker('_common/components');
 
       // Detects button click
       const button = document.querySelector('.open-prompt');
