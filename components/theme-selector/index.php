@@ -38,7 +38,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     <!--<?php versionizeEnd(__DIR__); ?>-->
 
     <style>
-      /*<?php ob_start();?>*/
+      /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
         --bg-color: #eee;
@@ -52,9 +52,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         --sunmoon-color: white;
         --sunray-color: lemonchiffon;
       }
-      /*<?php $body = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-      echo buildThemesStylesheet($body); ?>*/
+      /*<?php themeSheetEnd(closeComment: true); ?>*/
 
       html, body {
         height: 100%;

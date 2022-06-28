@@ -15,7 +15,7 @@ import '/_common/components/theme-selector/theme-selector.js.php';
 
 4. Préparer le CSS comme ceci :
 ```css
-/*<?php ob_start();?>*/
+/*<?php themeSheetStart(); ?>*/
 :root[data-theme="light"] selecteur? {
   color-scheme: light;
   /* CSS du thème clair */
@@ -25,9 +25,7 @@ import '/_common/components/theme-selector/theme-selector.js.php';
   color-scheme: dark;
   /* CSS du thème sombre */
 }
-/*<?php $body = ob_get_clean();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-echo buildThemesStylesheet($body); ?>*/
+/*<?php themeSheetEnd(closeComment: true); ?>*/
 ```
 
 5. Personnaliser l'apparence du sélecteur dans le CSS de la page.

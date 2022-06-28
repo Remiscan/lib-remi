@@ -1,10 +1,57 @@
 <?php
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Construit le fichier .css contenant les variables de thème en utilisant la fonction comme ceci
-// au début du fichier style-themes.css.php :
-//
-//    /*< ?php ob_start();? >*/
+/**
+ * Builds a stylesheet supporting light and dark themes through both @media (prefers-color-scheme)
+ * and [data-theme="light"/"dark"]
+ */
+function buildThemesStylesheet(string $body, string $default = 'light', bool $closeComment = false): array {
+  $regexp = '/(?:html|:root)\[(?:data-)?theme="?light"?\](?<selector> .*)*\{(?<light>(?:.|\n|\r)*?)\}(?:\n|\r| )*(?:html|:root)\[(?:data-)?theme="?dark"?\]( .*)*\{(?<dark>(?:.|\n|\r)*?)\}/';
+  preg_match_all($regexp, $body, $matches);
+
+  $blocks = [];
+
+  for ($i = 0; $i < count($matches[0]); $i++) {
+    $selector = str_replace(' ', '', $matches['selector'][$i]) == '' ? ':root' : $matches['selector'][$i];
+
+    $css = "";
+    if ($closeComment) $css .= "*/";
+    $css .= "\n" . $selector . " {" . $matches[$default][0] . "}\n\n";
+    if ($default == 'dark') {
+      $css .= "@media (prefers-color-scheme: light) {\n" . $selector . " {" . $matches['light'][$i] . "}\n}\n\n";
+    } else {
+      $css .= "@media (prefers-color-scheme: dark) {\n" . $selector . " {" . $matches['dark'][$i] . "}\n}\n\n";
+    }
+    $css .= ":root[data-theme=\"light\"] " . $matches['selector'][0] . " {" . $matches['light'][$i] . "}\n\n";
+    $css .= ":root[data-theme=\"dark\"] " . $matches['selector'][0] . " {" . $matches['dark'][$i] . "}\n";
+    if ($closeComment) $css .= "/*";
+  
+    $blocks[] = $css;
+  }
+
+  return $blocks;
+}
+
+
+
+/* Prepended in global.php */
+
+function themeSheetStart() {
+  ob_start();
+}
+
+function themeSheetEnd($default = 'light', $closeComment = true) {
+  $body = ob_get_clean();
+  $blocks = buildThemesStylesheet($body, $default, $closeComment);
+  foreach ($blocks as $block) {
+    echo $block;
+  }
+}
+
+
+
+/* HOW TO USE: In CSS */
+/* (themeSheetStart and themeSheetEnd prepended in global.php)
+
+//    /*< ?php themeSheetStart(); ? >*/
 //
 //    html[data-theme="light"] {
 //      --variables-light: etc; 
@@ -14,12 +61,10 @@
 //      --variables-dark: etc;
 //    }
 //
-//    /*< ?php $body = ob_get_clean();
-//    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-//    echo buildThemesStylesheet($body); ? >*/
-//
-// et renvoie les mêmes variables organisées comme ceci :
-//
+//    /*< ?php themeSheetEnd(closeComment: true); ? >*/
+
+/* PRINTS (if default = light) */
+
 //    html {
 //      --variables-default: etc;
 //    }
@@ -43,26 +88,3 @@
 //    html[data-theme="dark"] {
 //      --variables-dark: etc;
 //    }
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function buildThemesStylesheet($body, $default = 'light', $closeComment = true)
-{
-  $regexp = '/(?:html|:root)\[data-theme="?light"?\](?<selector> .*)*\{(?<light>(?:.|\n|\r)*?)\}(?:\n|\r| )*(?:html|:root)\[data-theme="?dark"?\]( .*)*\{(?<dark>(?:.|\n|\r)*?)\}/';
-  preg_match_all($regexp, $body, $matches);
-
-  $selector = str_replace(' ', '', $matches['selector'][0]) == '' ? ':root' : $matches['selector'][0];
-
-  $css = "";
-  if ($closeComment) $css .= "*/";
-  $css .= "\n" . $selector . " {" . $matches[$default][0] . "}\n\n";
-  if ($default == 'dark')
-    $css .= "@media (prefers-color-scheme: light) {\n" . $selector . " {" . $matches['light'][0] . "}\n}\n\n";
-  else
-    $css .= "@media (prefers-color-scheme: dark) {\n" . $selector . " {" . $matches['dark'][0] . "}\n}\n\n";
-  $css .= ":root[data-theme=\"light\"] " . $matches['selector'][0] . " {" . $matches['light'][0] . "}\n\n";
-  $css .= ":root[data-theme=\"dark\"] " . $matches['selector'][0] . " {" . $matches['dark'][0] . "}\n";
-  if ($closeComment) $css .= "/*";
-
-  return $css;
-}

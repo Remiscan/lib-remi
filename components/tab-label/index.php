@@ -34,7 +34,7 @@
     </script>
 
     <style>
-      /*<?php ob_start();?>*/
+      /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
         --bg-color: rgb(224, 224, 224);
@@ -46,11 +46,7 @@
         --bg-color: rgb(34, 34, 34);
         --text-color: white;
       }
-      /*<?php $body = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-      echo buildThemesStylesheet($body); ?>*/
 
-      /*<?php ob_start();?>*/
       :root[data-theme="light"] [role="tablist"] {
         --hue: 231;
         --on-bg-color: hsl(var(--hue), 40%, 50%);
@@ -68,9 +64,7 @@
         --off-text-color: white;
         --on-text-color: rgb(48, 48, 48);
       }
-      /*<?php $body = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-      echo buildThemesStylesheet($body); ?>*/
+      /*<?php themeSheetEnd(closeComment: true); ?>*/
 
       html {
         background: var(--bg-color);

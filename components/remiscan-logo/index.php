@@ -31,7 +31,7 @@
     <!--<?php versionizeEnd(__DIR__); ?>-->
 
     <style>
-      /*<?php ob_start();?>*/
+      /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
         --bg-color: rgb(224, 224, 224);
@@ -43,9 +43,7 @@
         --bg-color: rgb(34, 34, 34);
         --text-color: white;
       }
-      /*<?php $body = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-      echo buildThemesStylesheet($body); ?>*/
+      /*<?php themeSheetEnd(closeComment: true); ?>*/
 
       html {
         background: var(--bg-color);

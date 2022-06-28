@@ -7,7 +7,7 @@
     <title>&lt;input-switch&gt;</title>
 
     <style>
-      /*<?php ob_start();?>*/
+      /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
         --bg-color: rgb(224, 224, 224);
@@ -19,11 +19,7 @@
         --bg-color: rgb(34, 34, 34);
         --text-color: white;
       }
-      /*<?php $body = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-      echo buildThemesStylesheet($body); ?>*/
 
-      /*<?php ob_start();?>*/
       :root[data-theme="light"] input-switch {
         --off-bg-color: #828282;
         --on-bg-color: hsl(231, 40%, 50%);
@@ -45,9 +41,7 @@
         --on-text-color: var(--handle-color);
         --focus-color: white;
       }
-      /*<?php $body = ob_get_clean();
-      require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/components/theme-selector/build-css.php';
-      echo buildThemesStylesheet($body); ?>*/
+      /*<?php themeSheetEnd(closeComment: true); ?>*/
 
       @media (forced-colors: active) {
         input-switch {
