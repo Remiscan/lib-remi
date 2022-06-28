@@ -1,6 +1,6 @@
 // See /_common/js/cookie-maker.js for how to use.
 
-//import strings from 'theme-selector-strings' assert { type: 'json' };
+import strings from 'cookie-consent-prompt-strings' assert { type: 'json' };
 import sheet from 'cookie-consent-prompt-styles' assert { type: 'css' };
 import template from 'cookie-consent-prompt-template';
 
@@ -18,6 +18,16 @@ export class CookieConsentPrompt extends HTMLElement {
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
     if (!this.innerHTML)
       this.appendChild(template.content.cloneNode(true));
+
+    // Translate element content
+    const lang = document.documentElement.lang || 'en';
+    for (const e of [...this.querySelectorAll('[data-string]')]) {
+      if (e.tagName == 'IMG') e.alt = strings[lang][e.dataset.string];
+      else                    e.innerHTML = strings[lang][e.dataset.string];
+    }
+    for (const e of [...this.querySelectorAll('[data-label]')]) {
+      e.setAttribute('aria-label', strings[lang][e.dataset.label]);
+    }
 
     // Populate cookie info message
     const info = this.querySelector('.cookie-consent-prompt-info');

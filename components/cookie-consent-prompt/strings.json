@@ -1,0 +1,15 @@
+{
+  "fr": {
+    "consent-question": "Se rappeler de ce choix ? (Utilise un cookie)",
+    "consent-yes": "Oui",
+    "consent-no": "Non",
+    "cookie-data": "Données du cookie : nom = \"{{name}}\", valeur = \"{{content}}\"."
+  },
+  
+  "en": {
+    "consent-question": "Should this choice be remembered? (Uses a cookie)",
+    "consent-yes": "Yes",
+    "consent-no": "No",
+    "cookie-data": "Cookie data: name = \"{{name}}\", value = \"{{content}}\"."
+  }
+}
