@@ -99,7 +99,7 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
 
   <body>
     <p class="intro">
-      I'm tired of being asked to consent to all cookies as soon as a visit any website. My goal here was to create a system working more like Android app permissions: no cookie is set by default, and you only get prompted to consent to a specific cookie when you do something that needs a cookie.
+      I'm tired of being asked to consent to all cookies as soon as I visit any website. My goal here was to create a system working more like Android app permissions: no cookie is set by default, and you only get prompted to consent to a specific cookie when you do something that needs a cookie.
     </p>
 
     <p>
