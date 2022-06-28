@@ -44,49 +44,64 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
 
 
 
-// Example 1: versionize links in a JavaScript (.js.php) file:
-//
-//    /*< ?php ob_start();? >*/
-//
-//    import { ... } from '../_common/abc.js';
-//    import { ... } from './abc.js.php';
-//    import { ... } from '/abc.js.php';
-//    import { ... } from 'abc.js.php';
-//    import './abc.js.php';
-//    new Worker('worker-link.js');
-//
-//    /*< ?php $body = ob_get_clean();
-//    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-//    echo versionizeFiles($body, __DIR__); ? >*/
-//
-//        returns:
-//
-//    import { ... } from '/_common/abc--72c6b344.js';
-//    ...
-//    import './abc--72c6b344.js.php';
-//    new Worker('worker-link--72c6b344.js');
+/* HOW TO USE: In HTML, CSS or JS files */
 
-
-// Example 2: versionize links in a HTML (.php) file:
+//    /*< ?php versionizeStart();? >*/
 //
-//    <!--< ?php ob_start();? >-->
+//    <script type="importmap">
+//    {
+//      "imports": {
+//        "name": "./path.js"
+//      }
+//    }
+//    </script>
+//
+//    <script type="module">
+//      import { ... } from '../_common/abc.js';
+//      import { ... } from './abc.js.php';
+//      import { ... } from '/abc.js.php';
+//      import { ... } from 'abc.js.php';
+//      import './abc.js.php';
+//
+//      new Worker('worker-link.js');
+//    </script>
 //
 //    <link rel="stylesheet" href="/app/page.css">
 //    <script type="module" src="/app/scripts.js.php"></script>
 //
-//    <!--< ?php $body = ob_get_clean();
-//    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-//    echo versionizeFiles($body, __DIR__); ? >-->
-
-
-// Example 3: versionize links in a CSS (.css.php) file:
+//    <style>
+//      :root {
+//        background-image: url('./image.webp');
+//      }
+//    </style>
 //
-//    <!--< ?php ob_start();? >-->
-//
-//    :root {
-//      background-image: url('./image.webp');
+//    /*< ?php versionizeEnd(__DIR__); ? >*/
+
+/* PRINTS */
+
+//    <script type="importmap">
+//    {
+//      "imports": {
+//        "name": "./path--72c6b344.js"
+//      }
 //    }
+//    </script>
 //
-//    <!--< ?php $body = ob_get_clean();
-//    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-//    echo versionizeFiles($body, __DIR__); ? >-->
+//    <script type="module">
+//      import { ... } from '../_common/abc--72c6b344.js';
+//      import { ... } from './abc--72c6b344.js';
+//      import { ... } from '/abc--72c6b344.js';
+//      import { ... } from 'abc--72c6b344.js';
+//      import './abc--72c6b344.js';
+//
+//      new Worker('worker-link--72c6b344.js');
+//    </script>
+//
+//    <link rel="stylesheet" href="/app/page--72c6b344.css">
+//    <script type="module" src="/app/scripts--72c6b344.js.php"></script>
+//
+//    <style>
+//      :root {
+//        background-image: url('./image--72c6b344.webp');
+//      }
+//    </style>
