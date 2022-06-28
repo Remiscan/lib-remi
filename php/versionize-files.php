@@ -44,6 +44,19 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
 
 
 
+/* Prepended in global.php */
+
+function versionizeStart() {
+  ob_start();
+}
+
+function versionizeEnd($dir) {
+  $imports = ob_get_clean();
+  echo versionizeFiles($imports, $dir);
+}
+
+
+
 /* HOW TO USE: In HTML, CSS or JS files */
 
 //    /*< ?php versionizeStart();? >*/
