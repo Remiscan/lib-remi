@@ -88,6 +88,7 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
         border-radius: 10px;
         margin: 10px;
         padding: 10px;
+        row-gap: 5px;
       }
 
       cookie-consent-prompt > .cookie-consent-prompt-info {
