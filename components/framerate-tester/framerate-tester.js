@@ -62,15 +62,6 @@ export class FramerateTester extends HTMLElement {
       else              this.stop();
     });
   }
-
-
-  // Automatically called for every set attribute before connectedCallback
-  // (no need to check this.ready)
-  attributeChangedCallback(attr, oldValue, newValue) {
-    switch (attr) {
-
-    }
-  }
 }
 
 if (!customElements.get('framerate-tester')) customElements.define('framerate-tester', FramerateTester);
