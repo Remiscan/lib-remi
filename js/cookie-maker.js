@@ -198,7 +198,7 @@ export default function CookieMaker(path, noConsent = []) {
     static get all() {
       return document.cookie.split(';').reduce((cookies, cookie) => {
         const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies.push( { name, value } );
+        if (value != null) cookies.push( { name, value } );
         return cookies;
       }, []);
     }
