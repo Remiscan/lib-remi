@@ -165,8 +165,8 @@
       }*/
     </style>
 
-    <!-- ▼ Fichiers cache-busted grâce à PHP -->
-    <!--<?php ob_start();?>-->
+    <!-- ▼ Cache-busted files -->
+  <!--<?php versionizeStart(); ?>-->
   
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { "polyfillEnable": ["css-modules", "json-modules"] }</script>
@@ -182,19 +182,11 @@
     }
     </script>
   
-    <!--<?php $imports = ob_get_clean();
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-    echo versionizeFiles($imports, __DIR__); ?>-->
-  
-    <!--<?php ob_start();?>-->
-  
     <link rel="modulepreload" href="/_common/components/input-switch/input-switch.js">
     <link rel="modulepreload" href="/_common/components/input-switch/template.js">
     <!-- CSS modules not supported in modulepreload yet 😢 -->
   
-    <!--<?php $imports = ob_get_clean();
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-    echo versionizeFiles($imports, __DIR__); ?>-->
+    <!--<?php versionizeEnd(__DIR__); ?>-->
   </head>
 
   <body>

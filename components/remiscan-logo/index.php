@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>&lt;remiscan-logo&gt;</title>
 
-    <!-- ▼ Fichiers cache-busted grâce à PHP -->
-    <!--<?php ob_start();?>-->
+    <!-- ▼ Cache-busted files -->
+  <!--<?php versionizeStart(); ?>-->
   
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { "polyfillEnable": ["css-modules", "json-modules"] }</script>
@@ -24,19 +24,11 @@
     }
     </script>
   
-    <!--<?php $imports = ob_get_clean();
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-    echo versionizeFiles($imports, __DIR__); ?>-->
-  
-    <!--<?php ob_start();?>-->
-  
     <link rel="modulepreload" href="/_common/components/remiscan-logo/remiscan-logo.js">
     <link rel="modulepreload" href="/_common/components/remiscan-logo/template.js">
     <!-- CSS modules not supported in modulepreload yet 😢 -->
   
-    <!--<?php $imports = ob_get_clean();
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/_common/php/versionize-files.php';
-    echo versionizeFiles($imports, __DIR__); ?>-->
+    <!--<?php versionizeEnd(__DIR__); ?>-->
 
     <style>
       /*<?php ob_start();?>*/
