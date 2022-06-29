@@ -14,14 +14,14 @@ function buildThemesStylesheet(string $body, string $default = 'light', bool $cl
 
     $css = "";
     if ($closeComment) $css .= "*/";
-    $css .= "\n" . $selector . " {" . $matches[$default][0] . "}\n\n";
+    $css .= "\n" . $selector . " {" . $matches[$default][$i] . "}\n\n";
     if ($default == 'dark') {
       $css .= "@media (prefers-color-scheme: light) {\n" . $selector . " {" . $matches['light'][$i] . "}\n}\n\n";
     } else {
       $css .= "@media (prefers-color-scheme: dark) {\n" . $selector . " {" . $matches['dark'][$i] . "}\n}\n\n";
     }
-    $css .= ":root[data-theme=\"light\"] " . $matches['selector'][0] . " {" . $matches['light'][$i] . "}\n\n";
-    $css .= ":root[data-theme=\"dark\"] " . $matches['selector'][0] . " {" . $matches['dark'][$i] . "}\n";
+    $css .= ":root[data-theme=\"light\"] " . $matches['selector'][$i] . " {" . $matches['light'][$i] . "}\n\n";
+    $css .= ":root[data-theme=\"dark\"] " . $matches['selector'][$i] . " {" . $matches['dark'][$i] . "}\n";
     if ($closeComment) $css .= "/*";
   
     $blocks[] = $css;
