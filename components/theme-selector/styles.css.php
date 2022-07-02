@@ -72,7 +72,7 @@ theme-selector > button {
   }
 
   /* - Étape 2 : le soleil rétrécit */
-  theme-selector .sun-size {
+  theme-selector .sun {
     transform: scale(.5);
     transition: transform var(--sun-resize) ease;
     transition-delay: calc(.5 * var(--moon-hole-disparition));
@@ -90,7 +90,7 @@ theme-selector > button {
   /* Si on affiche l'icône du thème opposé */
 
   /* - Étape 1 : le soleil s'agrandit */
-  theme-selector[icon="reverse"] .sun-size {
+  theme-selector[icon="reverse"] .sun {
     transform: scale(1);
     transition: transform var(--sun-resize) ease;
     transition-delay: 0s;
@@ -102,7 +102,7 @@ theme-selector > button {
     transform: scale(.5);
     transition: transform .15s ease-in,
                 opacity .15s ease-in;
-    transition-delay: calc(var(--n) * 30ms);
+    transition-delay: 0s;
   }
 
   /* - Étape 3 : le soleil devient lune */
@@ -126,7 +126,7 @@ theme-selector > button {
   /* Si on affiche l'icône du thème en cours */
 
   /* - Étape 1 : le soleil s'agrandit */
-  theme-selector .sun-size {
+  theme-selector .sun {
     transform: scale(1);
     transition: transform var(--sun-resize) ease;
     transition-delay: 0s;
@@ -138,7 +138,7 @@ theme-selector > button {
     transform: scale(.5);
     transition: transform .15s ease-in,
                 opacity .15s ease-in;
-    transition-delay: calc(var(--n) * 30ms);
+    transition-delay: 0s;
   }
 
   /* - Étape 3 : le soleil devient lune */
@@ -158,7 +158,7 @@ theme-selector > button {
   }
 
   /* - Étape 2 : le soleil rétrécit */
-  theme-selector[icon="reverse"] .sun-size {
+  theme-selector[icon="reverse"] .sun {
     transform: scale(.5);
     transition: transform var(--sun-resize) ease;
     transition-delay: calc(.5 * var(--moon-hole-disparition));
