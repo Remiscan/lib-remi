@@ -1,7 +1,8 @@
 const template = document.createElement('template');
 template.innerHTML = `
 <button type="button">Start</button>
-<span class="rate">...</span>
+<span class="rate"></span>
+<span class="loading">...</span>
 `;
 
 
@@ -43,16 +44,24 @@ export class FramerateTester extends HTMLElement {
     this.shadow.querySelector('button').innerHTML = 'Stop';
 
     const span = this.shadow.querySelector('.rate');
+    const loading = this.shadow.querySelector('.loading');
+    loading.style.display = 'inline';
+    loading.innerHTML = '...';
+
+    let i = 0;
     while (!this.stopped) {
       const rate = await FramerateTester.averageRate();
+      loading.innerHTML = `${i === 1 ? '·' : '.'}${i === 2 ? '·' : '.'}${i === 3 ? '·' : '.'}`;
       span.innerHTML = `${rate} FPS`;
       console.log('Rate updated');
+      i = (i + 1) % 4;
     }
   }
 
   async stop() {
     this.stopped = true;
     this.shadow.querySelector('button').innerHTML = 'Start';
+    this.shadow.querySelector('.loading').style.display = 'none';
   }
 
 
