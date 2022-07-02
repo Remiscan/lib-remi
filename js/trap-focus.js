@@ -15,112 +15,70 @@ function loopThroughAllNodes(selector, callback = node => {}, rootElement = docu
 
 /** Re-enables a node to be focused. */
 const releaseNode = node => {
-  node.removeAttribute('data-trapped');
-  node.tabIndex = node.dataset.previousTabindex;
-  node.removeAttribute('data-previous-tabindex');
+  if (node.dataset.trapped === 'true') {
+    node.removeAttribute('data-trapped');
+    node.tabIndex = node.dataset.previousTabindex;
+    node.removeAttribute('data-previous-tabindex');
+  }
 };
 
 /** Prevents a node from being focused. */
 const trapNode = node => {
-  node.dataset.trapped = 'true';
-  node.dataset.previousTabindex = node.tabIndex;
-  node.tabIndex = -1;
+  if (node.dataset.trapped !== 'true') {
+    node.dataset.trapped = 'true';
+    node.dataset.previousTabindex = node.tabIndex;
+    node.tabIndex = -1;
+  }
 };
 
 
-/** Disables focus for all nodes outside of a container. */
-export function disableFocusOutside(container, { exceptions = [] } = {}) {
-  const disableFocusabilityOutside = node => {
+/** General function used by other focus-affecting functions. */
+function changeFocusability(container, callbackInside = () => {}, callbackOutside = () => {}, { exceptions = [] }) {
+  const callbackOnAllNodes = node => {
     if (exceptions.includes(node)) return;
 
     let element = node;
     while (element.getRootNode() !== document) element = element.getRootNode().host;
 
-    if (!container.contains(element)) trapNode(node);
+    if (container.contains(element)) callbackInside(node);
+    else                             callbackOutside(node);
   };
 
-  loopThroughAllNodes(potentiallyFocusableQuery, disableFocusabilityOutside);
+  loopThroughAllNodes(potentiallyFocusableQuery, callbackOnAllNodes);
+}
+
+
+/** Disables focus for all nodes outside of a container. */
+export function disableFocusOutside(container, options = {}) {
+  return changeFocusability(container, undefined, trapNode, options);
 }
 
 
 /** Disables focus for all nodes inside a container. */
-export function disableFocusInside(container, { exceptions = [] } = {}) {
-  const disableFocusabilityInside = node => {
-    if (exceptions.includes(node)) return;
-
-    let element = node;
-    while (element.getRootNode() !== document) element = element.getRootNode().host;
-    
-    if (container.contains(element)) trapNode(node);
-  };
-
-  loopThroughAllNodes(potentiallyFocusableQuery, disableFocusabilityInside);
+export function disableFocusInside(container, options = {}) {
+  return changeFocusability(container, trapNode, undefined, options);
 }
 
 
 /** Re-enables focus for all nodes outside of a container. */
-export function enableFocusOutside(container, { exceptions = [] } = {}) {
-  const enableFocusabilityOutside = node => {
-    if (exceptions.includes(node)) return;
-
-    let element = node;
-    while (element.getRootNode() !== document) element = element.getRootNode().host;
-
-    if (!container.contains(element)) releaseNode(node);
-  };
-
-  loopThroughAllNodes(potentiallyFocusableQuery, enableFocusabilityOutside);
+export function enableFocusOutside(container, options = {}) {
+  return changeFocusability(container, undefined, releaseNode, options);
 }
 
 
 /** Re-enables focus for all nodes inside a container. */
-export function enableFocusInside(container, { exceptions = [] } = {}) {
-  const enableFocusabilityInside = node => {
-    if (exceptions.includes(node)) return;
-
-    let element = node;
-    while (element.getRootNode() !== document) element = element.getRootNode().host;
-
-    if (container.contains(element)) releaseNode(node);
-  };
-
-  loopThroughAllNodes(potentiallyFocusableQuery, enableFocusabilityInside);
+export function enableFocusInside(container, options = {}) {
+  return changeFocusability(container, releaseNode, undefined, options);
 }
 
 
 /** Traps focus inside a container: disables it outside, enables it inside. */
-export function trapFocusIn(container, { exceptions = [] } = {}) {
-  const trapFocusability = node => {
-    if (exceptions.includes(node)) return;
-
-    let element = node;
-    while (element.getRootNode() !== document) element = element.getRootNode().host;
-    
-    if (container.contains(element)) {
-      if (node.matches('[data-trapped]')) releaseNode(node);
-    } else {
-      trapNode(node);
-    }
-  };
-
-  loopThroughAllNodes(potentiallyFocusableQuery, trapFocusability);
+export function trapFocusIn(container, options = {}) {
+  return changeFocusability(container, releaseNode, trapNode, options);
 }
 
 
 /** Re-enables focus outside of a container, disables it inside. */
-export function releaseFocusFrom(container, { exceptions = [] } = {}) {
-  const releaseFocusability = node => {
-    if (exceptions.includes(node)) return;
-    
-    let element = node;
-    while (element.getRootNode() !== document) element = element.getRootNode().host;
-    
-    if (container.contains(element)) {
-      trapNode(node);
-    } else {
-      if (node.matches('[data-trapped]')) releaseNode(node);
-    }
-  };
-
-  loopThroughAllNodes(potentiallyFocusableQuery, releaseFocusability);
+export function releaseFocusFrom(container, options = {}) {
+  return changeFocusability(container, trapNode, releaseNode, options);
 }
