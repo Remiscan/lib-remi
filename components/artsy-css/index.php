@@ -161,6 +161,7 @@
       <label for="effect-selection">Type:</label>
       <select id="effect-selection">
         <option value="diamond">Diamonds</option>
+        <option value="dot">Dots</option>
         <option value="square">Squares</option>
         <option value="labyrinth">Labyrinth</option>
         <option value="border">Borders</option>

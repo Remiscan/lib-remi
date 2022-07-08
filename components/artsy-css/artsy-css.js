@@ -127,6 +127,10 @@ class ArtsyCss extends HTMLElement {
         cell.style.setProperty('--decalage-y', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
       } break;
 
+      case 'dot': {
+        cell.style.setProperty('--scale', Math.round(100 * Math.random()) / 100);
+      } break;
+
       case 'square': {
         cell.style.setProperty('--scale', Math.round(100 * (2 - 1.5 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - .5 * Math.random())) / 100);
