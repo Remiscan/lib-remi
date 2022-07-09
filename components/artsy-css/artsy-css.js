@@ -119,7 +119,7 @@ class ArtsyCss extends HTMLElement {
 
     switch (this.type) {
 
-      case 'diamond': {
+      case 'diamonds': {
         cell.style.setProperty('--scale', Math.round(100 * (.6 - .5 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - 1 * Math.random())) / 100);
         cell.style.setProperty('--rotation', Math.round(4 * Math.random()));
@@ -127,11 +127,11 @@ class ArtsyCss extends HTMLElement {
         cell.style.setProperty('--decalage-y', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
       } break;
 
-      case 'dot': {
+      case 'dots': {
         cell.style.setProperty('--scale', Math.round(100 * Math.random()) / 100);
       } break;
 
-      case 'square': {
+      case 'squares': {
         cell.style.setProperty('--scale', Math.round(100 * (2 - 1.5 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - .5 * Math.random())) / 100);
         cell.style.setProperty('--rotation', Math.round(360 * Math.random()));
@@ -142,7 +142,7 @@ class ArtsyCss extends HTMLElement {
       } break;
 
       case 'labyrinth':
-      case 'border': {
+      case 'borders': {
         cell.style.setProperty('--scale', Math.round(100 * (.6 + 2 * .4 * Math.random())) / 100);
         cell.style.setProperty('--opacity', Math.round(100 * (1 - 1 * Math.random())) / 100);
         cell.style.setProperty('--rotation', Math.round(4 * Math.random()));

@@ -59,7 +59,7 @@
   transition-delay: calc(var(--random-order) * var(--cell-delay));
 }
 
-:host([type="border"]) > .cell::after {
+:host([type="borders"]) > .cell::after {
   width: 100%;
   height: 0;
   border-top: 4px var(--border-style) hsl(var(--hue), 100%, 50%);
@@ -82,7 +82,7 @@
     rotate(calc(-45deg + var(--rotation) * 90deg));
 }
 
-:host([type="diamond"]) > .cell::after {
+:host([type="diamonds"]) > .cell::after {
   width: 100%;
   height: 100%;
   background-color: hsl(var(--hue), 100%, 50%);
@@ -104,7 +104,8 @@
     scale(max(0.2, var(--scale, 1)));
 }
 
-:host([type="square"]) > .cell::after {
+:host([type="dots"]) > .cell::after {
+:host([type="squares"]) > .cell::after {
   width: 100%;
   height: calc(var(--height) * 100%);
   box-shadow: 0 0 0 calc(var(--epaisseur) * 1px) hsl(var(--hue), 100%, 50%);
