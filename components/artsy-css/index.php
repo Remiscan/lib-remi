@@ -188,7 +188,7 @@
     </p>
 
     <p>
-      <input type="checkbox" id="order" checked>
+      <input type="checkbox" id="order">
       <label for="order">Cell updates spread from click</label>
     </p>
 
