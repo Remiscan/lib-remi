@@ -105,6 +105,15 @@
 }
 
 :host([type="dots"]) > .cell::after {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: hsl(var(--hue), 100%, 50%);
+  transform-origin: center center;
+  transform: 
+    scale(var(--scale, 1));
+}
+
 :host([type="squares"]) > .cell::after {
   width: 100%;
   height: calc(var(--height) * 100%);

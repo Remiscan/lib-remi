@@ -128,7 +128,8 @@ class ArtsyCss extends HTMLElement {
       } break;
 
       case 'dots': {
-        cell.style.setProperty('--scale', Math.round(100 * Math.random()) / 100);
+        cell.style.setProperty('--scale', Math.round(100 * (.2 + .8 * Math.random())) / 100);
+      } break;
       } break;
 
       case 'squares': {
