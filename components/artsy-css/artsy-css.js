@@ -130,6 +130,11 @@ class ArtsyCss extends HTMLElement {
       case 'dots': {
         cell.style.setProperty('--scale', Math.round(100 * (.2 + .8 * Math.random())) / 100);
       } break;
+
+      case 'starfield': {
+        cell.style.setProperty('--scale', Math.round(100 * (.25 + .75 * Math.random())) / 100);
+        cell.style.setProperty('--decalage-x', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
+        cell.style.setProperty('--decalage-y', Math.round(-20 + 2 * 20 * Math.random()) + 'px');
       } break;
 
       case 'squares': {

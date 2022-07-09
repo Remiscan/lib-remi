@@ -94,14 +94,15 @@
     rotate(calc(-45deg + var(--rotation) * 90deg));
 }
 
-:host([type="dot"]) > .cell::after {
-  width: 5px;
-  height: 5px;
+:host([type="starfield"]) > .cell::after {
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background-color: hsl(var(--hue), 100%, 50%);
   transform-origin: center center;
   transform: 
-    scale(max(0.2, var(--scale, 1)));
+    translate3D(var(--decalage-x), var(--decalage-y), 0) 
+    scale(var(--scale, 1));
 }
 
 :host([type="dots"]) > .cell::after {

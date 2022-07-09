@@ -162,6 +162,7 @@
       <select id="effect-selection">
         <option value="diamonds">Diamonds</option>
         <option value="dots">Dots</option>
+        <option value="starfield">Star field</option>
         <option value="squares">Squares</option>
         <option value="labyrinth">Labyrinth</option>
         <option value="borders">Borders</option>
