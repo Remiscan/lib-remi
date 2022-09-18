@@ -28,11 +28,7 @@ export class MarkdownBlock extends HTMLElement {
     const markdownContent = this.innerHTML;
     await markdown.ready;
     const HTMLContent = markdown.parse(markdownContent);
-
-    const template = document.createElement('template');
-    template.innerHTML = HTMLContent;
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(template.content.cloneNode(true));
+    this.innerHTML = HTMLContent;
 
     this.setAttribute('parsed', '');
     this.parsed = true;
