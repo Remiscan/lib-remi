@@ -1,4 +1,4 @@
-<title>Frame rate test</title>
+<title>Markdown block</title>
 <meta name="viewport" content="width=device-width">
 
 <!-- ▼ Fichiers cache-busted grâce à PHP -->
