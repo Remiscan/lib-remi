@@ -65,14 +65,14 @@
 <h2 class="intro">This column is Markdown.</h2>
 <h2 class="intro">This column is HTML.</h2>
 
-<pre id="inert" contenteditable="true">
-# First example
+<pre id="inert">
+# Inert example
 
 Hello, I am an example.
 </pre>
 
 <markdown-block>
-# First example
+# Inert example
 
 Hello, I am an example.
 </markdown-block>
@@ -80,7 +80,7 @@ Hello, I am an example.
 <pre id="test" contenteditable="true">
 # Editable example
 
-## You can edit this example on the left side, and the markdown-block on the right will automatically be updated.
+## You can edit this example on the left side, and the block on the right will automatically be updated.
 
 A third of the distance across the Beach, the meadow ends and sand begins. This slopes gradually up for another third of the distance, to the foot of the sand hills, which seem tumbled into their places by some mighty power, sometimes three tiers of them deep, sometimes two, _and sometimes only one._ A third of the distance across the Beach, the meadow ends and sand begins.
 
