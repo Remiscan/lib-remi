@@ -2,6 +2,7 @@
 <script type="importmap">
 {
   "imports": {
+    "cancelable-async": "/_common/js/cancelable-async.js",
     "markdown-wasm": "/_common/components/markdown-block/markdown-wasm/markdown.es.js",
     "markdown-block": "/_common/components/markdown-block/markdown-block.js"
   }
@@ -9,7 +10,41 @@
 </script>
 */
 
+import { cancelableAsync } from 'cancelable-async';
 import * as Parser from 'markdown-wasm';
+
+
+
+/**
+ * Gets the content of the source element and converts it from Markdown to HTML.
+ * Defined as a generator to use it with cancelable-async, so that only the last instance per markdown-block proceeds.
+ * "this" refers to the markdown-block element doing the parsing.
+ */
+function* parseContent() {
+  if (this.parsed || this.parsing) return;
+  this.parsing = true;
+
+  // Get the content of the source element
+  const sourceID = this.getAttribute('source');
+  const source = document.getElementById(sourceID) || this;
+  if (this.source !== source) {
+    this.source = source;
+    if (this.source !== this) this.observeSource();
+  }
+
+  // Parse the source's content and inset it into the block
+  const markdown = this.source.innerHTML;
+  yield Parser.ready;
+  const html = Parser.parse(markdown);
+  yield;
+  this.innerHTML = html;
+  console.log('content parsed', this.source, Date.now());
+
+  // Mark the block as parsed
+  this.setAttribute('parsed', '');
+  this.parsed = true;
+  this.parsing = false;
+}
 
 
 
@@ -38,30 +73,8 @@ export class MarkdownBlock extends HTMLElement {
   }
 
 
-  /** Gets the content of the source element and converts it from Markdown to HTML. */
   async parseContent() {
-    if (this.parsed || this.parsing) return;
-    this.parsing = true;
-
-    // Get the content of the source element
-    const sourceID = this.getAttribute('source');
-    const source = document.getElementById(sourceID) || this;
-    if (this.source !== source) {
-      this.source = source;
-      if (this.source !== this) this.observeSource();
-    }
-
-    // Parse the source's content and inset it into the block
-    const markdown = this.source.innerHTML;
-    await Parser.ready;
-    const html = Parser.parse(markdown);
-    this.innerHTML = html;
-    console.log('content parsed', this.source, Date.now());
-
-    // Mark the block as parsed
-    this.setAttribute('parsed', '');
-    this.parsed = true;
-    this.parsing = false;
+    await cancelableAsync(parseContent.bind(this))();
   }
 
 
