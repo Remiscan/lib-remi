@@ -5,7 +5,12 @@
  * - now, f will stop when it reaches a yield and a newer instance of f has already been called
  */
 
-const warning = 'Function canceled ; a more recent iteration started';
+export class CanceledAsyncWarning extends Error {
+  constructor(...args) {
+    super('Function canceled ; a more recent iteration started', ...args);
+    this.name = 'CanceledAsyncWarning';
+  }
+}
 
 export function cancelableAsync(generator) {
   let check;
@@ -17,7 +22,7 @@ export function cancelableAsync(generator) {
       const next = iterator.next(lastValue);
       if (next.done) return next.value;
       lastValue = await next.value;
-      if (localCheck !== check) return warning;
+      if (localCheck !== check) throw new CanceledAsyncWarning();
     }
   }
 }
