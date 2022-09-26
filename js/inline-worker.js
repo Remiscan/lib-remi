@@ -1,5 +1,29 @@
+/* HOW TO USE :
+
+  import InlineWorker from 'inline-worker';
+
+  async function f(...args) {
+    // do stuff here
+    return result;
+  }
+
+  const inlineWorker = new InlineWorker(f);
+
+  // For example, run the function in the worker on a button click
+  const button = document.querySelector('button');
+  button.addEventListener('click', async event => {
+    const result = await inlineWorker.run(...args);
+    console.log(result);
+  });
+
+*/
+
 export default class InlineWorker {
-  constructor(asyncFunc) {
+  /**
+   * Makes a Worker by calling new InlineWorker().
+   * @param {function} asyncFunc - An async function that will be ran in the worker.
+   */
+  constructor(asyncFunc, options) {
     const workerScript = `f=${asyncFunc}; onmessage=${async e => {
       let result;
       try {
@@ -13,6 +37,11 @@ export default class InlineWorker {
     this.worker = new Worker(workerUrl);
   }
 
+  /**
+   * Messages the worker and gets a value back from it.
+   * @param  {...any} args - The arguments passed to the function ran in the worker.
+   * @returns The value returned by the function ran in the worker.
+   */
   async run(...args) {
     let handler;
     return await new Promise((resolve, reject) => {
