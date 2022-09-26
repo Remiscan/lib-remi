@@ -80,6 +80,7 @@ export class MarkdownBlock extends HTMLElement {
 
   /** Changes the source element. */
   observeSource() {
+    this.observer.disconnect();
     this.observer.observe(this.source, { characterData: true, subtree: true });
     console.log('observed:', this.source);
   }
