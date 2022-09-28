@@ -36,6 +36,7 @@ registerPaint('dot-cells', class {
         const scale = .25 * (.2 + .8 * random());
 
         const centre = origin
+          .translate(-.5 * cellSize, -.5 * cellSize)  // move origin to center of shape
           .translate(col * cellSize, row * cellSize)  // move shape to correct row and column
           ;
 
