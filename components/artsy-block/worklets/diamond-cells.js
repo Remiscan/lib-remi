@@ -60,8 +60,8 @@ registerPaint('diamond-cells', class {
       origin.translate(0, cellSize)
     ];
 
-    for (let row = -1; row <= rows + 1; row++) {
-      for (let col = -1; col <= columns + 1; col++) {
+    for (let row = -1; row < rows + 1; row++) {
+      for (let col = -1; col < columns + 1; col++) {
         const random = mulberry32(baseSeed * (row + 2) * (col + 2));
 
         // Only display frequency% of cells
@@ -77,7 +77,7 @@ registerPaint('diamond-cells', class {
         const angle = 45;
 
         const placedCorners = corners.map(point => point
-          .translate(-5 * cellSize, -5 * cellSize)    // move origin to center of shape
+          .translate(-.5 * cellSize, -.5 * cellSize)    // move origin to center of shape
           .scale(scale)                               // scale shape
           .rotate(angle)                              // rotate shape
           .translate(.5 * cellSize, .5 * cellSize)    // move origin back to top left of shape
