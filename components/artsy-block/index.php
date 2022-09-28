@@ -188,7 +188,7 @@
 
     <p>
       <label for="cell-size">Cell size:</label>
-      <input type="range" id="cell-size" min="10" max="200" step="1" value="40">
+      <input type="range" id="cell-size" min="20" max="200" step="1" value="40">
       <span class="cell-size-value">40px</span>
     </p>
 
