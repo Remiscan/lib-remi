@@ -60,69 +60,24 @@
     --angle-coeff: 1;
   }
 
-  artsy-block[type="borders"] > .cell::after {
-    width: 100%;
-    height: 0;
-    border-top: 4px var(--border-style) hsl(var(--hue), 100%, 50%);
-    opacity: var(--opacity, 1);
-    transform-origin: center center;
-    transform: 
-      translate3D(var(--decalage-x), var(--decalage-y), 0) 
-      scale(var(--scale, 1)) 
-      rotate(calc(-45deg + var(--rotation) * 90deg));
-  }
-
-  artsy-block[type="labyrinth"] > .cell::after {
-    width: 100%;
-    height: 0;
-    border-top: 2px solid hsl(var(--hue), 100%, 50%);
-    --scale: var(--labyrinth-scale);
-    transform-origin: center center;
-    transform: 
-      scale(var(--scale, 1)) 
-      rotate(calc(-45deg + var(--rotation) * 90deg));
-  }
-
   artsy-block[type="diamonds"] {
     background: paint(diamond-cells);
-    animation: rotate 2s linear infinite;
   }
 
-  artsy-block[type="starfield"] > .cell::after {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: hsl(var(--hue), 100%, 50%);
-    transform-origin: center center;
-    transform: 
-      translate3D(var(--decalage-x), var(--decalage-y), 0) 
-      scale(var(--scale, 1));
+  artsy-block[type="dots"] {
+    background: paint(dot-cells);
   }
 
-  artsy-block[type="dots"] > .cell::after {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: hsl(var(--hue), 100%, 50%);
-    transform-origin: center center;
-    transform: 
-      scale(var(--scale, 1));
+  artsy-block[type="big-dots"] {
+    background: paint(big-dot-cells);
   }
 
-  artsy-block[type="squares"] > .cell::after {
-    width: 100%;
-    height: calc(var(--height) * 100%);
-    box-shadow: 0 0 0 calc(var(--epaisseur) * 1px) hsl(var(--hue), 100%, 50%);
-    opacity: var(--opacity, 1);
-    transform-origin: center center;
-    transform: 
-      translate3D(var(--decalage-x), var(--decalage-y), 0) 
-      scale(var(--scale, 1)) 
-      rotate(calc(var(--rotation) * 1deg));
+  artsy-block[type="starfield"] {
+    background: paint(starfield);
   }
 
-  artsy-block:not([animate]) {
-    animation: none;
+  artsy-block[type="labyrinth"] {
+    background: paint(labyrinth);
   }
 
 }

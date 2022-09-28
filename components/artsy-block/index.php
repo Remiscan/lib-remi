@@ -18,7 +18,11 @@
     "imports": {
       "artsy-block": "/_common/components/artsy-block/artsy-block.js",
       "artsy-block-styles": "/_common/components/artsy-block/styles.css",
-      "diamond-cells-worklet": "/_common/components/artsy-block/worklets/diamond-cells.js"
+      "diamond-cells-worklet": "/_common/components/artsy-block/worklets/diamond-cells.js",
+      "dot-cells-worklet": "/_common/components/artsy-block/worklets/dot-cells.js",
+      "big-dot-cells-worklet": "/_common/components/artsy-block/worklets/big-dot-cells.js",
+      "starfield-worklet": "/_common/components/artsy-block/worklets/starfield.js",
+      "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js"
     }
   }
   </script>
@@ -101,13 +105,13 @@
     });
 
     // Cell animation
-    const inputAnimate = document.querySelector('input#animate');
+    /*const inputAnimate = document.querySelector('input#animate');
     inputAnimate.addEventListener('change', () => {
       for (const block of blocks) {
         if (inputAnimate.checked) block.setAttribute('animate', '');
         else block.removeAttribute('animate');
       }
-    });
+    });*/
 
     // Seed update request button
     const seedUpdateButton = document.querySelector('#request-update');
@@ -195,10 +199,10 @@
       <select id="effect-selection">
         <option value="diamonds">Diamonds</option>
         <option value="dots">Dots</option>
+        <option value="big-dots">Big dots</option>
         <option value="starfield">Star field</option>
-        <option value="squares">Squares</option>
         <option value="labyrinth">Labyrinth</option>
-        <option value="borders">Borders</option>
+        <option value="rain">Rain</option>
       </select>
     </p>
 
@@ -226,10 +230,10 @@
       <span class="hue-spread-value">30°</span>
     </p>
 
-    <p>
+    <!--<p>
       <input type="checkbox" id="animate">
       <label for="animate">Animate cells</label>
-    </p>
+    </p>-->
 
     <p>
       <button type="button" id="request-update">Change seed</button>
