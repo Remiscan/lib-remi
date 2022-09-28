@@ -1,3 +1,4 @@
+// Pseudorandom number generator
 function mulberry32(a) {
   return function() {
     a |= 0; a = a + 0x6D2B79F5 | 0;
@@ -6,6 +7,24 @@ function mulberry32(a) {
     return ((t ^ t >>> 14) >>> 0) / 4294967296;
   }
 }
+
+// Seed generating function
+function xmur3a(str) {
+  for(var k, i = 0, h = 2166136261 >>> 0; i < str.length; i++) {
+    k = Math.imul(str.charCodeAt(i), 3432918353); k = k << 15 | k >>> 17;
+    h ^= Math.imul(k, 461845907); h = h << 13 | h >>> 19;
+    h = Math.imul(h, 5) + 3864292196 | 0;
+  }
+  h ^= str.length;
+  return function() {
+    h ^= h >>> 16; h = Math.imul(h, 2246822507);
+    h ^= h >>> 13; h = Math.imul(h, 3266489909);
+    h ^= h >>> 16;
+    return h >>> 0;
+  }
+}
+
+
 
 class Point2D {
   constructor(x = 0, y = 0) {
@@ -43,7 +62,7 @@ registerPaint('diamond-cells', class {
   static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--max-hue-spread']; }
 
   paint(ctx, size, props) {
-    const baseSeed = Number(`${props.get('--base-seed')}`.replace(/[\'\"]/g, ''));
+    const baseSeed = props.get('--base-seed');
 
     const cellSize = Math.max(3, Number(props.get('--cell-size'))) || 40;
     const frequency = Number(props.get('--frequency')) ?? 100;
@@ -62,7 +81,8 @@ registerPaint('diamond-cells', class {
 
     for (let row = -1; row < rows + 1; row++) {
       for (let col = -1; col < columns + 1; col++) {
-        const random = mulberry32(baseSeed * (row + 2) * (col + 2));
+        const seed = xmur3a(`${baseSeed} row ${row} col ${col}`);
+        const random = mulberry32(seed());
 
         // Only display frequency% of cells
         const rand = Math.ceil(random() * 100);

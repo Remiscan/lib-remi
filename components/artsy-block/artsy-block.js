@@ -10,9 +10,6 @@
 */
 
 import sheet from 'artsy-block-styles' assert { type: 'css' };
-import { xmur3a } from 'prng';
-
-const seed = xmur3a(String(Date.now()));
 
 
 
@@ -23,7 +20,7 @@ class ArtsyBlock extends HTMLElement {
   }
 
   updateBaseSeed() {
-    this.baseSeed = seed();
+    this.baseSeed = Date.now();
     this.style.setProperty('--base-seed', `'${this.baseSeed}'`);
   }
 
