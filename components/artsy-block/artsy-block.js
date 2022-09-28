@@ -10,7 +10,7 @@
 */
 
 import sheet from 'artsy-block-styles' assert { type: 'css' };
-import { xmur3a } from '/_common/js/prng.js';
+import { xmur3a } from 'prng';
 
 const seed = xmur3a(String(Date.now()));
 

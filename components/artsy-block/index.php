@@ -18,7 +18,8 @@
     "imports": {
       "artsy-block": "/_common/components/artsy-block/artsy-block.js",
       "artsy-block-styles": "/_common/components/artsy-block/styles.css",
-      "diamond-cells-worklet": "/_common/components/artsy-block/worklets/diamond-cells.js"
+      "diamond-cells-worklet": "/_common/components/artsy-block/worklets/diamond-cells.js",
+      "prng": "/_common/js/prng.js"
     }
   }
   </script>
