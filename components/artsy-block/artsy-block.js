@@ -24,16 +24,41 @@ class ArtsyBlock extends HTMLElement {
     this.style.setProperty('--base-seed', `'${this.baseSeed}'`);
   }
 
+  static get workletImportNames() {
+    return new Map([
+      ['diamonds', 'diamond-cells-worklet']
+    ]);
+  }
+
+  registerWorklet(type) {
+    const importName = ArtsyBlock.workletImportNames.get(type);
+
+    if (importName) {
+      try {
+        CSS.paintWorklet.addModule(import.meta.resolve(importName));
+      } catch (e) {}
+    }
+  }
+
   connectedCallback() {
     // Add HTML and CSS to the element
     if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
+    this.registerWorklet(this.getAttribute('type'));
     this.addEventListener('updaterequest', this.updateBaseSeed);
   }
 
   disconnectedCallback() {
     this.removeEventListener('updaterequest', this.updateBaseSeed);
+  }
+
+  attributeChangedCallback(attr, oldValue, newValue) {
+    switch (attr) {
+      case 'type': {
+        this.registerWorklet(newValue);
+      } break;
+    }
   }
 
   editCell(cell) {
@@ -81,5 +106,3 @@ class ArtsyBlock extends HTMLElement {
 }
 
 if (!customElements.get('artsy-block')) customElements.define('artsy-block', ArtsyBlock);
-
-CSS.paintWorklet.addModule(import.meta.resolve('diamond-cells-worklet'));
