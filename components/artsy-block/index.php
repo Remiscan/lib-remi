@@ -45,6 +45,19 @@
       }
     });
 
+    // Size of cells
+    const cellSizeInput = document.querySelector('input#cell-size');
+    cellSizeInput.addEventListener('change', () => {
+      const value = cellSizeInput.value;
+      for (const block of blocks) {
+        block.style.setProperty('--cell-size', value);
+      }
+    });
+    cellSizeInput.addEventListener('input', () => {
+      const value = cellSizeInput.value;
+      document.querySelector('.cell-size-value').innerHTML = `${value}px`;
+    });
+
     // Frequency of cells
     const frequencyInput = document.querySelector('input#frequency');
     frequencyInput.addEventListener('change', () => {
@@ -171,6 +184,12 @@
         <option value="labyrinth">Labyrinth</option>
         <option value="borders">Borders</option>
       </select>
+    </p>
+
+    <p>
+      <label for="cell-size">Cell size:</label>
+      <input type="range" id="cell-size" min="10" max="200" step="1" value="40">
+      <span class="cell-size-value">40px</span>
     </p>
 
     <p>
