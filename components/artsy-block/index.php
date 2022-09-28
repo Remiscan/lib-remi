@@ -138,6 +138,7 @@
     grid-column: 1 / -1;
     resize: both;
     overflow: hidden;
+    box-shadow: 0 0 0 2px white;
   }
 
   .options {
