@@ -125,10 +125,8 @@
 
 <style>
   html {
-    width: 100vw;
-    width: 100lvw;
-    height: 100vh;
-    height: 100lvh;
+    width: 100%;
+    height: 100%;
     color-scheme: dark light;
   }
 
