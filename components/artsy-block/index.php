@@ -49,7 +49,7 @@
 
     // Size of cells
     const cellSizeInput = document.querySelector('input#cell-size');
-    cellSizeInput.addEventListener('change', () => {
+    cellSizeInput.addEventListener('input', () => {
       const value = cellSizeInput.value;
       for (const block of blocks) {
         block.style.setProperty('--cell-size', value);
@@ -62,7 +62,7 @@
 
     // Frequency of cells
     const frequencyInput = document.querySelector('input#frequency');
-    frequencyInput.addEventListener('change', () => {
+    frequencyInput.addEventListener('input', () => {
       const value = frequencyInput.value;
       for (const block of blocks) {
         block.style.setProperty('--frequency', value);
@@ -75,7 +75,7 @@
 
     // Base hue of cells
     const hueInput = document.querySelector('input#hue');
-    hueInput.addEventListener('change', () => {
+    hueInput.addEventListener('input', () => {
       const value = hueInput.value;
       for (const block of blocks) {
         block.style.setProperty('--base-hue', value);
@@ -89,7 +89,7 @@
 
     // Max hue spread of cells
     const hueSpreadInput = document.querySelector('input#hue-spread');
-    hueSpreadInput.addEventListener('change', () => {
+    hueSpreadInput.addEventListener('input', () => {
       const value = hueSpreadInput.value;
       for (const block of blocks) {
         block.style.setProperty('--max-hue-spread', value);
