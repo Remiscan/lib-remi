@@ -144,6 +144,10 @@
     accent-color: hsl(var(--hue), 100%, 80%);
   }
 
+  artsy-block:not(:defined) {
+    display: none;
+  }
+
   artsy-block {
     grid-row: 1 / -1;
     grid-column: 1 / -1;
