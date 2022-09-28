@@ -1,8 +1,38 @@
 @layer artsy-block {
 
+  @property --cell-size {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 40;
+  }
+
+  @property --frequency {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 100;
+  }
+
+  @property --base-hue {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+  }
+
+  @property --max-hue-spread {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 180;
+  }
+
+  @property --angle-coeff {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+  }
+
   @keyframes rotate {
-    0% { transform: rotate(0) }
-    100% { transform: rotate(360deg) }
+    0% { --angle-coeff: 1 }
+    100% { --angle-coeff: 3 }
   }
 
   artsy-block {
@@ -13,7 +43,7 @@
     --frequency: 100;
     --base-hue: 260;
     --max-hue-spread: 30;
-    --cell-delay: .01s;
+    --angle-coeff: 1;
   }
 
   artsy-block[type="borders"] > .cell::after {
@@ -41,6 +71,7 @@
 
   artsy-block[type="diamonds"] {
     background: paint(diamond-cells);
+    animation: rotate 2s linear infinite;
   }
 
   artsy-block[type="starfield"] > .cell::after {
@@ -76,9 +107,8 @@
       rotate(calc(var(--rotation) * 1deg));
   }
 
-  artsy-block[filter] > .cell::after {
-    transform: none;
-    background-color: hsl(var(--hue), 80%, 30%);
+  artsy-block:not([animate]) {
+    animation-play-state: paused;
   }
 
 }

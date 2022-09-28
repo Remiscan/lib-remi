@@ -100,6 +100,15 @@
       document.querySelector('.hue-spread-value').innerHTML = `${value}°`;
     });
 
+    // Cell animation
+    const inputAnimate = document.querySelector('input#animate');
+    inputAnimate.addEventListener('change', () => {
+      for (const block of blocks) {
+        if (inputAnimate.checked) block.setAttribute('animate', '');
+        else block.removeAttribute('animate');
+      }
+    });
+
     // Seed update request button
     const seedUpdateButton = document.querySelector('#request-update');
     seedUpdateButton.addEventListener('click', event => {
@@ -211,6 +220,11 @@
       <label for="hue-spread">Max hue spread:</label>
       <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
       <span class="hue-spread-value">30°</span>
+    </p>
+
+    <p>
+      <input type="checkbox" id="animate">
+      <label for="animate">Animate cells</label>
     </p>
 
     <p>

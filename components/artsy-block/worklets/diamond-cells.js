@@ -5,13 +5,14 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('diamond-cells', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--max-hue-spread']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--max-hue-spread', '--angle-coeff']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
 
     const cellSize = Math.max(3, Number(props.get('--cell-size'))) || 40;
     const frequency = Number(props.get('--frequency')) ?? 100;
+    const angleCoeff = Number(props.get('--angle-coeff'));
 
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
@@ -40,7 +41,7 @@ registerPaint('diamond-cells', class {
         }
 
         const scale = Math.round(100 * (.6 - .5 * random())) / 100;
-        const angle = 45;
+        const angle = (random() > .5 ? 1 : -1) * angleCoeff * 45;
 
         const placedCorners = corners.map(point => point
           .translate(-.5 * cellSize, -.5 * cellSize)    // move origin to center of shape
