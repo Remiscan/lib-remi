@@ -18,6 +18,18 @@
     initial-value: 0;
   }
 
+  @property --base-saturation {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 100;
+  }
+
+  @property --base-lightness {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 50;
+  }
+
   @property --max-hue-spread {
     syntax: "<number>";
     inherits: false;
@@ -42,6 +54,8 @@
     --cell-size: 40;
     --frequency: 100;
     --base-hue: 260;
+    --base-saturation: 100;
+    --base-lightness: 50;
     --max-hue-spread: 30;
     --angle-coeff: 1;
   }
