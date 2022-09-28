@@ -1,3 +1,7 @@
+/**
+ * Creates a point with x and y coordinates in 2D space.
+ * Transform methods are available to translate, rotate and scale the point (relative to the origin { x: 0, y: 0 }).
+ */
 export class Point2D {
   constructor(x = 0, y = 0) {
     this.x = x;
