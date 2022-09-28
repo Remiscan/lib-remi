@@ -108,7 +108,7 @@
   }
 
   artsy-block:not([animate]) {
-    animation-play-state: paused;
+    animation: none;
   }
 
 }
