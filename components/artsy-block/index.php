@@ -238,5 +238,9 @@
     <p>
       <button type="button" id="request-update">Change seed</button>
     </p>
+
+    <p>
+      <a href="/_common/components/artsy-css/">Older &lt;div&gt;s version</a>
+    </p>
   </div>
 </details>
