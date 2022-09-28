@@ -48,7 +48,7 @@ registerPaint('diamond-cells', class {
         const angle = (random() > .5 ? 1 : -1) * angleCoeff * 45;
 
         const placedCorners = corners.map(point => point
-          .translate(-.5 * cellSize, -.5 * cellSize)    // move origin to center of shape
+          .translate(-.5 * cellSize, -.5 * cellSize)  // move origin to center of shape
           .scale(scale)                               // scale shape
           .rotate(angle)                              // rotate shape
           .translate(.5 * cellSize, .5 * cellSize)    // move origin back to top left of shape
