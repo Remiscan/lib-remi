@@ -14,7 +14,9 @@ registerPaint('diamond-cells', class {
   static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--max-hue-spread']; }
 
   paint(ctx, size, props) {
-    const cellSize = Math.max(3, Number(props.get('--cell-size'))) || 25;
+    const baseSeed = Number(`${props.get('--base-seed')}`.replace(/[\'\"]/g, ''));
+
+    const cellSize = Math.max(3, Number(props.get('--cell-size'))) || 40;
     const frequency = Number(props.get('--frequency')) ?? 100;
 
     const columns = Math.ceil(size.width / cellSize);

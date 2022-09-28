@@ -32,23 +32,26 @@
   <script type="module">
     import 'artsy-block';
 
-    const container = document.querySelector('artsy-block');
+    const blocks = document.querySelectorAll('artsy-block');
 
     // Listen to options changes
 
     // Type of effect
     const select = document.getElementById('effect-selection');
-    select.value = container.getAttribute('type'); // take initial value from the element itself
+    select.value = blocks[0].getAttribute('type'); // take initial value from the element itself
     select.addEventListener('input', () => {
-      container.setAttribute('previous-type', container.getAttribute('type'));
-      container.setAttribute('type', select.value);
+      for (const block of blocks) {
+        block.setAttribute('type', select.value);
+      }
     });
 
     // Frequency of cells
     const frequencyInput = document.querySelector('input#frequency');
     frequencyInput.addEventListener('change', () => {
       const value = frequencyInput.value;
-      container.style.setProperty('--frequency', value);
+      for (const block of blocks) {
+        block.style.setProperty('--frequency', value);
+      }
     });
     frequencyInput.addEventListener('input', () => {
       const value = frequencyInput.value;
@@ -59,7 +62,9 @@
     const hueInput = document.querySelector('input#hue');
     hueInput.addEventListener('change', () => {
       const value = hueInput.value;
-      container.style.setProperty('--base-hue', value);
+      for (const block of blocks) {
+        block.style.setProperty('--base-hue', value);
+      }
       document.body.style.setProperty('--hue', value);
     });
     hueInput.addEventListener('input', () => {
@@ -71,11 +76,21 @@
     const hueSpreadInput = document.querySelector('input#hue-spread');
     hueSpreadInput.addEventListener('change', () => {
       const value = hueSpreadInput.value;
-      container.style.setProperty('--max-hue-spread', value);
+      for (const block of blocks) {
+        block.style.setProperty('--max-hue-spread', value);
+      }
     });
     hueSpreadInput.addEventListener('input', () => {
       const value = hueSpreadInput.value;
       document.querySelector('.hue-spread-value').innerHTML = `${value}°`;
+    });
+
+    // Seed update request button
+    const seedUpdateButton = document.querySelector('#request-update');
+    seedUpdateButton.addEventListener('click', event => {
+      for (const block of blocks) {
+        block.dispatchEvent(new Event('updaterequest'));
+      }
     });
   </script>
 </head>
@@ -120,6 +135,7 @@
     background-color: rgb(0, 0, 0, .6);
     border-radius: 0 0 20px 0;
     box-sizing: border-box;
+    position: fixed;
   }
 
   .options > summary {
@@ -145,8 +161,6 @@
   <summary>Options</summary>
 
   <div class="options-content">
-    <p>Click anywhere to randomize the cells.</p>
-
     <p>
       <label for="effect-selection">Type:</label>
       <select id="effect-selection">
@@ -175,6 +189,10 @@
       <label for="hue-spread">Max hue spread:</label>
       <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
       <span class="hue-spread-value">30°</span>
+    </p>
+
+    <p>
+      <button type="button" id="request-update">Change seed</button>
     </p>
   </div>
 </details>

@@ -19,13 +19,12 @@ const seed = xmur3a(String(Date.now()));
 class ArtsyBlock extends HTMLElement {
   constructor() {
     super();
-    
     this.updateBaseSeed();
   }
 
   updateBaseSeed() {
     this.baseSeed = seed();
-    this.style.setProperty('--base-seed', this.baseSeed);
+    this.style.setProperty('--base-seed', `'${this.baseSeed}'`);
   }
 
   connectedCallback() {
@@ -33,11 +32,11 @@ class ArtsyBlock extends HTMLElement {
     if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
-    //this.addEventListener('click', this.updateBaseSeed);
+    this.addEventListener('updaterequest', this.updateBaseSeed);
   }
 
   disconnectedCallback() {
-    //this.removeEventListener('click', this.updateBaseSeed);
+    this.removeEventListener('updaterequest', this.updateBaseSeed);
   }
 
   editCell(cell) {
