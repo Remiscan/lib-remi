@@ -24,6 +24,9 @@
   </script>
   
   <link rel="modulepreload" href="/_common/components/artsy-block/artsy-block.js">
+  <link rel="preload" as="style" href="/_common/components/artsy-block/styles.css">
+  <link rel="modulepreload" href="/_common/js/geometry.js">
+  <link rel="modulepreload" href="/_common/js/prng.js">
   <!-- CSS modules not supported in modulepreload yet 😢 -->
 
   <!--<?php versionizeEnd(__DIR__); ?>-->
