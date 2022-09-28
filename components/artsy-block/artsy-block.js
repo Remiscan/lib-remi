@@ -3,7 +3,13 @@
 {
   "imports": {
     "artsy-block": "/_common/components/artsy-block/artsy-block.js",
-    "artsy-block-styles": "/_common/components/artsy-block/styles.css"
+    "artsy-block-styles": "/_common/components/artsy-block/styles.css",
+    "diamond-cells-worklet": "/_common/components/artsy-block/worklets/diamond-cells.js",
+    "dot-cells-worklet": "/_common/components/artsy-block/worklets/dot-cells.js",
+    "big-dot-cells-worklet": "/_common/components/artsy-block/worklets/big-dot-cells.js",
+    "starfield-worklet": "/_common/components/artsy-block/worklets/starfield.js",
+    "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js",
+    "rainfall-worklet": "/_common/components/artsy-block/worklets/rainfall.js"
   }
 }
 </script>

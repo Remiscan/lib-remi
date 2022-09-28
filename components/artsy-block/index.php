@@ -200,7 +200,7 @@
         <option value="big-dots">Big dots</option>
         <option value="starfield">Star field</option>
         <option value="labyrinth">Labyrinth</option>
-        <option value="rain">Rain</option>
+        <option value="rainfall">Rainfall</option>
       </select>
     </p>
 
