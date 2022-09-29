@@ -73,6 +73,7 @@
   }
 
   artsy-block[type="starfield"] {
+    --base-saturation: 30;
     background: paint(starfield);
   }
 

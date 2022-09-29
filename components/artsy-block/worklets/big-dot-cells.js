@@ -38,8 +38,12 @@ registerPaint('big-dot-cells', class {
 
         // Randomize cell color
         const hue = baseHue + (-1 + 2 * random()) * maxHueSpread;
+        const maxSaturationSpread = 40;
+        const saturation = baseSaturation - (maxSaturationSpread * random());
+        const maxLightnessSpread = 20;
+        const lightness = baseLightness + (-1 + 2 * random()) * maxLightnessSpread;
         const opacity = 1;
-        ctx.fillStyle = `hsl(${hue}, ${baseSaturation}%, ${baseLightness}%, ${opacity})`;
+        ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
 
         // Draw the cell
         ctx.beginPath();
