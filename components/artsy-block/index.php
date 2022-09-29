@@ -200,7 +200,7 @@
   }
 </style>
 
-<artsy-block type="rainfall"></artsy-block>
+<artsy-block type="diamonds"></artsy-block>
 
 <details class="options" open>
   <summary>Options</summary>
