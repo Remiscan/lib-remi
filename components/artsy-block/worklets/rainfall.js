@@ -87,13 +87,19 @@ registerPaint('rainfall', class {
         // Randomize cell color
         const hue = baseHue + (-1 + 2 * random()) * maxHueSpread;
 
+        // Time between the bottom and the top of the rain drop touch the ground
+        const crashDuration = (dropHeight / size.height) * fallDuration;
+
         /* RAIN DROP falling */
 
-        if (progress <= fallDuration) {
+        if (progress <= fallDuration + crashDuration) {
           const fallProgress = progress;
           const coeffProgress = fallProgress / fallDuration;
 
-          const endPoint = wave[2]
+          // Scaling factor for the rain drop WHILE it's crashing to the ground
+          const crashProgressCoeff = Math.max(0, progress - fallDuration) / crashDuration;
+
+          const endPoint = wave[0]
             .translate(offset.x, offset.y)              // move shape by random offset
             .translate(col * cellSize, row * cellSize)  // move shape to correct row and column
             .scale(1, .5, 1)                            // scale "ground" to be half of the screen
@@ -102,24 +108,33 @@ registerPaint('rainfall', class {
             .translate(0, size.height)                  // move "ground" to bottom of the screen
             ;
 
+          const distanceCoeff = endPoint.y / size.height;
+
           const startPoint = new Point2D(
-            endPoint.x - fallDistanceX,
-            -dropHeight
+            endPoint.x - fallDistanceX * distanceCoeff,
+            0
           );
 
           const currentPoint = new Point2D(
-            startPoint.x + (endPoint.x - startPoint.x) * coeffProgress,
-            startPoint.y + (endPoint.y - startPoint.y) * coeffProgress
+            startPoint.x + (endPoint.x - startPoint.x) * Math.min(coeffProgress, 1),
+            startPoint.y + (endPoint.y - startPoint.y) * Math.min(coeffProgress, 1)
           );
 
           // Ignore rain drops that are out of screen
           if (currentPoint.x < 0 || currentPoint.x > size.width) continue;
 
           const corners = drop.map(point => point
-            .translate(-.5 * dropWidth, -.5 * dropHeight) // move origin to center of shape
+            .translate(-.5 * dropWidth, -dropHeight)      // move origin to bottom center of shape
             .scale(depthScale, depthScale, 1)             // scale shape according to depth
+            .scale(1, 1 - crashProgressCoeff, 1)          // scale drop while crashing
+            .translate(.5 * dropWidth, dropHeight)        // move origin back to top left of shape
+            .translate(-.5 * dropWidth, -.5 * dropHeight) // move origin to center of shape
             .rotate(fallAngle)                            // rotate rain drop according to fall angle
-            .translate(currentPoint.x, currentPoint.y)  // move rain drop to current point
+            .translate(
+              Math.sign(fallAngle) * Math.abs(.5 * dropHeight * Math.sin(fallAngle * Math.PI / 180)),
+              -.5 * dropHeight * Math.cos(fallAngle * Math.PI / 180)
+            ) // move origin to bottom center of rain drop (after scaling and rotation!)
+            .translate(currentPoint.x, currentPoint.y)    // move rain drop to current point
           );
 
           // Draw the rain drop
@@ -135,7 +150,7 @@ registerPaint('rainfall', class {
 
         /* WAVE where the rain drop fell */
 
-        else {
+        if (progress > fallDuration) {
           const waveProgress = progress - fallDuration;
           const coeffProgress = waveProgress / waveDuration;
 
