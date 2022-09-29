@@ -41,7 +41,7 @@ registerPaint('labyrinth', class {
         if (rand > frequency) continue;
 
         const angle = -45 + (Math.round(3 * random()) % 4) * 90;
-        const scale = (Math.sqrt(2) * cellSize + 3 * 1) / cellSize;
+        const scale = (Math.sqrt(2) * cellSize + 2 * 1) / cellSize;
 
         const placedCorners = corners.map(point => point
           .translate(-.5 * cellSize, -.5 * borderWidth) // move origin to center of shape
