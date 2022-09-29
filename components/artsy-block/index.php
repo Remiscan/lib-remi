@@ -163,7 +163,7 @@
     grid-column: 1;
     place-self: start;
     z-index: 2;
-    background-color: rgb(255, 255, 255, .6);
+    background-color: rgb(255, 255, 255, .8);
     border-radius: 0 0 20px 0;
     box-sizing: border-box;
     position: fixed;
