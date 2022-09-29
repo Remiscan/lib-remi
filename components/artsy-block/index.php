@@ -206,6 +206,10 @@
   <summary>Options</summary>
 
   <div class="options-content">
+    <script>
+      if (!('paintWorklet' in CSS)) { document.write(`<p>Not supported in your browser yet 😭, sorry!</p>`); }
+    </script>
+
     <p>
       <label for="effect-selection">Type:</label>
       <select id="effect-selection">
