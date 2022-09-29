@@ -22,7 +22,8 @@
       "dot-cells-worklet": "/_common/components/artsy-block/worklets/dot-cells.js",
       "big-dot-cells-worklet": "/_common/components/artsy-block/worklets/big-dot-cells.js",
       "starfield-worklet": "/_common/components/artsy-block/worklets/starfield.js",
-      "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js"
+      "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js",
+      "rainfall-worklet": "/_common/components/artsy-block/worklets/rainfall.js"
     }
   }
   </script>
@@ -199,7 +200,7 @@
   }
 </style>
 
-<artsy-block type="diamonds"></artsy-block>
+<artsy-block type="rainfall"></artsy-block>
 
 <details class="options" open>
   <summary>Options</summary>

@@ -36,7 +36,8 @@ class ArtsyBlock extends HTMLElement {
       ['dots', 'dot-cells-worklet'],
       ['big-dots', 'big-dot-cells-worklet'],
       ['starfield', 'starfield-worklet'],
-      ['labyrinth', 'labyrinth-worklet']
+      ['labyrinth', 'labyrinth-worklet'],
+      ['rainfall', 'rainfall-worklet']
     ]);
   }
 

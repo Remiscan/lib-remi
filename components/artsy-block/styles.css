@@ -42,9 +42,20 @@
     initial-value: 1;
   }
 
+  @property --anim-progress {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+  }
+
   @keyframes rotate {
     0% { --angle-coeff: 1 }
     100% { --angle-coeff: 3 }
+  }
+
+  @keyframes progress {
+    0% { --anim-progress: 0; }
+    100% { --anim-progress: 1; }
   }
 
   artsy-block {
@@ -86,6 +97,21 @@
 
   artsy-block[type="labyrinth"] {
     background: paint(labyrinth);
+  }
+
+  artsy-block[type="rainfall"] {
+    --base-lightness: 20;
+    --fall-duration: 1500; /* ms */
+    --wave-duration: 500; /* ms */
+    --anim-duration: calc(var(--fall-duration) * 1ms + var(--wave-duration) * 1ms);
+    background: paint(rainfall);
+    animation: progress var(--anim-duration) linear infinite;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    artsy-block[type="rainfall"] {
+      --base-lightness: 80;
+    }
   }
 
 }
