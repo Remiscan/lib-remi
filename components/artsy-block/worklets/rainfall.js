@@ -77,11 +77,11 @@ registerPaint('rainfall', class {
 
         // Make drops and waves smaller when they're in the distance
         const depth = (rows - row) / rows;
-        const depthMinScale = .6;
+        const depthMinScale = .5;
         const depthScale = 1 - depth * (1 - depthMinScale);
 
         // Make drops and waves more transparent when they're in the distance
-        const depthMinOpacity = .6;
+        const depthMinOpacity = .5;
         const depthOpacity = 1 - depth * (1 - depthMinOpacity);
 
         // Randomize cell color
