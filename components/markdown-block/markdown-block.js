@@ -20,25 +20,26 @@ import * as Parser from 'markdown-wasm';
  * Defined as a generator to use it with cancelable-async, so that only the last instance per markdown-block proceeds.
  * "this" refers to the markdown-block element doing the parsing.
  */
-function* parseContent() {
+function* parseContent(content) {
   if (this.parsed || this.parsing) return;
   this.parsing = true;
 
   // Get the content of the source element
-  const sourceID = this.getAttribute('source');
-  const source = document.getElementById(sourceID) || this;
-  if (this.source !== source) {
-    this.source = source;
-    if (this.source !== this) this.observeSource();
+  if (!content) {
+    const sourceID = this.getAttribute('source');
+    const source = document.getElementById(sourceID) ?? this;
+    if (this.source !== source) {
+      this.source = source;
+      this.observeSource();
+    }
   }
 
   // Parse the source's content and inset it into the block
-  const markdown = this.source.innerHTML;
+  const markdown = content ?? this.source.innerHTML;
   yield Parser.ready;
   const html = Parser.parse(markdown);
   yield;
   this.innerHTML = html;
-  console.log('content parsed', this.source, Date.now());
 
   // Mark the block as parsed
   this.setAttribute('parsed', '');
@@ -73,25 +74,30 @@ export class MarkdownBlock extends HTMLElement {
   }
 
 
-  async parseContent() {
-    await cancelableAsync(parseContent.bind(this))();
+  async parseContent(content) {
+    await cancelableAsync(parseContent.bind(this))(content);
+  }
+
+  async updateContent(content) {
+    this.parsed = false;
+    this.removeAttribute('parsed');
+
+    return this.parseContent(content);
   }
 
 
   /** Changes the source element. */
   observeSource() {
     this.observer.disconnect();
-    this.observer.observe(this.source, { characterData: true, subtree: true });
-    console.log('observed:', this.source);
+    if (this.source) {
+      this.observer.observe(this.source, { characterData: true, subtree: true });
+    }
   }
 
 
   connectedCallback() {
-    // If a source element is already defined, observe it.
-    if (this.source && this.source !== this) this.observeSource();
-
-    // If no source element is defined, markdown-block is its own source element. Parse its content.
-    else this.parseContent();
+    this.observeSource();
+    this.parseContent();
   }
 
   disconnectedCallback() {
@@ -107,11 +113,7 @@ export class MarkdownBlock extends HTMLElement {
     if (oldValue === newValue) return;
     switch (attr) {
       case 'source': {
-        // Reset the block's state
-        this.parsed = false;
-        this.removeAttribute('parsed');
-
-        this.parseContent();
+        this.updateContent();
       } break;
     }
   }
