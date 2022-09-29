@@ -24,8 +24,8 @@ registerPaint('rainfall', class {
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
 
-    const dropWidth = 1;
-    const dropHeight = 20;
+    const dropWidth = cellSize / 40;
+    const dropHeight = cellSize / 2;
 
     // Rain drop shape
     const origin = new Point2D(0, 0);
