@@ -69,13 +69,13 @@
 <pre id="inert">
 # Inert example
 
-Hello, I am an example.
+Simply write some markdown inside a &lt;markdown-block&gt; tag and it will be automatically converted to HTML.
 </pre>
 
 <markdown-block>
 # Inert example
 
-Hello, I am an example.
+Simply write some markdown inside a &lt;markdown-block&gt; tag and it will be automatically converted to HTML.
 </markdown-block>
 
 <pre id="test" contenteditable="true">
@@ -83,101 +83,94 @@ Hello, I am an example.
 
 ## You can edit this example on the left side, and the block on the right will automatically be updated.
 
-A third of the distance across the Beach, the meadow ends and sand begins. This slopes gradually up for another third of the distance, to the foot of the sand hills, which seem tumbled into their places by some mighty power, sometimes three tiers of them deep, sometimes two, _and sometimes only one._ A third of the distance across the Beach, the meadow ends and sand begins.
+&lt;markdown-block&gt; can also use another element as its source, and automatically convert that source's content to HTML. Try editing this example in the markdown column and see those changes reproduced in the HTML column!
 
-The outline of this inner shore is most irregular, curving and bending in and out and back upon itself, making coves and points and creeks and channels, and often pushing out in flats with not water enough on them at low tide to wet your ankles.
+---
 
-## Subtitle
+# Heading level 1
 
-This is another fine paragraph
+This is a paragraph.
 
-### Smaller subtitle
+This is another paragraph,
+with a line break.
 
-This is a paragraph `with` ~style~ *italic* _italic_ **bold** __bold__
+## Heading level 2
 
-![image](https://remiscan.fr/mon-portfolio/images/moi.jpg)
+### Heading level 3
 
-*Hello [link](https://remiscan.fr) lol*
+#### Heading level 4
 
-Hello [*link*](https://remiscan.fr) lol "cat"
+##### Heading level 5
 
-Hello from *[link](https://remiscan.fr)* to __everyone__ `reading this`
+###### Heading level 6
 
-Here's an [**important** anchor link](#example).
+Heading level 1
+===============
 
-line 1
-line 2
+Heading level 2
+---------------
 
-Code & Poetry
--------------
+- This is an unordered list.
+- ~Crossed out text~
+- *Italic text*
+- **Bold text**
+- ***Bold and italic text***
+- _Italic text_
+- __Bold text__
+- ___Bold and italic text***
+- [Link](#link)
 
-    You can also indent
-    blocks to display
-    code or poetry.
+* Another
+* unordered
+* list
+  * with a
+  * sub list
+* 👍
 
-    Indented code/poetry blocks
-    can be hard-wrapped.
++ Another
++ unordered
++ list.
 
-**Or, wrap your code in three backticks:**
+1. This is an ordered list with task lists in it.
+  + [x] Pasta
+  + [ ] Rice
+  + [ ] Bread
+2. And :
+  * [x] Shirt
+  * [ ] Pants
 
-```js
-function codeBlocks() {
-  return "Can be inserted"
-}
+***
+
+This is a paragraph with a `code` element in it.
+
+    This is a code block.
+    body {
+      color: red;
+    }
+  
+```javascript
+const text = 'This is also a code block';
+console.log(text);
 ```
 
-
-### Block Quotes
-
-> You can insert quotes by
-> preceeding each line with `>`.
+> This is a quote.
 >
-> Blockquotes can also contain line
-> breaks.
+>> This is a nested quote.
+>
+> - Remiscan, 2022
 
+_________________
 
-## Lists
+| Table     | with      | four        | columns
+|-----------|-----------|-------------|---------
+| One       | Two       | Three       | Four
+| Five      | Six       | Seven       | Eight
 
-### Unordered lists
+Here's an image:
 
-- Unordered
-- Lists
-- Hello
+![Photo of me](/mon-portfolio/images/moi.jpg)
 
-### Ordered lists
-
-1. Ordered
-2. Lists
-4. Numbers are ignored
-1. Ordered
-
-121) Ordered lists can start
-122) with any number and
-123) use . as well as ) as a separator.
-
-### Task lists
-
-- [ ] Task 1
-- [x] Task 2
-- [ ] Task 3
-- Regular list item
-
-## Tables
-
-| Column 1 | Column 2 | Column 3 | Column 4
-|----------|:---------|:--------:|---------:
-| default | left | center | right
-
-### Table of image file types
-
-| Header                    | Mime type    | Extensions | Description
-|---------------------------|--------------|------------|-------------
-| `89 50 4E 47 0D 0A 1A 0A` | image/png    | png        | PNG image
-| `47 49 46 38 39 61`       | image/gif    | gif        | GIF image
-| `FF D8 FF`                | image/jpeg   | jpg jpeg   | JPEG image
-| `4D 4D 00 2B`             | image/tiff   | tif tiff   | TIFF image
-| `42 4D`                   | image/bmp    | bmp        | Bitmap image
-| `00 00 01 00`             | image/x-icon | ico        | Icon image
+The end.
 </pre>
 
 
