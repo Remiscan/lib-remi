@@ -140,10 +140,10 @@
     grid-template-rows: 1fr;
     place-items: center;
     --hue: 260;
-    background-color: hsl(var(--hue), 30%, 8%);
     overflow: hidden;
-    color: white;
-    accent-color: hsl(var(--hue), 100%, 80%);
+    color: black;
+    background-color: hsl(var(--hue), 30%, 92%);
+    accent-color: hsl(var(--hue), 100%, 50%);
   }
 
   artsy-block:not(:defined) {
@@ -163,7 +163,7 @@
     grid-column: 1;
     place-self: start;
     z-index: 2;
-    background-color: rgb(0, 0, 0, .6);
+    background-color: rgb(255, 255, 255, .6);
     border-radius: 0 0 20px 0;
     box-sizing: border-box;
     position: fixed;
@@ -183,6 +183,19 @@
 
   .options-content > p {
     margin: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: hsl(var(--hue), 30%, 8%);
+      accent-color: hsl(var(--hue), 100%, 80%);
+      color: white;
+    }
+
+    .options {
+      background-color: rgb(255, 255, 255, .6);
+      background-color: rgb(0, 0, 0, .6);
+    }
   }
 </style>
 

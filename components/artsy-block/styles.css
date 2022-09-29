@@ -73,8 +73,15 @@
   }
 
   artsy-block[type="starfield"] {
-    --base-saturation: 30;
+    --base-saturation: 50;
+    --base-lightness: 30;
     background: paint(starfield);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    artsy-block[type="starfield"] {
+      --base-lightness: 70;
+    }
   }
 
   artsy-block[type="labyrinth"] {
