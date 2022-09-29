@@ -5,7 +5,7 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('rainfall', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--fall-duration', '--wave-duration', '--anim-progress']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--fall-duration', '--wave-duration', '--drop-width-ratio', '--drop-height-ratio', '--anim-progress']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
@@ -24,8 +24,8 @@ registerPaint('rainfall', class {
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
 
-    const dropWidth = cellSize / 40;
-    const dropHeight = cellSize / 2;
+    const dropWidth = cellSize / Number(props.get('--drop-width-ratio'));
+    const dropHeight = cellSize / Number(props.get('--drop-height-ratio'));
 
     // Rain drop shape
     const origin = new Point2D(0, 0);
