@@ -4,12 +4,7 @@
   "imports": {
     "artsy-block": "/_common/components/artsy-block/artsy-block.js",
     "artsy-block-styles": "/_common/components/artsy-block/styles.css",
-    "diamond-cells-worklet": "/_common/components/artsy-block/worklets/diamond-cells.js",
-    "dot-cells-worklet": "/_common/components/artsy-block/worklets/dot-cells.js",
-    "big-dot-cells-worklet": "/_common/components/artsy-block/worklets/big-dot-cells.js",
-    "starfield-worklet": "/_common/components/artsy-block/worklets/starfield.js",
-    "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js",
-    "rainfall-worklet": "/_common/components/artsy-block/worklets/rainfall.js"
+    "${type}-worklet": "/_common/components/artsy-block/worklets/${type}.js"
   }
 }
 </script>
@@ -30,24 +25,11 @@ class ArtsyBlock extends HTMLElement {
     this.style.setProperty('--base-seed', `'${this.baseSeed}'`);
   }
 
-  static get workletImportNames() {
-    return new Map([
-      ['diamonds', 'diamond-cells-worklet'],
-      ['dots', 'dot-cells-worklet'],
-      ['big-dots', 'big-dot-cells-worklet'],
-      ['starfield', 'starfield-worklet'],
-      ['labyrinth', 'labyrinth-worklet'],
-      ['rainfall', 'rainfall-worklet']
-    ]);
-  }
-
   registerWorklet(type) {
-    const importName = ArtsyBlock.workletImportNames.get(type);
-
-    if (importName) {
-      try {
-        CSS.paintWorklet.addModule(import.meta.resolve(importName));
-      } catch (e) {}
+    try {
+      CSS.paintWorklet.addModule(import.meta.resolve(`${type}-worklet`));
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -56,7 +38,6 @@ class ArtsyBlock extends HTMLElement {
     if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
-    //this.registerWorklet(this.getAttribute('type'));
     this.addEventListener('updaterequest', this.updateBaseSeed);
   }
 
