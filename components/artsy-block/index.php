@@ -41,7 +41,7 @@
 
     const blocks = document.querySelectorAll('artsy-block');
 
-    // Listen to options changes
+    // Listen to settings changes
 
     // Type of effect
     const select = document.getElementById('effect-selection');
@@ -50,69 +50,20 @@
       for (const block of blocks) {
         block.setAttribute('type', select.value);
       }
+      document.body.dataset.type = select.value;
     });
 
-    // Size of cells
-    const cellSizeInput = document.querySelector('input#cell-size');
-    cellSizeInput.addEventListener('input', () => {
-      const value = cellSizeInput.value;
-      for (const block of blocks) {
-        block.style.setProperty('--cell-size', value);
-      }
-    });
-    cellSizeInput.addEventListener('input', () => {
-      const value = cellSizeInput.value;
-      document.querySelector('.cell-size-value').innerHTML = `${value}px`;
-    });
-
-    // Frequency of cells
-    const frequencyInput = document.querySelector('input#frequency');
-    frequencyInput.addEventListener('input', () => {
-      const value = frequencyInput.value;
-      for (const block of blocks) {
-        block.style.setProperty('--frequency', value);
-      }
-    });
-    frequencyInput.addEventListener('input', () => {
-      const value = frequencyInput.value;
-      document.querySelector('.frequency-value').innerHTML = `${value}%`;
-    });
-
-    // Base hue of cells
-    const hueInput = document.querySelector('input#hue');
-    hueInput.addEventListener('input', () => {
-      const value = hueInput.value;
-      for (const block of blocks) {
-        block.style.setProperty('--base-hue', value);
-      }
-      document.body.style.setProperty('--hue', value);
-    });
-    hueInput.addEventListener('input', () => {
-      const value = hueInput.value;
-      document.querySelector('.hue-value').innerHTML = `${value}°`;
-    })
-
-    // Max hue spread of cells
-    const hueSpreadInput = document.querySelector('input#hue-spread');
-    hueSpreadInput.addEventListener('input', () => {
-      const value = hueSpreadInput.value;
-      for (const block of blocks) {
-        block.style.setProperty('--max-hue-spread', value);
-      }
-    });
-    hueSpreadInput.addEventListener('input', () => {
-      const value = hueSpreadInput.value;
-      document.querySelector('.hue-spread-value').innerHTML = `${value}°`;
-    });
-
-    // Cell animation
-    /*const inputAnimate = document.querySelector('input#animate');
-    inputAnimate.addEventListener('change', () => {
-      for (const block of blocks) {
-        if (inputAnimate.checked) block.setAttribute('animate', '');
-        else block.removeAttribute('animate');
-      }
-    });*/
+    // All common and specific settings
+    const inputs = document.querySelectorAll('.settings input');
+    for (const input of inputs) {
+      input.addEventListener('input', () => {
+        const value = input.value;
+        for (const block of blocks) {
+          block.style.setProperty(`--${input.id}`, value);
+        }
+        document.querySelector(`.${input.id}-value`).innerHTML = value;
+      });
+    }
 
     // Seed update request button
     const seedUpdateButton = document.querySelector('#request-update');
@@ -159,7 +110,7 @@
     box-shadow: 0 0 0 2px currentColor;
   }
 
-  .options {
+  .settings {
     grid-row: 1;
     grid-column: 1;
     place-self: start;
@@ -168,13 +119,15 @@
     border-radius: 0 0 20px 0;
     box-sizing: border-box;
     position: fixed;
+    max-height: 100%;
+    overflow: auto;
   }
 
-  .options > summary {
+  .settings > summary {
     padding: 10px;
   }
 
-  .options-content {
+  .settings-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -182,8 +135,12 @@
     border-top: 1px solid currentColor;
   }
 
-  .options-content > p {
+  .settings-content > p {
     margin: 0;
+  }
+
+  body:not([data-type="rainfall"]) fieldset[data-type="rainfall"] {
+    display: none;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -193,7 +150,7 @@
       color: white;
     }
 
-    .options {
+    .settings {
       background-color: rgb(255, 255, 255, .6);
       background-color: rgb(0, 0, 0, .6);
     }
@@ -202,58 +159,79 @@
 
 <artsy-block type="diamonds"></artsy-block>
 
-<details class="options" open>
-  <summary>Options</summary>
+<details class="settings" open>
+  <summary>Settings</summary>
 
-  <div class="options-content">
+  <div class="settings-content">
     <script>
       if (!('paintWorklet' in CSS)) { document.write(`<p>Not supported in your browser yet 😭, sorry!</p>`); }
     </script>
 
-    <p>
-      <label for="effect-selection">Type:</label>
-      <select id="effect-selection">
-        <option value="diamonds">Diamonds</option>
-        <option value="dots">Dots</option>
-        <option value="big-dots">Big dots</option>
-        <option value="starfield">Star field</option>
-        <option value="labyrinth">Labyrinth</option>
-        <option value="rainfall">Rainfall</option>
-      </select>
-    </p>
+    <fieldset data-type="common">
+      <legend>Common settings</legend>
 
-    <p>
-      <label for="cell-size">Cell size:</label>
-      <input type="range" id="cell-size" min="20" max="200" step="1" value="40">
-      <span class="cell-size-value">40px</span>
-    </p>
+      <p>
+        <label for="effect-selection">Type:</label>
+        <select id="effect-selection">
+          <option value="diamonds">Diamonds</option>
+          <option value="dots">Dots</option>
+          <option value="big-dots">Big dots</option>
+          <option value="starfield">Star field</option>
+          <option value="labyrinth">Labyrinth</option>
+          <option value="rainfall">Rainfall</option>
+        </select>
+      </p>
 
-    <p>
-      <label for="frequency">Frequency:</label>
-      <input type="range" id="frequency" min="0" max="100" step="1" value="100">
-      <span class="frequency-value">100%</span>
-    </p>
+      <p>
+        <label for="cell-size">Cell size:</label>
+        <input type="range" id="cell-size" min="20" max="200" step="1" value="40">
+        <span class="cell-size-value">40</span>px
+      </p>
 
-    <p>
-      <label for="hue">Hue:</label>
-      <input type="range" id="hue" min="0" max="360" step="1" value="260">
-      <span class="hue-value">260°</span>
-    </p>
+      <p>
+        <label for="frequency">Frequency:</label>
+        <input type="range" id="frequency" min="0" max="100" step="1" value="100">
+        <span class="frequency-value">100</span>%
+      </p>
 
-    <p>
-      <label for="hue-spread">Max hue spread:</label>
-      <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
-      <span class="hue-spread-value">30°</span>
-    </p>
+      <p>
+        <label for="base-hue">Hue:</label>
+        <input type="range" id="base-hue" min="0" max="360" step="1" value="260">
+        <span class="base-hue-value">260</span>°
+      </p>
 
-    <!--<p>
-      <input type="checkbox" id="animate">
-      <label for="animate">Animate cells</label>
-    </p>-->
+      <p>
+        <label for="max-hue-spread">Max hue spread:</label>
+        <input type="range" id="max-hue-spread" min="0" max="180" step="1" value="30">
+        <span class="max-hue-spread-value">30</span>°
+      </p>
 
-    <p>
-      <button type="button" id="request-update">Change seed</button>
-    </p>
+      <p>
+        <button type="button" id="request-update">Change seed</button>
+      </p>
+    </fieldset>
+
+    <fieldset data-type="rainfall">
+      <legend>Rainfall settings</legend>
+
+      <p>
+        <label for="fall-duration">Fall duration:</label>
+        <input type="range" id="fall-duration" min="100" max="5000" step="100" value="1500">
+        <span class="fall-duration-value">1500</span>ms
+      </p>
+
+      <p>
+        <label for="wave-duration">Wave duration:</label>
+        <input type="range" id="wave-duration" min="100" max="1000" step="100" value="500">
+        <span class="wave-duration-value">500</span>ms
+      </p>
+
+      <p>
+        <label for="drop-height-ratio">Raindrop height ratio:</label>
+        <input type="range" id="drop-height-ratio" min="1" max="20" step="1" value="2">
+        <span class="drop-height-ratio-value">2</span>
+      </p>
+    </fieldset>
 
     <p>
       <a href="/_common/components/artsy-css/">Older &lt;div&gt;s version</a>
