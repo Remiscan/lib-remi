@@ -127,6 +127,17 @@
     padding: 10px;
   }
 
+  .close {
+    position: absolute;
+    right: 10px;
+    cursor: default;
+    filter: grayscale(100%) brightness(0%);
+  }
+
+  .settings:not([open]) .close {
+    display: none;
+  }
+
   .settings-content {
     display: flex;
     flex-direction: column;
@@ -154,13 +165,17 @@
       background-color: rgb(255, 255, 255, .7);
       background-color: rgb(0, 0, 0, .6);
     }
+
+    .close {
+      filter: grayscale(100%) brightness(1000%);
+    }
   }
 </style>
 
 <artsy-block type="diamonds"></artsy-block>
 
 <details class="settings" open>
-  <summary>Settings</summary>
+  <summary>Settings <span class="close">❌</span></summary>
 
   <div class="settings-content">
     <script>
