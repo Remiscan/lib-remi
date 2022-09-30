@@ -35,7 +35,7 @@ function* parseContent(content) {
   }
 
   // Parse the source's content and inset it into the block
-  const markdown = content ?? this.source.innerHTML;
+  const markdown = content ?? this.source.textContent;
   yield Parser.ready;
   const html = Parser.parse(markdown);
   yield;

@@ -153,11 +153,11 @@ const text = 'This is also a code block';
 console.log(text);
 ```
 
-> This is a quote.
+> "This is a quote."
 >
->> This is a nested quote.
+>> "This is a nested quote."
 >
-> - Remiscan, 2022
+> Remiscan, 2022
 
 _________________
 
