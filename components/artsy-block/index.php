@@ -115,7 +115,7 @@
     grid-column: 1;
     place-self: start;
     z-index: 2;
-    background-color: rgb(255, 255, 255, .8);
+    background-color: rgb(255, 255, 255, .9);
     border-radius: 0 0 20px 0;
     box-sizing: border-box;
     position: fixed;
@@ -151,7 +151,7 @@
     }
 
     .settings {
-      background-color: rgb(255, 255, 255, .6);
+      background-color: rgb(255, 255, 255, .7);
       background-color: rgb(0, 0, 0, .6);
     }
   }
