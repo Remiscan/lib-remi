@@ -58,7 +58,7 @@ registerPaint('diamond-cells', class {
 
         // Randomize cell color
         const hue = baseHue + (-1 + 2 * random()) * maxHueSpread;
-        const opacity = Math.round(100 * (1 - 1 * random())) / 100;
+        const opacity = Math.round(100 * (1 - .9 * random())) / 100;
         ctx.fillStyle = `hsl(${hue}, ${baseSaturation}%, ${baseLightness}%, ${opacity})`;
 
         // Draw the cell
