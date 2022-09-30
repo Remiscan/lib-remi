@@ -83,7 +83,7 @@ Simply write some markdown inside a &lt;markdown-block&gt; tag and it will be au
 
 ## You can edit this example on the left side, and the block on the right will automatically be updated.
 
-&lt;markdown-block&gt; can also use another element as its source, and automatically convert that source's content to HTML. Try editing this example in the markdown column and see those changes reproduced in the HTML column!
+\&lt;markdown-block\&gt; can also use another element as its source, and automatically convert that source's content to HTML. Try editing this example in the markdown column and see those changes reproduced in the HTML column!
 
 ---
 
