@@ -83,12 +83,6 @@
     --max-scale: 60; /* % of cell size */
   }
 
-  artsy-block[type="dots"] {
-    background: paint(dot-cells);
-    --min-scale: 5; /* % of cell size */
-    --max-scale: 20; /* % of cell size */
-  }
-
   artsy-block[type="bigdots"] {
     background: paint(big-dot-cells);
     --max-saturation-spread: 40;

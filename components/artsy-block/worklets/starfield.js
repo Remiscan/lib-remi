@@ -43,6 +43,7 @@ registerPaint('starfield', class {
         const scale = Math.round(100 * (maxScaleCoeff - (maxScaleCoeff - minScaleCoeff) * random())) / 100;
 
         const centre = origin
+          .translate(-.5 * cellSize, -.5 * cellSize)  // move origin to center of shape
           .translate(offset.x, offset.y)              // move shape by random offset
           .translate(col * cellSize, row * cellSize)  // move shape to correct row and column
           ;

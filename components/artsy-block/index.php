@@ -19,7 +19,6 @@
       "artsy-block": "/_common/components/artsy-block/artsy-block.js",
       "artsy-block-styles": "/_common/components/artsy-block/styles.css",
       "diamonds-worklet": "/_common/components/artsy-block/worklets/diamonds.js",
-      "dots-worklet": "/_common/components/artsy-block/worklets/dots.js",
       "bigdots-worklet": "/_common/components/artsy-block/worklets/bigdots.js",
       "starfield-worklet": "/_common/components/artsy-block/worklets/starfield.js",
       "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js",
@@ -182,7 +181,6 @@
     }
 
     body:not([data-type="diamonds"]) fieldset[data-type="diamonds"],
-    body:not([data-type="dots"]) fieldset[data-type="dots"],
     body:not([data-type="bigdots"]) fieldset[data-type="bigdots"],
     body:not([data-type="starfield"]) fieldset[data-type="starfield"],
     body:not([data-type="labyrinth"]) fieldset[data-type="labyrinth"],
@@ -225,7 +223,6 @@
         <label for="effect-selection">Type:</label>
         <select id="effect-selection">
           <option value="diamonds">Diamonds</option>
-          <option value="dots">Dots</option>
           <option value="bigdots">Big dots</option>
           <option value="starfield">Star field</option>
           <option value="labyrinth">Labyrinth</option>
@@ -284,22 +281,6 @@
           <label for="diamonds-max-scale">Max scale:</label>
           <input type="range" id="diamonds-max-scale" min="1" max="100" step="1" value="60">
           <span class="diamonds-max-scale-value">60</span>%
-        </p>
-      </fieldset>
-
-      <fieldset data-type="dots">
-        <legend>Dots settings</legend>
-
-        <p>
-          <label for="dots-min-scale">Min scale:</label>
-          <input type="range" id="dots-min-scale" min="1" max="100" step="1" value="5">
-          <span class="dots-min-scale-value">5</span>%
-        </p>
-
-        <p>
-          <label for="dots-max-scale">Max scale:</label>
-          <input type="range" id="dots-max-scale" min="1" max="100" step="1" value="20">
-          <span class="dots-max-scale-value">20</span>%
         </p>
       </fieldset>
 
