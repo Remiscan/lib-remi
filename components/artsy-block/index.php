@@ -78,6 +78,14 @@
       document.body.dataset.type = select.value;
     });
 
+    // Seed update request button
+    const seedUpdateButton = document.querySelector('#request-update');
+    seedUpdateButton.addEventListener('click', event => {
+      for (const block of blocks) {
+        block.dispatchEvent(new Event('updaterequest'));
+      }
+    });
+
     // All common and specific settings
     const inputs = document.querySelectorAll('.settings input');
     for (const input of inputs) {
@@ -92,12 +100,9 @@
       });
     }
 
-    // Seed update request button
-    const seedUpdateButton = document.querySelector('#request-update');
-    seedUpdateButton.addEventListener('click', event => {
-      for (const block of blocks) {
-        block.dispatchEvent(new Event('updaterequest'));
-      }
+    // Update body hue with --base-hue
+    document.querySelector('input#common-base-hue').addEventListener('input', event => {
+      document.body.style.setProperty('--hue', event.currentTarget.value);
     });
   </script>
 
