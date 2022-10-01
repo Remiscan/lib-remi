@@ -41,7 +41,7 @@ class Translation {
    */
   function setLanguage(?string $lang = null): string {
     $selectedLang = null;
-    $candidates = $lang ? [$lang] : $this->supportedLanguages(true);
+    $candidates = $lang ? [$lang] : $this->acceptedLanguages(true);
     $supported = $this->supportedLanguages();
 
     foreach ($candidates as $l) {
@@ -88,6 +88,6 @@ class Translation {
     // Sort accepted languages by weight
     arsort($languages, SORT_NUMERIC);
 
-    return $languages;
+    return array_keys($languages);
   }
 }
