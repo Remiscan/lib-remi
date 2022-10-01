@@ -5,7 +5,7 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('dot-cells', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--angle-coeff']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--min-scale', '--max-scale']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
@@ -16,7 +16,8 @@ registerPaint('dot-cells', class {
     const baseSaturation = Number(props.get('--base-saturation'));
     const baseLightness = Number(props.get('--base-lightness'));
     const maxHueSpread = Number(props.get('--max-hue-spread'));
-    const animCoeff = Number(props.get('--angle-coeff'));
+    const minScaleCoeff = Number(props.get('--min-scale')) / 100;
+    const maxScaleCoeff = Math.max(minScaleCoeff, Number(props.get('--max-scale')) / 100);
 
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
@@ -33,7 +34,7 @@ registerPaint('dot-cells', class {
         const rand = Math.ceil(random() * 100);
         if (rand > frequency) continue;
 
-        const scale = .25 * (.2 + .8 * random());
+        const scale = minScaleCoeff + (maxScaleCoeff - minScaleCoeff) * random();
 
         const centre = origin
           .translate(-.5 * cellSize, -.5 * cellSize)  // move origin to center of shape

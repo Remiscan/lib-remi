@@ -5,7 +5,7 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('big-dot-cells', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--max-saturation-spread', '--max-lightness-spread']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
@@ -16,6 +16,8 @@ registerPaint('big-dot-cells', class {
     const baseSaturation = Number(props.get('--base-saturation'));
     const baseLightness = Number(props.get('--base-lightness'));
     const maxHueSpread = Number(props.get('--max-hue-spread'));
+    const maxSaturationSpread = Number(props.get('--max-saturation-spread'));
+    const maxLightnessSpread = Number(props.get('--max-lightness-spread'));
 
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
@@ -38,9 +40,7 @@ registerPaint('big-dot-cells', class {
 
         // Randomize cell color
         const hue = baseHue + (-1 + 2 * random()) * maxHueSpread;
-        const maxSaturationSpread = 40;
         const saturation = baseSaturation - (maxSaturationSpread * random());
-        const maxLightnessSpread = 20;
         const lightness = baseLightness + (-1 + 2 * random()) * maxLightnessSpread;
         const opacity = 1;
         ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;

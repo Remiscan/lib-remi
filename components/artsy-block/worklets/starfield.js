@@ -5,7 +5,7 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('starfield', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--max-offset', '--min-scale', '--max-scale']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
@@ -16,6 +16,9 @@ registerPaint('starfield', class {
     const baseSaturation = Number(props.get('--base-saturation'));
     const baseLightness = Number(props.get('--base-lightness'));
     const maxHueSpread = Number(props.get('--max-hue-spread'));
+    const maxOffsetCoeff = Number(props.get('--max-offset')) / 100;
+    const minScaleCoeff = Number(props.get('--min-scale')) / 100;
+    const maxScaleCoeff = Math.max(minScaleCoeff, Number(props.get('--max-scale')) / 100);
 
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
@@ -33,11 +36,11 @@ registerPaint('starfield', class {
         if (rand > frequency) continue;
 
         const offset = {
-          x: 0.5 * (-1 + random() * 2) * cellSize,
-          y: 0.5 * (-1 + random() * 2) * cellSize,
+          x: maxOffsetCoeff * (-1 + random() * 2) * cellSize,
+          y: maxOffsetCoeff * (-1 + random() * 2) * cellSize,
         }
 
-        const scale = .1 * (.25 + .75 * random());
+        const scale = Math.round(100 * (maxScaleCoeff - (maxScaleCoeff - minScaleCoeff) * random())) / 100;
 
         const centre = origin
           .translate(offset.x, offset.y)              // move shape by random offset

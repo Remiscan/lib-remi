@@ -68,7 +68,6 @@
     --base-saturation: 100;
     --base-lightness: 50;
     --max-hue-spread: 30;
-    --angle-coeff: 1;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -79,18 +78,28 @@
 
   artsy-block[type="diamonds"] {
     background: paint(diamond-cells);
+    --max-offset: 50; /* % of cell size */
+    --min-scale: 10; /* % of cell size */
+    --max-scale: 60; /* % of cell size */
   }
 
   artsy-block[type="dots"] {
     background: paint(dot-cells);
+    --min-scale: 5; /* % of cell size */
+    --max-scale: 20; /* % of cell size */
   }
 
-  artsy-block[type="big-dots"] {
+  artsy-block[type="bigdots"] {
     background: paint(big-dot-cells);
+    --max-saturation-spread: 40;
+    --max-lightness-spread: 20;
   }
 
   artsy-block[type="starfield"] {
     background: paint(starfield);
+    --max-offset: 50; /* % of cell size */
+    --min-scale: 2; /* % of cell size */
+    --max-scale: 8; /* % of cell size */
   }
 
   artsy-block[type="labyrinth"] {

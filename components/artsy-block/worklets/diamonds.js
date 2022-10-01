@@ -5,18 +5,20 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('diamond-cells', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--angle-coeff']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--max-offset', '--min-scale', '--max-scale']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
 
     const cellSize = Math.max(3, Number(props.get('--cell-size'))) || 40;
     const frequency = Number(props.get('--frequency')) ?? 100;
-    const angleCoeff = Number(props.get('--angle-coeff'));
     const baseHue = Number(props.get('--base-hue'));
     const baseSaturation = Number(props.get('--base-saturation'));
     const baseLightness = Number(props.get('--base-lightness'));
     const maxHueSpread = Number(props.get('--max-hue-spread'));
+    const maxOffsetCoeff = Number(props.get('--max-offset')) / 100;
+    const minScaleCoeff = Number(props.get('--min-scale')) / 100;
+    const maxScaleCoeff = Math.max(minScaleCoeff, Number(props.get('--max-scale')) / 100);
 
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
@@ -40,12 +42,12 @@ registerPaint('diamond-cells', class {
         if (rand > frequency) continue;
 
         const offset = {
-          x: 0.5 * (-1 + random() * 2) * cellSize,
-          y: 0.5 * (-1 + random() * 2) * cellSize,
+          x: maxOffsetCoeff * (-1 + random() * 2) * cellSize,
+          y: maxOffsetCoeff * (-1 + random() * 2) * cellSize,
         }
 
-        const scale = Math.round(100 * (.6 - .5 * random())) / 100;
-        const angle = (random() > .5 ? 1 : -1) * angleCoeff * 45;
+        const scale = Math.round(100 * (maxScaleCoeff - (maxScaleCoeff - minScaleCoeff) * random())) / 100;
+        const angle = (random() > .5 ? 1 : -1) * 45;
 
         const placedCorners = corners.map(point => point
           .translate(-.5 * cellSize, -.5 * cellSize)  // move origin to center of shape
