@@ -182,20 +182,24 @@
       if (!('paintWorklet' in CSS)) { document.write(`<p>Not supported in your browser yet 😭, sorry!</p>`); }
     </script>
 
+    <p>
+      <label for="effect-selection">Type:</label>
+      <select id="effect-selection">
+        <option value="diamonds">Diamonds</option>
+        <option value="dots">Dots</option>
+        <option value="big-dots">Big dots</option>
+        <option value="starfield">Star field</option>
+        <option value="labyrinth">Labyrinth</option>
+        <option value="rainfall">Rainfall</option>
+      </select>
+    </p>
+
+    <p>
+      <button type="button" id="request-update">Change seed</button>
+    </p>
+
     <fieldset data-type="common">
       <legend>Common settings</legend>
-
-      <p>
-        <label for="effect-selection">Type:</label>
-        <select id="effect-selection">
-          <option value="diamonds">Diamonds</option>
-          <option value="dots">Dots</option>
-          <option value="big-dots">Big dots</option>
-          <option value="starfield">Star field</option>
-          <option value="labyrinth">Labyrinth</option>
-          <option value="rainfall">Rainfall</option>
-        </select>
-      </p>
 
       <p>
         <label for="cell-size">Cell size:</label>
@@ -219,10 +223,6 @@
         <label for="max-hue-spread">Max hue spread:</label>
         <input type="range" id="max-hue-spread" min="0" max="180" step="1" value="30">
         <span class="max-hue-spread-value">30</span>°
-      </p>
-
-      <p>
-        <button type="button" id="request-update">Change seed</button>
       </p>
     </fieldset>
 
