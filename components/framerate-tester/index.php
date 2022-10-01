@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en">
+
 <title>Frame rate test</title>
 <meta name="viewport" content="width=device-width">
 

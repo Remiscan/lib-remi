@@ -3,7 +3,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 ?>
 
 <!doctype html>
-<html data-theme="<?=$theme?>">
+<html lang="en" data-theme="<?=$theme?>">
 
   <head>
     <meta charset="utf-8">

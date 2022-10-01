@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -90,115 +90,116 @@
       else container.removeAttribute('filter');
     });
   </script>
+
+  <style>
+    html {
+      width: 100vw;
+      width: 100lvw;
+      height: 100vh;
+      height: 100lvh;
+      color-scheme: dark light;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+      place-items: center;
+      --hue: 260;
+      background-color: hsl(var(--hue), 30%, 8%);
+      overflow: hidden;
+      color: white;
+      accent-color: hsl(var(--hue), 100%, 80%);
+    }
+
+    artsy-css {
+      grid-row: 1 / -1;
+      grid-column: 1 / -1;
+    }
+
+    .options {
+      grid-row: 1;
+      grid-column: 1;
+      place-self: start;
+      z-index: 2;
+      background-color: rgb(0, 0, 0, .6);
+      border-radius: 0 0 20px 0;
+      box-sizing: border-box;
+    }
+
+    .options > summary {
+      padding: 10px;
+    }
+
+    .options-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+      border-top: 1px solid currentColor;
+    }
+
+    .options-content > p {
+      margin: 0;
+    }
+  </style>
 </head>
 
-<style>
-  html {
-    width: 100vw;
-    width: 100lvw;
-    height: 100vh;
-    height: 100lvh;
-    color-scheme: dark light;
-  }
+<body>
+  <artsy-css type="diamonds"></artsy-css>
 
-  body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-    place-items: center;
-    --hue: 260;
-    background-color: hsl(var(--hue), 30%, 8%);
-    overflow: hidden;
-    color: white;
-    accent-color: hsl(var(--hue), 100%, 80%);
-  }
+  <details class="options" open>
+    <summary>Options</summary>
 
-  artsy-css {
-    grid-row: 1 / -1;
-    grid-column: 1 / -1;
-  }
+    <div class="options-content">
+      <p>Click anywhere to randomize the cells.</p>
 
-  .options {
-    grid-row: 1;
-    grid-column: 1;
-    place-self: start;
-    z-index: 2;
-    background-color: rgb(0, 0, 0, .6);
-    border-radius: 0 0 20px 0;
-    box-sizing: border-box;
-  }
+      <p>
+        <label for="effect-selection">Type:</label>
+        <select id="effect-selection">
+          <option value="diamonds">Diamonds</option>
+          <option value="dots">Dots</option>
+          <option value="starfield">Star field</option>
+          <option value="squares">Squares</option>
+          <option value="labyrinth">Labyrinth</option>
+          <option value="borders">Borders</option>
+        </select>
+      </p>
 
-  .options > summary {
-    padding: 10px;
-  }
+      <p>
+        <label for="frequency">Frequency:</label>
+        <input type="range" id="frequency" min="0" max="100" step="1" value="100">
+        <span class="frequency-value">100%</span>
+      </p>
 
-  .options-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    border-top: 1px solid currentColor;
-  }
+      <p>
+        <label for="hue">Hue:</label>
+        <input type="range" id="hue" min="0" max="360" step="1" value="260">
+        <span class="hue-value">260°</span>
+      </p>
 
-  .options-content > p {
-    margin: 0;
-  }
-</style>
+      <p>
+        <label for="hue-spread">Max hue spread:</label>
+        <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
+        <span class="hue-spread-value">30°</span>
+      </p>
 
-<artsy-css type="diamonds"></artsy-css>
+      <p>
+        <input type="checkbox" id="order">
+        <label for="order">Cell updates spread from click</label>
+      </p>
 
-<details class="options" open>
-  <summary>Options</summary>
+      <p>
+        <input type="checkbox" id="filter">
+        <label for="filter">Weird filter</label>
+      </p>
 
-  <div class="options-content">
-    <p>Click anywhere to randomize the cells.</p>
-
-    <p>
-      <label for="effect-selection">Type:</label>
-      <select id="effect-selection">
-        <option value="diamonds">Diamonds</option>
-        <option value="dots">Dots</option>
-        <option value="starfield">Star field</option>
-        <option value="squares">Squares</option>
-        <option value="labyrinth">Labyrinth</option>
-        <option value="borders">Borders</option>
-      </select>
-    </p>
-
-    <p>
-      <label for="frequency">Frequency:</label>
-      <input type="range" id="frequency" min="0" max="100" step="1" value="100">
-      <span class="frequency-value">100%</span>
-    </p>
-
-    <p>
-      <label for="hue">Hue:</label>
-      <input type="range" id="hue" min="0" max="360" step="1" value="260">
-      <span class="hue-value">260°</span>
-    </p>
-
-    <p>
-      <label for="hue-spread">Max hue spread:</label>
-      <input type="range" id="hue-spread" min="0" max="180" step="1" value="30">
-      <span class="hue-spread-value">30°</span>
-    </p>
-
-    <p>
-      <input type="checkbox" id="order">
-      <label for="order">Cell updates spread from click</label>
-    </p>
-
-    <p>
-      <input type="checkbox" id="filter">
-      <label for="filter">Weird filter</label>
-    </p>
-
-    <p>
-      <a href="/_common/components/artsy-block/">Newer paint worklets version</a>
-    </p>
-  </div>
-</details>
+      <p>
+        <a href="/_common/components/artsy-block/">Newer paint worklets version</a>
+      </p>
+    </div>
+  </details>

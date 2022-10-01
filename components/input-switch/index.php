@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
   <head>
     <meta charset="utf-8">
@@ -160,7 +160,7 @@
     </style>
 
     <!-- ▼ Cache-busted files -->
-  <!--<?php versionizeStart(); ?>-->
+    <!--<?php versionizeStart(); ?>-->
   
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { "polyfillEnable": ["css-modules", "json-modules"] }</script>

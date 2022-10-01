@@ -1,65 +1,70 @@
-<title>Markdown block</title>
-<meta name="viewport" content="width=device-width">
+<!doctype html>
+<html lang="en">
 
-<!-- ▼ Fichiers cache-busted grâce à PHP -->
-<!--<?php versionizeStart(); ?>-->
+<head>
+  <title>Markdown block</title>
+  <meta name="viewport" content="width=device-width">
 
-<script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
-<script>window.esmsInitOptions = { polyfillEnable: ['css-modules'] }</script>
-<script defer src="../../polyfills/es-module-shims.js"></script>
+  <!-- ▼ Fichiers cache-busted grâce à PHP -->
+  <!--<?php versionizeStart(); ?>-->
 
-<script type="importmap">
-{
-  "imports": {
-    "cancelable-async": "/_common/js/cancelable-async.js",
-    "markdown-wasm": "/_common/components/markdown-block/markdown-wasm/markdown.es.js",
-    "markdown-block": "/_common/components/markdown-block/markdown-block.js"
-  }
-}
-</script>
+  <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script>
+  <script>window.esmsInitOptions = { polyfillEnable: ['css-modules'] }</script>
+  <script defer src="../../polyfills/es-module-shims.js"></script>
 
-<link rel="modulepreload" href="/_common/components/markdown-block/markdown-block.js">
-<!-- CSS modules not supported in modulepreload yet 😢 -->
-
-<!--<?php versionizeEnd(__DIR__); ?>-->
-
-<style>
-  body {
-    margin: 0;
-    padding: 10px;
-    background-color: #DDD;
-    color: #222;
-    margin: 20px;
-
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 20px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #222;
-      color: #DDD;
+  <script type="importmap">
+  {
+    "imports": {
+      "cancelable-async": "/_common/js/cancelable-async.js",
+      "markdown-wasm": "/_common/components/markdown-block/markdown-wasm/markdown.es.js",
+      "markdown-block": "/_common/components/markdown-block/markdown-block.js"
     }
   }
+  </script>
 
-  .intro { 
-    opacity: .8;
-  }
+  <link rel="modulepreload" href="/_common/components/markdown-block/markdown-block.js">
+  <!-- CSS modules not supported in modulepreload yet 😢 -->
 
-  pre {
-    white-space: pre-wrap;
-  }
+  <!--<?php versionizeEnd(__DIR__); ?>-->
 
-  markdown-block:not([parsed]),
-  markdown-block:not(:defined) > * {
-    opacity: 0;
-  } 
-</style>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      background-color: #DDD;
+      color: #222;
+      margin: 20px;
 
-<script type="module">
-  import { MarkdownBlock } from 'markdown-block';
-</script>
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #222;
+        color: #DDD;
+      }
+    }
+
+    .intro { 
+      opacity: .8;
+    }
+
+    pre {
+      white-space: pre-wrap;
+    }
+
+    markdown-block:not([parsed]),
+    markdown-block:not(:defined) > * {
+      opacity: 0;
+    } 
+  </style>
+
+  <script type="module">
+    import { MarkdownBlock } from 'markdown-block';
+  </script>
+</head>
 
 <body>
 

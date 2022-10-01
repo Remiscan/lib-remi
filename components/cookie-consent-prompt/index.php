@@ -3,7 +3,7 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
 ?>
 
 <!doctype html>
-<html>
+<html lang="en">
 
   <head>
     <meta charset="utf-8">

@@ -1,6 +1,6 @@
 <?php require_once dirname(__DIR__, 2) . '/php/version.php'; ?>
 <!doctype html>
-<html>
+<html lang="en">
 
   <head>
     <meta charset="utf-8">
