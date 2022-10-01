@@ -361,6 +361,18 @@
           <input type="range" id="rainfall-drop-height-ratio" min="1" max="20" step="1" value="2">
           <span class="rainfall-drop-height-ratio-value">2</span>
         </p>
+
+        <p>
+          <label for="rainfall-min-depth-scale">Min depth scale:</label>
+          <input type="range" id="rainfall-min-depth-scale" min="1" max="100" step="1" value="50">
+          <span class="rainfall-min-depth-scale-value">50</span>%
+        </p>
+
+        <p>
+          <label for="rainfall-min-depth-opacity">Min depth opacity:</label>
+          <input type="range" id="rainfall-min-depth-opacity" min="1" max="100" step="1" value="50">
+          <span class="rainfall-min-depth-opacity-value">50</span>%
+        </p>
       </fieldset>
 
       <p>

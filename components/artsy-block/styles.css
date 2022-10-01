@@ -112,6 +112,8 @@
     --wave-duration: 500; /* ms */
     --drop-width-ratio: 40; /* fraction of cell size */
     --drop-height-ratio: 2; /* fraction of cell size */
+    --min-depth-scale: 50; /* % */
+    --min-depth-opacity: 50; /* % */
     --anim-duration: calc(var(--fall-duration) * 1ms + var(--wave-duration) * 1ms);
     background: paint(rainfall);
     animation: progress var(--anim-duration) linear infinite;

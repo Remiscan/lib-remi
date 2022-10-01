@@ -5,7 +5,7 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('rainfall', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--fall-duration', '--wave-duration', '--drop-width-ratio', '--drop-height-ratio', '--anim-progress']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--fall-duration', '--wave-duration', '--drop-width-ratio', '--drop-height-ratio', '--min-depth-scale', '--min-depth-opacity', '--anim-progress']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
@@ -20,6 +20,8 @@ registerPaint('rainfall', class {
     const waveDuration = Number(props.get('--wave-duration'));
     const animDuration = fallDuration + waveDuration;
     const animProgress = Number(props.get('--anim-progress'));
+    const depthMinScale = Number(props.get('--min-depth-scale')) / 100;
+    const depthMinOpacity = Number(props.get('--min-depth-opacity')) / 100;
 
     const columns = Math.ceil(size.width / cellSize);
     const rows = Math.ceil(size.height / cellSize);
@@ -77,12 +79,10 @@ registerPaint('rainfall', class {
 
         // Make drops and waves smaller when they're in the distance
         const depth = (rows - row) / rows;
-        const depthMinScale = .5;
-        const depthScale = 1 - depth * (1 - depthMinScale);
+        const depthScale = Math.max(depthMinScale, 1 - depth * (1 - depthMinScale));
 
         // Make drops and waves more transparent when they're in the distance
-        const depthMinOpacity = .5;
-        const depthOpacity = 1 - depth * (1 - depthMinOpacity);
+        const depthOpacity = Math.max(depthMinOpacity, 1 - depth * (1 - depthMinOpacity));
 
         // Randomize cell color
         const hue = baseHue + (-1 + 2 * random()) * maxHueSpread;
