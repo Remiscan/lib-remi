@@ -1,56 +1,73 @@
 @layer artsy-block {
 
+  /* Seed used to pseudo-randomly generate elements */
+  @proprty --base-seed {
+    syntax: "*";
+    inherits: false;
+    initial-value: "1664319900000"; /* 2022/09/28 1h05:00, time of the first artsy-block commit */
+  }
+
+  /* Size of the grid cells */
   @property --cell-size {
     syntax: "<number>";
     inherits: false;
-    initial-value: 40;
+    initial-value: 40; /* px */
   }
 
+  /* Percentage of grid cells containing an element */
   @property --frequency {
     syntax: "<number>";
     inherits: false;
-    initial-value: 100;
+    initial-value: 100; /* % */
   }
 
+  /* Hue of the elements */
   @property --base-hue {
     syntax: "<number>";
     inherits: false;
-    initial-value: 0;
+    initial-value: 0; /* deg */
   }
 
+  /* Saturation of the elements */
   @property --base-saturation {
     syntax: "<number>";
     inherits: false;
-    initial-value: 100;
+    initial-value: 100; /* % */
   }
 
+  /* Lightness of the elements */
   @property --base-lightness {
     syntax: "<number>";
     inherits: false;
-    initial-value: 50;
+    initial-value: 50; /* % */
   }
 
+  /* Maximum random hue offset */
   @property --max-hue-spread {
     syntax: "<number>";
     inherits: false;
-    initial-value: 180;
+    initial-value: 180; /* deg */
   }
 
-  @property --angle-coeff {
+  /* Maximum random saturation offset */
+  @property --max-saturation-spread {
     syntax: "<number>";
     inherits: false;
-    initial-value: 1;
+    initial-value: 0; /* % */
   }
 
+  /* Maximum random lightness offset */
+  @property --max-lightness-spread {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0; /* % */
+  }
+
+  /* Progress of the animation (from 0 to 1) */
   @property --anim-progress {
     syntax: "<number>";
     inherits: false;
-    initial-value: 0;
-  }
-
-  @keyframes rotate {
-    0% { --angle-coeff: 1 }
-    100% { --angle-coeff: 3 }
+    initial-value: 0; /* unitless */
   }
 
   @keyframes progress {
@@ -76,11 +93,39 @@
     }
   }
 
+  /* Maximum element position offset */
+  @property --max-offset {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0; /* % of --cell-size */
+  }
+
+  /* Minimum element scale */
+  @property --min-scale {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0; /* % of --cell-size */
+  }
+
+  /* Maximum element scale */
+  @property --max-scale {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 100; /* % of --cell-size */
+  }
+
   artsy-block[type="diamonds"] {
     background: paint(diamond-cells);
     --max-offset: 50; /* % of cell size */
     --min-scale: 10; /* % of cell size */
     --max-scale: 60; /* % of cell size */
+  }
+
+  artsy-block[type="starfield"] {
+    background: paint(starfield);
+    --max-offset: 50; /* % of cell size */
+    --min-scale: 2; /* % of cell size */
+    --max-scale: 8; /* % of cell size */
   }
 
   artsy-block[type="bigdots"] {
@@ -96,15 +141,57 @@
     }
   }
 
-  artsy-block[type="starfield"] {
-    background: paint(starfield);
-    --max-offset: 50; /* % of cell size */
-    --min-scale: 2; /* % of cell size */
-    --max-scale: 8; /* % of cell size */
-  }
-
   artsy-block[type="labyrinth"] {
     background: paint(labyrinth);
+  }
+
+  /* Duration of the fall of a rain drop */
+  @property --fall-duration {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1500; /* ms */
+  }
+
+  /* Duration of the wave after the fall of a rain drop */
+  @property --wave-duration {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 500; /* ms */
+  }
+
+  /* --fall-duration + --wave-duration */
+  @property --anim-duration {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 2000; /* ms */
+  }
+
+  /* Fraction of the cell size used as the width of an element */
+  @property --drop-width-ratio {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 40; /* fraction of --cell-size */
+  }
+
+  /* Fraction of the cell size used as the height of an element */
+  @property --drop-height-ratio {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 40; /* fraction of --cell-size */
+  }
+
+  /* Minimum scale of elements in the distance */
+  @property --min-depth-scale {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 50; /* % */
+  }
+
+  /* Minimum opacity of elements in the distance */
+  @property --min-depth-opacity {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 50; /* % */
   }
 
   artsy-block[type="rainfall"] {
