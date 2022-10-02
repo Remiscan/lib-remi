@@ -161,9 +161,9 @@
 
   /* --fall-duration + --wave-duration */
   @property --anim-duration {
-    syntax: "<number>";
+    syntax: "<time>";
     inherits: false;
-    initial-value: 2000; /* ms */
+    initial-value: 2000ms;
   }
 
   /* Fraction of the cell size used as the width of an element */
