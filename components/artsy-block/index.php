@@ -295,8 +295,8 @@
 
         <p>
           <label for="bigdots-max-lightness-spread">Max lightness spread:</label>
-          <input type="range" id="bigdots-max-lightness-spread" min="0" max="100" step="1" value="20">
-          <span class="bigdots-max-lightness-spread-value">20</span>
+          <input type="range" id="bigdots-max-lightness-spread" min="0" max="100" step="1" value="15">
+          <span class="bigdots-max-lightness-spread-value">15</span>
         </p>
       </fieldset>
 
