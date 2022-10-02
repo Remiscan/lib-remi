@@ -85,14 +85,14 @@
 
   artsy-block[type="bigdots"] {
     background: paint(big-dot-cells);
-    --base-lightness: 65;
+    --base-lightness: 60;
     --max-saturation-spread: 40;
     --max-lightness-spread: 15;
   }
 
   @media (prefers-color-scheme: dark) {
     artsy-block[type="bigdots"] {
-      --base-lightness: 25;
+      --base-lightness: 30;
     }
   }
 
