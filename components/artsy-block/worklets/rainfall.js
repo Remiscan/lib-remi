@@ -65,26 +65,16 @@ registerPaint('rainfall', class {
         const seed = xmur3a(`${baseSeed} row ${row} col ${col}`);
         const random = mulberry32(seed());
 
+        // Only display frequency% of cells
+        const rand = Math.ceil(random() * 100);
+        if (rand > frequency) continue;
+
         const delay = random();
         const progress = ((animProgress + delay) * animDuration) % animDuration;
 
-        // Number that stays the same from when a drop starts falling to when its wave disappears, but changes after
-        // i.e. number that is constant for each drop instance, but different for the next instances
-        const now = Date.now();
-        const loopID = Math.floor((now - progress) / animDuration);
-        if (row == -1 && col == minCol) console.log(progress, loopID);
-
-        // Randomize drop characteristics after it's finished falling
-        const loopSeed = xmur3a(`${baseSeed} row ${row} col ${col} loop ${loopID}`);
-        const loopRandom = mulberry32(loopSeed());
-
-        // Only display frequency% of cells
-        const rand = Math.ceil(loopRandom() * 100);
-        if (rand > frequency) continue;
-
         const offset = {
-          x: 0.5 * (-1 + loopRandom() * 2) * cellSize,
-          y: 0.5 * (-1 + loopRandom() * 2) * cellSize,
+          x: 0.5 * (-1 + random() * 2) * cellSize,
+          y: 0.5 * (-1 + random() * 2) * cellSize,
         }
 
         // Make drops and waves smaller when they're in the distance
@@ -95,7 +85,7 @@ registerPaint('rainfall', class {
         const depthOpacity = Math.max(depthMinOpacity, 1 - depth * (1 - depthMinOpacity));
 
         // Randomize cell color
-        const hue = baseHue + (-1 + 2 * loopRandom()) * maxHueSpread;
+        const hue = baseHue + (-1 + 2 * random()) * maxHueSpread;
 
         // Time between the bottom and the top of the rain drop touch the ground
         const crashDuration = (dropHeight / size.height) * fallDuration;
