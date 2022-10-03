@@ -71,7 +71,8 @@ registerPaint('rainfall', class {
         // Number that stays the same from when a drop starts falling to when its wave disappears, but changes after
         // i.e. number that is constant for each drop instance, but different for the next instances
         const now = Date.now();
-        const loopID = Math.floor(Math.round(now - progress) / animDuration);
+        const loopID = Math.floor((now - progress) / animDuration);
+        if (row == -1 && col == minCol) console.log(progress, loopID);
 
         // Randomize drop characteristics after it's finished falling
         const loopSeed = xmur3a(`${baseSeed} row ${row} col ${col} loop ${loopID}`);
