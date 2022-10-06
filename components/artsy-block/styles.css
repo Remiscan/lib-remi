@@ -1,7 +1,7 @@
 @layer artsy-block {
 
   /* Seed used to pseudo-randomly generate elements */
-  @proprty --base-seed {
+  @property --base-seed {
     syntax: "*";
     inherits: false;
     initial-value: "1664319900000"; /* 2022/09/28 1h05:00, time of the first artsy-block commit */
