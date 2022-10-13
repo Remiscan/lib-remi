@@ -28,7 +28,7 @@ function setLangAttribute(element, source) {
  * and reflects changes to these sources lang attributes onto the set of elements.
  */
 class TranslationObserver {
-  #elements = new Map();
+  #elements = new Map(); // Map<source: Element, elements: Set<Element>>
   #observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
