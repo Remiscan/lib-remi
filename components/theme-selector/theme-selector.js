@@ -144,6 +144,7 @@ class ThemeSelector extends HTMLElement {
   disconnectedCallback() {
     const button = this.querySelector('button');
     button.removeEventListener('click', this.openHandler);
+    translationObserver.unserve(this);
   }
 
 
