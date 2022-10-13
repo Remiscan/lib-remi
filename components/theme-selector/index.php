@@ -23,6 +23,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       "imports": {
         "theme-selector": "/_common/components/theme-selector/theme-selector.js",
         "trap-focus": "/_common/js/trap-focus.js",
+        "translation-observer": "/_common/js/translation-observer.js",
         "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
         "theme-selector-strings": "/_common/components/theme-selector/strings.json",
         "theme-selector-template": "/_common/components/theme-selector/template.js"

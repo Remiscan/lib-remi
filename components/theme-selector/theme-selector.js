@@ -4,6 +4,7 @@
   "imports": {
     "theme-selector": "/_common/components/theme-selector/theme-selector.js",
     "trap-focus": "/_common/js/trap-focus.js",
+    "translation-observer": "/_common/js/translation-observer.js",
     "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
     "theme-selector-strings": "/_common/components/theme-selector/strings.json",
     "theme-selector-template": "/_common/components/theme-selector/template.js",
@@ -15,6 +16,7 @@
 import strings from 'theme-selector-strings' assert { type: 'json' };
 import sheet from 'theme-selector-styles' assert { type: 'css' };
 import template from 'theme-selector-template';
+import translationObserver from 'translation-observer';
 import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
 
@@ -100,15 +102,7 @@ class ThemeSelector extends HTMLElement {
     const button = this.querySelector('button');
     const selector = this.querySelector('.selector');
 
-    // Translate element content
-    const lang = document.documentElement.lang || 'en';
-    for (const e of [...this.querySelectorAll('[data-string]')]) {
-      if (e.tagName == 'IMG') e.alt = strings[lang][e.dataset.string];
-      else                    e.innerHTML = strings[lang][e.dataset.string];
-    }
-    for (const e of [...this.querySelectorAll('[data-label]')]) {
-      e.setAttribute('aria-label', strings[lang][e.dataset.label]);
-    }
+    translationObserver.serve(this);
 
     // Make theme-selector button clickable
     button.addEventListener('click', this.openHandler = event => {
@@ -150,6 +144,27 @@ class ThemeSelector extends HTMLElement {
   disconnectedCallback() {
     const button = this.querySelector('button');
     button.removeEventListener('click', this.openHandler);
+  }
+
+
+  static get observedAttributes() { return ['lang']; }
+  
+
+  attributeChangedCallback(attr, oldValue, newValue) {
+    if (attr === 'lang') {
+      const lang = newValue;
+      const defaultLang = 'en';
+      const getString = id => strings[lang]?.[id] ?? strings[defaultLang]?.[id] ?? 'undefined string';
+
+      // Translate element content
+      for (const e of [...this.querySelectorAll('[data-string]')]) {
+        if (e.tagName == 'IMG') e.alt = getString(e.dataset.string);
+        else                    e.innerHTML = getString(e.dataset.string);
+      }
+      for (const e of [...this.querySelectorAll('[data-label]')]) {
+        e.setAttribute('aria-label', getString(e.dataset.label));
+      }
+    }
   }
 }
 

@@ -3,6 +3,7 @@
 import strings from 'cookie-consent-prompt-strings' assert { type: 'json' };
 import sheet from 'cookie-consent-prompt-styles' assert { type: 'css' };
 import template from 'cookie-consent-prompt-template';
+import translationObserver from 'translation-observer';
 
 
 
@@ -19,20 +20,7 @@ export class CookieConsentPrompt extends HTMLElement {
     if (!this.innerHTML)
       this.appendChild(template.content.cloneNode(true));
 
-    // Translate element content
-    const lang = document.documentElement.lang || 'en';
-    for (const e of [...this.querySelectorAll('[data-string]')]) {
-      if (e.tagName == 'IMG') e.alt = strings[lang][e.dataset.string];
-      else                    e.innerHTML = strings[lang][e.dataset.string];
-    }
-    for (const e of [...this.querySelectorAll('[data-label]')]) {
-      e.setAttribute('aria-label', strings[lang][e.dataset.label]);
-    }
-
-    // Populate cookie info message
-    const info = this.querySelector('.cookie-consent-prompt-info');
-    info.innerHTML = info.innerHTML.replace('{{name}}', this.getAttribute('cookie'));
-    info.innerHTML = info.innerHTML.replace('{{content}}', this.getAttribute('value'));
+    translationObserver.serve(this);
 
     // Listen to button clicks
     const buttonYes = this.querySelector('.cookie-consent-prompt-button-yes');
@@ -51,6 +39,37 @@ export class CookieConsentPrompt extends HTMLElement {
     buttonNo.addEventListener('click', () => {
       consentEvent(false);
     });
+  }
+
+
+  disconnectedCallback() {
+    translationObserver.unserve(this);
+  }
+
+
+  static get observedAttributes() { return ['lang']; }
+  
+
+  attributeChangedCallback(attr, oldValue, newValue) {
+    if (attr === 'lang') {
+      const lang = newValue;
+      const defaultLang = 'en';
+      const getString = id => strings[lang]?.[id] ?? strings[defaultLang]?.[id] ?? 'undefined string';
+
+      // Translate element content
+      for (const e of [...this.querySelectorAll('[data-string]')]) {
+        if (e.tagName == 'IMG') e.alt = getString(e.dataset.string);
+        else                    e.innerHTML = getString(e.dataset.string);
+      }
+      for (const e of [...this.querySelectorAll('[data-label]')]) {
+        e.setAttribute('aria-label', getString(e.dataset.label));
+      }
+
+      // Populate cookie info message
+      const info = this.querySelector('.cookie-consent-prompt-info');
+      info.innerHTML = info.innerHTML.replace('{{name}}', this.getAttribute('cookie'));
+      info.innerHTML = info.innerHTML.replace('{{content}}', this.getAttribute('value'));
+    }
   }
 }
 
