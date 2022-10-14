@@ -25,7 +25,7 @@ export class TranslationObserver {
       if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
         for (const [source, jobs] of this.#jobs) {
           for (const { element, method } of jobs || new Set()) {
-            TranslationObserver.notify(element, source, method);
+            this.notify(element, source, method);
           }
         }
       }
@@ -43,7 +43,7 @@ export class TranslationObserver {
     const jobsWithSameSource = this.#jobs.get(source) || new Set();
 
     this.#jobs.set(source, new Set([...jobsWithSameSource, { element, method }]));
-    if (init) TranslationObserver.notify(element, source, method);
+    if (init) this.notify(element, source, method);
     this.#observer.observe(source, { attributes: true });
   }
 
@@ -122,7 +122,7 @@ export class TranslationObserver {
    * @param {Element} source 
    * @param {'attribute'|'event'|'both'} method 
    */
-  static notify(element, source, method) {
+  notify(element, source, method) {
     if (!source) return;
     const language = source.getAttribute('lang');
     if (method === 'attribute' || method === 'both') {
