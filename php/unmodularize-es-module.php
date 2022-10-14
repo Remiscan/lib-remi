@@ -11,7 +11,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/_common/php/ModuleGraph.php';
 function unmodularize(string $moduleId, string $importMapPath) {
   // Build the module graph
   $importMap = json_decode(file_get_contents($importMapPath), associative: true)['imports'];
-  $graph = ModuleGraph::create($moduleId, $importMap);
+  $graph = new ModuleGraph($moduleId, $importMap);
   $orderedModules = array_reverse(
     $graph->topologicalOrder()
   );
