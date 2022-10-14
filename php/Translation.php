@@ -54,6 +54,13 @@ class Translation {
 
 
   /**
+   * Gets the currently set language.
+   */
+  function getLanguage(): string {
+    return $this->language;
+  }
+
+  /**
    * Gets the translated text associated to the requested id.
    * @param $id - The identifier of the requested text.
    */
