@@ -1,10 +1,3 @@
-/*<?php
-echo '*'.'/';
-$commonDir = dirname(__DIR__, 3).'/_common';
-require_once $commonDir.'/php/version.php';
-echo '/'.'*';
-?>*/
-
 @keyframes rainbow-text-animation {
   0% { background-position: 0 0; }
   100% { background-position: calc(100% * var(--main-gradient-bands, 1)) 0; }

@@ -1,4 +1,5 @@
-<?php
+<?php /* Prepended in global.php */
+
 /**
  * Builds a stylesheet supporting light and dark themes through both @media (prefers-color-scheme)
  * and [data-theme="light"/"dark"]
@@ -31,8 +32,6 @@ function buildThemesStylesheet(string $body, string $default = 'light', bool $cl
 }
 
 
-
-/* Prepended in global.php */
 
 function themeSheetStart() {
   ob_start();

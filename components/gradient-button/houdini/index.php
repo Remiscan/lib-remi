@@ -1,8 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <?php require_once dirname(__DIR__, 3) . '/php/version.php';
-  $version = version(__DIR__, ['gradient-button.js', 'styles.css', 'paint-worklet.js']); ?>
+  <?php $version = version(__DIR__, ['gradient-button.js', 'styles.css', 'paint-worklet.js']); ?>
   <script type="module">
     CSS.paintWorklet.addModule('paint-worklet--<?=$version?>.js');
   </script>
