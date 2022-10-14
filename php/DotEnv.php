@@ -1,4 +1,8 @@
 <?php
+/**
+ * Parses a .env file.
+ * @param $path - The path to the .env file.
+ */
 class DotEnv {
   private array $env;
 
@@ -9,10 +13,12 @@ class DotEnv {
     $this->env = $env;
   }
 
+  /** Gets a value from the .env file. */
   public function get(string $key): string {
     return $this->env[$key];
   }
 
+  /** Gets an array of all values from the .env file. */
   public function getAll(): array {
     return $this->env;
   }
