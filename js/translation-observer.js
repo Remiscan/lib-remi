@@ -25,8 +25,7 @@ export class TranslationObserver {
       if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
         for (const [source, jobs] of this.#jobs) {
           for (const { element, method } of jobs || new Set()) {
-            if (method === 'attribute' || method === 'both') TranslationObserver.setLangAttribute(element, source);
-            if (method === 'event' || method === 'both')     TranslationObserver.sendTranslateEvent(element, source);
+            TranslationObserver.notify(element, source, method);
           }
         }
       }
@@ -44,7 +43,7 @@ export class TranslationObserver {
     const jobsWithSameSource = this.#jobs.get(source) || new Set();
 
     this.#jobs.set(source, new Set([...jobsWithSameSource, { element, method }]));
-    if (init) TranslationObserver.setLangAttribute(element, source);
+    if (init) TranslationObserver.notify(element, source, method);
     this.#observer.observe(source, { attributes: true });
   }
 
@@ -139,6 +138,18 @@ export class TranslationObserver {
     element.dispatchEvent(
       new CustomEvent('translate', { detail: { lang: language, language: language } })
     );
+  }
+
+
+  /**
+   * Notifies an element that it's source's lang attribute changed.
+   * @param {Element} element 
+   * @param {Element} source 
+   * @param {'attribute'|'event'|'both'} method 
+   */
+  static notify(element, source, method) {
+    if (method === 'attribute' || method === 'both') TranslationObserver.setLangAttribute(element, source);
+    if (method === 'event' || method === 'both')     TranslationObserver.sendTranslateEvent(element, source);
   }
 }
 
