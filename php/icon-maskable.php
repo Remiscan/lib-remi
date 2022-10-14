@@ -1,4 +1,5 @@
 <?php
+// Takes an SVG icon which had a 10% margin cut off around it, and make it whole.
 header('Content-Type: image/svg+xml');
 $url = (isset($_GET['icon'])) ? dirname(__DIR__, 2).'/'.$_GET['icon'] : __DIR__.'/icon.svg';
 
