@@ -54,16 +54,7 @@ export class CookieConsentPrompt extends HTMLElement {
     if (attr === 'lang') {
       const lang = newValue;
       const defaultLang = 'en';
-      const getString = id => strings[lang]?.[id] ?? strings[defaultLang]?.[id] ?? 'undefined string';
-
-      // Translate element content
-      for (const e of [...this.querySelectorAll('[data-string]')]) {
-        if (e.tagName == 'IMG') e.alt = getString(e.dataset.string);
-        else                    e.innerHTML = getString(e.dataset.string);
-      }
-      for (const e of [...this.querySelectorAll('[data-label]')]) {
-        e.setAttribute('aria-label', getString(e.dataset.label));
-      }
+      translationObserver.translate(this, strings, lang, defaultLang);
 
       // Populate cookie info message
       const info = this.querySelector('.cookie-consent-prompt-info');
