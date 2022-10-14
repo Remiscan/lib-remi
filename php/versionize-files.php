@@ -69,8 +69,8 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
       $fileext = $matches[3][$i];
 
       $RealPath = new FilePath($path, $fromDir);
-      $version = version($_SERVER['DOCUMENT_ROOT'], $RealPath->resolve(true, 'absolute'));
-      $versionizedPath = $RealPath->resolve(false, 'absolute') . '/' . $filename . '--' . $version . '.' . $fileext;
+      $version = version($_SERVER['DOCUMENT_ROOT'], $RealPath->resolve(true, 'root-relative'));
+      $versionizedPath = $RealPath->resolve(false, 'root-relative') . '/' . $filename . '--' . $version . '.' . $fileext;
       $versionizedExpr = str_replace($path, $versionizedPath, $expr);
 
       $body = str_replace(

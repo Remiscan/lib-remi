@@ -1,11 +1,15 @@
 <?php
+/**
+ * Takes a relative path and a base directory, and resolves the full path.
+ * @param $path - The relative path.
+ * @param $fromDir - The base directory.
+ */
 class FilePath {
   private $startingDirectory;
   private $unresolved;
   private $parts;
-  private $hash;
 
-  function __construct($path, $fromDir = __DIR__) {
+  function __construct(string $path, string $fromDir = __DIR__) {
     $this->unresolved = $path;
     $this->startingDirectory = $fromDir;
 
@@ -28,7 +32,6 @@ class FilePath {
     }
 
     $dir = ($depth > 0) ? dirname($dir, $depth) : dirname($dir);
-    //$this->resolved = str_replace($_SERVER['DOCUMENT_ROOT'], '', $dir);
 
     $parts = [
       'root' => $_SERVER['DOCUMENT_ROOT'],
@@ -39,7 +42,13 @@ class FilePath {
     $this->parts = $parts;
   }
 
-  public function resolve($file = true, $type = 'absolute') {
+
+  /**
+   * Resolves the path of the file.
+   * @param $file - Whether to include the file in the path. If not, only return the path of its directory.
+   * @param $type - The type of path requested: relative (to the base directory), root-relative (relative to the document root), absolute.
+   */
+  public function resolve(bool $file = true, string $type = 'absolute'): string {
     $parts = $this->parts;
     $path = $parts['directory'] . ($file ? '/' . $parts['file'] : '');
     $rootPath = $parts['root'] . $path;
@@ -53,24 +62,23 @@ class FilePath {
       else                   return $path;
     }   
 
-    if ($type == 'absolute') return $path;
-    else                     return $rootPath;
+    elseif ($type == 'root-relative') return $path;
+    else                              return $rootPath;
   }
 
-  public function directory($root = false) {
-    if ($root) return $this->resolve(false, 'root');
-    else       return $this->resolve(false, 'absolute');
+
+  /**
+   * Returns the path of the file's directory.
+   * @param $root - Whether to include the document root or not.
+   */
+  public function directory(bool $root = false): string {
+    if ($root) return $this->resolve(false, 'absolute');
+    else       return $this->resolve(false, 'root-relative');
   }
 
-  public function file() {
+
+  /** Returns the file's name. */
+  public function file(): string {
     return $this->parts['file'];
-  }
-
-  public function setHash($hash) {
-    $this->hash = $hash;
-  }
-
-  public function hash() {
-    return $this->hash;
   }
 }
