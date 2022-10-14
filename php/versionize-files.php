@@ -1,6 +1,6 @@
 <?php /* Prepended in global.php */
 
-require_once __DIR__ . '/resolvePath.php';
+require_once __DIR__ . '/FilePath.php';
 
 
 
