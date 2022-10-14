@@ -117,39 +117,22 @@ export class TranslationObserver {
 
 
   /**
-   * Sets the lang attribute from a source element to an element.
-   * @param {Element} element
-   * @param {Element} source
-   */
-  static setLangAttribute(element, source) {
-    if (!source) return;
-    element.setAttribute('lang', source.getAttribute('lang'));
-  }
-
-
-  /**
-   * Sends a translate event containing the source's lang attribute to an element.
-   * @param {Element} element
-   * @param {Element} source
-   */
-  static sendTranslateEvent(element, source) {
-    if (!source) return;
-    const language = source.getAttribute('lang');
-    element.dispatchEvent(
-      new CustomEvent('translate', { detail: { lang: language, language: language } })
-    );
-  }
-
-
-  /**
    * Notifies an element that it's source's lang attribute changed.
    * @param {Element} element 
    * @param {Element} source 
    * @param {'attribute'|'event'|'both'} method 
    */
   static notify(element, source, method) {
-    if (method === 'attribute' || method === 'both') TranslationObserver.setLangAttribute(element, source);
-    if (method === 'event' || method === 'both')     TranslationObserver.sendTranslateEvent(element, source);
+    if (!source) return;
+    const language = source.getAttribute('lang');
+    if (method === 'attribute' || method === 'both') {
+      element.setAttribute('lang', language);
+    }
+    if (method === 'event' || method === 'both') {
+      element.dispatchEvent(
+        new CustomEvent('translate', { detail: { lang: language, language: language } })
+      );
+    }
   }
 }
 
