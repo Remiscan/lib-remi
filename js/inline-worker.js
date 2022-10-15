@@ -56,6 +56,10 @@ export default class InlineWorker {
         }
       });
 
+      this.worker.addEventListener('messageerror', event => {
+        reject(event.data);
+      });
+
       this.worker.postMessage(JSON.stringify(args));
     });
   }
