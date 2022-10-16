@@ -23,10 +23,10 @@ export class TranslationObserver {
   #observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
-        for (const [source, jobs] of this.#jobs) {
-          for (const { element, method } of jobs || new Set()) {
-            this.notify(element, source, method);
-          }
+        const source = mutation.target;
+        const jobs = this.#jobs.get(source) || new Set();
+        for (const { element, method } of jobs) {
+          this.notify(element, source, method);
         }
       }
     }
@@ -34,7 +34,7 @@ export class TranslationObserver {
 
 
   /**
-   * Here "serve" an element means observe its source and update the element's lang attribute when the source's lang attribute changes.
+   * Here "serve" an element means observe its source and notify the element when the source's lang attribute changes.
    * @param {Element} element - The element to serve.
    * @param {boolean} init - Whether to immediately update the element's lang attribute before observing changes.
    */
