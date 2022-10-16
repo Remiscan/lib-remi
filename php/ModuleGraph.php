@@ -9,12 +9,12 @@ use colori\Graph;
  */
 class ModuleGraph extends Graph {
   public function __construct(string $startId, array $importMap) {
-    $ModulesList = [$startId];
-    $ModulesPathList = [$importMap[$startId]];
-    $GraphNodes = [];
+    $modulesList = [$startId];
+    $modulesPathList = [$importMap[$startId]];
+    $graphNodes = [];
 
     // Recursively find the list of modules that will be imported from the starting module.
-    $findModulesFromFile = function (string $id) use (&$importMap, &$ModulesList, &$ModulesPathList, &$GraphNodes, &$findModulesFromFile): void {
+    $findModulesFromFile = function (string $id) use (&$importMap, &$modulesList, &$modulesPathList, &$graphNodes, &$findModulesFromFile): void {
       $path = $_SERVER['DOCUMENT_ROOT'].$importMap[$id];
       $contents = file_get_contents($path);
       $regex = '/(?:from|import) +?\'(.*?)\';/';
@@ -26,10 +26,10 @@ class ModuleGraph extends Graph {
         $moduleId = $matches[1][$i];
         $modulePath = $_SERVER['DOCUMENT_ROOT'].$importMap[$moduleId];
         $links[] = $modulePath;
-        if (in_array($modulePath, $ModulesPathList)) continue; // Ignore modules that were already imported earlier.
+        if (in_array($modulePath, $modulesPathList)) continue; // Ignore modules that were already imported earlier.
         else {
-          $ModulesList[] = $moduleId;
-          $ModulesPathList[] = $modulePath;
+          $modulesList[] = $moduleId;
+          $modulesPathList[] = $modulePath;
           $findModulesFromFile($moduleId);
         }
       }
@@ -38,10 +38,10 @@ class ModuleGraph extends Graph {
         'id' => $path,
         'links' => $links
       ];
-      $GraphNodes[] = $node;
+      $graphNodes[] = $node;
     };
 
     $findModulesFromFile($startId);
-    parent::__construct($GraphNodes);
+    parent::__construct($graphNodes);
   }
 }
