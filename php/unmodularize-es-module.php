@@ -15,41 +15,51 @@ function unmodularize(string $moduleId, string $importMapPath) {
   $orderedModules = array_reverse(
     $graph->topologicalOrder()
   );
+
+  $defaultExports = array();
+  $defaultCount = 0;
   
   // Include all module files in the right order and remove imports/exports.
   foreach ($orderedModules as $module) {
     $path = $module->id;
 
     ob_start();
-    include_once $path;
+    include_once $_SERVER['DOCUMENT_ROOT'].$path;
     $content = ob_get_clean();
 
     echo preg_replace_callback_array([
-      // Replace 'import/export { name as alias };' by 'var alias = name;'
-      '/(?:export|import) *?\{(.*?)\} *?(?:from(.*?))?;/' => function ($matches) {
-        $body = $matches[1];
+      // Replace 'import/export { name as alias } from ...;' by 'var alias = name;'
+      '/(export|import) *?\{(.*?)\} *?(?:from ?\'(.*?)\' *?)?;/' => function ($matches) use (&$path, &$importMap, &$defaultExports, &$defaultCount) {
+        $action = $matches[1]; // 'import' or 'export'
+        $body = $matches[2]; // 'name1 as alias1, name2 as alias2, ...'
+        $from = $matches[3] ?? null; // identifier of the imported module
+
         $parts = explode(',', $body);
         $aliases = [];
         $result = '';
-        $defaultCount = 0;
 
         foreach ($parts as $part) {
           $subparts = explode(' as ', $part);
           $name = trim($subparts[0]);
-          if ($name === 'default') $name = 'def';
           $alias = trim($subparts[1] ?? '');
-          if ($alias === 'default') $alias = 'def';
-          if ($alias) $result .= "var $alias = $name;";
+          if ($action === 'export' && $alias === 'default') {
+            $alias = "def$defaultCount";
+            $defaultCount++;
+            $defaultExports[$path] = $alias;
+          } elseif ($action === 'import' && $name === 'default') {
+            $name = $defaultExports[$importMap[trim($from)]];
+          }
+          if ($name && $alias) $result .= "var $alias = $name;";
         }
 
         return $result;
       },
 
-      // Replace 'import/export name;' by ''
+      // Replace 'import/export name;' and 'export default name;' by ''
       '/(?:export|import)(.+?);/' => function ($matches) { return ''; },
       
-      // Replace 'export expr' by 'expr';
-      '/export ?/' => function ($matches) { return ''; },
+      // Replace 'export expr' and 'export default expr' by 'expr';
+      '/export (?:default)?/' => function ($matches) { return ''; },
     ], $content);
   }
 }
