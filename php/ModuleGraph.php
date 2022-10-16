@@ -15,8 +15,8 @@ class ModuleGraph extends Graph {
 
     // Recursively find the list of modules that will be imported from the starting module.
     $findModulesFromFile = function (string $id) use (&$importMap, &$modulesList, &$modulesPathList, &$graphNodes, &$findModulesFromFile): void {
-      $path = $_SERVER['DOCUMENT_ROOT'].$importMap[$id];
-      $contents = file_get_contents($path);
+      $path = $importMap[$id];
+      $contents = file_get_contents($_SERVER['DOCUMENT_ROOT'].$path);
       $regex = '/(?:from|import) +?\'(.*?)\';/';
       preg_match_all($regex, $contents, $matches);
   
@@ -24,7 +24,7 @@ class ModuleGraph extends Graph {
       // For each imported module, find which additional modules they import
       for ($i = 0; $i < count($matches[0]); $i++) {
         $moduleId = $matches[1][$i];
-        $modulePath = $_SERVER['DOCUMENT_ROOT'].$importMap[$moduleId];
+        $modulePath = $importMap[$moduleId];
         $links[] = $modulePath;
         if (in_array($modulePath, $modulesPathList)) continue; // Ignore modules that were already imported earlier.
         else {
