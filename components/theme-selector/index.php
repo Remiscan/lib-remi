@@ -94,7 +94,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       }
 
       theme-selector {
-        width: 5rem;
+        --size: 5rem;
         transform: translateY(calc(-0.5 * (44px * 3 + 10px * 2 + 1.4rem)));
         --primary-color: var(--sunmoon-color);
         --secondary-color: var(--sunray-color);
@@ -141,6 +141,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
   <body>
     <theme-selector position="bottom"></theme-selector>
+    <theme-selector position="bottom" label></theme-selector>
   </body>
 
 </html>

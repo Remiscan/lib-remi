@@ -1,6 +1,7 @@
 {
   "fr": {
     "change-theme": "Changer la palette de couleurs de la page",
+    "change-theme-short": "Changer palette",
     "selector-title": "Palette de couleurs",
     "theme-auto": "Claire/sombre auto.",
     "theme-light": "Claire",
@@ -10,6 +11,7 @@
   
   "en": {
     "change-theme": "Change the page's color scheme",
+    "change-theme-short": "Change color scheme",
     "selector-title": "Color scheme",
     "theme-auto": "Auto light/dark",
     "theme-light": "Light",

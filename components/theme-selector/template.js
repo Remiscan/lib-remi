@@ -38,6 +38,8 @@ template.innerHTML = `
       </g>
       <rect class="sun" x="0" y="0" width="120" height="120" transform-origin="50% 50%" mask="url(#sun-mask)"/>
     </svg>
+
+    <span data-string="change-theme-short"></span>
   </button>
 
   <div class="selector">
