@@ -219,6 +219,9 @@ export class ThemeSelector extends HTMLElement {
 
     // Disable focusability inside the theme-selector
     disableFocusInside(this, { exceptions: [this.querySelector('button')] });
+
+    // Remove the button's aria-label if the label is displayed
+    this.attributeChangedCallback('label', null, this.getAttribute('label'));
   }
 
 
@@ -236,14 +239,29 @@ export class ThemeSelector extends HTMLElement {
   }
 
 
-  static get observedAttributes() { return ['lang']; }
+  static get observedAttributes() { return ['lang', 'label']; }
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
-    if (attr === 'lang') {
-      const lang = newValue;
-      const defaultLang = 'en';
-      translationObserver.translate(this, strings, lang, defaultLang);
+    switch (attr) {
+      case 'lang': {
+        const lang = newValue;
+        const defaultLang = 'en';
+        translationObserver.translate(this, strings, lang, defaultLang);
+      } break;
+
+      case 'label': {
+        const button = this.querySelector('button');
+        if (!button) return;
+        // If label shown, don't use aria-label
+        if (newValue !== null) {
+          button.removeAttribute('data-label');
+          button.removeAttribute('aria-label');
+        } else {
+          button.setAttribute('data-label', 'change-theme');
+          translationObserver.translate(this, strings, this.getAttribute('lang'));
+        }
+      } break;
     }
   }
 }
