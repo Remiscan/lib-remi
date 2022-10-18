@@ -30,7 +30,7 @@ export class ThemeSelector extends HTMLElement {
     super();
 
     this.openHandler = event => {
-      event.stopPropagation();
+      //event.stopPropagation();
       if (this.getAttribute('open') == 'true')  this.close();
       else                                      this.open();
     };
@@ -40,7 +40,13 @@ export class ThemeSelector extends HTMLElement {
       const root = document.documentElement;
       root.dataset.theme = choice.value;
 
-      this.setAttribute('scheme', ThemeSelector.resolve(choice.getAttribute('data-scheme')));
+      for (const selector of [...document.querySelectorAll('theme-selector')]) {
+        selector.setAttribute('scheme', ThemeSelector.resolve(choice.getAttribute('data-scheme')));
+        if (selector !== this) {
+          const input = selector.querySelector(`input[value="${choice.value}"]`);
+          input.checked = true;
+        }
+      }
       
       const themeEvent = new CustomEvent('themechange', { detail: {
         theme: choice.value,
@@ -64,11 +70,6 @@ export class ThemeSelector extends HTMLElement {
 
   /** Opens the options menu. */
   open() {
-    // Correctly check the current theme if it has been changed by another selector
-    const root = document.documentElement;
-    const currentTheme = root.dataset.theme || 'auto';
-    this.querySelector(`input[value="${currentTheme}"]`).checked = true;
-
     // Disable focus outside the menu
     trapFocusIn(this);
 
