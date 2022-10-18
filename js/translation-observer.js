@@ -53,13 +53,7 @@ export class TranslationObserver {
    * @param {Element} element - The element to unserve.
    */
   unserve(element) {
-    let source;
-    for (const [s, els] of this.#jobs) {
-      if (els.has(element)) {
-        source = s;
-        break;
-      }
-    }
+    const source = this.getSourceOf(element);
     if (!source) return;
 
     const jobsWithSameSource = this.#jobs.get(source) || new Set();
@@ -103,7 +97,12 @@ export class TranslationObserver {
    * @param {string} defaultLang - The language to use if the requested language or string isn't supported.
    */
   translate(container, strings, lang, defaultLang = 'en') {
-    const getString = id => strings[lang]?.[id] ?? strings[defaultLang]?.[id] ?? 'undefined string';
+    let currentLang = lang;
+    if (!lang) {
+      const source = this.getSourceOf(container) ?? document.documentElement;
+      currentLang = source.getAttribute('lang') ?? '';
+    }
+    const getString = id => strings[currentLang]?.[id] ?? strings[defaultLang]?.[id] ?? 'undefined string';
 
     // Translate all texts in the container
     for (const e of [...container.querySelectorAll('[data-string]')]) {
@@ -133,6 +132,18 @@ export class TranslationObserver {
         new CustomEvent('translate', { detail: { lang: language, language: language } })
       );
     }
+  }
+
+
+  /**
+   * Finds the source of an element.
+   * @param {Element} element
+   */
+  getSourceOf(element) {
+    for (const [s, els] of this.#jobs) {
+      if (els.has(element)) return s;
+    }
+    return null;
   }
 }
 
