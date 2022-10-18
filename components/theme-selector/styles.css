@@ -6,7 +6,6 @@ theme-selector > button {
   font: inherit;
   line-height: inherit;
   text-transform: none;
-  -webkit-appearance: button;
   cursor: pointer;
   color-scheme: light dark;
 
@@ -53,33 +52,32 @@ theme-selector > button {
   /*************/
 
 
-  /*<?php ob_start();?>*/
   /************************************/
   /* Thème clair - on affiche la lune */
   /************************************/
 
-  theme-selector {
+  theme-selector[scheme="light"] {
     --default-color: black;
   }
 
   /* Si on affiche l'icône du thème en cours */
 
   /* - Étape 1 : la lune devient soleil */
-  theme-selector .moon-hole {
+  theme-selector[scheme="light"] .moon-hole {
     transform: translate(40%, -40%);
     transition: transform var(--moon-hole-disparition) ease;
     transition-delay: 0s;
   }
 
   /* - Étape 2 : le soleil rétrécit */
-  theme-selector .sun {
+  theme-selector[scheme="light"] .sun {
     transform: scale(.5);
     transition: transform var(--sun-resize) ease;
     transition-delay: calc(.5 * var(--moon-hole-disparition));
   }
 
   /* - Étape 3 : les rayons apparaissent */
-  theme-selector .ray {
+  theme-selector[scheme="light"] .ray {
     opacity: 1;
     transform: scale(1);
     transition: transform .3s ease,
@@ -90,14 +88,14 @@ theme-selector > button {
   /* Si on affiche l'icône du thème opposé */
 
   /* - Étape 1 : le soleil s'agrandit */
-  theme-selector[icon="reverse"] .sun {
+  theme-selector[scheme="light"][icon="reverse"] .sun {
     transform: scale(1);
     transition: transform var(--sun-resize) ease;
     transition-delay: 0s;
   }
 
   /* - Étape 2 : les rayons disparaissent */
-  theme-selector[icon="reverse"] .ray {
+  theme-selector[scheme="light"][icon="reverse"] .ray {
     opacity: 0;
     transform: scale(.5);
     transition: transform .15s ease-in,
@@ -106,34 +104,32 @@ theme-selector > button {
   }
 
   /* - Étape 3 : le soleil devient lune */
-  theme-selector[icon="reverse"] .moon-hole {
+  theme-selector[scheme="light"][icon="reverse"] .moon-hole {
     transform: translate(0, 0);
     transition: transform var(--moon-hole-apparition) ease;
     transition-delay: calc(.5 * var(--sun-resize));
   }
-  /*<?php $light = ob_get_clean();?>*/
 
 
-  /*<?php ob_start();?>*/
   /***************************************/
   /* Thème sombre - on affiche le soleil */
   /***************************************/
 
-  theme-selector {
+  theme-selector[scheme="dark"] {
     --default-color: white;
   }
 
   /* Si on affiche l'icône du thème en cours */
 
   /* - Étape 1 : le soleil s'agrandit */
-  theme-selector .sun {
+  theme-selector[scheme="dark"] .sun {
     transform: scale(1);
     transition: transform var(--sun-resize) ease;
     transition-delay: 0s;
   }
 
   /* - Étape 2 : les rayons disparaissent */
-  theme-selector .ray {
+  theme-selector[scheme="dark"] .ray {
     opacity: 0;
     transform: scale(.5);
     transition: transform .15s ease-in,
@@ -142,7 +138,7 @@ theme-selector > button {
   }
 
   /* - Étape 3 : le soleil devient lune */
-  theme-selector .moon-hole {
+  theme-selector[scheme="dark"] .moon-hole {
     transform: translate(0, 0);
     transition: transform var(--moon-hole-apparition) ease;
     transition-delay: calc(.5 * var(--sun-resize));
@@ -151,60 +147,27 @@ theme-selector > button {
   /* Si on affiche l'icône du thème opposé */
 
   /* - Étape 1 : la lune devient soleil */
-  theme-selector[icon="reverse"] .moon-hole {
+  theme-selector[scheme="dark"][icon="reverse"] .moon-hole {
     transform: translate(40%, -40%);
     transition: transform var(--moon-hole-disparition) ease;
     transition-delay: 0s;
   }
 
   /* - Étape 2 : le soleil rétrécit */
-  theme-selector[icon="reverse"] .sun {
+  theme-selector[scheme="dark"][icon="reverse"] .sun {
     transform: scale(.5);
     transition: transform var(--sun-resize) ease;
     transition-delay: calc(.5 * var(--moon-hole-disparition));
   }
 
   /* - Étape 3 : les rayons apparaissent */
-  theme-selector[icon="reverse"] .ray {
+  theme-selector[scheme="dark"][icon="reverse"] .ray {
     opacity: 1;
     transform: scale(1);
     transition: transform .3s ease,
                 opacity .3s ease;
     transition-delay: calc(.5 * var(--moon-hole-disparition) + .2s + var(--m, 0) * 60ms);
   }
-  /*<?php $dark = ob_get_clean();?>*/
-
-
-  /******************************************/
-  /* DISTRIBUTION DES STYLES SELON LE THÈME */
-  /* 🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽 */
-
-  /********************/
-  /* Thème par défaut */
-  /*<?=$light?>*/
-
-  /****************************************/
-  /* @media (prefers-color-scheme: light) */
-  @media (prefers-color-scheme: light) {
-    /*<?=$light?>*/
-  }
-
-  /****************************************/
-  /* @media (prefers-color-scheme: dark) */
-  @media (prefers-color-scheme: dark) {
-    /*<?=$dark?>*/
-  }
-
-  /*****************************/
-  /* :root[data-theme="light"] */
-  /*<?=str_replace('theme-selector', ':root[data-theme="light"] theme-selector', $light)?>*/
-
-  /*****************************/
-  /* :root[data-theme="dark"] */
-  /*<?=str_replace('theme-selector', ':root[data-theme="dark"] theme-selector', $dark)?>*/
-
-  /* 🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼 */
-  /******************************************/
 
 
 

@@ -5,7 +5,7 @@
     "theme-selector": "/_common/components/theme-selector/theme-selector.js",
     "trap-focus": "/_common/js/trap-focus.js",
     "translation-observer": "/_common/js/translation-observer.js",
-    "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
+    "theme-selector-styles": "/_common/components/theme-selector/styles.css",
     "theme-selector-strings": "/_common/components/theme-selector/strings.json",
     "theme-selector-template": "/_common/components/theme-selector/template.js",
   }
@@ -21,15 +21,48 @@ import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
 
 
-class ThemeSelector extends HTMLElement {
+let count = 0;
+
+
+
+export class ThemeSelector extends HTMLElement {
   constructor() {
     super();
-    this.openHandler = () => {};
+
+    this.openHandler = event => {
+      event.stopPropagation();
+      if (this.getAttribute('open') == 'true')  this.close();
+      else                                      this.open();
+    };
+
+    this.changeHangler = async (event) => {
+      const choice = event.currentTarget;
+      const root = document.documentElement;
+      root.dataset.theme = choice.value;
+
+      this.setAttribute('scheme', ThemeSelector.resolve(choice.getAttribute('data-scheme')));
+      
+      const themeEvent = new CustomEvent('themechange', { detail: {
+        theme: choice.value,
+        resolvedTheme: ['light', 'dark', 'auto'].includes(choice.value) ? ThemeSelector.resolve(choice.value) : choice.value
+      }});
+      window.dispatchEvent(themeEvent);
+    }
+
+    this.schemeHandler = event => {
+      const autoChoice = this.querySelector('input[value="auto"]');
+      const autoScheme = ThemeSelector.osTheme ?? 'light';
+      autoChoice.setAttribute('data-scheme', autoScheme);
+      const root = document.documentElement;
+      if (root.dataset.theme === 'auto') this.setAttribute('scheme', autoScheme);
+    };
+
+    this.count = count;
+    count++;
   }
 
 
-  ////////////////////////
-  // Open the options menu
+  /** Opens the options menu. */
   open() {
     // Correctly check the current theme if it has been changed by another selector
     const root = document.documentElement;
@@ -59,8 +92,7 @@ class ThemeSelector extends HTMLElement {
   }
 
 
-  /////////////////////////
-  // Close the options menu
+  /** Closes the options menu. */
   close(focus = true) {
     // Restore previous focusability
     releaseFocusFrom(this, { exceptions: [this.querySelector('button')] });
@@ -74,21 +106,72 @@ class ThemeSelector extends HTMLElement {
   }
 
 
-  ///////////////////////////////////////////////
-  // Calculates which theme 'auto' corresponds to
+  /** Starts monitoring changes to the selected theme. */
+  startMonitoringChanges() {
+    for (const choice of [...this.querySelectorAll('.selector > input')]) {
+      choice.addEventListener('change', this.changeHangler);
+    }
+  }
+
+
+  /** Stops monitoring changes to the selected theme. */
+  stopMonitoringChanges() {
+    for (const choice of [...this.querySelectorAll('.selector > input')]) {
+      choice.removeEventListener('change', this.changeHangler);
+    }
+  }
+
+
+  /** Calculates which theme 'auto' corresponds to. */
   static get osTheme() {
     let osTheme;
     if (window.matchMedia('(prefers-color-scheme: dark)').matches)        osTheme = 'dark';
     else if (window.matchMedia('(prefers-color-scheme: light)').matches)  osTheme = 'light';
     return osTheme;
   }
+
+
+  /** Returns the default theme (l) */
   static get defaultTheme() {
-    if (this.getAttribute('default') == 'dark') return 'dark';
-    else                                        return 'light';
+    return this.getAttribute('default') === 'dark' ? 'dark' : 'light';
   }
+
+
+  /** Resolves which theme will be applied (in case of auto). */
   static resolve(theme) {
     if (['light', 'dark'].includes(theme)) return theme;
     return ThemeSelector.osTheme || ThemeSelector.defaultTheme;
+  }
+
+
+  /**
+   * Adds a theme to the theme selector.
+   * @param {string} name - The name of the added theme.
+   * @param {object} translatedNames - An object with languages as keys, theme name translations as values (for example { en: "Blue", fr: "Bleue" }).
+   * @param {'light'|'dark'} scheme - The color scheme applied with the theme: light or dark.
+   */
+  static addTheme(name, translatedNames, scheme = 'light') {
+    for (const lang of Object.keys(strings)) {
+      strings[lang][`theme-${name}`] = translatedNames[lang];
+    }
+
+    for (const selector of [...document.querySelectorAll('theme-selector')]) {
+      const lastElement = selector.querySelector('.selector > :last-child');
+      lastElement.outerHTML = `
+        <input type="radio" name="theme-${selector.count}" id="theme-${selector.count}-${name}" value="${name}" data-scheme="${scheme}">
+        <label for="theme-${selector.count}-${name}">
+          <span class="theme-name" data-string="theme-${name}"></span>
+          <span class="theme-cookie-star">*</span>
+        </label>
+
+        ${lastElement.outerHTML}
+      `;
+
+      translationObserver.translate(selector, strings);
+
+      selector.stopMonitoringChanges();
+      selector.startMonitoringChanges();
+    }
   }
 
 
@@ -96,44 +179,41 @@ class ThemeSelector extends HTMLElement {
     // Add HTML and CSS to the element
     if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-    if (!this.innerHTML)
-      this.appendChild(template.content.cloneNode(true));
-    
-    const button = this.querySelector('button');
-    const selector = this.querySelector('.selector');
+
+    const html = template.content.cloneNode(true);
+    if (!this.innerHTML) {
+      // Give unique name/id to elements in case there are mutiple theme-selectors
+      for (const choice of [...html.querySelectorAll('input')]) {
+        choice.name = `theme-${this.count}`;
+        choice.id = `theme-${this.count}-${choice.value}`;
+        const label = html.querySelector(`label[for="theme-${choice.value}"]`);
+        label.setAttribute('for', choice.id);
+      }
+      this.appendChild(html);
+    }
 
     translationObserver.serve(this, { method: 'attribute' });
-
-    // Make theme-selector button clickable
-    button.addEventListener('click', this.openHandler = event => {
-      event.stopPropagation();
-      if (this.getAttribute('open') == 'true')  this.close();
-      else                                      this.open();
-    });
 
     // Check the current selected theme, if any
     const root = document.documentElement;
     const currentTheme = root.dataset.theme || 'auto';
-    this.querySelector(`input[value="${currentTheme}"]`).checked = true;
+    const input = this.querySelector(`input[value="${currentTheme}"]`);
+    input.checked = true;
+    this.setAttribute('scheme', input.getAttribute('data-scheme') ?? 'light');
 
-    // Get a unique name for this theme-selector if there are several
-    const themeSelectors = document.querySelectorAll('theme-selector');
-    let name = 'theme';
-    for (const [k, themeSelector] of Object.entries(themeSelectors)) {
-      if (themeSelector == this) name = `theme-${k}`;
-    }
+    // Make theme-selector button clickable
+    const button = this.querySelector('button');
+    button.addEventListener('click', this.openHandler);
 
-    // Apply the choice of theme
-    for (const choice of [...selector.querySelectorAll('input')]) {
-      choice.name = name;
-      choice.addEventListener('change', async () => {
-        root.dataset.theme = choice.value;
-        const themeEvent = new CustomEvent('themechange', { detail: {
-          theme: choice.value,
-          resolvedTheme: ThemeSelector.resolve(choice.value)
-        }});
-        window.dispatchEvent(themeEvent);
-      });
+    // Update icon when auto theme is selected and OS-level preference changes
+    this.schemeHandler();
+
+    // Monitor the choice of theme
+    this.startMonitoringChanges();
+
+    // Monitor OS-level user preferences changes
+    for (const scheme of ['light', 'dark']) {
+      window.matchMedia(`(prefers-color-scheme: ${scheme})`).addEventListener('change', this.schemeHandler);
     }
 
     // Disable focusability inside the theme-selector
@@ -144,6 +224,13 @@ class ThemeSelector extends HTMLElement {
   disconnectedCallback() {
     const button = this.querySelector('button');
     button.removeEventListener('click', this.openHandler);
+
+    this.stopMonitoringChanges();
+
+    for (const scheme of ['light', 'dark']) {
+      window.matchMedia(`(prefers-color-scheme: ${scheme})`).removeEventListener('change', this.schemeHandler);
+    }
+
     translationObserver.unserve(this);
   }
 

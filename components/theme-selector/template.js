@@ -1,6 +1,6 @@
 const template = document.createElement('template');
 template.innerHTML = `
-  <button type="button" data-label="theme-button">
+  <button type="button" data-label="change-theme">
     <svg viewBox="0 0 120 120">
       <defs>
         <mask id="sun-mask">
@@ -43,18 +43,18 @@ template.innerHTML = `
   <div class="selector">
     <span class="selector-title" data-string="selector-title"></span>
 
-    <input type="radio" name="theme" id="theme-auto" value="auto" checked>
+    <input type="radio" name="theme" id="theme-auto" value="auto" data-scheme="auto" checked>
     <label for="theme-auto">
       <span class="theme-name" data-string="theme-auto"></span>
     </label>
 
-    <input type="radio" name="theme" id="theme-light" value="light">
+    <input type="radio" name="theme" id="theme-light" value="light" data-scheme="light">
     <label for="theme-light">
       <span class="theme-name" data-string="theme-light"></span>
       <span class="theme-cookie-star">*</span>
     </label>
 
-    <input type="radio" name="theme" id="theme-dark" value="dark">
+    <input type="radio" name="theme" id="theme-dark" value="dark" data-scheme="dark">
     <label for="theme-dark">
       <span class="theme-name" data-string="theme-dark"></span>
       <span class="theme-cookie-star">*</span>

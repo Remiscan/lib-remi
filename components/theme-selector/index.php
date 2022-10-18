@@ -24,7 +24,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         "theme-selector": "/_common/components/theme-selector/theme-selector.js",
         "trap-focus": "/_common/js/trap-focus.js",
         "translation-observer": "/_common/js/translation-observer.js",
-        "theme-selector-styles": "/_common/components/theme-selector/styles.css.php",
+        "theme-selector-styles": "/_common/components/theme-selector/styles.css",
         "theme-selector-strings": "/_common/components/theme-selector/strings.json",
         "theme-selector-template": "/_common/components/theme-selector/template.js"
       }
@@ -37,6 +37,18 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     <!-- CSS modules not supported in modulepreload yet 😢 -->
     
     <!--<?php versionizeEnd(__DIR__); ?>-->
+
+    <script type="module">
+      import { ThemeSelector } from 'theme-selector';
+
+      ThemeSelector.addTheme('blue', { fr: 'Bleue', en: 'Blue' });
+
+      // Detects theme changes
+      window.addEventListener('themechange', event => {
+        const html = document.documentElement;
+        html.dataset.theme = event.detail.theme;
+      });
+    </script>
 
     <style>
       /*<?php themeSheetStart(); ?>*/
@@ -54,6 +66,13 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         --sunray-color: lemonchiffon;
       }
       /*<?php themeSheetEnd(closeComment: true); ?>*/
+
+      html[data-theme="blue"] {
+        color-scheme: light;
+        --bg-color: skyblue;
+        --sunmoon-color: darkblue;
+        --sunray-color: royalblue;
+      }
 
       html, body {
         height: 100%;
@@ -77,6 +96,8 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       theme-selector {
         width: 5rem;
         transform: translateY(calc(-0.5 * (44px * 3 + 10px * 2 + 1.4rem)));
+        --primary-color: var(--sunmoon-color);
+        --secondary-color: var(--sunray-color);
       }
 
       theme-selector .selector-title {
@@ -120,16 +141,6 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
   <body>
     <theme-selector position="bottom"></theme-selector>
-
-    <script type="module">
-      import 'theme-selector';
-
-      // Detects theme changes
-      window.addEventListener('themechange', event => {
-        const html = document.documentElement;
-        html.dataset.theme = event.detail.theme;
-      });
-    </script>
   </body>
 
 </html>
