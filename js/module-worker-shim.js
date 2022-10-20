@@ -7,18 +7,12 @@ export default class ModuleWorkerShim extends Worker {
    * @param {string} url - The full URL of the ES module to execute in the worker.
    */
   constructor(url) {
-    super(
-      URL.createObjectURL(
-        new Blob(
-          [`
-            importScripts('${import.meta.resolve('es-module-shims-wasm')}');
-            importShim.addImportMap(${JSON.stringify(importShim.getImportMap())});
-            importShim('${url}').catch(e => setTimeout(() => { throw e; }))
-          `], {
-            type: 'application/javascript'
-          }
-        )
-      )
-    );
+    const workerScript = `
+      importScripts('${import.meta.resolve('es-module-shims-wasm')}');
+      importShim.addImportMap(${JSON.stringify(importShim.getImportMap())});
+      importShim('${url}').catch(e => setTimeout(() => { throw e; }));
+    `;
+    const workerUrl = URL.createObjectURL(new Blob([workerScript], { type: 'application/javascript' }));
+    super(workerUrl);
   }
 }
