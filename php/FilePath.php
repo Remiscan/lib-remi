@@ -46,24 +46,22 @@ class FilePath {
   /**
    * Resolves the path of the file.
    * @param $file - Whether to include the file in the path. If not, only return the path of its directory.
-   * @param $type - The type of path requested: relative (to the base directory), root-relative (relative to the document root), absolute.
+   * @param $relativeTo - The absolute path relative to which the returned path will be expressed. Supports shorthands 'absolute' and 'root'.
    */
-  public function resolve(bool $file = true, string $type = 'absolute'): string {
+  public function resolve(bool $file = true, string $relativeTo = ''): string {
     $parts = $this->parts;
+
+    if ($relativeTo === 'absolute') return $this->resolve($file, '');
+    if ($relativeTo === 'root')     return $this->resolve($file, $parts['root']);
+    
     $path = $parts['directory'] . ($file ? '/' . $parts['file'] : '');
     $rootPath = $parts['root'] . $path;
 
-    if ($type == 'relative') {
-      $match = preg_match(
-        '/^' . preg_quote($this->startingDirectory, '/') . '/',
-        $rootPath
-      );
-      if ($match === 1)      return str_replace($this->startingDirectory, '.', $rootPath);
-      else                   return $path;
-    }   
+    if ($relativeTo !== '' && !str_starts_with($rootPath, $relativeTo)) {
+      throw new Exception("Path $rootPath can not be expressed relative to $relativeTo");
+    }
 
-    elseif ($type == 'root-relative') return $path;
-    else                              return $rootPath;
+    return str_replace($relativeTo, '', $rootPath);
   }
 
 
@@ -73,7 +71,7 @@ class FilePath {
    */
   public function directory(bool $root = false): string {
     if ($root) return $this->resolve(false, 'absolute');
-    else       return $this->resolve(false, 'root-relative');
+    else       return $this->resolve(false, 'root');
   }
 
 
