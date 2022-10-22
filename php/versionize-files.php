@@ -7,41 +7,44 @@ require_once __DIR__ . '/FilePath.php';
 /**
  * Computes the version of a list of files, relative to the given directory.
  */
-function version($dir = __DIR__, $arrayChemins = false, $method = 'date') {
-  if ($arrayChemins) $listeFichiers = (array) $arrayChemins;
-  else               $listeFichiers = array_diff(scandir($dir), array('..', '.'));
+function version(array $paths = [], string $method = 'date') {
+  $files = [];
+  foreach ($paths as $path) {
+    if (file_exists($path)) {
+      if (is_dir($path))      $files = [...$files, ...array_diff(scandir($path), array('..', '.'))];
+      elseif (is_file($path)) $files = [...$files, $path];
+    }
+  }
 
   // Initialize version
-  $versionFichiers = match($method) {
+  $filesVersion = match($method) {
     'date', 'pretty-date' => 0,
     'hash' => []
   };
 
   // Compute version
-  foreach($listeFichiers as $fichier) {
-    $path = $dir . '/' . $fichier;
-    if (file_exists($path) && is_file($path)) {
-      switch ($method) {
-        case 'pretty-date':
-        case 'date':
-          $date_fichier = filemtime($path);
-          if ($date_fichier > $versionFichiers) $versionFichiers = $date_fichier;
-          break;
-        case 'hash':
-          $hash = hash_file('crc32b', $path);
-          $versionFichiers[] = $hash;
-      }
+  foreach($files as $file) {
+    switch ($method) {
+      case 'pretty-date':
+      case 'date':
+        $fileDate = filemtime($file);
+        if ($fileDate > $filesVersion) $filesVersion = $fileDate;
+        break;
+      case 'hash':
+        $hash = hash_file('crc32b', $file);
+        $filesVersion[] = $hash;
+        break;
     }
   }
 
   // Parse version
-  $versionFichiers = match($method) {
-    'pretty-date' => date('Y.m.d_H.i.s', $versionFichiers),
-    'hash' => count($versionFichiers) > 1 ? hash('crc32b', implode($versionFichiers)) : ($versionFichiers[0] ?? 'doesnotexist'),
-    default => $versionFichiers
+  $filesVersion = match($method) {
+    'pretty-date' => date('Y.m.d_H.i.s', $filesVersion),
+    'hash' => count($filesVersion) > 1 ? hash('crc32b', implode($filesVersion)) : ($filesVersion[0] ?? 'doesnotexist'),
+    default => $filesVersion
   };
 
-  return $versionFichiers;
+  return $filesVersion;
 }
 
 
@@ -69,8 +72,8 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
       $fileext = $matches[3][$i];
 
       $RealPath = new FilePath($path, $fromDir);
-      $version = version($_SERVER['DOCUMENT_ROOT'], $RealPath->resolve(true, 'root'));
-      $versionizedPath = $RealPath->resolve(false, 'root') . '/' . $filename . '--' . $version . '.' . $fileext;
+      $version = version([$RealPath->resolve()]);
+      $versionizedPath = $RealPath->directory(false) . '/' . $filename . '--' . $version . '.' . $fileext;
       $versionizedExpr = str_replace($path, $versionizedPath, $expr);
 
       $body = str_replace(

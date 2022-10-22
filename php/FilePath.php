@@ -48,13 +48,13 @@ class FilePath {
    * @param $file - Whether to include the file in the path. If not, only return the path of its directory.
    * @param $relativeTo - The absolute path relative to which the returned path will be expressed. Supports shorthands 'absolute' and 'root'.
    */
-  public function resolve(bool $file = true, string $relativeTo = ''): string {
+  public function resolve(string $relativeTo = '', bool $filename = true): string {
     $parts = $this->parts;
 
-    if ($relativeTo === 'absolute') return $this->resolve($file, '');
-    if ($relativeTo === 'root')     return $this->resolve($file, $parts['root']);
+    if ($relativeTo === 'absolute') return $this->resolve('', $filename);
+    if ($relativeTo === 'root')     return $this->resolve($parts['root'], $filename);
     
-    $path = $parts['directory'] . ($file ? '/' . $parts['file'] : '');
+    $path = $parts['directory'] . ($filename ? '/' . $parts['file'] : '');
     $rootPath = $parts['root'] . $path;
 
     if ($relativeTo !== '' && !str_starts_with($rootPath, $relativeTo)) {
@@ -70,13 +70,13 @@ class FilePath {
    * @param $root - Whether to include the document root or not.
    */
   public function directory(bool $root = false): string {
-    if ($root) return $this->resolve(false, 'absolute');
-    else       return $this->resolve(false, 'root');
+    if ($root) return $this->resolve('absolute', false);
+    else       return $this->resolve('root', false);
   }
 
 
   /** Returns the file's name. */
-  public function file(): string {
+  public function filename(): string {
     return $this->parts['file'];
   }
 }

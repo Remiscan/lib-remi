@@ -113,7 +113,7 @@ a {
   mask-size: 100% 100%;
   -webkit-mask-image: var(--mask);
   -webkit-mask-size: 100% 100%;
-  --mask: url('/_common/components/remiscan-logo/logo--<?=version(__DIR__, 'logo.svg')?>.svg');
+  --mask: url('/_common/components/remiscan-logo/logo--<?=version([__DIR__.'/logo.svg'])?>.svg');
 
   display: none;
   width: 100%;
