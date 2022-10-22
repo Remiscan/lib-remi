@@ -60,7 +60,8 @@ function versionizeFiles(string $body, string $fromDir = __DIR__): string {
     '/(?:new Worker\()\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\'/',           // Worker creation
     '/(?:src|href) *?= *?"((?:[^"]*?\/)?([^\/<>]+?)\.('.$extensions.'))"/', // src or href HTML attributes
     '/(?:url\()\'((?:.*?\/)([^\/]+?)\.('.$extensions.'))\'/',               // CSS URLs
-    '/"[\w\/\.-]+?": +"((?:.*?\/)([^\/]+?)\.('.$extensions.'))"/'           // import maps
+    '/"[\w\/\.-]+?": +"((?:.*?\/)([^\/]+?)\.('.$extensions.'))"/',          // import maps
+    //'/(?:Location: +?https:\/\/'.$_SERVER['SERVER_NAME'].')((?:.*?\/)([^\/]+?)\.('.$extensions.'))/' // Location header
   ];
 
   foreach($regexps as $regex) {
