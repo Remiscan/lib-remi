@@ -54,7 +54,7 @@ function version(array $paths = [], string $method = 'date') {
  * (See below for examples.)
  */
 function versionizeFiles(string $body, string $fromDir = __DIR__): string {
-  $extensions = 'css|css\.php|js|js\.php|json|htm|svg|ico|webp|png|jpe?g|gif|mp4|mp3|ogg'; // same as in .htaccess
+  $extensions = getenv('VERSIONIZED_EXTS'); // Defined in .conf
   $regexps = [
     '/(?:from|import) +?\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\';/',        // import statements
     '/(?:new Worker\()\'((?:.*?\/)([^\/]+?)\.(js(?:\.php)?))\'/',           // Worker creation
