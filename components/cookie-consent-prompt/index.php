@@ -25,7 +25,7 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
         "cookie-consent-prompt-styles": "/_common/components/cookie-consent-prompt/styles.css",
         "cookie-consent-prompt-strings": "/_common/components/cookie-consent-prompt/strings.json",
         "cookie-consent-prompt-template": "/_common/components/cookie-consent-prompt/template.js",
-        "cookie-maker": "/_common/js/cookie-maker.js",
+        "cookie-factory": "/_common/js/cookie-factory.js",
         "translation-observer": "/_common/js/translation-observer.js"
       }
     }
@@ -34,7 +34,8 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
     <link rel="modulepreload" href="/_common/components/cookie-consent-prompt/cookie-consent-prompt.js">
     <link rel="modulepreload" href="/_common/components/cookie-consent-prompt/template.js">
     <!-- CSS modules not supported in modulepreload yet 😢 -->
-    <link rel="modulepreload" href="/_common/js/cookies.js">
+    <link rel="modulepreload" href="/_common/js/cookie-factory.js">
+    <link rel="modulepreload" href="/_common/js/translation-observer.js">
     
     <!--<?php versionizeEnd(__DIR__); ?>-->
 
@@ -115,7 +116,7 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
     <div class="cookie-consent-container"></div>
 
     <script type="module">
-      import CookieFactory from 'cookie-maker';
+      import CookieFactory from 'cookie-factory';
       import 'cookie-consent-prompt';
 
       const Cookie = new CookieFactory('_common/components');

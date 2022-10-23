@@ -1,4 +1,4 @@
-// See /_common/js/cookie-maker.js for how to use.
+// See /_common/js/cookie-factory.js for how to use.
 
 import strings from 'cookie-consent-prompt-strings' assert { type: 'json' };
 import sheet from 'cookie-consent-prompt-styles' assert { type: 'css' };

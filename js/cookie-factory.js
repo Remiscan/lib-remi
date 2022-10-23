@@ -6,7 +6,7 @@
     "cookie-consent-prompt-styles": "/_common/components/cookie-consent-prompt/styles.css.php",
     "cookie-consent-prompt-strings": "/_common/components/cookie-consent-prompt/strings.json",
     "cookie-consent-prompt-template": "/_common/components/cookie-consent-prompt/template.js",
-    "cookie-maker": "/_common/js/cookie-maker.js"
+    "cookie-factory": "/_common/js/cookie-factory.js"
   }
 }
 </script>
