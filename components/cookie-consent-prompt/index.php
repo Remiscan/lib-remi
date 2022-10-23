@@ -115,16 +115,16 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
     <div class="cookie-consent-container"></div>
 
     <script type="module">
-      import CookieMaker from 'cookie-maker';
+      import CookieFactory from 'cookie-maker';
       import 'cookie-consent-prompt';
 
-      const Cookie = new CookieMaker('_common/components');
+      const Cookie = new CookieFactory('_common/components');
 
       // Detects button click
       const button = document.querySelector('.open-prompt');
       button.addEventListener('click', () => {
         const cookie = new Cookie('test', 'test value', { maxAge: 5*60 });
-        cookie.submit(true);
+        cookie.prompt(true);
       });
 
       // Detects cookie consent
