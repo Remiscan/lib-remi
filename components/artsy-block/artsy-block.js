@@ -3,14 +3,100 @@
 {
   "imports": {
     "artsy-block": "/_common/components/artsy-block/artsy-block.js",
-    "artsy-block-styles": "/_common/components/artsy-block/styles.css",
     "${type}-worklet": "/_common/components/artsy-block/worklets/${type}.js"
   }
 }
 </script>
 */
 
-import sheet from 'artsy-block-styles' assert { type: 'css' };
+
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(/*css*/`
+  @layer artsy-block {
+
+    /* Progress of the animation (from 0 to 1) */
+    @property --anim-progress {
+      syntax: "<number>";
+      inherits: false;
+      initial-value: 0; /* unitless */
+    }
+
+    @keyframes progress {
+      0% { --anim-progress: 0; }
+      100% { --anim-progress: 1; }
+    }
+
+    artsy-block {
+      display: block;
+      width: 100%;
+      height: 100%;
+      --cell-size: 40;
+      --frequency: 100;
+      --base-hue: 260;
+      --base-saturation: 100;
+      --base-lightness: 50;
+      --max-hue-spread: 30;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      artsy-block {
+        --base-lightness: 70;
+      }
+    }
+
+    artsy-block[type="diamonds"] {
+      background: paint(diamond-cells);
+      --max-offset: 50; /* % of cell size */
+      --min-scale: 10; /* % of cell size */
+      --max-scale: 60; /* % of cell size */
+    }
+
+    artsy-block[type="starfield"] {
+      background: paint(starfield);
+      --max-offset: 50; /* % of cell size */
+      --min-scale: 2; /* % of cell size */
+      --max-scale: 8; /* % of cell size */
+    }
+
+    artsy-block[type="bigdots"] {
+      background: paint(big-dot-cells);
+      --base-lightness: 60;
+      --max-saturation-spread: 40;
+      --max-lightness-spread: 15;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      artsy-block[type="bigdots"] {
+        --base-lightness: 30;
+      }
+    }
+
+    artsy-block[type="labyrinth"] {
+      background: paint(labyrinth);
+    }
+
+    artsy-block[type="rainfall"] {
+      --base-lightness: 20;
+      --fall-duration: 1500; /* ms */
+      --wave-duration: 500; /* ms */
+      --drop-width-ratio: 40; /* fraction of cell size */
+      --drop-height-ratio: 2; /* fraction of cell size */
+      --min-depth-scale: 50; /* % */
+      --min-depth-opacity: 50; /* % */
+      --anim-duration: calc(var(--fall-duration) * 1ms + var(--wave-duration) * 1ms);
+      background: paint(rainfall);
+      animation: progress var(--anim-duration) linear infinite;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      artsy-block[type="rainfall"] {
+        --base-lightness: 80;
+      }
+    }
+
+  }
+`);
 
 
 
