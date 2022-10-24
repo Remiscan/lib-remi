@@ -17,7 +17,6 @@
   {
     "imports": {
       "artsy-block": "/_common/components/artsy-block/artsy-block.js",
-      "artsy-block-styles": "/_common/components/artsy-block/styles.css",
       "diamonds-worklet": "/_common/components/artsy-block/worklets/diamonds.js",
       "bigdots-worklet": "/_common/components/artsy-block/worklets/bigdots.js",
       "starfield-worklet": "/_common/components/artsy-block/worklets/starfield.js",
@@ -28,10 +27,8 @@
   </script>
   
   <link rel="modulepreload" href="/_common/components/artsy-block/artsy-block.js">
-  <link rel="preload" as="style" href="/_common/components/artsy-block/styles.css">
   <link rel="modulepreload" href="/_common/js/geometry.js">
   <link rel="modulepreload" href="/_common/js/prng.js">
-  <!-- CSS modules not supported in modulepreload yet 😢 -->
 
   <!--<?php versionizeEnd(__DIR__); ?>-->
 
