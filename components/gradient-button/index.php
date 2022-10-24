@@ -16,16 +16,12 @@
   <script type="importmap">
   {
     "imports": {
-      "gradient-button": "/_common/components/gradient-button/gradient-button.js",
-      "gradient-button-styles": "/_common/components/gradient-button/styles.css",
-      "gradient-button-template": "/_common/components/gradient-button/template.js"
+      "gradient-button": "/_common/components/gradient-button/gradient-button.js"
     }
   }
   </script>
 
   <link rel="modulepreload" href="/_common/components/gradient-button/gradient-button.js">
-  <link rel="modulepreload" href="/_common/components/gradient-button/template.js">
-  <!-- CSS modules not supported in modulepreload yet 😢 -->
 
   <!--<?php versionizeEnd(__DIR__); ?>-->
 

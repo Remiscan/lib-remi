@@ -16,16 +16,12 @@
     <script type="importmap">
     {
       "imports": {
-        "tab-label": "/_common/components/tab-label/tab-label.js",
-        "tab-label-styles": "/_common/components/tab-label/styles.css",
-        "tab-label-template": "/_common/components/tab-label/template.js"
+        "tab-label": "/_common/components/tab-label/tab-label.js"
       }
     }
     </script>
   
     <link rel="modulepreload" href="/_common/components/tab-label/tab-label.js">
-    <link rel="modulepreload" href="/_common/components/tab-label/template.js">
-    <!-- CSS modules not supported in modulepreload yet 😢 -->
   
     <!--<?php versionizeEnd(__DIR__); ?>-->
 

@@ -16,16 +16,12 @@
   <script type="importmap">
   {
     "imports": {
-      "loader-button": "/_common/components/loader-button/loader-button.js",
-      "loader-button-styles": "/_common/components/loader-button/styles.css",
-      "loader-button-template": "/_common/components/loader-button/template.js"
+      "loader-button": "/_common/components/loader-button/loader-button.js"
     }
   }
   </script>
 
   <link rel="modulepreload" href="/_common/components/loader-button/loader-button.js">
-  <link rel="modulepreload" href="/_common/components/loader-button/template.js">
-  <!-- CSS modules not supported in modulepreload yet 😢 -->
 
   <!--<?php versionizeEnd(__DIR__); ?>-->
 

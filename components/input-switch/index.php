@@ -169,16 +169,12 @@
     <script type="importmap">
     {
       "imports": {
-        "input-switch": "/_common/components/input-switch/input-switch.js",
-        "input-switch-styles": "/_common/components/input-switch/styles.css",
-        "input-switch-template": "/_common/components/input-switch/template.js"
+        "input-switch": "/_common/components/input-switch/input-switch.js"
       }
     }
     </script>
   
     <link rel="modulepreload" href="/_common/components/input-switch/input-switch.js">
-    <link rel="modulepreload" href="/_common/components/input-switch/template.js">
-    <!-- CSS modules not supported in modulepreload yet 😢 -->
   
     <!--<?php versionizeEnd(__DIR__); ?>-->
   </head>

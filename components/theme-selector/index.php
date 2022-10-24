@@ -23,18 +23,13 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       "imports": {
         "theme-selector": "/_common/components/theme-selector/theme-selector.js",
         "trap-focus": "/_common/js/trap-focus.js",
-        "translation-observer": "/_common/js/translation-observer.js",
-        "theme-selector-styles": "/_common/components/theme-selector/styles.css",
-        "theme-selector-strings": "/_common/components/theme-selector/strings.json",
-        "theme-selector-template": "/_common/components/theme-selector/template.js"
+        "translation-observer": "/_common/js/translation-observer.js"
       }
     }
     </script>
     
     <link rel="modulepreload" href="/_common/components/theme-selector/theme-selector.js">
     <link rel="modulepreload" href="/_common/js/trap-focus.js">
-    <link rel="modulepreload" href="/_common/components/theme-selector/template.js">
-    <!-- CSS modules not supported in modulepreload yet 😢 -->
     
     <!--<?php versionizeEnd(__DIR__); ?>-->
 

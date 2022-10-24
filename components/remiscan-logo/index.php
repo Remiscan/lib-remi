@@ -17,15 +17,12 @@
     {
       "imports": {
         "remiscan-logo": "/_common/components/remiscan-logo/remiscan-logo.js",
-        "remiscan-logo-styles": "/_common/components/remiscan-logo/styles.css.php",
-        "remiscan-logo-template": "/_common/components/remiscan-logo/template.js"
+        "remiscan-logo-svg": "/_common/components/remiscan-logo/logo.svg"
       }
     }
     </script>
   
     <link rel="modulepreload" href="/_common/components/remiscan-logo/remiscan-logo.js">
-    <link rel="modulepreload" href="/_common/components/remiscan-logo/template.js">
-    <!-- CSS modules not supported in modulepreload yet 😢 -->
   
     <!--<?php versionizeEnd(__DIR__); ?>-->
 

@@ -22,9 +22,6 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
     {
       "imports": {
         "cookie-consent-prompt": "/_common/components/cookie-consent-prompt/cookie-consent-prompt.js",
-        "cookie-consent-prompt-styles": "/_common/components/cookie-consent-prompt/styles.css",
-        "cookie-consent-prompt-strings": "/_common/components/cookie-consent-prompt/strings.json",
-        "cookie-consent-prompt-template": "/_common/components/cookie-consent-prompt/template.js",
         "cookie-factory": "/_common/js/cookie-factory.js",
         "translation-observer": "/_common/js/translation-observer.js"
       }
@@ -32,8 +29,6 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
     </script>
     
     <link rel="modulepreload" href="/_common/components/cookie-consent-prompt/cookie-consent-prompt.js">
-    <link rel="modulepreload" href="/_common/components/cookie-consent-prompt/template.js">
-    <!-- CSS modules not supported in modulepreload yet 😢 -->
     <link rel="modulepreload" href="/_common/js/cookie-factory.js">
     <link rel="modulepreload" href="/_common/js/translation-observer.js">
     
