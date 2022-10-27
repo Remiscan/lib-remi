@@ -11,6 +11,7 @@
 </script>
 */
 
+import Couleur from 'colori';
 import translationObserver from 'translation-observer';
 import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
@@ -18,11 +19,13 @@ import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <button type="button" data-label="change-theme">
+  <button type="button" data-label="pick-color">
+    <span class="color-preview"></span>
+
     <svg viewBox="0 0 120 120">
     </svg>
 
-    <span data-string="change-theme-short"></span>
+    <span class="button-label" data-string="pick-color"></span>
   </button>
 
   <div class="selector">
@@ -177,21 +180,12 @@ template.innerHTML = /*html*/`
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   button {
-    border: none;
-    background-color: transparent;
-    padding: 0;
-    margin: 0;
-    font: inherit;
-    line-height: inherit;
-    text-transform: none;
-    cursor: pointer;
     color-scheme: light dark;
 
     display: grid;
     grid-template-columns: var(--size) auto;
     align-items: center;
     gap: 1ch;
-    color: currentColor;
   }
 
   :host(:not([label])) > button {
@@ -210,11 +204,29 @@ sheet.replaceSync(/*css*/`
                               linear-gradient(to right, #ddd 0% 100%);
   }
 
-  :host(:not([label])) > button > span {
+  :host(:not([label])) .button-label {
     display: none;
   }
 
-  svg {
+  button > .color-preview,
+  button > svg {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  button > .color-preview {
+    --displayed-color: var(--clamped-color, var(--color, transparent));
+    grid-row: 1 / -1;
+    background: linear-gradient(to right, var(--displayed-color) 0% 100%),
+                var(--echiquier-transparence);
+    background-size: 100% 100%, 16px 16px, 16px 16px;
+    background-position: 0 0, 0 0, 8px 8px;
+    background-repeat: no-repeat, repeat, repeat;
+    width: 100%;
+    height: 100%;
+  }
+
+  button > svg {
     width: 100%;
     height: 100%;
     aspect-ratio: 1;
@@ -297,14 +309,14 @@ sheet.replaceSync(/*css*/`
     --cursor-width: 14px;
   }
   
-  :host(:not([data-format])) label[data-format~="rgb"],
-  :host([data-format="rgb"]) label[data-format~="rgb"],
-  :host([data-format="hsl"]) label[data-format~="hsl"],
-  :host([data-format="hwb"]) label[data-format~="hwb"],
-  :host([data-format="lab"]) label[data-format~="lab"],
-  :host([data-format="lch"]) label[data-format~="lch"],
-  :host([data-format="oklab"]) label[data-format~="oklab"],
-  :host([data-format="oklch"]) label[data-format~="oklch"] {
+  :host(:not([format])) label[data-format~="rgb"],
+  :host([format="rgb"]) label[data-format~="rgb"],
+  :host([format="hsl"]) label[data-format~="hsl"],
+  :host([format="hwb"]) label[data-format~="hwb"],
+  :host([format="lab"]) label[data-format~="lab"],
+  :host([format="lch"]) label[data-format~="lch"],
+  :host([format="oklab"]) label[data-format~="oklab"],
+  :host([format="oklch"]) label[data-format~="oklch"] {
     display: grid;
   }
   
@@ -469,11 +481,11 @@ export class ColorPicker extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [sheet];
 
-    this.inputHandlers = new Map(); // Map<InputElement, Handler>
+    this.inputHandlers = []; // Array<{ input, type, handler }>
 
     this.openHandler = event => {
-      if (this.getAttribute('open'))  this.close();
-      else                            this.open();
+      if (this.getAttribute('open') != null)  this.close();
+      else                                    this.open();
     };
 
     this.changeHangler = async (event) => {
@@ -529,9 +541,11 @@ export class ColorPicker extends HTMLElement {
   /** Starts monitoring changes to the selected color. */
   startMonitoringChanges() {
     const select = this.shadowRoot.querySelector('select');
-    select.addEventListener('change', event => {
+    let selectChangeHandler;
+    select.addEventListener('change', selectChangeHandler = event => {
       this.setAttribute('format', select.value);
     });
+    this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
     const rangeValue = prop => this.shadowRoot.querySelector(`input[type="range"][data-property="${prop}"]`).value;
     for (const input of [...this.shadowRoot.querySelectorAll('input[type="range"][data-property]')]) {
@@ -542,7 +556,7 @@ export class ColorPicker extends HTMLElement {
       // Update gradients on range change
       let rangeChangeHandler;
       input.addEventListener('change', rangeChangeHandler = event => {
-        const format = this.getAttribute('format');
+        const format = this.shadowRoot.querySelector('select').value;
         let color;
         const a = rangeValue('a') / 100;
         switch (format) {
@@ -557,7 +571,7 @@ export class ColorPicker extends HTMLElement {
         this.setAttribute('last-changed-property', input.dataset.property);
         this.setAttribute('color', color);
       });
-      this.inputHandlers.set(input, { type: 'change', handler: rangeChangeHandler });
+      this.inputHandlers.push({ input, type: 'change', handler: rangeChangeHandler });
 
       // Move numeric input on range drag
       let rangeInputHandler;
@@ -567,7 +581,7 @@ export class ColorPicker extends HTMLElement {
         numericInput.value = input.value;
         numericInput.style.setProperty('--pos', (input.value - input.min) / (input.max - input.min));
       });
-      this.inputHandlers.set(input, { type: 'input', handler: rangeInputHandler });
+      this.inputHandlers.push({ input, type: 'input', handler: rangeInputHandler });
 
       // Move numeric input and update range input value on range change
       let numberChangeHandler;
@@ -576,7 +590,7 @@ export class ColorPicker extends HTMLElement {
         numericInput.style.setProperty('--pos', (input.value - input.min) / (input.max - input.min));
         input.dispatchEvent(new Event('change'));
       });
-      this.inputHandlers.set(numericInput, { type: 'change', handler: numberChangeHandler });
+      this.inputHandlers.push({ input: numericInput, type: 'change', handler: numberChangeHandler });
     }
   }
 
@@ -642,9 +656,19 @@ export class ColorPicker extends HTMLElement {
       } break;
 
       case 'color': {
+        const color = new Couleur(newValue);
+        const clampedColor = color.toGamut('srgb');
+
         // Update gradients and button color here
+        const button = this.shadowRoot.querySelector('button');
+        button.style.setProperty('--color', newValue);
+        button.style.setProperty('--clamped-color', clampedColor.hex);
         this.updateGradients(newValue, this.getAttribute('last-changed-property'));
         
+        this.dispatchEvent(new CustomEvent('change', { detail: {
+          color,
+          clampedColor
+        }}));
       } break;
     }
   }

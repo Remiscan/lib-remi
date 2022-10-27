@@ -22,6 +22,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     {
       "imports": {
         "color-picker": "/_common/components/color-picker/color-picker.js",
+        "colori": "/colori/lib/dist/colori.js",
         "trap-focus": "/_common/js/trap-focus.js",
         "translation-observer": "/_common/js/translation-observer.js"
       }
