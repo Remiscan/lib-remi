@@ -105,11 +105,12 @@ export class TranslationObserver {
     const getString = id => strings[currentLang]?.[id] ?? strings[defaultLang]?.[id] ?? 'undefined string';
 
     // Translate all texts in the container
-    for (const e of [...container.querySelectorAll('[data-string]')]) {
+    let _container = container.shadowRoot ?? container;
+    for (const e of [..._container.querySelectorAll('[data-string]')]) {
       if (e.tagName == 'IMG') e.alt = getString(e.dataset.string);
       else                    e.innerHTML = getString(e.dataset.string);
     }
-    for (const e of [...container.querySelectorAll('[data-label]')]) {
+    for (const e of [..._container.querySelectorAll('[data-label]')]) {
       e.setAttribute('aria-label', getString(e.dataset.label));
     }
   }
