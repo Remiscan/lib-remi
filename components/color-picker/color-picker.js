@@ -22,7 +22,8 @@ template.innerHTML = /*html*/`
   <button type="button" data-label="pick-color" part="button">
     <span part="color-preview"></span>
 
-    <svg viewBox="0 0 120 120" part="button-icon">
+    <svg viewBox="0 0 24 24" part="button-icon">
+      <path d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.23-1.21c-.39-.39-1.02-.38-1.41 0-.39.39-.39 1.02 0 1.41l.72.72-8.77 8.77c-.1.1-.15.22-.15.36v4.04c0 .28.22.5.5.5h4.04c.13 0 .26-.05.35-.15l8.77-8.77.72.72c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.22-1.22 3.12-3.12c.41-.4.41-1.03.02-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z"/>
     </svg>
 
     <span part="button-label" data-string="pick-color"></span>
@@ -187,9 +188,18 @@ sheet.replaceSync(/*css*/`
     position: relative;
     --size: 3rem;
     --tap-safe-size: 44px;
+    --echiquier-light-background-color: #ddd;
+    --echiquier-dark-background-color: #555;
+    --echiquier-background-color: var(--echiquier-light-background-color);
     --echiquier-transparence: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
                               linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
-                              linear-gradient(to right, #ddd 0% 100%);
+                              linear-gradient(to right, var(--echiquier-background-color) 0% 100%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --echiquier-background-color: var(--echiquier-dark-background-color);
+    }
   }
 
   button {
@@ -233,10 +243,17 @@ sheet.replaceSync(/*css*/`
     width: 100%;
     height: 100%;
     aspect-ratio: 1;
-    fill: var(--primary-color, var(--default-color));
+    --text-color: var(--light-theme-text-color);
+    fill: var(--text-color, currentColor);
     --sun-resize: .5s;
     --moon-hole-apparition: .5s;
     --moon-hole-disparition: .3s;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    button > [part="button-icon"] {
+      --text-color: var(--dark-theme-text-color);
+    }
   }
 
 
@@ -531,7 +548,7 @@ export class ColorPicker extends HTMLElement {
           case 'oklch': color = `oklch(${rangeValue('okl')}% ${rangeValue('okc')} ${rangeValue('okh')} / ${a})`; break;
         }
         this.setAttribute('last-changed-format', format);
-        this.setAttribute('last-changed-property', rangeInput.dataset.property);
+        this.setAttribute('last-changed-property', label.dataset.property);
         this.setAttribute('color', color);
       });
       this.inputHandlers.push({ input: rangeInput, type: 'change', handler: rangeChangeHandler });
@@ -626,8 +643,16 @@ export class ColorPicker extends HTMLElement {
         const button = this.shadowRoot.querySelector('button');
         button.style.setProperty('--color', newValue);
         button.style.setProperty('--clamped-color', clampedColor.hex);
+        button.style.setProperty('--light-theme-text-color', Couleur.blend(
+          getComputedStyle(this).getPropertyValue('--echiquier-light-background-color').trim(),
+          color
+        ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
+        button.style.setProperty('--dark-theme-text-color', Couleur.blend(
+          getComputedStyle(this).getPropertyValue('--echiquier-dark-background-color').trim(),
+          color
+        ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
 
-        // Update values of inputs that weren't manually changed
+        // Update values of inputs
         const lastChangedFormat = this.getAttribute('last-changed-format');
         for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
           const rangeInput = label.querySelector(`input[type="range"]`);
@@ -644,6 +669,9 @@ export class ColorPicker extends HTMLElement {
         }
 
         // Update gradients (just set custom properties on input ranges, the gradients will be changed by paint worklet)
+        for (const prop of Couleur.properties) {
+          this.style.setProperty(`--${prop}`, color[prop]);
+        }
         this.updateGradients(newValue, this.getAttribute('last-changed-property'));
         
         this.dispatchEvent(new CustomEvent('change', { detail: {
