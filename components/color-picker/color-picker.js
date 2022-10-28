@@ -476,6 +476,10 @@ const strings = {
 
 
 
+const black = new Couleur('black');
+
+
+
 export class ColorPicker extends HTMLElement {
   constructor() {
     super();
@@ -545,6 +549,48 @@ export class ColorPicker extends HTMLElement {
   }
 
 
+  getCurrentColorExpression() {
+    let color;
+    const format = this.shadowRoot.querySelector('select').value;
+    const rangeValue = this.getCurrentRangeValue.bind(this);
+    const a = rangeValue('a') / 100;
+    switch (format) {
+      case 'rgb': color = `rgb(${rangeValue('r')}, ${rangeValue('g')}, ${rangeValue('b')}, ${a})`; break;
+      case 'hsl': color = `hsl(${rangeValue('h')}, ${rangeValue('s')}%, ${rangeValue('l')}%, ${a})`; break;
+      case 'hwb': color = `hwb(${rangeValue('h')} ${rangeValue('w')}% ${rangeValue('bk')}% / ${a})`; break;
+      case 'lab': color = `lab(${rangeValue('ciel')}% ${rangeValue('ciea')} ${rangeValue('cieb')} / ${a})`; break;
+      case 'lch': color = `lch(${rangeValue('ciel')}% ${rangeValue('ciec')} ${rangeValue('cieh')} / ${a})`; break;
+      case 'oklab': color = `oklab(${rangeValue('okl')}% ${rangeValue('oka')} ${rangeValue('okb')} / ${a})`; break;
+      case 'oklch': color = `oklch(${rangeValue('okl')}% ${rangeValue('okc')} ${rangeValue('okh')} / ${a})`; break;
+    }
+    return color;
+  }
+
+
+  updateGradients() {
+    for (const prop of Couleur.properties) {
+      this.style.setProperty(`--${prop}`, this.getCurrentRangeValue(prop));
+    }
+  }
+
+
+  linkPropertiesToFormats(format) {
+    // Makes sure properties shared by multiple formats update their gradients
+    const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
+    const formatLabels = [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)];
+    const formatIsSupported = CSS.supports(`color: ${black[format]}`);
+    for (const label of allLabels) {
+      const range = label.querySelector('input[type="range"]');
+      if (formatLabels.includes(label)) {
+        range.style.setProperty('--as-format', format);
+      } else {
+        range.style.setProperty('--as-format', label.dataset.format.split(' ')[0]);
+      }
+      range.style.setProperty('--format-is-supported', String(formatIsSupported));
+    }
+  }
+
+
   /** Starts monitoring changes to the selected color. */
   startMonitoringChanges() {
     const select = this.shadowRoot.querySelector('select');
@@ -554,7 +600,6 @@ export class ColorPicker extends HTMLElement {
     });
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
-    const rangeValue = this.getCurrentRangeValue.bind(this);
     for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
       const rangeInput = label.querySelector(`input[type="range"]`);
       const numericInput = label.querySelector(`input[type="number"]`);
@@ -563,43 +608,54 @@ export class ColorPicker extends HTMLElement {
       rangeInput.style.setProperty('--min', rangeInput.getAttribute('min'));
       rangeInput.style.setProperty('--max', rangeInput.getAttribute('max'));
 
-      // Update other sliders and numeric input on slider input
+      // Update other sliders and numeric input on slider change
       let rangeChangeHandler;
-      rangeInput.addEventListener('input', rangeChangeHandler = event => {
-        const format = this.shadowRoot.querySelector('select').value;
-        let color;
-        const a = rangeValue('a') / 100;
-        switch (format) {
-          case 'rgb': color = `rgb(${rangeValue('r')}, ${rangeValue('g')}, ${rangeValue('b')}, ${a})`; break;
-          case 'hsl': color = `hsl(${rangeValue('h')}, ${rangeValue('s')}%, ${rangeValue('l')}%, ${a})`; break;
-          case 'hwb': color = `hwb(${rangeValue('h')} ${rangeValue('w')}% ${rangeValue('bk')}% / ${a})`; break;
-          case 'lab': color = `lab(${rangeValue('ciel')}% ${rangeValue('ciea')} ${rangeValue('cieb')} / ${a})`; break;
-          case 'lch': color = `lch(${rangeValue('ciel')}% ${rangeValue('ciec')} ${rangeValue('cieh')} / ${a})`; break;
-          case 'oklab': color = `oklab(${rangeValue('okl')}% ${rangeValue('oka')} ${rangeValue('okb')} / ${a})`; break;
-          case 'oklch': color = `oklch(${rangeValue('okl')}% ${rangeValue('okc')} ${rangeValue('okh')} / ${a})`; break;
-        }
-        this.setAttribute('last-changed-format', format);
-        this.setAttribute('last-changed-property', label.dataset.property);
-        this.setAttribute('color', color);
+      rangeInput.addEventListener('change', rangeChangeHandler = event => {
+        const colorExpr = this.getCurrentColorExpression();
+        const color = new Couleur(colorExpr);
+
+        this.dispatchEvent(new CustomEvent('colorchange', {
+          bubbles: true,
+          detail: { color }
+        }));
+
+        this.setAttribute('color', colorExpr);
       });
-      this.inputHandlers.push({ input: rangeInput, type: 'input', handler: rangeChangeHandler });
+      this.inputHandlers.push({ input: rangeInput, type: 'change', handler: rangeChangeHandler });
 
       // Update numeric input on slider input
       let rangeInputHandler;
       rangeInput.addEventListener('input', rangeInputHandler = event => {
-        if (numericInput.value == rangeInput.value) return;
-        if (![rangeInput, numericInput].includes(document.activeElement)) rangeInput.focus();
-        numericInput.value = rangeInput.value;
+        if (!this.getAttribute('color')) return;
+
+        const colorExpr = this.getCurrentColorExpression();
+        const color = new Couleur(colorExpr);
+
+        this.dispatchEvent(new CustomEvent('colorinput', {
+          bubbles: true,
+          detail: { color }
+        }));
+        
+        const format = this.shadowRoot.querySelector('select').value;
+        this.setAttribute('last-changed-format', format);
+
+        this.linkPropertiesToFormats(format);
+        this.updateGradients();
+
+        if (numericInput.value !== rangeInput.value) {
+          if (![rangeInput, numericInput].includes(document.activeElement)) rangeInput.focus();
+          numericInput.value = rangeInput.value;
+        }
       });
       this.inputHandlers.push({ input: rangeInput, type: 'input', handler: rangeInputHandler });
 
-      // Update range input on numeric input
+      // Update range input on numeric input change
       let numberChangeHandler;
-      numericInput.addEventListener('input', numberChangeHandler = event => {
+      numericInput.addEventListener('change', numberChangeHandler = event => {
         rangeInput.value = numericInput.value;
-        rangeInput.dispatchEvent(new Event('input'));
+        rangeInput.dispatchEvent(new Event('change'));
       });
-      this.inputHandlers.push({ input: numericInput, type: 'input', handler: numberChangeHandler });
+      this.inputHandlers.push({ input: numericInput, type: 'change', handler: numberChangeHandler });
     }
   }
 
@@ -619,9 +675,6 @@ export class ColorPicker extends HTMLElement {
     const button = this.shadowRoot.querySelector('button');
     button.addEventListener('click', this.openHandler);
 
-    // Monitor the choice of color
-    this.startMonitoringChanges();
-
     // Disable focusability inside the color-picker
     disableFocusInside(this, { exceptions: [this.shadowRoot.querySelector('button')] });
 
@@ -632,6 +685,10 @@ export class ColorPicker extends HTMLElement {
     const format = this.getAttribute('format') ?? 'rgb';
     const select = this.shadowRoot.querySelector('select');
     select.value = format;
+    this.linkPropertiesToFormats(format);
+
+    // Monitor the choice of color
+    this.startMonitoringChanges();
 
     CSS.paintWorklet.addModule(import.meta.resolve(`range-gradient-worklet`));
     if (!this.getAttribute('color')) this.setAttribute('color', 'red');
@@ -674,17 +731,11 @@ export class ColorPicker extends HTMLElement {
 
       case 'color': {
         const color = new Couleur(newValue);
-        const clampedColor = color.toGamut('srgb');
-
-        this.dispatchEvent(new CustomEvent('change', { detail: {
-          color,
-          clampedColor
-        }}));
 
         // Update button color
         const button = this.shadowRoot.querySelector('button');
         button.style.setProperty('--color', newValue);
-        button.style.setProperty('--clamped-color', clampedColor.hex);
+        button.style.setProperty('--clamped-color', color.toGamut('srgb').hex);
         button.style.setProperty('--light-theme-text-color', Couleur.blend(
           getComputedStyle(this).getPropertyValue('--echiquier-light-background-color').trim(),
           color
@@ -701,19 +752,19 @@ export class ColorPicker extends HTMLElement {
           const numericInput = label.querySelector(`input[type="number"]`);
 
           const prop = label.dataset.property;
-          const value = color[prop];
+          const formats = label.dataset.format.split(' ');
+          const clampedColor = color.toGamut(formats[0]);
+          const value = clampedColor[prop];
           const displayedValue = eval(label.dataset.valueOperation.replace('{v}', value));
 
-          if (!(label.dataset.format.split(' ').includes(lastChangedFormat))) {
+          if (!(formats.includes(lastChangedFormat))) {
             rangeInput.value = displayedValue;
             numericInput.value = displayedValue;
           }
         }
 
         // Update gradients
-        for (const prop of Couleur.properties) {
-          this.style.setProperty(`--${prop}`, this.getCurrentRangeValue(prop));
-        }
+        this.updateGradients();
       } break;
     }
   }
