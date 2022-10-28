@@ -31,7 +31,7 @@ template.innerHTML = /*html*/`
 
   <div part="selector">
     <div part="format-choice">
-      <label for="color-formats" data-string="color-format" part="select-label" ></label>
+      <label for="color-formats" data-string="color-format" part="select-label"></label>
       <select name="color-formats" id="color-formats" part="select">
         <option value="rgb">RGB</option>
         <option value="hsl">HSL</option>
@@ -188,6 +188,9 @@ sheet.replaceSync(/*css*/`
     position: relative;
     --size: 3rem;
     --tap-safe-size: 44px;
+    --slider-height: 12rem;
+    --gradient-steps: 25;
+    --cursor-width: 14;
     --echiquier-light-background-color: #ddd;
     --echiquier-dark-background-color: #555;
     --echiquier-background-color: var(--echiquier-light-background-color);
@@ -272,6 +275,17 @@ sheet.replaceSync(/*css*/`
     grid-column: 1;
     opacity: 0;
     pointer-events: none;
+    background: #ddd;
+    color: black;
+    padding: 5px;
+    border: 1px solid currentColor;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    [part="selector"] {
+      background: #222;
+      color: white;
+    }
   }
 
   :host([open]) > [part="selector"] {
@@ -307,6 +321,16 @@ sheet.replaceSync(/*css*/`
     margin: auto;
   }
 
+  [part="select-label"],
+  [part="property-name"] {
+    font-size: 1.1em;
+    font-weight: 600;
+  }
+
+  [part="property-range"] {
+    display: none;
+  }
+
 
 
   /**********/
@@ -315,14 +339,12 @@ sheet.replaceSync(/*css*/`
 
   label[data-format] {
     display: none;
-    --slider-width: 44px;
-    --slider-height: 10rem;
+    --slider-width: var(--tap-safe-size);
     grid-template-columns: calc(2 * var(--slider-width));
-    grid-template-rows: auto auto var(--slider-height) auto;
+    grid-template-rows: auto var(--slider-height) auto;
     justify-items: center;
-    gap: .3rem;
+    gap: 10px;
     position: relative;
-    --cursor-width: 14px;
   }
   
   :host(:not([format])) label[data-format~="rgb"],
@@ -349,37 +371,37 @@ sheet.replaceSync(/*css*/`
     display: block;
     border: none;
     --couleurs: white 0%, black 100%;
-    background: linear-gradient(to right, var(--couleurs)),
+    background: paint(range-gradient),
                 var(--echiquier-transparence);
     background-size: 100% 100%, 16px 16px, 16px 16px;
     background-position: 0 0, 0 0, 8px 8px;
     background-repeat: no-repeat, repeat, repeat;
+    position: relative;
+    outline-offset: 3px;
   }
   
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: var(--cursor-width);
+    width: calc(var(--cursor-width) * 1px);
     height: var(--tap-safe-size);
     background: transparent;
     border: none;
-    border-radius: .6rem;
-    box-shadow: inset 0 0 0 2px var(--input-active-bg-color),
-                0 0 0 2px var(--text-color);
+    box-shadow: inset 0 0 0 2px white,
+                0 0 0 2px black;
   }
   
   input[type="range"]::-moz-range-thumb {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: var(--cursor-width);
+    width: calc(var(--cursor-width) * 1px);
     height: var(--tap-safe-size);
     background: transparent;
     border: none;
-    border-radius: .6rem;
-    box-shadow: inset 0 0 0 2px var(--input-active-bg-color),
-                0 0 0 2px var(--text-color);
+    box-shadow: inset 0 0 0 2px white,
+                0 0 0 2px black;
   }
   
   input[type="range"]::-moz-range-track {
@@ -404,7 +426,7 @@ const strings = {
   "fr": {
     "pick-color": "Choisir une couleur",
     "selector-title": "Sélecteur de couleur",
-    "color-format": "Format",
+    "color-format": "Format :",
     "prop-r-nom": "Rouge",
     "prop-g-nom": "Vert",
     "prop-b-nom": "Bleu",
@@ -429,7 +451,7 @@ const strings = {
   "en": {
     "pick-color": "Pick a color",
     "selector-title": "Color picker",
-    "color-format": "Format",
+    "color-format": "Format:",
     "prop-r-nom": "Red",
     "prop-g-nom": "Green",
     "prop-b-nom": "Blue",
@@ -518,6 +540,11 @@ export class ColorPicker extends HTMLElement {
   }
 
 
+  getCurrentRangeValue(prop) {
+    return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
+  }
+
+
   /** Starts monitoring changes to the selected color. */
   startMonitoringChanges() {
     const select = this.shadowRoot.querySelector('select');
@@ -527,14 +554,18 @@ export class ColorPicker extends HTMLElement {
     });
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
-    const rangeValue = prop => this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
+    const rangeValue = this.getCurrentRangeValue.bind(this);
     for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
       const rangeInput = label.querySelector(`input[type="range"]`);
       const numericInput = label.querySelector(`input[type="number"]`);
 
-      // Update other sliders and numeric input on slider change
+      rangeInput.style.setProperty('--property', label.dataset.property);
+      rangeInput.style.setProperty('--min', rangeInput.getAttribute('min'));
+      rangeInput.style.setProperty('--max', rangeInput.getAttribute('max'));
+
+      // Update other sliders and numeric input on slider input
       let rangeChangeHandler;
-      rangeInput.addEventListener('change', rangeChangeHandler = event => {
+      rangeInput.addEventListener('input', rangeChangeHandler = event => {
         const format = this.shadowRoot.querySelector('select').value;
         let color;
         const a = rangeValue('a') / 100;
@@ -551,7 +582,7 @@ export class ColorPicker extends HTMLElement {
         this.setAttribute('last-changed-property', label.dataset.property);
         this.setAttribute('color', color);
       });
-      this.inputHandlers.push({ input: rangeInput, type: 'change', handler: rangeChangeHandler });
+      this.inputHandlers.push({ input: rangeInput, type: 'input', handler: rangeChangeHandler });
 
       // Update numeric input on slider input
       let rangeInputHandler;
@@ -562,13 +593,13 @@ export class ColorPicker extends HTMLElement {
       });
       this.inputHandlers.push({ input: rangeInput, type: 'input', handler: rangeInputHandler });
 
-      // Update range input on numeric input change
+      // Update range input on numeric input
       let numberChangeHandler;
-      numericInput.addEventListener('change', numberChangeHandler = event => {
+      numericInput.addEventListener('input', numberChangeHandler = event => {
         rangeInput.value = numericInput.value;
-        rangeInput.dispatchEvent(new Event('change'));
+        rangeInput.dispatchEvent(new Event('input'));
       });
-      this.inputHandlers.push({ input: numericInput, type: 'change', handler: numberChangeHandler });
+      this.inputHandlers.push({ input: numericInput, type: 'input', handler: numberChangeHandler });
     }
   }
 
@@ -597,6 +628,12 @@ export class ColorPicker extends HTMLElement {
     // Remove the button's aria-label if the label is displayed
     this.attributeChangedCallback('label', null, this.getAttribute('label'));
 
+    // If the format attribute is present, switch to that format
+    const format = this.getAttribute('format') ?? 'rgb';
+    const select = this.shadowRoot.querySelector('select');
+    select.value = format;
+
+    CSS.paintWorklet.addModule(import.meta.resolve(`range-gradient-worklet`));
     if (!this.getAttribute('color')) this.setAttribute('color', 'red');
   }
 
@@ -639,6 +676,11 @@ export class ColorPicker extends HTMLElement {
         const color = new Couleur(newValue);
         const clampedColor = color.toGamut('srgb');
 
+        this.dispatchEvent(new CustomEvent('change', { detail: {
+          color,
+          clampedColor
+        }}));
+
         // Update button color
         const button = this.shadowRoot.querySelector('button');
         button.style.setProperty('--color', newValue);
@@ -668,16 +710,10 @@ export class ColorPicker extends HTMLElement {
           }
         }
 
-        // Update gradients (just set custom properties on input ranges, the gradients will be changed by paint worklet)
+        // Update gradients
         for (const prop of Couleur.properties) {
-          this.style.setProperty(`--${prop}`, color[prop]);
+          this.style.setProperty(`--${prop}`, this.getCurrentRangeValue(prop));
         }
-        this.updateGradients(newValue, this.getAttribute('last-changed-property'));
-        
-        this.dispatchEvent(new CustomEvent('change', { detail: {
-          color,
-          clampedColor
-        }}));
       } break;
     }
   }

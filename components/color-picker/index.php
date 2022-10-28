@@ -22,6 +22,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     {
       "imports": {
         "color-picker": "/_common/components/color-picker/color-picker.js",
+        "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
         "colori": "/colori/lib/dist/colori.js",
         "trap-focus": "/_common/js/trap-focus.js",
         "translation-observer": "/_common/js/translation-observer.js"
@@ -83,53 +84,25 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       color-picker {
         --size: 2rem;
-        transform: translateY(calc(-0.5 * (44px * 3 + 10px * 2 + 1.4rem)));
-        --primary-color: var(--sunmoon-color);
-        --secondary-color: var(--sunray-color);
       }
 
-      color-picker .selector-title {
-        font-size: 1.4rem;
-        border-bottom: 1px solid;
-        padding: 10px;
-      }
-
-      color-picker > .selector {
-        font-size: 1.2rem;
-        border: 1px solid currentColor;
+      color-picker::part(selector) {
         border-radius: 10px;
-        width: max-content;
         transform: translateY(-.2rem);
         transition: opacity .2s ease,
                     transform .2s ease;
         margin-top: 10px;
-        overflow: hidden;
       }
 
-      color-picker[open="true"] > .selector {
+      color-picker[open]::part(selector) {
         transform: translateY(0);
-      }
-
-      color-picker > .selector > input {
-        width: 1.5em;
-        margin: 10px;
-        margin-right: 0;
-      }
-
-      color-picker > .selector > input + label {
-        box-sizing: border-box;
-        height: 44px;
-        padding: 10px;
-        display: grid;
-        align-content: center;
-        justify-content: start;
       }
     </style>
   </head>
 
   <body>
-    <color-picker position="bottom"></color-picker>
-    <color-picker position="bottom" label></color-picker>
+    <color-picker position="bottom" format="hsl"></color-picker>
+    <color-picker position="bottom" format="oklch" label></color-picker>
   </body>
 
 </html>
