@@ -42,7 +42,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       for (const colorPicker of [...document.querySelectorAll('color-picker')]) {
         for (const type of ['colorinput', 'colorchange']) {
           colorPicker.addEventListener(type, event => {
-            console.log(`${i}: ${type} color ${event.detail.color.rgb}`);
+            console.log(`${i}: ${type} color ${event.detail.color}`);
           });
         }
         i++;

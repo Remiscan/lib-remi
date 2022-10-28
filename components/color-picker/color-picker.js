@@ -612,11 +612,10 @@ export class ColorPicker extends HTMLElement {
       let rangeChangeHandler;
       rangeInput.addEventListener('change', rangeChangeHandler = event => {
         const colorExpr = this.getCurrentColorExpression();
-        const color = new Couleur(colorExpr);
 
         this.dispatchEvent(new CustomEvent('colorchange', {
           bubbles: true,
-          detail: { color }
+          detail: { color: colorExpr }
         }));
 
         this.setAttribute('color', colorExpr);
@@ -633,7 +632,7 @@ export class ColorPicker extends HTMLElement {
 
         this.dispatchEvent(new CustomEvent('colorinput', {
           bubbles: true,
-          detail: { color }
+          detail: { color: colorExpr }
         }));
         
         const format = this.shadowRoot.querySelector('select').value;
