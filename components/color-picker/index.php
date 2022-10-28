@@ -82,7 +82,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       }
 
       color-picker {
-        --size: 5rem;
+        --size: 2rem;
         transform: translateY(calc(-0.5 * (44px * 3 + 10px * 2 + 1.4rem)));
         --primary-color: var(--sunmoon-color);
         --secondary-color: var(--sunray-color);
