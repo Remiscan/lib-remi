@@ -46,134 +46,134 @@ template.innerHTML = /*html*/`
     <label for="range-red" data-format="rgb" part="property-container" data-property="r" data-value-operation="Math.round(255 * {v})">
       <span data-string="prop-r-nom" part="property-name"></span>
       <span part="property-range">[0 ; 255]</span>
-      <input type="range" part="input-range" id="range-red" min="0" max="255" step="1">
       <input type="number" part="input-number" min="0" max="255" step="1" part="input-number">
+      <input type="range" part="input-range" id="range-red" min="0" max="255" step="1">
     </label>
 
     <label for="range-green" data-format="rgb" part="property-container" data-property="g" data-value-operation="Math.round(255 * {v})">
       <span data-string="prop-g-nom" part="property-name"></span>
       <span part="property-range">[0 ; 255]</span>
-      <input type="range" part="input-range" id="range-green" min="0" max="255" step="1">
       <input type="number" part="input-number" min="0" max="255" step="1">
+      <input type="range" part="input-range" id="range-green" min="0" max="255" step="1">
     </label>
 
     <label for="range-blue" data-format="rgb" part="property-container" data-property="b" data-value-operation="Math.round(255 * {v})">
       <span data-string="prop-b-nom" part="property-name"></span>
       <span part="property-range">[0 ; 255]</span>
-      <input type="range" part="input-range" id="range-blue" min="0" max="255" step="1">
       <input type="number" part="input-number" min="0" max="255" step="1">
+      <input type="range" part="input-range" id="range-blue" min="0" max="255" step="1">
     </label>
 
     <label for="range-hue" data-format="hsl hwb" part="property-container"  data-property="h"data-value-operation="Math.round({v})">
       <span data-string="prop-h-nom" part="property-name"></span>
       <span part="property-range">[0 ; 360]</span>
-      <input type="range" part="input-range" id="range-hue" min="0" max="360" step="1">
       <input type="number" part="input-number" min="0" max="360" step="1">
+      <input type="range" part="input-range" id="range-hue" min="0" max="360" step="1">
     </label>
 
     <label for="range-saturation" data-format="hsl" part="property-container" data-property="s" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-s-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-saturation" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-saturation" min="0" max="100" step="1">
     </label>
 
     <label for="range-luminosity" data-format="hsl" part="property-container" data-property="l" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-l-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-luminosity" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-luminosity" min="0" max="100" step="1">
     </label>
 
     <label for="range-whiteness" data-format="hwb" part="property-container" data-property="w" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-w-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-whiteness" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-whiteness" min="0" max="100" step="1">
     </label>
 
     <label for="range-blackness" data-format="hwb" part="property-container" data-property="bk" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-bk-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-blackness" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-blackness" min="0" max="100" step="1">
     </label>
 
     <label for="range-cie-lightness" data-format="lab lch" part="property-container" data-property="ciel" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-ciel-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-cie-lightness" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-cie-lightness" min="0" max="100" step="1">
     </label>
 
     <label for="range-cie-a-axis" data-format="lab" part="property-container" data-property="ciea" data-value-operation="Math.round({v})">
       <span data-string="prop-ciea-nom" part="property-name"></span>
       <span part="property-range">[-80 ; 94]</span>
-      <input type="range" part="input-range" id="range-cie-a-axis" min="-80" max="94" step="1">
       <input type="number" part="input-number" min="-80" max="94" step="1">
+      <input type="range" part="input-range" id="range-cie-a-axis" min="-80" max="94" step="1">
     </label>
 
     <label for="range-cie-b-axis" data-format="lab" part="property-container" data-property="cieb" data-value-operation="Math.round({v})">
       <span data-string="prop-cieb-nom" part="property-name"></span>
       <span part="property-range">[-112 ; 94]</span>
-      <input type="range" part="input-range" id="range-cie-b-axis" min="-112" max="94" step="1">
       <input type="number" part="input-number" min="-112" max="94" step="1">
+      <input type="range" part="input-range" id="range-cie-b-axis" min="-112" max="94" step="1">
     </label>
 
     <label for="range-cie-chroma" data-format="lch" part="property-container" data-property="ciec" data-value-operation="Math.round({v})">
       <span data-string="prop-ciec-nom" part="property-name"></span>
       <span part="property-range">[0 ; 132]</span>
-      <input type="range" part="input-range" id="range-cie-chroma" min="0" max="132" step="1">
       <input type="number" part="input-number" min="0" max="132" step="1">
+      <input type="range" part="input-range" id="range-cie-chroma" min="0" max="132" step="1">
     </label>
 
     <label for="range-cie-hue" data-format="lch" part="property-container" data-property="cieh" data-value-operation="Math.round({v})">
       <span data-string="prop-cieh-nom" part="property-name"></span>
       <span part="property-range">[0 ; 360]</span>
-      <input type="range" part="input-range" id="range-cie-hue" min="0" max="360" step="1">
       <input type="number" part="input-number" min="0" max="360" step="1">
+      <input type="range" part="input-range" id="range-cie-hue" min="0" max="360" step="1">
     </label>
 
     <label for="range-ok-lightness" data-format="oklab oklch" part="property-container" data-property="okl" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-okl-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-ok-lightness" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-lightness" min="0" max="100" step="1">
     </label>
 
     <label for="range-ok-a-axis" data-format="oklab" part="property-container" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3">
       <span data-string="prop-oka-nom" part="property-name"></span>
       <span part="property-range">[-0.24 ; 0.28]</span>
-      <input type="range" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001">
       <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
+      <input type="range" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001">
     </label>
 
     <label for="range-ok-b-axis" data-format="oklab" part="property-container" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3">
       <span data-string="prop-okb-nom" part="property-name"></span>
       <span part="property-range">[-0.32 ; 0.20]</span>
-      <input type="range" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001">
       <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
+      <input type="range" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001">
     </label>
 
     <label for="range-ok-chroma" data-format="oklch" part="property-container" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3">
       <span data-string="prop-okc-nom" part="property-name"></span>
       <span part="property-range">[0 ; 0.32]</span>
-      <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
       <input type="number" part="input-number" min="0" max="0.32" step="0.001">
+      <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
     </label>
 
     <label for="range-ok-hue" data-format="oklch" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
       <span data-string="prop-okh-nom" part="property-name"></span>
       <span part="property-range">[0 ; 360]</span>
-      <input type="range" part="input-range" id="range-ok-hue" min="0" max="360" step="1">
       <input type="number" part="input-number" min="0" max="360" step="1">
+      <input type="range" part="input-range" id="range-ok-hue" min="0" max="360" step="1">
     </label>
 
     <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-a-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
-      <input type="range" part="input-range" id="range-opacity" min="0" max="100" step="1">
       <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-opacity" min="0" max="100" step="1">
     </label>
   </div>
 `;
@@ -341,7 +341,7 @@ sheet.replaceSync(/*css*/`
     display: none;
     --slider-width: var(--tap-safe-size);
     grid-template-columns: calc(2 * var(--slider-width));
-    grid-template-rows: auto var(--slider-height) auto;
+    grid-template-rows: auto auto var(--slider-height);
     justify-items: center;
     gap: 10px;
     position: relative;
