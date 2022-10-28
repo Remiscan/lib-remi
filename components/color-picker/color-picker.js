@@ -19,158 +19,160 @@ import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <button type="button" data-label="pick-color">
-    <span class="color-preview"></span>
+  <button type="button" data-label="pick-color" part="button">
+    <span part="color-preview"></span>
 
-    <svg viewBox="0 0 120 120">
+    <svg viewBox="0 0 120 120" part="button-icon">
     </svg>
 
-    <span class="button-label" data-string="pick-color"></span>
+    <span part="button-label" data-string="pick-color"></span>
   </button>
 
-  <div class="selector">
-    <label for="color-formats" data-string="color-format"></label>
-    <select name="color-formats" id="color-formats">
-      <option value="rgb">RGB</option>
-      <option value="hsl">HSL</option>
-      <option value="hwb">HWB</option>
-      <option value="lab">LAB</option>
-      <option value="lch">LCH</option>
-      <option value="oklab">OKLAB</option>
-      <option value="oklch">OKLCH</option>
-    </select>
+  <div part="selector">
+    <div part="format-choice">
+      <label for="color-formats" data-string="color-format" part="select-label" ></label>
+      <select name="color-formats" id="color-formats" part="select">
+        <option value="rgb">RGB</option>
+        <option value="hsl">HSL</option>
+        <option value="hwb">HWB</option>
+        <option value="lab">LAB</option>
+        <option value="lch">LCH</option>
+        <option value="oklab">OKLAB</option>
+        <option value="oklch">OKLCH</option>
+      </select>
+    </div>
 
-    <label for="range-red" data-format="rgb">
-      <span data-string="prop-r-nom" data-string="prop-r-nom"></span>
-      <span>[0 ; 255]</span>
-      <input type="range" id="range-red" data-property="r" min="0" max="255" step="1" value="<?=round(255 * $startColor->r)?>">
-      <input type="number" data-property="r" min="0" max="255" step="1" value="<?=round(255 * $startColor->r)?>">
+    <label for="range-red" data-format="rgb" part="property-container" data-property="r" data-value-operation="Math.round(255 * {v})">
+      <span data-string="prop-r-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 255]</span>
+      <input type="range" part="input-range" id="range-red" min="0" max="255" step="1">
+      <input type="number" part="input-number" min="0" max="255" step="1" part="input-number">
     </label>
 
-    <label for="range-green" data-format="rgb">
-      <span data-string="prop-g-nom" data-string="prop-g-nom"></span>
-      <span>[0 ; 255]</span>
-      <input type="range" id="range-green" data-property="g" min="0" max="255" step="1" value="<?=round(255 * $startColor->g)?>">
-      <input type="number" data-property="g" min="0" max="255" step="1" value="<?=round(255 * $startColor->g)?>">
+    <label for="range-green" data-format="rgb" part="property-container" data-property="g" data-value-operation="Math.round(255 * {v})">
+      <span data-string="prop-g-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 255]</span>
+      <input type="range" part="input-range" id="range-green" min="0" max="255" step="1">
+      <input type="number" part="input-number" min="0" max="255" step="1">
     </label>
 
-    <label for="range-blue" data-format="rgb">
-      <span data-string="prop-b-nom" data-string="prop-b-nom"></span>
-      <span>[0 ; 255]</span>
-      <input type="range" id="range-blue" data-property="b" min="0" max="255" step="1" value="<?=round(255 * $startColor->b)?>">
-      <input type="number" data-property="b" min="0" max="255" step="1" value="<?=round(255 * $startColor->b)?>">
+    <label for="range-blue" data-format="rgb" part="property-container" data-property="b" data-value-operation="Math.round(255 * {v})">
+      <span data-string="prop-b-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 255]</span>
+      <input type="range" part="input-range" id="range-blue" min="0" max="255" step="1">
+      <input type="number" part="input-number" min="0" max="255" step="1">
     </label>
 
-    <label for="range-hue" data-format="hsl hwb">
-      <span data-string="prop-h-nom" data-string="prop-h-nom"></span>
-      <span>[0 ; 360]</span>
-      <input type="range" id="range-hue" data-property="h" min="0" max="360" step="1" value="<?=round($startColor->h())?>">
-      <input type="number" data-property="h" min="0" max="360" step="1" value="<?=round($startColor->h())?>">
+    <label for="range-hue" data-format="hsl hwb" part="property-container"  data-property="h"data-value-operation="Math.round({v})">
+      <span data-string="prop-h-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 360]</span>
+      <input type="range" part="input-range" id="range-hue" min="0" max="360" step="1">
+      <input type="number" part="input-number" min="0" max="360" step="1">
     </label>
 
-    <label for="range-saturation" data-format="hsl">
-      <span data-string="prop-s-nom" data-string="prop-s-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-saturation" data-property="s" min="0" max="100" step="1" value="<?=round(100 * $startColor->s())?>">
-      <input type="number" data-property="s" min="0" max="100" step="1" value="<?=round(100 * $startColor->s())?>">
+    <label for="range-saturation" data-format="hsl" part="property-container" data-property="s" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-s-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-saturation" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
 
-    <label for="range-luminosity" data-format="hsl">
-      <span data-string="prop-l-nom" data-string="prop-l-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-luminosity" data-property="l" min="0" max="100" step="1" value="<?=round(100 * $startColor->l())?>">
-      <input type="number" data-property="l" min="0" max="100" step="1" value="<?=round(100 * $startColor->l())?>">
+    <label for="range-luminosity" data-format="hsl" part="property-container" data-property="l" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-l-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-luminosity" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
 
-    <label for="range-whiteness" data-format="hwb">
-      <span data-string="prop-w-nom" data-string="prop-w-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-whiteness" data-property="w" min="0" max="100" step="1" value="<?=round(100 * $startColor->w())?>">
-      <input type="number" data-property="w" min="0" max="100" step="1" value="<?=round(100 * $startColor->w())?>">
+    <label for="range-whiteness" data-format="hwb" part="property-container" data-property="w" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-w-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-whiteness" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
 
-    <label for="range-blackness" data-format="hwb">
-      <span data-string="prop-bk-nom" data-string="prop-bk-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-blackness" data-property="bk" min="0" max="100" step="1" value="<?=round(100 * $startColor->bk())?>">
-      <input type="number" data-property="bk" min="0" max="100" step="1" value="<?=round(100 * $startColor->bk())?>">
+    <label for="range-blackness" data-format="hwb" part="property-container" data-property="bk" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-bk-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-blackness" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
 
-    <label for="range-cie-lightness" data-format="lab lch">
-      <span data-string="prop-ciel-nom" data-string="prop-ciel-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-cie-lightness" data-property="ciel" min="0" max="100" step="1" value="<?=round(100 * $startColor->ciel())?>">
-      <input type="number" data-property="ciel" min="0" max="100" step="1" value="<?=round(100 * $startColor->ciel())?>">
+    <label for="range-cie-lightness" data-format="lab lch" part="property-container" data-property="ciel" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-ciel-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-cie-lightness" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
 
-    <label for="range-cie-a-axis" data-format="lab">
-      <span data-string="prop-ciea-nom" data-string="prop-ciea-nom"></span>
-      <span>[-80 ; 94]</span>
-      <input type="range" id="range-cie-a-axis" data-property="ciea" min="-80" max="94" step="1" value="<?=round($startColor->ciea())?>">
-      <input type="number" data-property="ciea" min="-80" max="94" step="1" value="<?=round($startColor->ciea())?>">
+    <label for="range-cie-a-axis" data-format="lab" part="property-container" data-property="ciea" data-value-operation="Math.round({v})">
+      <span data-string="prop-ciea-nom" part="property-name"></span>
+      <span part="property-range">[-80 ; 94]</span>
+      <input type="range" part="input-range" id="range-cie-a-axis" min="-80" max="94" step="1">
+      <input type="number" part="input-number" min="-80" max="94" step="1">
     </label>
 
-    <label for="range-cie-b-axis" data-format="lab">
-      <span data-string="prop-cieb-nom" data-string="prop-cieb-nom"></span>
-      <span>[-112 ; 94]</span>
-      <input type="range" id="range-cie-b-axis" data-property="cieb" min="-112" max="94" step="1" value="<?=round($startColor->cieb())?>">
-      <input type="number" data-property="cieb" min="-112" max="94" step="1" value="<?=round($startColor->cieb())?>">
+    <label for="range-cie-b-axis" data-format="lab" part="property-container" data-property="cieb" data-value-operation="Math.round({v})">
+      <span data-string="prop-cieb-nom" part="property-name"></span>
+      <span part="property-range">[-112 ; 94]</span>
+      <input type="range" part="input-range" id="range-cie-b-axis" min="-112" max="94" step="1">
+      <input type="number" part="input-number" min="-112" max="94" step="1">
     </label>
 
-    <label for="range-cie-chroma" data-format="lch">
-      <span data-string="prop-ciec-nom" data-string="prop-ciec-nom"></span>
-      <span>[0 ; 132]</span>
-      <input type="range" id="range-cie-chroma" data-property="ciec" min="0" max="132" step="1" value="<?=round($startColor->ciec())?>">
-      <input type="number" data-property="ciec" min="0" max="132" step="1" value="<?=round($startColor->ciec())?>">
+    <label for="range-cie-chroma" data-format="lch" part="property-container" data-property="ciec" data-value-operation="Math.round({v})">
+      <span data-string="prop-ciec-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 132]</span>
+      <input type="range" part="input-range" id="range-cie-chroma" min="0" max="132" step="1">
+      <input type="number" part="input-number" min="0" max="132" step="1">
     </label>
 
-    <label for="range-cie-hue" data-format="lch">
-      <span data-string="prop-cieh-nom" data-string="prop-cieh-nom"></span>
-      <span>[0 ; 360]</span>
-      <input type="range" id="range-cie-hue" data-property="cieh" min="0" max="360" step="1" value="<?=round($startColor->cieh())?>">
-      <input type="number" data-property="cieh" min="0" max="360" step="1" value="<?=round($startColor->cieh())?>">
+    <label for="range-cie-hue" data-format="lch" part="property-container" data-property="cieh" data-value-operation="Math.round({v})">
+      <span data-string="prop-cieh-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 360]</span>
+      <input type="range" part="input-range" id="range-cie-hue" min="0" max="360" step="1">
+      <input type="number" part="input-number" min="0" max="360" step="1">
     </label>
 
-    <label for="range-ok-lightness" data-format="oklab oklch">
-      <span data-string="prop-okl-nom" data-string="prop-okl-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-ok-lightness" data-property="okl" min="0" max="100" step="1" value="<?=round(100 * $startColor->okl())?>">
-      <input type="number" data-property="okl" min="0" max="100" step="1" value="<?=round(100 * $startColor->okl())?>">
+    <label for="range-ok-lightness" data-format="oklab oklch" part="property-container" data-property="okl" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-okl-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-ok-lightness" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
 
-    <label for="range-ok-a-axis" data-format="oklab">
-      <span data-string="prop-oka-nom" data-string="prop-oka-nom"></span>
-      <span>[-0.24 ; 0.28]</span>
-      <input type="range" id="range-ok-a-axis" data-property="oka" min="-0.24" max="0.28" step="0.001" value="<?=round(10**3 * $startColor->oka()) / 10**3?>">
-      <input type="number" data-property="oka" min="-0.24" max="0.28" step="0.001" value="<?=round(10**3 * $startColor->oka()) / 10**3?>">
+    <label for="range-ok-a-axis" data-format="oklab" part="property-container" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3">
+      <span data-string="prop-oka-nom" part="property-name"></span>
+      <span part="property-range">[-0.24 ; 0.28]</span>
+      <input type="range" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001">
+      <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
     </label>
 
-    <label for="range-ok-b-axis" data-format="oklab">
-      <span data-string="prop-okb-nom" data-string="prop-okb-nom"></span>
-      <span>[-0.32 ; 0.20]</span>
-      <input type="range" id="range-ok-b-axis" data-property="okb" min="-0.32" max="0.20" step="0.001" value="<?=round(10**3 * $startColor->okb()) / 10**3?>">
-      <input type="number" data-property="okb" min="-0.32" max="0.20" step="0.001" value="<?=round(10**3 * $startColor->okb()) / 10**3?>">
+    <label for="range-ok-b-axis" data-format="oklab" part="property-container" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3">
+      <span data-string="prop-okb-nom" part="property-name"></span>
+      <span part="property-range">[-0.32 ; 0.20]</span>
+      <input type="range" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001">
+      <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
     </label>
 
-    <label for="range-ok-chroma" data-format="oklch">
-      <span data-string="prop-okc-nom" data-string="prop-okc-nom"></span>
-      <span>[0 ; 0.32]</span>
-      <input type="range" id="range-ok-chroma" data-property="okc" min="0" max="0.32" step="0.001" value="<?=round(10**3 * $startColor->okc()) / 10**3?>">
-      <input type="number" data-property="okc" min="0" max="0.32" step="0.001" value="<?=round(10**3 * $startColor->okc()) / 10**3?>">
+    <label for="range-ok-chroma" data-format="oklch" part="property-container" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3">
+      <span data-string="prop-okc-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 0.32]</span>
+      <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
+      <input type="number" part="input-number" min="0" max="0.32" step="0.001">
     </label>
 
-    <label for="range-ok-hue" data-format="oklch">
-      <span data-string="prop-okh-nom" data-string="prop-okh-nom"></span>
-      <span>[0 ; 360]</span>
-      <input type="range" id="range-ok-hue" data-property="okh" min="0" max="360" step="1" value="<?=round($startColor->okh())?>">
-      <input type="number" data-property="okh" min="0" max="360" step="1" value="<?=round($startColor->okh())?>">
+    <label for="range-ok-hue" data-format="oklch" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
+      <span data-string="prop-okh-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 360]</span>
+      <input type="range" part="input-range" id="range-ok-hue" min="0" max="360" step="1">
+      <input type="number" part="input-number" min="0" max="360" step="1">
     </label>
 
-    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch">
-      <span data-string="prop-a-nom" data-string="prop-a-nom"></span>
-      <span>[0 ; 100]</span>
-      <input type="range" id="range-opacity" data-property="a" min="0" max="100" step="1" value="<?=round(100 * $startColor->a)?>">
-      <input type="number" data-property="a" min="0" max="100" step="1" value="<?=round(100 * $startColor->a)?>">
+    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-a-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="range" part="input-range" id="range-opacity" min="0" max="100" step="1">
+      <input type="number" part="input-number" min="0" max="100" step="1">
     </label>
   </div>
 `;
@@ -179,20 +181,6 @@ template.innerHTML = /*html*/`
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
-  button {
-    color-scheme: light dark;
-
-    display: grid;
-    grid-template-columns: var(--size) auto;
-    align-items: center;
-    gap: 1ch;
-  }
-
-  :host(:not([label])) > button {
-    grid-template-columns: var(--size) 0;
-    gap: 0;
-  }
-
   :host {
     display: grid;
     place-items: center;
@@ -204,17 +192,32 @@ sheet.replaceSync(/*css*/`
                               linear-gradient(to right, #ddd 0% 100%);
   }
 
-  :host(:not([label])) .button-label {
+  button {
+    color-scheme: light dark;
+
+    display: grid;
+    grid-template-columns: var(--size) auto;
+    align-items: center;
+    gap: 1ch;
+    padding: 0.2em;
+  }
+
+  :host(:not([label])) > button {
+    grid-template-columns: var(--size) 0;
+    gap: 0;
+  }
+
+  :host(:not([label])) [part="button-label"] {
     display: none;
   }
 
-  button > .color-preview,
-  button > svg {
+  button > [part="color-preview"],
+  button > [part="button-icon"] {
     grid-row: 1;
     grid-column: 1;
   }
 
-  button > .color-preview {
+  button > [part="color-preview"] {
     --displayed-color: var(--clamped-color, var(--color, transparent));
     grid-row: 1 / -1;
     background: linear-gradient(to right, var(--displayed-color) 0% 100%),
@@ -226,7 +229,7 @@ sheet.replaceSync(/*css*/`
     height: 100%;
   }
 
-  button > svg {
+  button > [part="button-icon"] {
     width: 100%;
     height: 100%;
     aspect-ratio: 1;
@@ -236,19 +239,16 @@ sheet.replaceSync(/*css*/`
     --moon-hole-disparition: .3s;
   }
 
-  .unusable {
-    pointer-events: none !important;
-  }
-
 
 
   /**********/
   /* POP-UP */
   /**********/
 
-  .selector {
+  [part="selector"] {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .3rem;
     position: absolute;
     top: 100%;
     grid-row: 1;
@@ -257,41 +257,37 @@ sheet.replaceSync(/*css*/`
     pointer-events: none;
   }
 
-  :host([open]) > .selector {
+  :host([open]) > [part="selector"] {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .selector-title {
-    grid-column: 1 / -1;
-  }
-
-  .selector > input {
-    grid-column: 1;
-  }
-
-  .selector > label {
-    grid-column: 2;
-  }
-
-  .selector > label > span {
-    grid-column: 2;
-  }
-
-  :host([position="bottom"]) > .selector {
+  :host([position="bottom"]) > [part="selector"] {
     top: 100%;
   }
-  :host([position="top"]) > .selector {
+  :host([position="top"]) > [part="selector"] {
     top: unset;
     bottom: 100%;
   }
-  :host([position="left"]) > .selector {
+  :host([position="left"]) > [part="selector"] {
     top: unset;
     right: 100%;
   }
-  :host([position="right"]) > .selector {
+  :host([position="right"]) > [part="selector"] {
     top: unset;
     left: 100%;
+  }
+
+
+
+  /*****************/
+  /* FORMAT SELECT */
+  /*****************/
+
+  [part="format-choice"] {
+    grid-column: 1 / -1;
+    width: fit-content;
+    margin: auto;
   }
 
 
@@ -302,8 +298,11 @@ sheet.replaceSync(/*css*/`
 
   label[data-format] {
     display: none;
-    grid-template-columns: auto auto 1fr;
-    grid-template-rows: auto auto;
+    --slider-width: 44px;
+    --slider-height: 10rem;
+    grid-template-columns: calc(2 * var(--slider-width));
+    grid-template-rows: auto auto var(--slider-height) auto;
+    justify-items: center;
     gap: .3rem;
     position: relative;
     --cursor-width: 14px;
@@ -320,17 +319,17 @@ sheet.replaceSync(/*css*/`
     display: grid;
   }
   
-  label[data-format] > input[type="range"] {
-    grid-row: 2;
-    grid-column: 1 / -1;
-  }
-  
   input[type="range"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    width: var(--slider-height);
+    height: var(--slider-width);
+    margin: 0;
+    padding: 0;
+    rotate: -90deg;
+    translate: 0 calc(0.5 * (var(--slider-height) - var(--slider-width)));
     display: block;
-    height: var(--tap-safe-size);
     border: none;
     --couleurs: white 0%, black 100%;
     background: linear-gradient(to right, var(--couleurs)),
@@ -370,51 +369,15 @@ sheet.replaceSync(/*css*/`
     background: none;
   }
   
-  input[type=number][data-property]::-webkit-inner-spin-button, 
-  input[type=number][data-property]::-webkit-outer-spin-button {  
-    opacity: 1;
-  }
-  
-  input[type="number"][data-property] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    --width: 6ch;
-    width: var(--width);
-    height: 1.8rem;
-    --padding-side: .3rem;
-    padding: .15rem var(--padding-side);
-    font-size: 1rem;
-    color: var(--text-color);
-    border: none;
-    border-radius: .6rem;
-    background: var(--body-color);
-    --border-width: 1px;
-    border: var(--border-width) solid var(--section-color);
-    text-align: center;
-  
-    position: absolute;
-    --compensation: calc(var(--cursor-width) + 2 * var(--preview-border-width) + 2 * var(--border-width));
-    bottom: calc(var(--tap-safe-size) + 10px);
-    left: clamp(
-      0px,
-      var(--pos, 0) * (100% - var(--compensation)) - 0.5 * var(--width) + var(--padding-side),
-      100% - 24px - var(--width) + 2 * var(--padding-side)
-    ); 
-    margin: 0 -6ch 0 0;
-  
-    opacity: 0;
-    pointer-events: none;
-  }
-  
   input[type="range"][data-property]:hover + input[type="number"][data-property],
   input[type="range"][data-property]:focus + input[type="number"][data-property],
-  input[type="range"][data-property]:active + input[type="number"][data-property],
-  input[type="number"][data-property]:hover,
-  input[type="number"][data-property]:focus,
-  input[type="number"][data-property]:active {
+  input[type="range"][data-property]:active + input[type="number"][data-property] {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  input[type="number"] {
+    width: 8ch;
   }
 `);
 
@@ -547,15 +510,14 @@ export class ColorPicker extends HTMLElement {
     });
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
-    const rangeValue = prop => this.shadowRoot.querySelector(`input[type="range"][data-property="${prop}"]`).value;
-    for (const input of [...this.shadowRoot.querySelectorAll('input[type="range"][data-property]')]) {
-      // Create corresponding numeric input
-      const numericInput = this.shadowRoot.querySelector(`input[type="number"][data-property="${input.dataset.property}"]`);
-      numericInput.style.setProperty('--pos', (input.value - input.min) / (input.max - input.min));
+    const rangeValue = prop => this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
+    for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
+      const rangeInput = label.querySelector(`input[type="range"]`);
+      const numericInput = label.querySelector(`input[type="number"]`);
 
-      // Update gradients on range change
+      // Update other sliders and numeric input on slider change
       let rangeChangeHandler;
-      input.addEventListener('change', rangeChangeHandler = event => {
+      rangeInput.addEventListener('change', rangeChangeHandler = event => {
         const format = this.shadowRoot.querySelector('select').value;
         let color;
         const a = rangeValue('a') / 100;
@@ -568,27 +530,26 @@ export class ColorPicker extends HTMLElement {
           case 'oklab': color = `oklab(${rangeValue('okl')}% ${rangeValue('oka')} ${rangeValue('okb')} / ${a})`; break;
           case 'oklch': color = `oklch(${rangeValue('okl')}% ${rangeValue('okc')} ${rangeValue('okh')} / ${a})`; break;
         }
-        this.setAttribute('last-changed-property', input.dataset.property);
+        this.setAttribute('last-changed-format', format);
+        this.setAttribute('last-changed-property', rangeInput.dataset.property);
         this.setAttribute('color', color);
       });
-      this.inputHandlers.push({ input, type: 'change', handler: rangeChangeHandler });
+      this.inputHandlers.push({ input: rangeInput, type: 'change', handler: rangeChangeHandler });
 
-      // Move numeric input on range drag
+      // Update numeric input on slider input
       let rangeInputHandler;
-      input.addEventListener('input', rangeInputHandler = event => {
-        if (numericInput.value == input.value) return;
-        if (![input, numericInput].includes(document.activeElement)) input.focus();
-        numericInput.value = input.value;
-        numericInput.style.setProperty('--pos', (input.value - input.min) / (input.max - input.min));
+      rangeInput.addEventListener('input', rangeInputHandler = event => {
+        if (numericInput.value == rangeInput.value) return;
+        if (![rangeInput, numericInput].includes(document.activeElement)) rangeInput.focus();
+        numericInput.value = rangeInput.value;
       });
-      this.inputHandlers.push({ input, type: 'input', handler: rangeInputHandler });
+      this.inputHandlers.push({ input: rangeInput, type: 'input', handler: rangeInputHandler });
 
-      // Move numeric input and update range input value on range change
+      // Update range input on numeric input change
       let numberChangeHandler;
       numericInput.addEventListener('change', numberChangeHandler = event => {
-        input.value = numericInput.value;
-        numericInput.style.setProperty('--pos', (input.value - input.min) / (input.max - input.min));
-        input.dispatchEvent(new Event('change'));
+        rangeInput.value = numericInput.value;
+        rangeInput.dispatchEvent(new Event('change'));
       });
       this.inputHandlers.push({ input: numericInput, type: 'change', handler: numberChangeHandler });
     }
@@ -618,6 +579,8 @@ export class ColorPicker extends HTMLElement {
 
     // Remove the button's aria-label if the label is displayed
     this.attributeChangedCallback('label', null, this.getAttribute('label'));
+
+    if (!this.getAttribute('color')) this.setAttribute('color', 'red');
   }
 
 
@@ -659,10 +622,28 @@ export class ColorPicker extends HTMLElement {
         const color = new Couleur(newValue);
         const clampedColor = color.toGamut('srgb');
 
-        // Update gradients and button color here
+        // Update button color
         const button = this.shadowRoot.querySelector('button');
         button.style.setProperty('--color', newValue);
         button.style.setProperty('--clamped-color', clampedColor.hex);
+
+        // Update values of inputs that weren't manually changed
+        const lastChangedFormat = this.getAttribute('last-changed-format');
+        for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
+          const rangeInput = label.querySelector(`input[type="range"]`);
+          const numericInput = label.querySelector(`input[type="number"]`);
+
+          const prop = label.dataset.property;
+          const value = color[prop];
+          const displayedValue = eval(label.dataset.valueOperation.replace('{v}', value));
+
+          if (!(label.dataset.format.split(' ').includes(lastChangedFormat))) {
+            rangeInput.value = displayedValue;
+            numericInput.value = displayedValue;
+          }
+        }
+
+        // Update gradients (just set custom properties on input ranges, the gradients will be changed by paint worklet)
         this.updateGradients(newValue, this.getAttribute('last-changed-property'));
         
         this.dispatchEvent(new CustomEvent('change', { detail: {
