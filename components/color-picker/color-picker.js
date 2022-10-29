@@ -3,6 +3,7 @@
 {
   "imports": {
     "color-picker": "/_common/components/color-picker/color-picker.js",
+    "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
     "colori": "/colori/lib/dist/colori.min.js",
     "trap-focus": "/_common/js/trap-focus.js",
     "translation-observer": "/_common/js/translation-observer.js"
@@ -547,16 +548,16 @@ export class ColorPicker extends HTMLElement {
 
 
   /** Gets the current input value of a certain color property. */
-  getCurrentRangeValue(prop) {
+  #getCurrentRangeValue(prop) {
     return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
   }
 
 
   /** Returns the expression of the color based on current input values. */
-  getCurrentColorExpression() {
+  #getCurrentColorExpression() {
     const format = this.shadowRoot.querySelector('select').value;
     const rangeValue = prop => {
-      const value = this.getCurrentRangeValue(prop);
+      const value = this.#getCurrentRangeValue(prop);
       switch (prop) {
         case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl':
           return `${value}%`;
@@ -571,7 +572,7 @@ export class ColorPicker extends HTMLElement {
 
 
   /** Update the gradients of the input[type="range"]s. */
-  updateGradients(format) {
+  #updateGradients(format) {
     const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
     const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
     const formatIsSupported = CSS.supports(`color: ${black[format]}`);
@@ -582,7 +583,7 @@ export class ColorPicker extends HTMLElement {
 
       // Make the paint worklet recalculate the gradients
       for (const prop of [...Couleur.propertiesOf(appliedFormat), 'a']) {
-        label.style.setProperty(`--${prop}`, this.getCurrentRangeValue(prop));
+        label.style.setProperty(`--${prop}`, this.#getCurrentRangeValue(prop));
       }
 
       // Makes sure properties shared by multiple formats update their gradients
@@ -593,7 +594,7 @@ export class ColorPicker extends HTMLElement {
 
 
   /** Updates the color of the color-picker button when its selected color is updated. */
-  updateButtonColor(colorExpr) {
+  #updateButtonColor(colorExpr) {
     const color = new Couleur(colorExpr);
     const button = this.shadowRoot.querySelector('button');
 
@@ -614,7 +615,7 @@ export class ColorPicker extends HTMLElement {
 
 
   /** Updates the values of inputs of the non-selected formats when the selected color is updated. */
-  updateOtherInputs(colorExpr, format = this.shadowRoot.querySelector('select').value) {
+  #updateOtherInputs(colorExpr, format = this.shadowRoot.querySelector('select').value) {
     const color = new Couleur(colorExpr);
     for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
       const rangeInput = label.querySelector(`input[type="range"]`);
@@ -636,7 +637,7 @@ export class ColorPicker extends HTMLElement {
 
 
   /** Updates the selected color when an input[type="range"]'s value is modified. */
-  updateColor(event, colorExpr, rangeInput, format = this.shadowRoot.querySelector('select').value) {
+  #updateColor(event, colorExpr, rangeInput, format = this.shadowRoot.querySelector('select').value) {
     this.dispatchEvent(new CustomEvent(event.type, {
       bubbles: true,
       detail: { color: colorExpr }
@@ -645,15 +646,15 @@ export class ColorPicker extends HTMLElement {
     this.setAttribute('color', colorExpr);
 
     // Update button color
-    this.updateButtonColor(colorExpr);
+    this.#updateButtonColor(colorExpr);
 
     // Update values of inputs that weren't manually changed by the user
     if (event.type === 'change') {
-      this.updateOtherInputs(colorExpr);
+      this.#updateOtherInputs(colorExpr);
     }
 
     // Update gradients
-    this.updateGradients(format);
+    this.#updateGradients(format);
 
     if (rangeInput) {
       const numericInput = rangeInput.parentElement.querySelector(`input[type="number"]`);
@@ -669,8 +670,15 @@ export class ColorPicker extends HTMLElement {
   }
 
 
+  /** Programmatically update the selected color. */
+  selectColor(colorExpr) {
+    this.#updateOtherInputs(colorExpr, null);
+    this.#updateColor(new Event('change'), colorExpr);
+  }
+
+
   /** Starts monitoring changes to the selected color. */
-  startMonitoringChanges() {
+  #startMonitoringChanges() {
     const select = this.shadowRoot.querySelector('select');
     let selectChangeHandler;
     select.addEventListener('change', selectChangeHandler = event => {
@@ -686,7 +694,7 @@ export class ColorPicker extends HTMLElement {
       rangeInput.style.setProperty('--min', rangeInput.getAttribute('min'));
       rangeInput.style.setProperty('--max', rangeInput.getAttribute('max'));
 
-      const rangeHandler = event => this.updateColor(event, this.getCurrentColorExpression(), rangeInput);
+      const rangeHandler = event => this.#updateColor(event, this.#getCurrentColorExpression(), rangeInput);
       const numericHandler = event => {
         // Update range input on numeric input change
         rangeInput.value = numericInput.value;
@@ -705,7 +713,7 @@ export class ColorPicker extends HTMLElement {
 
 
   /** Stops monitoring changes to the selected color. */
-  stopMonitoringChanges() {
+  #stopMonitoringChanges() {
     for (const [input, { type, handler }] of this.inputHandlers) {
       input.removeEventListener(type, handler);
     }
@@ -717,8 +725,7 @@ export class ColorPicker extends HTMLElement {
 
     // Use the color attribute as the starting color
     const startColor = this.getAttribute('color') ?? 'red';
-    this.updateOtherInputs(startColor, null);
-    this.updateColor(new Event('change'), startColor);
+    this.selectColor(startColor);
 
     // If the format attribute is present, switch to that format
     const format = this.getAttribute('format') ?? 'rgb';
@@ -736,7 +743,7 @@ export class ColorPicker extends HTMLElement {
     button.addEventListener('click', this.openHandler);
 
     // Monitor the choice of color
-    this.startMonitoringChanges();
+    this.#startMonitoringChanges();
   }
 
 
@@ -746,7 +753,7 @@ export class ColorPicker extends HTMLElement {
     const button = this.shadowRoot.querySelector('button');
     button.removeEventListener('click', this.openHandler);
 
-    this.stopMonitoringChanges();
+    this.#stopMonitoringChanges();
   }
 
 
