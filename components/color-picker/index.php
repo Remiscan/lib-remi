@@ -23,7 +23,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       "imports": {
         "color-picker": "/_common/components/color-picker/color-picker.js",
         "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
-        "colori": "/colori/lib/dist/colori.js",
+        "colori": "/colori/lib/dist/colori.min.js",
         "trap-focus": "/_common/js/trap-focus.js",
         "translation-observer": "/_common/js/translation-observer.js"
       }
@@ -40,8 +40,9 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       let i = 0;
       for (const colorPicker of [...document.querySelectorAll('color-picker')]) {
-        for (const type of ['colorinput', 'colorchange']) {
+        for (const type of ['input', 'change']) {
           colorPicker.addEventListener(type, event => {
+            if (!event.detail?.color) return;
             console.log(`${i}: ${type} color ${event.detail.color}`);
           });
         }
@@ -111,7 +112,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
-    <color-picker position="bottom" format="hsl"></color-picker>
+    <color-picker position="bottom" format="hsl" color="blue"></color-picker>
     <color-picker position="bottom" format="oklch" label></color-picker>
   </body>
 

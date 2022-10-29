@@ -3,7 +3,7 @@
 {
   "imports": {
     "color-picker": "/_common/components/color-picker/color-picker.js",
-    "colori": "/colori/lib/dist/colori.js",
+    "colori": "/colori/lib/dist/colori.min.js",
     "trap-focus": "/_common/js/trap-focus.js",
     "translation-observer": "/_common/js/translation-observer.js"
   }
@@ -14,6 +14,10 @@
 import Couleur from 'colori';
 import translationObserver from 'translation-observer';
 import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
+
+
+
+CSS.paintWorklet.addModule(import.meta.resolve(`range-gradient-worklet`));
 
 
 
@@ -525,8 +529,6 @@ export class ColorPicker extends HTMLElement {
     window.addEventListener('keydown', closeMenu);
     // Display the menu
     this.setAttribute('open', '');
-    // Place focus on checked input
-    this.shadowRoot.querySelector('input[type="radio"]:checked')?.focus();
   }
 
 
@@ -544,49 +546,125 @@ export class ColorPicker extends HTMLElement {
   }
 
 
+  /** Gets the current input value of a certain color property. */
   getCurrentRangeValue(prop) {
     return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
   }
 
 
+  /** Returns the expression of the color based on current input values. */
   getCurrentColorExpression() {
-    let color;
     const format = this.shadowRoot.querySelector('select').value;
-    const rangeValue = this.getCurrentRangeValue.bind(this);
-    const a = rangeValue('a') / 100;
-    switch (format) {
-      case 'rgb': color = `rgb(${rangeValue('r')}, ${rangeValue('g')}, ${rangeValue('b')}, ${a})`; break;
-      case 'hsl': color = `hsl(${rangeValue('h')}, ${rangeValue('s')}%, ${rangeValue('l')}%, ${a})`; break;
-      case 'hwb': color = `hwb(${rangeValue('h')} ${rangeValue('w')}% ${rangeValue('bk')}% / ${a})`; break;
-      case 'lab': color = `lab(${rangeValue('ciel')}% ${rangeValue('ciea')} ${rangeValue('cieb')} / ${a})`; break;
-      case 'lch': color = `lch(${rangeValue('ciel')}% ${rangeValue('ciec')} ${rangeValue('cieh')} / ${a})`; break;
-      case 'oklab': color = `oklab(${rangeValue('okl')}% ${rangeValue('oka')} ${rangeValue('okb')} / ${a})`; break;
-      case 'oklch': color = `oklch(${rangeValue('okl')}% ${rangeValue('okc')} ${rangeValue('okh')} / ${a})`; break;
+    const rangeValue = prop => {
+      const value = this.getCurrentRangeValue(prop);
+      switch (prop) {
+        case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl':
+          return `${value}%`;
+        default:
+          return `${value}`;
+      }
     }
-    return color;
+
+    const values = [...Couleur.propertiesOf(format), 'a'].map(p => rangeValue(p));
+    return `${format}(${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
   }
 
 
-  updateGradients() {
-    for (const prop of Couleur.properties) {
-      this.style.setProperty(`--${prop}`, this.getCurrentRangeValue(prop));
-    }
-  }
-
-
-  linkPropertiesToFormats(format) {
-    // Makes sure properties shared by multiple formats update their gradients
+  /** Update the gradients of the input[type="range"]s. */
+  updateGradients(format) {
     const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
-    const formatLabels = [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)];
+    const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
     const formatIsSupported = CSS.supports(`color: ${black[format]}`);
+
     for (const label of allLabels) {
       const range = label.querySelector('input[type="range"]');
-      if (formatLabels.includes(label)) {
-        range.style.setProperty('--as-format', format);
-      } else {
-        range.style.setProperty('--as-format', label.dataset.format.split(' ')[0]);
+      const appliedFormat = formatLabels.includes(label) ? format : label.dataset.format.split(' ')[0];
+
+      // Make the paint worklet recalculate the gradients
+      for (const prop of [...Couleur.propertiesOf(appliedFormat), 'a']) {
+        label.style.setProperty(`--${prop}`, this.getCurrentRangeValue(prop));
       }
+
+      // Makes sure properties shared by multiple formats update their gradients
+      range.style.setProperty('--as-format', appliedFormat);
       range.style.setProperty('--format-is-supported', String(formatIsSupported));
+    }
+  }
+
+
+  /** Updates the color of the color-picker button when its selected color is updated. */
+  updateButtonColor(colorExpr) {
+    const color = new Couleur(colorExpr);
+    const button = this.shadowRoot.querySelector('button');
+
+    // Update color of the button, with clamped version in case the format isn't supported yet by the browser
+    button.style.setProperty('--color', colorExpr);
+    button.style.setProperty('--clamped-color', color.toGamut('srgb').hex);
+
+    // Update color of the icon, enforcing good contrast with the button color
+    button.style.setProperty('--light-theme-text-color', Couleur.blend(
+      getComputedStyle(this).getPropertyValue('--echiquier-light-background-color').trim(),
+      color
+    ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
+    button.style.setProperty('--dark-theme-text-color', Couleur.blend(
+      getComputedStyle(this).getPropertyValue('--echiquier-dark-background-color').trim(),
+      color
+    ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
+  }
+
+
+  /** Updates the values of inputs of the non-selected formats when the selected color is updated. */
+  updateOtherInputs(colorExpr, format = this.shadowRoot.querySelector('select').value) {
+    const color = new Couleur(colorExpr);
+    for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
+      const rangeInput = label.querySelector(`input[type="range"]`);
+      const numericInput = label.querySelector(`input[type="number"]`);
+
+      const prop = label.dataset.property;
+      const formats = label.dataset.format.split(' ');
+      const clampedColor = color.toGamut(formats[0]);
+      const value = clampedColor[prop];
+      const displayedValue = eval(label.dataset.valueOperation.replace('{v}', value));
+
+      // Don't update values of the currently chosen format
+      if (!(formats.includes(format))) {
+        rangeInput.value = displayedValue;
+        numericInput.value = displayedValue;
+      }
+    }
+  }
+
+
+  /** Updates the selected color when an input[type="range"]'s value is modified. */
+  updateColor(event, colorExpr, rangeInput, format = this.shadowRoot.querySelector('select').value) {
+    this.dispatchEvent(new CustomEvent(event.type, {
+      bubbles: true,
+      detail: { color: colorExpr }
+    }));
+
+    this.setAttribute('color', colorExpr);
+
+    // Update button color
+    this.updateButtonColor(colorExpr);
+
+    // Update values of inputs that weren't manually changed by the user
+    if (event.type === 'change') {
+      this.updateOtherInputs(colorExpr);
+    }
+
+    // Update gradients
+    this.updateGradients(format);
+
+    if (rangeInput) {
+      const numericInput = rangeInput.parentElement.querySelector(`input[type="number"]`);
+
+      // Only update the value of numericInput if the value of rangeInput changed
+      if (numericInput.value !== rangeInput.value) {
+        if (![rangeInput, numericInput].includes(document.activeElement)) {
+          rangeInput.focus();
+        }
+        numericInput.value = rangeInput.value;
+      }
     }
   }
 
@@ -608,53 +686,20 @@ export class ColorPicker extends HTMLElement {
       rangeInput.style.setProperty('--min', rangeInput.getAttribute('min'));
       rangeInput.style.setProperty('--max', rangeInput.getAttribute('max'));
 
-      // Update other sliders and numeric input on slider change
-      let rangeChangeHandler;
-      rangeInput.addEventListener('change', rangeChangeHandler = event => {
-        const colorExpr = this.getCurrentColorExpression();
-
-        this.dispatchEvent(new CustomEvent('colorchange', {
-          bubbles: true,
-          detail: { color: colorExpr }
-        }));
-
-        this.setAttribute('color', colorExpr);
-      });
-      this.inputHandlers.push({ input: rangeInput, type: 'change', handler: rangeChangeHandler });
-
-      // Update numeric input on slider input
-      let rangeInputHandler;
-      rangeInput.addEventListener('input', rangeInputHandler = event => {
-        if (!this.getAttribute('color')) return;
-
-        const colorExpr = this.getCurrentColorExpression();
-        const color = new Couleur(colorExpr);
-
-        this.dispatchEvent(new CustomEvent('colorinput', {
-          bubbles: true,
-          detail: { color: colorExpr }
-        }));
-        
-        const format = this.shadowRoot.querySelector('select').value;
-        this.setAttribute('last-changed-format', format);
-
-        this.linkPropertiesToFormats(format);
-        this.updateGradients();
-
-        if (numericInput.value !== rangeInput.value) {
-          if (![rangeInput, numericInput].includes(document.activeElement)) rangeInput.focus();
-          numericInput.value = rangeInput.value;
-        }
-      });
-      this.inputHandlers.push({ input: rangeInput, type: 'input', handler: rangeInputHandler });
-
-      // Update range input on numeric input change
-      let numberChangeHandler;
-      numericInput.addEventListener('change', numberChangeHandler = event => {
+      const rangeHandler = event => this.updateColor(event, this.getCurrentColorExpression(), rangeInput);
+      const numericHandler = event => {
+        // Update range input on numeric input change
         rangeInput.value = numericInput.value;
-        rangeInput.dispatchEvent(new Event('change'));
-      });
-      this.inputHandlers.push({ input: numericInput, type: 'change', handler: numberChangeHandler });
+        rangeInput.dispatchEvent(new Event(event.type));
+      };
+
+      for (const type of ['change', 'input']) {
+        rangeInput.addEventListener(type, rangeHandler);
+        this.inputHandlers.push({ input: rangeInput, type, handler: rangeHandler });
+
+        numericInput.addEventListener(type, numericHandler);
+        this.inputHandlers.push({ input: numericInput, type, handler: numericHandler });
+      }
     }
   }
 
@@ -670,9 +715,15 @@ export class ColorPicker extends HTMLElement {
   connectedCallback() {
     translationObserver.serve(this, { method: 'attribute' });
 
-    // Make color-picker button clickable
-    const button = this.shadowRoot.querySelector('button');
-    button.addEventListener('click', this.openHandler);
+    // Use the color attribute as the starting color
+    const startColor = this.getAttribute('color') ?? 'red';
+    this.updateOtherInputs(startColor, null);
+    this.updateColor(new Event('change'), startColor);
+
+    // If the format attribute is present, switch to that format
+    const format = this.getAttribute('format') ?? 'rgb';
+    const select = this.shadowRoot.querySelector('select');
+    select.value = format;
 
     // Disable focusability inside the color-picker
     disableFocusInside(this, { exceptions: [this.shadowRoot.querySelector('button')] });
@@ -680,31 +731,26 @@ export class ColorPicker extends HTMLElement {
     // Remove the button's aria-label if the label is displayed
     this.attributeChangedCallback('label', null, this.getAttribute('label'));
 
-    // If the format attribute is present, switch to that format
-    const format = this.getAttribute('format') ?? 'rgb';
-    const select = this.shadowRoot.querySelector('select');
-    select.value = format;
-    this.linkPropertiesToFormats(format);
+    // Make color-picker button clickable
+    const button = this.shadowRoot.querySelector('button');
+    button.addEventListener('click', this.openHandler);
 
     // Monitor the choice of color
     this.startMonitoringChanges();
-
-    CSS.paintWorklet.addModule(import.meta.resolve(`range-gradient-worklet`));
-    if (!this.getAttribute('color')) this.setAttribute('color', 'red');
   }
 
 
   disconnectedCallback() {
+    translationObserver.unserve(this);
+
     const button = this.shadowRoot.querySelector('button');
     button.removeEventListener('click', this.openHandler);
 
     this.stopMonitoringChanges();
-
-    translationObserver.unserve(this);
   }
 
 
-  static get observedAttributes() { return ['lang', 'label', 'color']; }
+  static get observedAttributes() { return ['lang', 'label']; }
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
@@ -726,44 +772,6 @@ export class ColorPicker extends HTMLElement {
           button.setAttribute('data-label', 'pick-color');
           translationObserver.translate(this, strings, this.getAttribute('lang'));
         }
-      } break;
-
-      case 'color': {
-        const color = new Couleur(newValue);
-
-        // Update button color
-        const button = this.shadowRoot.querySelector('button');
-        button.style.setProperty('--color', newValue);
-        button.style.setProperty('--clamped-color', color.toGamut('srgb').hex);
-        button.style.setProperty('--light-theme-text-color', Couleur.blend(
-          getComputedStyle(this).getPropertyValue('--echiquier-light-background-color').trim(),
-          color
-        ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
-        button.style.setProperty('--dark-theme-text-color', Couleur.blend(
-          getComputedStyle(this).getPropertyValue('--echiquier-dark-background-color').trim(),
-          color
-        ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
-
-        // Update values of inputs
-        const lastChangedFormat = this.getAttribute('last-changed-format');
-        for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
-          const rangeInput = label.querySelector(`input[type="range"]`);
-          const numericInput = label.querySelector(`input[type="number"]`);
-
-          const prop = label.dataset.property;
-          const formats = label.dataset.format.split(' ');
-          const clampedColor = color.toGamut(formats[0]);
-          const value = clampedColor[prop];
-          const displayedValue = eval(label.dataset.valueOperation.replace('{v}', value));
-
-          if (!(formats.includes(lastChangedFormat))) {
-            rangeInput.value = displayedValue;
-            numericInput.value = displayedValue;
-          }
-        }
-
-        // Update gradients
-        this.updateGradients();
       } break;
     }
   }
