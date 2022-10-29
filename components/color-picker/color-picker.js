@@ -196,8 +196,12 @@ sheet.replaceSync(/*css*/`
     --slider-height: 12rem;
     --gradient-steps: 25;
     --cursor-width: 14;
+    --range-border-width: 0px;
+    --range-border-radius: 0;
     --echiquier-light-background-color: #ddd;
     --echiquier-dark-background-color: #555;
+    --border-color: black;
+    --border-color-opposite: white;
     --echiquier-background-color: var(--echiquier-light-background-color);
     --echiquier-transparence: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
                               linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
@@ -206,6 +210,8 @@ sheet.replaceSync(/*css*/`
 
   @media (prefers-color-scheme: dark) {
     :host {
+      --border-color: white;
+      --border-color-opposite: black;
       --echiquier-background-color: var(--echiquier-dark-background-color);
     }
   }
@@ -218,6 +224,20 @@ sheet.replaceSync(/*css*/`
     align-items: center;
     gap: 1ch;
     padding: 0.2em;
+  }
+
+  /* Hit zone bigger than the actual button */
+  button::before {
+    content: '';
+    display: block;
+    width: 100%;
+    min-width: var(--tap-safe-size);
+    height: 100%;
+    min-height: var(--tap-safe-size);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   :host(:not([label])) > button {
@@ -251,8 +271,8 @@ sheet.replaceSync(/*css*/`
     width: 100%;
     height: 100%;
     aspect-ratio: 1;
-    --text-color: var(--light-theme-text-color);
-    fill: var(--text-color, currentColor);
+    --icon-color: var(--light-theme-icon-color);
+    fill: var(--icon-color, currentColor);
     --sun-resize: .5s;
     --moon-hole-apparition: .5s;
     --moon-hole-disparition: .3s;
@@ -260,7 +280,7 @@ sheet.replaceSync(/*css*/`
 
   @media (prefers-color-scheme: dark) {
     button > [part="button-icon"] {
-      --text-color: var(--dark-theme-text-color);
+      --icon-color: var(--dark-theme-icon-color);
     }
   }
 
@@ -345,8 +365,10 @@ sheet.replaceSync(/*css*/`
   label[data-format] {
     display: none;
     --slider-width: var(--tap-safe-size);
+    --slider-full-width: calc(var(--slider-width) + 2 * var(--range-border-width));
+    --slider-full-height: calc(var(--slider-height) + 2 * var(--range-border-width));
     grid-template-columns: calc(2 * var(--slider-width));
-    grid-template-rows: auto auto var(--slider-height);
+    grid-template-rows: auto auto var(--slider-full-height);
     justify-items: center;
     gap: 10px;
     position: relative;
@@ -372,9 +394,10 @@ sheet.replaceSync(/*css*/`
     margin: 0;
     padding: 0;
     rotate: -90deg;
-    translate: 0 calc(0.5 * (var(--slider-height) - var(--slider-width)));
+    translate: 0 calc(0.5 * (var(--slider-full-height) - var(--slider-full-width)));
     display: block;
-    border: none;
+    border: var(--range-border-width, none);
+    border-radius: var(--range-border-radius);
     --couleurs: white 0%, black 100%;
     background: paint(range-gradient),
                 var(--echiquier-transparence);
@@ -393,8 +416,9 @@ sheet.replaceSync(/*css*/`
     height: var(--tap-safe-size);
     background: transparent;
     border: none;
-    box-shadow: inset 0 0 0 2px white,
-                0 0 0 2px black;
+    border-radius: var(--range-border-radius);
+    box-shadow: inset 0 0 0 2px var(--border-color-opposite),
+                0 0 0 2px var(--border-color);
   }
   
   input[type="range"]::-moz-range-thumb {
@@ -405,8 +429,9 @@ sheet.replaceSync(/*css*/`
     height: var(--tap-safe-size);
     background: transparent;
     border: none;
-    box-shadow: inset 0 0 0 2px white,
-                0 0 0 2px black;
+    border-radius: var(--range-border-radius);
+    box-shadow: inset 0 0 0 2px var(--border-color-opposite),
+                0 0 0 2px var(--border-color);
   }
   
   input[type="range"]::-moz-range-track {
@@ -603,11 +628,11 @@ export class ColorPicker extends HTMLElement {
     button.style.setProperty('--clamped-color', color.toGamut('srgb').hex);
 
     // Update color of the icon, enforcing good contrast with the button color
-    button.style.setProperty('--light-theme-text-color', Couleur.blend(
+    button.style.setProperty('--light-theme-icon-color', Couleur.blend(
       getComputedStyle(this).getPropertyValue('--echiquier-light-background-color').trim(),
       color
     ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
-    button.style.setProperty('--dark-theme-text-color', Couleur.blend(
+    button.style.setProperty('--dark-theme-icon-color', Couleur.blend(
       getComputedStyle(this).getPropertyValue('--echiquier-dark-background-color').trim(),
       color
     ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
