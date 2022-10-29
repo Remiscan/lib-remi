@@ -34,7 +34,7 @@ registerPaint('range-gradient', class {
         const value = k === propertyIndex ? min + i * (max - min) / steps : inputValue;
         switch (prop) {
           case 'r': case 'g': case 'b':
-            return `${Number(value) / 255}`;
+            return `${Math.round(10**3 * Number(value) / 255) / 10**3}`;
           case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl': case 'oksl': case 'oklr': case 'oksv': case 'okv':
             return `${Number(value) / 100}`;
           default:
