@@ -33,14 +33,16 @@ registerPaint('range-gradient', class {
         const inputValue = props.get(`--${prop}`);
         const value = k === propertyIndex ? min + i * (max - min) / steps : inputValue;
         switch (prop) {
-          case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl':
-            return `${value}%`;
+          case 'r': case 'g': case 'b':
+            return `${Number(value) / 255}`;
+          case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl': case 'oksl': case 'oklr': case 'oksv': case 'okv':
+            return `${Number(value) / 100}`;
           default:
             return `${value}`;
         }
       });
 
-      const expr = `${format}(${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
+      const expr = `color(${format} ${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
       gradient.push(formatIsSupported ? expr : new Couleur(expr).rgb);
     }
 

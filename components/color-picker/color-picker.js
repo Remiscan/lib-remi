@@ -45,6 +45,8 @@ template.innerHTML = /*html*/`
         <option value="lch">LCH</option>
         <option value="oklab">OKLAB</option>
         <option value="oklch">OKLCH</option>
+        <option value="okhsl">OKHSL</option>
+        <option value="okhsv">OKHSV</option>
       </select>
     </div>
 
@@ -167,14 +169,42 @@ template.innerHTML = /*html*/`
       <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
     </label>
 
-    <label for="range-ok-hue" data-format="oklch" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
+    <label for="range-ok-hue" data-format="oklch okhsl okhsv" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
       <span data-string="prop-okh-nom" part="property-name"></span>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
       <input type="range" part="input-range" id="range-ok-hue" min="0" max="359" step="1">
     </label>
 
-    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
+    <label for="range-ok-saturation-l" data-format="okhsl" part="property-container" data-property="oksl" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-oksl-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-saturation-l" min="0" max="100" step="1">
+    </label>
+
+    <label for="range-ok-lightness-r" data-format="okhsl" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-oklr-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-lightness-r" min="0" max="100" step="1">
+    </label>
+
+    <label for="range-ok-saturation-v" data-format="okhsv" part="property-container" data-property="oksv" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-oksv-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-saturation-v" min="0" max="100" step="1">
+    </label>
+
+    <label for="range-ok-value" data-format="okhsv" part="property-container" data-property="okv" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-okv-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-value" min="0" max="100" step="1">
+    </label>
+
+    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-a-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
@@ -381,7 +411,9 @@ sheet.replaceSync(/*css*/`
   :host([format="lab"]) label[data-format~="lab"],
   :host([format="lch"]) label[data-format~="lch"],
   :host([format="oklab"]) label[data-format~="oklab"],
-  :host([format="oklch"]) label[data-format~="oklch"] {
+  :host([format="oklch"]) label[data-format~="oklch"],
+  :host([format="okhsl"]) label[data-format~="okhsl"],
+  :host([format="okhsv"]) label[data-format~="okhsv"] {
     display: grid;
   }
   
@@ -475,6 +507,10 @@ const strings = {
     "prop-okb-nom": "Axe B",
     "prop-okc-nom": "Chroma",
     "prop-okh-nom": "Teinte",
+    "prop-oksl-nom": "Saturation",
+    "prop-oklr-nom": "Luminosité",
+    "prop-oksv-nom": "Saturation",
+    "prop-okv-nom": "Valeur",
     "prop-a-nom": "Opacité",
   },
   
@@ -500,6 +536,10 @@ const strings = {
     "prop-okb-nom": "B axis",
     "prop-okc-nom": "Chroma",
     "prop-okh-nom": "Hue",
+    "prop-oksl-nom": "Saturation",
+    "prop-oklr-nom": "Lightness",
+    "prop-oksv-nom": "Saturation",
+    "prop-okv-nom": "Value",
     "prop-a-nom": "Opacity",
   }
 };
@@ -584,26 +624,28 @@ export class ColorPicker extends HTMLElement {
     const rangeValue = prop => {
       const value = this.#getCurrentRangeValue(prop);
       switch (prop) {
-        case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl':
-          return `${value}%`;
+        case 'r': case 'g': case 'b':
+          return `${Number(value) / 255}`;
+        case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl': case 'oksl': case 'oklr': case 'oksv': case 'okv':
+          return `${Number(value) / 100}`;
         default:
           return `${value}`;
       }
     }
-
+    
     const values = [...Couleur.propertiesOf(format), 'a'].map(p => rangeValue(p));
-    return `${format}(${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
+    return `color(${format} ${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
   }
 
 
   /** Update the gradients of the input[type="range"]s. */
-  #updateGradients(format) {
+  #updateGradients(format = this.shadowRoot.querySelector('select').value) {
     const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
     const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
     const formatIsSupported = CSS.supports(`color: ${black[format]}`);
 
     for (const label of allLabels) {
-      const range = label.querySelector('input[type="range"]');
+      const rangeInput = label.querySelector('input[type="range"]');
       const appliedFormat = formatLabels.includes(label) ? format : label.dataset.format.split(' ')[0];
 
       // Make the paint worklet recalculate the gradients
@@ -611,9 +653,8 @@ export class ColorPicker extends HTMLElement {
         label.style.setProperty(`--${prop}`, this.#getCurrentRangeValue(prop));
       }
 
-      // Makes sure properties shared by multiple formats update their gradients
-      range.style.setProperty('--as-format', appliedFormat);
-      range.style.setProperty('--format-is-supported', String(formatIsSupported));
+      rangeInput.style.setProperty('--as-format', appliedFormat);
+      rangeInput.style.setProperty('--format-is-supported', String(formatIsSupported));
     }
   }
 
@@ -648,7 +689,8 @@ export class ColorPicker extends HTMLElement {
 
       const prop = label.dataset.property;
       const formats = label.dataset.format.split(' ');
-      const clampedColor = color.toGamut(formats[0]);
+      const appliedFormat = (format && Couleur.propertiesOf(format).includes(prop)) ? format : formats[0];
+      const clampedColor = color.toGamut(appliedFormat);
       const value = clampedColor[prop];
       const displayedValue = eval(label.dataset.valueOperation.replace('{v}', value));
 
@@ -707,7 +749,9 @@ export class ColorPicker extends HTMLElement {
     const select = this.shadowRoot.querySelector('select');
     let selectChangeHandler;
     select.addEventListener('change', selectChangeHandler = event => {
-      this.setAttribute('format', select.value);
+      const format = select.value;
+      this.setAttribute('format', format);
+      this.#updateGradients(format);
     });
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
@@ -748,14 +792,14 @@ export class ColorPicker extends HTMLElement {
   connectedCallback() {
     translationObserver.serve(this, { method: 'attribute' });
 
-    // Use the color attribute as the starting color
-    const startColor = this.getAttribute('color') ?? 'red';
-    this.selectColor(startColor);
-
     // If the format attribute is present, switch to that format
     const format = this.getAttribute('format') ?? 'rgb';
     const select = this.shadowRoot.querySelector('select');
     select.value = format;
+
+    // Use the color attribute as the starting color
+    const startColor = this.getAttribute('color') ?? 'red';
+    this.selectColor(startColor);
 
     // Disable focusability inside the color-picker
     disableFocusInside(this, { exceptions: [this.shadowRoot.querySelector('button')] });
