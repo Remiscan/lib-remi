@@ -225,11 +225,11 @@ sheet.replaceSync(/*css*/`
     position: relative;
     --size: 3rem;
     --tap-safe-size: 44px;
-    --slider-height: 12rem;
+    --range-height: 12rem;
     --gradient-steps: 25;
     --cursor-width: 14;
-    --range-border-width: 0px;
-    --range-border-radius: 0;
+    --range-border-width: 2px;
+    --range-border-radius: 0px;
     --checkered-light-background-color: #fff;
     --checkered-light-cell-color: rgba(0, 0, 0, .1);
     /*--checkered-dark-background-color: #000;
@@ -399,11 +399,11 @@ sheet.replaceSync(/*css*/`
 
   label[data-format] {
     display: none;
-    --slider-width: var(--tap-safe-size);
-    --slider-full-width: calc(var(--slider-width) + 2 * var(--range-border-width));
-    --slider-full-height: calc(var(--slider-height) + 2 * var(--range-border-width));
-    grid-template-columns: calc(2 * var(--slider-width));
-    grid-template-rows: auto auto var(--slider-full-height);
+    --range-width: var(--tap-safe-size);
+    --range-full-width: calc(var(--range-width) + 2 * var(--range-border-width));
+    --range-full-height: calc(var(--range-height) + 2 * var(--range-border-width));
+    grid-template-columns: calc(2 * var(--range-width));
+    grid-template-rows: auto auto var(--range-full-height);
     justify-items: center;
     gap: 10px;
     position: relative;
@@ -461,14 +461,15 @@ sheet.replaceSync(/*css*/`
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: var(--slider-height);
-    height: var(--slider-width);
+    width: var(--range-height);
+    height: var(--range-width);
     margin: 0;
     padding: 0;
     rotate: -90deg;
-    translate: 0 calc(0.5 * (var(--slider-full-height) - var(--slider-full-width)));
+    translate: 0 calc(0.5 * (var(--range-full-height) - var(--range-full-width)));
     display: block;
-    border: var(--range-border-width, none);
+    --border: var(--range-border-width, 0px) var(--range-border-style, solid) var(--range-border-color, var(--border-color-opposite));
+    border: var(--border, none);
     border-radius: var(--range-border-radius);
     --couleurs: white 0%, black 100%;
     background: paint(range-gradient),

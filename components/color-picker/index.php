@@ -93,8 +93,14 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         grid-row: 1;
       }
 
-      color-picker {
+      color-picker:nth-of-type(1) {
+        --size: 3rem;
+      }
+
+      color-picker:nth-of-type(2) {
         --size: 2rem;
+        --range-border-width: 5px;
+        --range-border-radius: 5px;
       }
 
       color-picker::part(selector) {
