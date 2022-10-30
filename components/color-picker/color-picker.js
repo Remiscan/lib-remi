@@ -34,7 +34,7 @@ template.innerHTML = /*html*/`
     <span part="button-label" data-string="pick-color"></span>
   </button>
 
-  <div part="selector">
+  <div part="selector" aria-hidden="true">
     <div part="format-choice">
       <label for="color-formats" data-string="color-format" part="select-label"></label>
       <select name="color-formats" id="color-formats" part="select">
@@ -622,6 +622,9 @@ export class ColorPicker extends HTMLElement {
 
   /** Opens the options menu. */
   open() {
+    const selector = this.shadowRoot.querySelector('[part="selector"]');
+    selector.removeAttribute('aria-hidden');
+    
     // Disable focus outside the menu
     trapFocusIn(this);
 
@@ -647,6 +650,9 @@ export class ColorPicker extends HTMLElement {
   close(focus = true) {
     // Restore previous focusability
     releaseFocusFrom(this, { exceptions: [this.shadowRoot.querySelector('button')] });
+
+    const selector = this.shadowRoot.querySelector('[part="selector"]');
+    selector.setAttribute('aria-hidden', 'true');
     
     const button = this.shadowRoot.querySelector('button');
     button.tabIndex = 0;

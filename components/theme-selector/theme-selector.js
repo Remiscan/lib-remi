@@ -59,7 +59,7 @@ template.innerHTML = /*html*/`
     <span data-string="change-theme-short"></span>
   </button>
 
-  <div class="selector">
+  <div class="selector" aria-hidden="true">
     <span class="selector-title" data-string="selector-title"></span>
 
     <input type="radio" name="theme" id="theme-auto" value="auto" data-scheme="auto" checked>
@@ -410,6 +410,9 @@ export class ThemeSelector extends HTMLElement {
 
   /** Opens the options menu. */
   open() {
+    const selector = this.shadowRoot.querySelector('.selector');
+    selector.removeAttribute('aria-hidden');
+    
     // Disable focus outside the menu
     trapFocusIn(this);
 
@@ -437,6 +440,9 @@ export class ThemeSelector extends HTMLElement {
   close(focus = true) {
     // Restore previous focusability
     releaseFocusFrom(this, { exceptions: [this.querySelector('button')] });
+
+    const selector = this.shadowRoot.querySelector('.selector');
+    selector.setAttribute('aria-hidden', 'true');
     
     const button = this.querySelector('button');
     button.tabIndex = 0;
