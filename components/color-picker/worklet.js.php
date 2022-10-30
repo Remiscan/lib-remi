@@ -8,12 +8,11 @@ import Couleur from '/colori/lib/dist/colori.min.js';
 
 registerPaint('range-gradient', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--gradient-steps', '--format-is-supported', '--cursor-width', '--property', '--as-format', '--min', '--max', ...Couleur.properties.map(p => `--${p}`)]; }
+  static get inputProperties() { return ['--gradient-steps', '--format-is-supported', '--property', '--as-format', '--min', '--max', ...Couleur.properties.map(p => `--${p}`)]; }
 
   paint(ctx, size, props) {
     const property = String(props.get('--property'));
     const steps = Number(props.get('--gradient-steps'));
-    const cursorWidth = Number(props.get('--cursor-width'));
 
     const gradient = [];
     
@@ -50,16 +49,32 @@ registerPaint('range-gradient', class {
 
     const canvasGradient = ctx.createLinearGradient(0, 0, size.width, 0);
     for (const [k, color] of Object.entries(gradient)) {
-      if (k == 0) {
-        canvasGradient.addColorStop(0, color);
-      }
-      canvasGradient.addColorStop((cursorWidth / 2 + (k / gradient.length) * (size.width - cursorWidth)) / size.width, color);
-      if (k == gradient.length - 1) {
-        canvasGradient.addColorStop(1, color);
-      }
+      canvasGradient.addColorStop(k / gradient.length, color);
     }
 
     ctx.fillStyle = canvasGradient;
     ctx.fillRect(0, 0, size.width, size.height);
+  }
+});
+
+registerPaint('checkered', class {
+  static get contextOptions() { return {alpha: true}; }
+  static get inputProperties() { return ['--checkered-cell-size', '--checkered-background-color', '--checkered-cell-color']; }
+
+  paint(ctx, size, props) {
+    const cellSize = Number(props.get('--checkered-cell-size')) || 8;
+    const bgColor = String(props.get('--checkered-background-color')) || 'transparent';
+    const cellColor = String(props.get('--checkered-cell-color')) || 'rgba(0, 0, 0, .1)';
+
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, size.width, size.height);
+
+    for (let x = 0; x < size.width; x += cellSize) {
+      for (let y = 0; y < size.height; y += cellSize) {
+        if (((x + y) / cellSize) % 2 !== 0) continue;
+        ctx.fillStyle = cellColor;
+        ctx.fillRect(x, y, cellSize, cellSize);
+      }
+    }
   }
 });

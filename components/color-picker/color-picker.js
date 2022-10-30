@@ -230,21 +230,27 @@ sheet.replaceSync(/*css*/`
     --cursor-width: 14;
     --range-border-width: 0px;
     --range-border-radius: 0;
-    --echiquier-light-background-color: #ddd;
-    --echiquier-dark-background-color: #555;
+    --checkered-light-background-color: #fff;
+    --checkered-light-cell-color: rgba(0, 0, 0, .1);
+    /*--checkered-dark-background-color: #000;
+    --checkered-dark-cell-color: rgba(255, 255, 255, .1);*/
+    --checkered-dark-background-color: #fff;
+    --checkered-dark-cell-color: rgba(0, 0, 0, .1);
     --border-color: black;
     --border-color-opposite: white;
-    --echiquier-background-color: var(--echiquier-light-background-color);
-    --echiquier-transparence: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
+    --checkered-background-color: var(--checkered-light-background-color);
+    --checkered-cell-color: var(--checkered-light-cell-color);
+    --checkered-transparence: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
                               linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
-                              linear-gradient(to right, var(--echiquier-background-color) 0% 100%);
+                              linear-gradient(to right, var(--checkered-background-color) 0% 100%);
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
       --border-color: white;
       --border-color-opposite: black;
-      --echiquier-background-color: var(--echiquier-dark-background-color);
+      --checkered-background-color: var(--checkered-dark-background-color);
+      --checkered-cell-color: var(--checkered-dark-cell-color);
     }
   }
 
@@ -291,10 +297,7 @@ sheet.replaceSync(/*css*/`
     --displayed-color: var(--clamped-color, var(--color, transparent));
     grid-row: 1 / -1;
     background: linear-gradient(to right, var(--displayed-color) 0% 100%),
-                var(--echiquier-transparence);
-    background-size: 100% 100%, 16px 16px, 16px 16px;
-    background-position: 0 0, 0 0, 8px 8px;
-    background-repeat: no-repeat, repeat, repeat;
+                paint(checkered);
     width: 100%;
     height: 100%;
   }
@@ -436,10 +439,12 @@ sheet.replaceSync(/*css*/`
     border-radius: var(--range-border-radius);
     --couleurs: white 0%, black 100%;
     background: paint(range-gradient),
-                var(--echiquier-transparence);
-    background-size: 100% 100%, 16px 16px, 16px 16px;
-    background-position: 0 0, 0 0, 8px 8px;
-    background-repeat: no-repeat, repeat, repeat;
+                paint(checkered);
+    background-size: 100% 100%, 100% 100%;
+    background-size: calc(100% - var(--cursor-width) * 1px) 100%;
+    background-position: 0 0, 0 0;
+    background-position: calc(.5 * var(--cursor-width) * 1px) 0;
+    background-repeat: no-repeat, no-repeat;
     position: relative;
     outline-offset: 3px;
   }
@@ -678,11 +683,11 @@ export class ColorPicker extends HTMLElement {
 
     // Update color of the icon, enforcing good contrast with the button color
     button.style.setProperty('--light-theme-icon-color', Couleur.blend(
-      getComputedStyle(this).getPropertyValue('--echiquier-light-background-color').trim(),
+      getComputedStyle(this).getPropertyValue('--checkered-light-background-color').trim(),
       color
     ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
     button.style.setProperty('--dark-theme-icon-color', Couleur.blend(
-      getComputedStyle(this).getPropertyValue('--echiquier-dark-background-color').trim(),
+      getComputedStyle(this).getPropertyValue('--checkered-dark-background-color').trim(),
       color
     ).bestColorScheme('background') === 'dark' ? 'white' : 'black');
   }
