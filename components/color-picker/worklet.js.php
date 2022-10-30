@@ -20,7 +20,7 @@ registerPaint('range-gradient', class {
     const min = Number(props.get('--min')), max = Number(props.get('--max'));
 
     const format = String(props.get('--as-format'));
-    const formatIsSupported = false; //String(props.get('--format-is-supported')); // There is currently a bug with CSS.supports and colors in Chrome
+    const formatIsSupported = false; //String(props.get('--format-is-supported')) === 'true'; // There is currently a bug with CSS.supports and colors in Chrome
     const propertiesOfFormat = [...Couleur.propertiesOf(format), 'a'];
     const propertyIndex = propertiesOfFormat.indexOf(property);
 
@@ -42,7 +42,9 @@ registerPaint('range-gradient', class {
         }
       });
 
-      const expr = `color(${format} ${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
+      const colorFunctionFormats = ['okhsl', 'okhsv'];
+      const appliedFormat = colorFunctionFormats.includes(format) ? `color-${format}` : format;
+      const expr = Couleur.makeExpr(appliedFormat, values, { precision: 2 });
       gradient.push(formatIsSupported ? expr : new Couleur(expr).rgb);
     }
 

@@ -625,7 +625,7 @@ export class ColorPicker extends HTMLElement {
       const value = this.#getCurrentRangeValue(prop);
       switch (prop) {
         case 'r': case 'g': case 'b':
-          return `${Math.round(10**3 * Number(value) / 255) / 10**3}`;
+          return `${Number(value) / 255}`;
         case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl': case 'oksl': case 'oklr': case 'oksv': case 'okv':
           return `${Number(value) / 100}`;
         default:
@@ -634,7 +634,9 @@ export class ColorPicker extends HTMLElement {
     }
     
     const values = [...Couleur.propertiesOf(format), 'a'].map(p => rangeValue(p));
-    return `color(${format} ${values[0]} ${values[1]} ${values[2]} / ${values[3]})`;
+    const colorFunctionFormats = ['okhsl', 'okhsv'];
+    const appliedFormat = colorFunctionFormats.includes(format) ? `color-${format}` : format;
+    return Couleur.makeExpr(appliedFormat, values, { precision: 2 });
   }
 
 
@@ -642,7 +644,7 @@ export class ColorPicker extends HTMLElement {
   #updateGradients(format = this.shadowRoot.querySelector('select').value) {
     const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
     const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
-    const formatIsSupported = CSS.supports(`color: ${black[format]}`);
+    const formatIsSupported = CSS.supports(`color: ${black.expr(`color-${format}`)}`);
 
     for (const label of allLabels) {
       const rangeInput = label.querySelector('input[type="range"]');
