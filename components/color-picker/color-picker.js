@@ -559,7 +559,7 @@ const strings = {
   },
   
   "en": {
-    "pick-color": "Pick a color",
+    "pick-color": "Choose a color",
     "selector-title": "Color picker",
     "color-format": "Format:",
     "prop-r-nom": "Red",
