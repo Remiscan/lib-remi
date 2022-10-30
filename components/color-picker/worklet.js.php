@@ -53,7 +53,7 @@ registerPaint('range-gradient', class {
       if (k == 0) {
         canvasGradient.addColorStop(0, color);
       }
-      canvasGradient.addColorStop((cursorWidth / 2 + (k / gradient.length) * (size.width - cursorWidth)) / size.width, color);
+      canvasGradient.addColorStop((cursorWidth / 2 + (k / (gradient.length - 1)) * (size.width - cursorWidth)) / size.width, color);
       if (k == gradient.length - 1) {
         canvasGradient.addColorStop(1, color);
       }
