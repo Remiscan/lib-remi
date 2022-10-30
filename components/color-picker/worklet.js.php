@@ -27,7 +27,7 @@ registerPaint('range-gradient', class {
     if (propertyIndex === -1) return;//console.error(`Property ${property} not found in format ${format}`);
 
     // Create gradient steps
-    for (let i = 0; i < steps; i++) {
+    for (let i = 0; i <= steps; i++) {
       // Create the expression of the color of that step
       const values = propertiesOfFormat.map((prop, k) => {
         const inputValue = props.get(`--${prop}`);
@@ -42,8 +42,8 @@ registerPaint('range-gradient', class {
         }
       });
 
-      const colorFunctionFormats = ['okhsl', 'okhsv'];
-      const appliedFormat = colorFunctionFormats.includes(format) ? `color-${format}` : format;
+      const cssFormats = ['rgb', 'hsl', 'hwb', 'lab', 'lch', 'oklab', 'oklch'];
+      const appliedFormat = cssFormats.includes(format) ? format : `color-${format}`;
       const expr = Couleur.makeExpr(appliedFormat, values, { precision: 2 });
       gradient.push(formatIsSupported ? expr : new Couleur(expr).rgb);
     }

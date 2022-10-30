@@ -45,6 +45,8 @@ template.innerHTML = /*html*/`
         <option value="lch">LCH</option>
         <option value="oklab">OKLAB</option>
         <option value="oklch">OKLCH</option>
+        <option value="oklrab">OKLrAB</option>
+        <option value="oklrch">OKLrCH</option>
         <option value="okhsl">OKHSL</option>
         <option value="okhsv">OKHSV</option>
       </select>
@@ -148,53 +150,11 @@ template.innerHTML = /*html*/`
       <input type="range" part="input-range" id="range-ok-lightness" min="0" max="100" step="1">
     </label>
 
-    <label for="range-ok-a-axis" data-format="oklab" part="property-container" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3">
-      <span data-string="prop-oka-nom" part="property-name"></span>
-      <span part="property-range">[-0.24 ; 0.28]</span>
-      <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
-      <input type="range" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001">
-    </label>
-
-    <label for="range-ok-b-axis" data-format="oklab" part="property-container" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3">
-      <span data-string="prop-okb-nom" part="property-name"></span>
-      <span part="property-range">[-0.32 ; 0.20]</span>
-      <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
-      <input type="range" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001">
-    </label>
-
-    <label for="range-ok-chroma" data-format="oklch" part="property-container" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3">
-      <span data-string="prop-okc-nom" part="property-name"></span>
-      <span part="property-range">[0 ; 0.32]</span>
-      <input type="number" part="input-number" min="0" max="0.32" step="0.001">
-      <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
-    </label>
-
-    <label for="range-ok-hue" data-format="oklch okhsl okhsv" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
-      <span data-string="prop-okh-nom" part="property-name"></span>
-      <span part="property-range">[0 ; 359]</span>
-      <input type="number" part="input-number" min="0" max="359" step="1">
-      <input type="range" part="input-range" id="range-ok-hue" min="0" max="359" step="1">
-    </label>
-
-    <label for="range-ok-saturation-l" data-format="okhsl" part="property-container" data-property="oksl" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-oksl-nom" part="property-name"></span>
-      <span part="property-range">[0 ; 100]</span>
-      <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-saturation-l" min="0" max="100" step="1">
-    </label>
-
-    <label for="range-ok-lightness-r" data-format="okhsl" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
+    <label for="range-ok-lightness-r" data-format="oklrab oklrch" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-oklr-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input type="range" part="input-range" id="range-ok-lightness-r" min="0" max="100" step="1">
-    </label>
-
-    <label for="range-ok-saturation-v" data-format="okhsv" part="property-container" data-property="oksv" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-oksv-nom" part="property-name"></span>
-      <span part="property-range">[0 ; 100]</span>
-      <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-saturation-v" min="0" max="100" step="1">
     </label>
 
     <label for="range-ok-value" data-format="okhsv" part="property-container" data-property="okv" data-value-operation="Math.round(100 * {v})">
@@ -204,7 +164,49 @@ template.innerHTML = /*html*/`
       <input type="range" part="input-range" id="range-ok-value" min="0" max="100" step="1">
     </label>
 
-    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
+    <label for="range-ok-a-axis" data-format="oklab oklrab" part="property-container" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3">
+      <span data-string="prop-oka-nom" part="property-name"></span>
+      <span part="property-range">[-0.24 ; 0.28]</span>
+      <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
+      <input type="range" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001">
+    </label>
+
+    <label for="range-ok-b-axis" data-format="oklab oklrab" part="property-container" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3">
+      <span data-string="prop-okb-nom" part="property-name"></span>
+      <span part="property-range">[-0.32 ; 0.20]</span>
+      <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
+      <input type="range" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001">
+    </label>
+
+    <label for="range-ok-chroma" data-format="oklch oklrch" part="property-container" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3">
+      <span data-string="prop-okc-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 0.32]</span>
+      <input type="number" part="input-number" min="0" max="0.32" step="0.001">
+      <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
+    </label>
+
+    <label for="range-ok-saturation-l" data-format="okhsl" part="property-container" data-property="oksl" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-oksl-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-saturation-l" min="0" max="100" step="1">
+    </label>
+
+    <label for="range-ok-saturation-v" data-format="okhsv" part="property-container" data-property="oksv" data-value-operation="Math.round(100 * {v})">
+      <span data-string="prop-oksv-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 100]</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input type="range" part="input-range" id="range-ok-saturation-v" min="0" max="100" step="1">
+    </label>
+
+    <label for="range-ok-hue" data-format="oklch oklrch okhsl okhsv" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
+      <span data-string="prop-okh-nom" part="property-name"></span>
+      <span part="property-range">[0 ; 359]</span>
+      <input type="number" part="input-number" min="0" max="359" step="1">
+      <input type="range" part="input-range" id="range-ok-hue" min="0" max="359" step="1">
+    </label>
+
+    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch oklrab oklrch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-a-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
@@ -412,6 +414,8 @@ sheet.replaceSync(/*css*/`
   :host([format="lch"]) label[data-format~="lch"],
   :host([format="oklab"]) label[data-format~="oklab"],
   :host([format="oklch"]) label[data-format~="oklch"],
+  :host([format="oklrab"]) label[data-format~="oklrab"],
+  :host([format="oklrch"]) label[data-format~="oklrch"],
   :host([format="okhsl"]) label[data-format~="okhsl"],
   :host([format="okhsv"]) label[data-format~="okhsv"] {
     display: grid;
@@ -503,6 +507,7 @@ const strings = {
     "prop-ciec-nom": "Chroma",
     "prop-cieh-nom": "Teinte",
     "prop-okl-nom": "Luminosité",
+    "prop-oklr-nom": "Luminosité",
     "prop-oka-nom": "Axe A",
     "prop-okb-nom": "Axe B",
     "prop-okc-nom": "Chroma",
@@ -532,6 +537,7 @@ const strings = {
     "prop-ciec-nom": "Chroma",
     "prop-cieh-nom": "Hue",
     "prop-okl-nom": "Lightness",
+    "prop-oklr-nom": "Lightness",
     "prop-oka-nom": "A axis",
     "prop-okb-nom": "B axis",
     "prop-okc-nom": "Chroma",
@@ -634,8 +640,8 @@ export class ColorPicker extends HTMLElement {
     }
     
     const values = [...Couleur.propertiesOf(format), 'a'].map(p => rangeValue(p));
-    const colorFunctionFormats = ['okhsl', 'okhsv'];
-    const appliedFormat = colorFunctionFormats.includes(format) ? `color-${format}` : format;
+    const cssFormats = ['rgb', 'hsl', 'hwb', 'lab', 'lch', 'oklab', 'oklch'];
+    const appliedFormat = cssFormats.includes(format) ? format : `color-${format}`;
     return Couleur.makeExpr(appliedFormat, values, { precision: 2 });
   }
 
@@ -693,7 +699,8 @@ export class ColorPicker extends HTMLElement {
       const formats = label.dataset.format.split(' ');
       const appliedFormat = (format && Couleur.propertiesOf(format).includes(prop)) ? format : formats[0];
       const clampedColor = color.toGamut(appliedFormat);
-      const value = clampedColor[prop];
+      const propIndex = [...Couleur.propertiesOf(appliedFormat), 'a'].findIndex(p => p === prop);
+      const value = [...clampedColor.valuesTo(appliedFormat), clampedColor.a][propIndex];
       const displayedValue = eval(label.dataset.valueOperation.replace('{v}', value));
 
       // Don't update values of the currently chosen format
