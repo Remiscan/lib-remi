@@ -150,7 +150,7 @@ template.innerHTML = /*html*/`
       <input type="range" part="input-range" id="range-ok-lightness" min="0" max="100" step="1">
     </label>
 
-    <label for="range-ok-lightness-r" data-format="oklrab oklrch" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
+    <label for="range-ok-lightness-r" data-format="oklrab oklrch okhsl" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-oklr-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
