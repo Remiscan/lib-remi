@@ -407,8 +407,41 @@ sheet.replaceSync(/*css*/`
     justify-items: center;
     gap: 10px;
     position: relative;
+    --gradient-steps: 25;
   }
-  
+
+  /* Gradient steps per format */
+  label[data-property="r"],
+  label[data-property="g"],
+  label[data-property="b"],
+  label[data-property="a"] {
+    --gradient-steps: 1;
+  }
+  label[data-property="h"],
+  label[data-property="s"],
+  label[data-property="l"],
+  label[data-property="w"],
+  label[data-property="bk"] {
+    --gradient-steps: 25;
+  }
+  label[data-property="ciel"],
+  label[data-property="ciea"],
+  label[data-property="cieb"],
+  label[data-property="ciec"],
+  label[data-property="cieh"],
+  label[data-property="okl"],
+  label[data-property="oka"],
+  label[data-property="okb"],
+  label[data-property="okc"],
+  label[data-property="okh"],
+  label[data-property="oklr"],
+  label[data-property="okv"],
+  label[data-property="oksl"],
+  label[data-property="oksv"] {
+    --gradient-steps: 50;
+  }
+
+  /* Properties displayed per format */
   :host(:not([format])) label[data-format~="rgb"],
   :host([format="rgb"]) label[data-format~="rgb"],
   :host([format="hsl"]) label[data-format~="hsl"],
