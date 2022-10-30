@@ -440,10 +440,10 @@ sheet.replaceSync(/*css*/`
     --couleurs: white 0%, black 100%;
     background: paint(range-gradient),
                 paint(checkered);
-    background-size: 100% 100%, 100% 100%;
+    /*background-size: 100% 100%, 100% 100%;
     background-size: calc(100% - var(--cursor-width) * 1px) 100%;
     background-position: 0 0, 0 0;
-    background-position: calc(.5 * var(--cursor-width) * 1px) 0;
+    background-position: calc(.5 * var(--cursor-width) * 1px) 0;*/
     background-repeat: no-repeat, no-repeat;
     position: relative;
     outline-offset: 3px;

@@ -8,11 +8,12 @@ import Couleur from '/colori/lib/dist/colori.min.js';
 
 registerPaint('range-gradient', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--gradient-steps', '--format-is-supported', '--property', '--as-format', '--min', '--max', ...Couleur.properties.map(p => `--${p}`)]; }
+  static get inputProperties() { return ['--gradient-steps', '--format-is-supported', '--cursor-width', '--property', '--as-format', '--min', '--max', ...Couleur.properties.map(p => `--${p}`)]; }
 
   paint(ctx, size, props) {
     const property = String(props.get('--property'));
     const steps = Number(props.get('--gradient-steps'));
+    const cursorWidth = Number(props.get('--cursor-width'));
 
     const gradient = [];
     
@@ -49,7 +50,13 @@ registerPaint('range-gradient', class {
 
     const canvasGradient = ctx.createLinearGradient(0, 0, size.width, 0);
     for (const [k, color] of Object.entries(gradient)) {
-      canvasGradient.addColorStop(k / gradient.length, color);
+      if (k == 0) {
+        canvasGradient.addColorStop(0, color);
+      }
+      canvasGradient.addColorStop((cursorWidth / 2 + (k / gradient.length) * (size.width - cursorWidth)) / size.width, color);
+      if (k == gradient.length - 1) {
+        canvasGradient.addColorStop(1, color);
+      }
     }
 
     ctx.fillStyle = canvasGradient;
