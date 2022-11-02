@@ -410,7 +410,7 @@ export class ThemeSelector extends HTMLElement {
 
   /** Opens the options menu. */
   open() {
-    const selector = this.shadowRoot.querySelector('.selector');
+    const selector = this.querySelector('.selector');
     selector.removeAttribute('aria-hidden');
     
     // Disable focus outside the menu
@@ -441,7 +441,7 @@ export class ThemeSelector extends HTMLElement {
     // Restore previous focusability
     releaseFocusFrom(this, { exceptions: [this.querySelector('button')] });
 
-    const selector = this.shadowRoot.querySelector('.selector');
+    const selector = this.querySelector('.selector');
     selector.setAttribute('aria-hidden', 'true');
     
     const button = this.querySelector('button');
