@@ -44,7 +44,7 @@ registerPaint('range-gradient', class {
 
       const cssFormats = ['rgb', 'hsl', 'hwb', 'lab', 'lch', 'oklab', 'oklch'];
       const appliedFormat = cssFormats.includes(format) ? format : `color-${format}`;
-      const expr = Couleur.makeExpr(appliedFormat, values, { precision: 2 });
+      const expr = Couleur.makeString(appliedFormat, values, { precision: 2 });
       gradient.push(formatIsSupported ? expr : new Couleur(expr).rgb);
     }
 

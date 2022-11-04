@@ -687,7 +687,7 @@ export class ColorPicker extends HTMLElement {
     const values = [...Couleur.propertiesOf(format), 'a'].map(p => rangeValue(p));
     const cssFormats = ['rgb', 'hsl', 'hwb', 'lab', 'lch', 'oklab', 'oklch'];
     const appliedFormat = cssFormats.includes(format) ? format : `color-${format}`;
-    return Couleur.makeExpr(appliedFormat, values, { precision: 2 });
+    return Couleur.makeString(appliedFormat, values, { precision: 2 });
   }
 
 
@@ -695,7 +695,7 @@ export class ColorPicker extends HTMLElement {
   #updateGradients(format = this.shadowRoot.querySelector('select').value) {
     const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
     const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
-    const formatIsSupported = CSS.supports(`color: ${black.expr(`color-${format}`)}`);
+    const formatIsSupported = CSS.supports(`color: ${black.toString(`color-${format}`)}`);
 
     for (const label of allLabels) {
       const rangeInput = label.querySelector('input[type="range"]');
