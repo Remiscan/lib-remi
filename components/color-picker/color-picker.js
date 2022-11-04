@@ -646,7 +646,10 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Closes the options menu. */
+  /**
+   * Closes the options menu.
+   * @param {boolean} focus - Whether to focus on the toggle button after closing.
+   */
   close(focus = true) {
     // Restore previous focusability
     releaseFocusFrom(this, { exceptions: [this.shadowRoot.querySelector('button')] });
@@ -663,13 +666,20 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Gets the current input value of a certain color property. */
+  /**
+   * Gets the current input value of a certain color property.
+   * @param {string} prop - The name of the color property.
+   * @returns {string} The current input value.
+   */
   #getCurrentRangeValue(prop) {
     return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
   }
 
 
-  /** Returns the expression of the color based on current input values. */
+  /**
+   * Returns the expression of the color based on current input values.
+   * @returns {string} A color expression.
+   */
   #getCurrentColorExpression() {
     const format = this.shadowRoot.querySelector('select').value;
     const rangeValue = prop => {
@@ -691,8 +701,12 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Update the gradients of the input[type="range"]s. */
-  #updateGradients(format = this.shadowRoot.querySelector('select').value) {
+  /**
+   * Update the gradients of the input[type="range"]s.
+   */
+  #updateGradients() {
+    const format = this.shadowRoot.querySelector('select').value;
+
     const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
     const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
     const formatIsSupported = CSS.supports(`color: ${black.toString(`color-${format}`)}`);
@@ -712,7 +726,10 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Updates the color of the color-picker button when its selected color is updated. */
+  /**
+   * Updates the color of the color-picker button when its selected color is updated.
+   * @param {string} colorExpr - The expression of the selected color.
+   */
   #updateButtonColor(colorExpr) {
     const color = new Couleur(colorExpr);
     const button = this.shadowRoot.querySelector('button');
@@ -733,7 +750,11 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Updates the values of inputs of the non-selected formats when the selected color is updated. */
+  /**
+   * Updates the values of inputs of the non-selected formats when the selected color is updated.
+   * @param {string} colorExpr - The expression of the selected color.
+   * @param {string} format - The user-selected format, whose values won't be updated because they were chosen by the user.
+   */
   #updateOtherInputs(colorExpr, format = this.shadowRoot.querySelector('select').value) {
     const color = new Couleur(colorExpr);
     for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
@@ -757,8 +778,13 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Updates the selected color when an input[type="range"]'s value is modified. */
-  #updateColor(event, colorExpr, rangeInput, format = this.shadowRoot.querySelector('select').value) {
+  /**
+   * Updates the selected color when an input[type="range"]'s value is modified.
+   * @param {Event} event - The event that triggered the color update.
+   * @param {string} colorExpr - The expression of the selected color.
+   * @param {HTMLInputElement} rangeInput - The input[type="range"] element that triggered the event.
+   */
+  #updateColor(event, colorExpr, rangeInput) {
     this.dispatchEvent(new CustomEvent(event.type, {
       bubbles: true,
       detail: { color: colorExpr }
@@ -775,7 +801,7 @@ export class ColorPicker extends HTMLElement {
     }
 
     // Update gradients
-    this.#updateGradients(format);
+    this.#updateGradients();
 
     if (rangeInput) {
       const numericInput = rangeInput.parentElement.querySelector(`input[type="number"]`);
@@ -791,7 +817,10 @@ export class ColorPicker extends HTMLElement {
   }
 
 
-  /** Programmatically update the selected color. */
+  /**
+   * Programmatically update the selected color.
+   * @param {string} colorExpr - The expression of the selected color.
+   */
   selectColor(colorExpr) {
     this.#updateOtherInputs(colorExpr, null);
     this.#updateColor(new Event('change'), colorExpr);
@@ -805,7 +834,7 @@ export class ColorPicker extends HTMLElement {
     select.addEventListener('change', selectChangeHandler = event => {
       const format = select.value;
       this.setAttribute('format', format);
-      this.#updateGradients(format);
+      this.#updateGradients();
     });
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
