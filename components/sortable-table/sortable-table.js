@@ -1,3 +1,13 @@
+const upArrow = /*html*/`
+  <svg></svg>
+`;
+
+const downArrow = /*html*/`
+  <svg></svg>
+`;
+
+
+
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   @layer sortable-table {
