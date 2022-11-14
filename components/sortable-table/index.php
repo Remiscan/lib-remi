@@ -13,6 +13,7 @@
     <script defer src="/_common/polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'] }</script>
     <script defer src="/_common/polyfills/es-module-shims.js"></script>
+    <script defer src="/_common/polyfills/custom-elements.js"></script>
     
     <script type="importmap">
     {
