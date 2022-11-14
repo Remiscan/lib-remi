@@ -66,9 +66,13 @@ export class SortableTable extends HTMLTableElement {
       for (const [order, { title, type, format }] of this.headers) {
         let value = this.data.get(id)[title];
         switch (type) {
-          case 'date':
-            value = new Date(value).toLocaleDateString();
+          case 'date': {
+            const formatOptions = JSON.parse(format ?? '{ "dateStyle": "long", "timeStyle": "long" }');
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, formatOptions);
+            const date = dateTimeFormat.format(new Date(value));
+            value = `${date}`;
             break;
+          }
         }
         html += `<td>${value}</td>`;
       }
