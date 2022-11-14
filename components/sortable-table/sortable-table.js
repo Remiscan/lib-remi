@@ -56,28 +56,18 @@ export class SortableTable extends HTMLTableElement {
   }
 
 
-  sortTable(title, direction = 'ascending') {
+  sortTable(
+    title = this.getAttribute('sort-by') ?? this.getAttribute('default-sort-by') ?? this.headers.get(0).title,
+    direction = this.getAttribute('sort-direction') ?? this.getAttribute('default-sort-direction') ?? 'ascending'
+  ) {
     const tbody = this.querySelector('tbody');
     tbody.innerHTML = '';
 
     const sortedKeys = this.#sortData(title, direction);
     for (const id of sortedKeys) {
-      let html = `<tr>`;
-      for (const [order, { title, type, format }] of this.headers) {
-        let value = this.data.get(id)[title];
-        switch (type) {
-          case 'date': {
-            const formatOptions = JSON.parse(format ?? '{ "dateStyle": "long", "timeStyle": "long" }');
-            const dateTimeFormat = new Intl.DateTimeFormat(undefined, formatOptions);
-            const date = dateTimeFormat.format(new Date(value));
-            value = `${date}`;
-            break;
-          }
-        }
-        html += `<td>${value}</td>`;
-      }
-      html += `</tr>`;
-      tbody.innerHTML += html;
+      const tr = this.#dataToRow(this.data.get(id));
+      tr.dataset.id = id;
+      tbody.appendChild(tr);
     }
 
     const headers = this.querySelectorAll(`thead td`);
@@ -92,10 +82,11 @@ export class SortableTable extends HTMLTableElement {
   }
 
 
-  #sortData(title, direction = 'ascending') {
+  #sortData(title, direction) {
     const keys = [...this.data.keys()];
+    const type = this.#getHeaderFromTitle(title).type;
+    
     return keys.sort((a, b) => {
-      const type = this.headers.get(title);
       const [valueA, valueB] = [a, b].map(v => this.data.get(v)[title]);
 
       let comparison;
@@ -112,15 +103,12 @@ export class SortableTable extends HTMLTableElement {
         } break;
       }
 
-      return (direction === 'ascending' ? 1 : -1) * comparison;
+      return (direction === 'ascending' ? 1 : direction === 'descending' ? -1 : 0) * comparison;
     });
   }
 
 
-  #addRow(tr) {
-    if (tr.dataset.id) return;
-
-    const id = this.dataRows;
+  #rowToData(tr) {
     const cells = tr.querySelectorAll('td');
     const data = {};
 
@@ -139,13 +127,51 @@ export class SortableTable extends HTMLTableElement {
       data[title] = value;
     }
 
+    return data;
+  }
+
+
+  #dataToRow(data) {
+    const tr = document.createElement('tr');
+
+    for (const [order, { title, type, format }] of this.headers) {
+      let value = data[title];
+      switch (type) {
+        case 'date': {
+          const formatOptions = JSON.parse(format ?? '{ "dateStyle": "long", "timeStyle": "long" }');
+          if (formatOptions.function) {
+            value = window[formatOptions.function](Number(value));
+          } else {
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, formatOptions);
+            const date = dateTimeFormat.format(new Date(value));
+            value = `${date}`;
+          }
+          break;
+        }
+      }
+
+      const td = document.createElement('td');
+      td.innerHTML = value;
+      tr.appendChild(td);
+    }
+
+    return tr;
+  }
+
+
+  addRow(tr) {
+    if (tr.dataset.id) return;
+
+    const id = this.dataRows;
+    const data = this.#rowToData(tr);
+
     this.data.set(id, data);
     tr.dataset.id = id;
     this.dataRows++;
   }
 
 
-  #deleteRow(id) {
+  deleteRow(id) {
     this.data.delete(id);
   }
 
@@ -160,12 +186,24 @@ export class SortableTable extends HTMLTableElement {
       const format = header.dataset.format;
 
       const clickHandler = () => {
-        this.sortTable(title, header.classList.contains('ascending') ? 'descending' : 'ascending');
+        this.sortTable(title,
+          header.classList.contains('ascending') ? 'descending' :
+          header.classList.contains('descending') ? 'ascending' :
+          this.getAttribute('default-sort-direction') ?? 'ascending'
+        );
       };
 
       header.dataset.title = title;
       this.headers.set(k, { title, type, format, clickHandler });
     }
+  }
+
+
+  #getHeaderFromTitle(title) {
+    for (const [k, header] of this.headers) {
+      if (header.title === title) return header;
+    }
+    return null;
   }
 
 
@@ -195,13 +233,11 @@ export class SortableTable extends HTMLTableElement {
     if (this.data.size === 0) {
       const rows = this.querySelectorAll('tbody > tr');
       for (const row of rows) {
-        this.#addRow(row);
+        this.addRow(row);
       }
     }
 
-    const sortBy = this.getAttribute('sort-by') ?? this.headers.get(0).title;
-    const sortDirection = this.getAttribute('sort-direction') ?? 'ascending';
-    this.sortTable(sortBy, sortDirection);
+    this.sortTable();
     this.#startHandlingClicks();
   }
 
@@ -219,14 +255,10 @@ export class SortableTable extends HTMLTableElement {
 
     switch (attr) {
       case 'sort-by': {
-        const sortBy = newValue;
-        const sortDirection = this.getAttribute('sort-direction') ?? 'ascending';
-        this.sortTable(sortBy, sortDirection);
+        this.sortTable(newValue, undefined);
       } break;
       case 'sort-direction': {
-        const sortBy = this.getAttribute('sort-by') ?? this.headers.get(0).title;
-        const sortDirection = newValue;
-        this.sortTable(sortBy, sortDirection);
+        this.sortTable(undefined, newValue);
       } break;
     }
   }
