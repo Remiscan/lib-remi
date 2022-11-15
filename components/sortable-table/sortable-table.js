@@ -153,16 +153,21 @@ export class SortableTable extends HTMLTableElement {
 
     for (const [id, { type, format }] of this.headers) {
       let value = data[id];
-      if (format.function) {
-        value = format.function(value);
+      if (typeof format === 'function') {
+        value = format(value);
       } else {
-        switch (type) {
-          case 'date': {
-            const dateTimeFormat = new Intl.DateTimeFormat(undefined, format);
-            const date = dateTimeFormat.format(new Date(value));
-            value = `${date}`;
-            break;
+        try {
+          switch (type) {
+            case 'date': {
+              const dateTimeFormat = new Intl.DateTimeFormat(undefined, format);
+              const date = dateTimeFormat.format(new Date(value));
+              value = `${date}`;
+              break;
+            }
           }
+        } catch (e) {
+          console.error(e);
+          value = data[id];
         }
       }
 
@@ -231,7 +236,7 @@ export class SortableTable extends HTMLTableElement {
 
   setFormat(id, formatFunction) {
     const header = this.headers.get(id);
-    header.format = { function: formatFunction };
+    header.format = formatFunction;
   }
 
 

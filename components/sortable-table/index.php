@@ -45,7 +45,7 @@
         <tr>
           <td>Prénom</td>
           <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</td>
-          <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 2</td>
+          <td data-type="date" data-format='{ "dateStyle": "medium", "timeStyle": "medium" }'>Date 2</td>
         </tr>
       </thead>
       <tbody>
