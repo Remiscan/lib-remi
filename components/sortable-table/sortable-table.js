@@ -51,29 +51,31 @@ export class SortableTable extends HTMLTableElement {
   constructor() {
     super();
     this.dataRows = 0;
-    this.headers = new Map(); // Map<order, { title, type, format, clickHandler }>
-    this.data = new Map(); // Map<id, { [title]: [value] }>
+    this.headers = new Map(); // Map<id, { order, title, type, format, clickHandler(), filter() }>
+    this.data = new Map(); // Map<key, { [title]: [value] }>
+    this.filter = data => true;
   }
 
 
   sortTable(
-    title = this.getAttribute('sort-by') ?? this.getAttribute('default-sort-by') ?? this.headers.get(0).title,
+    id = this.getAttribute('sort-by') ?? this.getAttribute('default-sort-by') ?? this.headers.keys().next().value,
     direction = this.getAttribute('sort-direction') ?? this.getAttribute('default-sort-direction') ?? 'ascending'
   ) {
     const tbody = this.querySelector('tbody');
     tbody.innerHTML = '';
 
-    const sortedKeys = this.#sortData(title, direction);
-    for (const id of sortedKeys) {
-      const tr = this.#dataToRow(this.data.get(id));
-      tr.dataset.id = id;
+    const sortedKeys = this.#sortData(id, direction);
+    const filteredKeys = this.#filterData(sortedKeys);
+    for (const key of filteredKeys) {
+      const tr = this.#dataToRow(this.data.get(key));
+      tr.dataset.key = key;
       tbody.appendChild(tr);
     }
 
     const headers = this.querySelectorAll(`thead td`);
     for (const header of headers) {
       header.classList.remove('ascending', 'descending');
-      if (header.dataset.title === title) {
+      if (header.dataset.id === id) {
         header.classList.add('sorted', direction);
       } else {
         header.classList.remove('sorted');
@@ -82,12 +84,13 @@ export class SortableTable extends HTMLTableElement {
   }
 
 
-  #sortData(title, direction) {
-    const keys = [...this.data.keys()];
-    const type = this.#getHeaderFromTitle(title).type;
+  #sortData(id, direction) {
+    const header = this.headers.get(id);
+    const type = header.type;
     
+    const keys = [...this.data.keys()];
     return keys.sort((a, b) => {
-      const [valueA, valueB] = [a, b].map(v => this.data.get(v)[title]);
+      const [valueA, valueB] = [a, b].map(v => this.data.get(v)[id]);
 
       let comparison;
       switch (type) {
@@ -108,13 +111,27 @@ export class SortableTable extends HTMLTableElement {
   }
 
 
+  #filterData(keys = [...this.data.keys()]) {
+    const filteredKeys = [];
+    for (const key of keys) {
+      const data = this.data.get(key);
+      const fitsFilter = this.filter(data);
+      if (fitsFilter) filteredKeys.push(key);
+    }
+
+    return filteredKeys;
+  }
+
+
   #rowToData(tr) {
     const cells = tr.querySelectorAll('td');
     const data = {};
+    const headerIds = this.headers.keys();
 
-    for (const [k, cell] of [...cells].map((v, k) => [k, v])) {
+    for (const cell of cells) {
       let value = cell.innerHTML;
-      const { title, type } = this.headers.get(k);
+      const id = headerIds.next().value;
+      const { type } = this.headers.get(id);
       switch (type) {
         case 'date':
         case 'number':
@@ -124,7 +141,7 @@ export class SortableTable extends HTMLTableElement {
           value = String(value);
           break;
       }
-      data[title] = value;
+      data[id] = value;
     }
 
     return data;
@@ -134,8 +151,8 @@ export class SortableTable extends HTMLTableElement {
   #dataToRow(data) {
     const tr = document.createElement('tr');
 
-    for (const [order, { title, type, format }] of this.headers) {
-      let value = data[title];
+    for (const [id, { type, format }] of this.headers) {
+      let value = data[id];
       switch (type) {
         case 'date': {
           const formatOptions = JSON.parse(format ?? '{ "dateStyle": "long", "timeStyle": "long" }');
@@ -180,45 +197,51 @@ export class SortableTable extends HTMLTableElement {
     if (this.headers.size > 0) return;
 
     const headers = this.querySelectorAll(`thead td`);
-    for (const [k, header] of [...headers].map((v, k) => [k, v])) {
+    for (const [order, header] of [...headers].map((v, k) => [k, v])) {
       const title = header.innerText;
       const type = header.dataset.type;
       const format = header.dataset.format;
 
+      const id = header.dataset.id ?? order;
+      header.dataset.id = id;
+
       const clickHandler = () => {
-        this.sortTable(title,
+        this.sortTable(id,
           header.classList.contains('ascending') ? 'descending' :
           header.classList.contains('descending') ? 'ascending' :
           this.getAttribute('default-sort-direction') ?? 'ascending'
         );
       };
 
-      header.dataset.title = title;
-      this.headers.set(k, { title, type, format, clickHandler });
+      const filter = value => true;
+
+      this.headers.set(id, { order, title, type, format, clickHandler, filter });
     }
   }
 
 
-  #getHeaderFromTitle(title) {
-    for (const [k, header] of this.headers) {
-      if (header.title === title) return header;
-    }
-    return null;
+  setFilter(filterFunction = data => true) {
+    this.filter = filterFunction;
+  }
+
+
+  resetFilter() {
+    return this.setFilter();
   }
 
 
   #startHandlingClicks() {
     const headers = this.querySelectorAll(`thead td`);
-    for (const [k, header] of [...headers].map((v, k) => [k, v])) {
-      header.addEventListener('click', this.headers.get(k).clickHandler);
+    for (const header of headers) {
+      header.addEventListener('click', this.headers.get(header.dataset.id).clickHandler);
     }
   }
 
 
   #stopHandlingClicks() {
     const headers = this.querySelectorAll(`thead td`);
-    for (const [k, header] of [...headers].map((v, k) => [k, v])) {
-      header.removeEventListener('click', this.headers.get(k).clickHandler);
+    for (const header of headers) {
+      header.removeEventListener('click', this.headers.get(header.dataset.id).clickHandler);
     }
   }
 
