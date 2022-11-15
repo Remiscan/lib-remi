@@ -153,17 +153,16 @@ export class SortableTable extends HTMLTableElement {
 
     for (const [id, { type, format }] of this.headers) {
       let value = data[id];
-      switch (type) {
-        case 'date': {
-          const formatOptions = JSON.parse(format ?? '{ "dateStyle": "long", "timeStyle": "long" }');
-          if (formatOptions.function) {
-            value = window[formatOptions.function](Number(value));
-          } else {
-            const dateTimeFormat = new Intl.DateTimeFormat(undefined, formatOptions);
+      if (format.function) {
+        value = format.function(value);
+      } else {
+        switch (type) {
+          case 'date': {
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, format);
             const date = dateTimeFormat.format(new Date(value));
             value = `${date}`;
+            break;
           }
-          break;
         }
       }
 
@@ -200,9 +199,9 @@ export class SortableTable extends HTMLTableElement {
     for (const [order, header] of [...headers].map((v, k) => [k, v])) {
       const title = header.innerText;
       const type = header.dataset.type;
-      const format = header.dataset.format;
+      const format = JSON.parse(header.dataset.format ?? "{}");
 
-      const id = header.dataset.id ?? order;
+      const id = header.dataset.id ?? String(order);
       header.dataset.id = id;
 
       const clickHandler = () => {
@@ -230,8 +229,15 @@ export class SortableTable extends HTMLTableElement {
   }
 
 
+  setFormat(id, formatFunction) {
+    const header = this.headers.get(id);
+    header.format = { function: formatFunction };
+  }
+
+
   #startHandlingClicks() {
     const headers = this.querySelectorAll(`thead td`);
+    console.log(this.headers);
     for (const header of headers) {
       header.addEventListener('click', this.headers.get(header.dataset.id).clickHandler);
     }
