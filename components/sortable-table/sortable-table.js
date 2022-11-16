@@ -1,9 +1,9 @@
-const upArrow = /*html*/`
-  <svg></svg>
-`;
-
-const downArrow = /*html*/`
-  <svg></svg>
+const arrowTemplate = document.createElement('template');
+arrowTemplate.innerHTML = /*html*/`
+  <svg viewBox="0 0 14 28">
+    <path class="arrow ascending-arrow" d="M 0 12 L 7 0 L 14 12 z"/>
+    <path class="arrow descending-arrow" d="M 0 16 L 7 28 L 14 16 z"/>
+  </svg>
 `;
 
 
@@ -21,13 +21,25 @@ sheet.replaceSync(/*css*/`
       margin-left: 1ch;
     }
 
-    table[is="sortable-table"] thead td.sorted.descending::after {
-      content: '▼';
-      opacity: 1;
+    table[is="sortable-table"] thead td svg {
+      fill: currentColor;
+      --width: .6em;
+      width: var(--width);
+      height: calc(2 * var(--width));
+      vertical-align: text-bottom;
+      scale: .85;
     }
 
-    table[is="sortable-table"] thead td.sorted.ascending::after {
-      content: '▲';
+    table[is="sortable-table"] thead td.sorted svg {
+      scale: 1;
+    }
+
+    table[is="sortable-table"] thead td .arrow {
+      opacity: .5;
+    }
+
+    table[is="sortable-table"] thead td.sorted.ascending .ascending-arrow,
+    table[is="sortable-table"] thead td.sorted.descending .descending-arrow {
       opacity: 1;
     }
   }
@@ -220,6 +232,9 @@ export class SortableTable extends HTMLTableElement {
       const filter = value => true;
 
       this.headers.set(id, { order, title, type, format, clickHandler, filter });
+
+      // Add arrows
+      header.appendChild(arrowTemplate.content.cloneNode(true));
     }
   }
 
@@ -242,7 +257,6 @@ export class SortableTable extends HTMLTableElement {
 
   #startHandlingClicks() {
     const headers = this.querySelectorAll(`thead td`);
-    console.log(this.headers);
     for (const header of headers) {
       header.addEventListener('click', this.headers.get(header.dataset.id).clickHandler);
     }
