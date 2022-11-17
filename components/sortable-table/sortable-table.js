@@ -27,11 +27,16 @@ sheet.replaceSync(/*css*/`
       width: var(--width);
       height: calc(2 * var(--width));
       vertical-align: text-bottom;
-      scale: .85;
+      overflow: visible;
+      margin-left: .5ch;
     }
 
-    table[is="sortable-table"] thead td.sorted svg {
-      scale: 1;
+    .ascending-arrow {
+      transform-origin: calc(100% * 12/28) center;
+    }
+
+    .descending-arrow {
+      transform-origin: calc(100% * (28 - 12)/28) center;
     }
 
     table[is="sortable-table"] thead td .arrow {
@@ -41,6 +46,7 @@ sheet.replaceSync(/*css*/`
     table[is="sortable-table"] thead td.sorted.ascending .ascending-arrow,
     table[is="sortable-table"] thead td.sorted.descending .descending-arrow {
       opacity: 1;
+      scale: 1.4;
     }
   }
 `);
