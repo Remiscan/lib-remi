@@ -1,6 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/colori/lib/src/php/graph.php';
-use colori\Graph;
+require_once $_SERVER['DOCUMENT_ROOT'].'/_common/php/Graph.php';
 
 /**
  * Builds a module graph : each node is the path of an ES module, and links are the paths of imports used by that module.
