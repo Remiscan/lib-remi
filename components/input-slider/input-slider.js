@@ -150,7 +150,7 @@ export class InputSlider extends HTMLElement {
 
         const min = this.getAttribute('min'), max = this.getAttribute('max');
         const ratio = 1 - (max - value) / (max - min);
-        this.style.setProperty('--ratio', ratio);
+        slider.style.setProperty('--ratio', ratio);
       } break;
     }
   }
