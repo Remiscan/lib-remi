@@ -71,7 +71,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       for (const slider of sliders) {
         for (const type of ['input', 'change']) {
           slider.addEventListener(type, event => {
-            console.log(slider, event.type, event.detail.value);
+            console.log(slider, event.type, event.detail);
           })
         }
       }
@@ -79,7 +79,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
-    <input-slider orientation="horizontal"></input-slider>
+    <input-slider orientation="horizontal" value-text-format="ratio {v}"></input-slider>
     <input-slider orientation="vertical"></input-slider>
   </body>
 

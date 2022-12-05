@@ -154,15 +154,16 @@ export class InputSlider extends HTMLElement {
         const currentValue = Math.max(min, Math.min(Number(newValue), max));
         if (currentValue !== Number(newValue)) return this.setAttribute('value', currentValue);
 
+        let valueText = String(currentValue);
         const valueTextFormat = this.getAttribute('value-text-format');
         if (valueTextFormat) {
-          const valueText = eval(valueTextFormat.replace('{v}', currentValue));
+          valueText = valueTextFormat.replace('{v}', currentValue);
           slider.setAttribute('aria-valuetext', valueText);
         }
 
         this.dispatchEvent(new CustomEvent(this.inputting ? 'input' : 'change', {
           bubbles: true,
-          detail: { value: currentValue }
+          detail: { value: currentValue, valueText }
         }));
       }
 
