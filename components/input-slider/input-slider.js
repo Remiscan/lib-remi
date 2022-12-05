@@ -95,6 +95,13 @@ export class InputSlider extends HTMLElement {
   }
 
 
+  closestValidValue(value) {
+    const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), step = Number(this.getAttribute('step'));
+    const closerValidStep = Math.round((value - min) / step);
+    return min + closerValidStep * step;
+  }
+
+
   connectedCallback() {
     for (const [attr, obj] of InputSlider.ariaAttributesMap) {
       this.initAttribute(attr, obj);
