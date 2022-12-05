@@ -104,12 +104,16 @@ export class InputSlider extends HTMLElement {
     
   }
 
+
   initAttribute(attr, obj) {
     if (!this.getAttribute(attr)) {
       const mappedAriaAttribute = obj;
       if (mappedAriaAttribute.default != null) this.setAttribute(attr, mappedAriaAttribute.default);
     }
   }
+
+
+  get step() { return Number(this.getAttribute('step')) ?? (Number(this.getAttribute('max')) - Number(this.getAttribute('min'))) / 100; }
 
 
   static get observedAttributes() { return ['min', 'max', 'value', 'orientation', 'label', 'labelledby']; }
