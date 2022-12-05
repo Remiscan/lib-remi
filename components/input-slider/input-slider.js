@@ -147,16 +147,25 @@ export class InputSlider extends HTMLElement {
 
     switch (attr) {
       case 'value': {
+        const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max'));
+
+        const currentValue = Math.max(min, Math.min(Number(newValue), max));
+        if (currentValue !== Number(newValue)) return this.setAttribute('value', currentValue);
+
         const valueTextFormat = this.getAttribute('value-text-format');
         if (valueTextFormat) {
-          const valueText = eval(valueTextFormat.replace('{v}', value));
+          const valueText = eval(valueTextFormat.replace('{v}', currentValue));
           slider.setAttribute('aria-valuetext', valueText);
         }
+      }
 
-        const min = this.getAttribute('min'), max = this.getAttribute('max');
-        const ratio = 1 - (max - value) / (max - min);
+      case 'min':
+      case 'max': {
+        const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), value = Number(this.getAttribute('value'));
+        const currentValue = Math.max(min, Math.min(value, max));
+        const ratio = 1 - (max - currentValue) / (max - min);
         slider.style.setProperty('--ratio', ratio);
-      } break;
+      }
     }
   }
 }
