@@ -135,7 +135,10 @@ export class InputSlider extends HTMLElement {
 
     // Set the corresponding aria-attribute on the slider
     const value = newValue ?? mappedAriaAttribute.default;
-    if (mappedAriaAttribute) slider.setAttribute(mappedAriaAttribute.name, value);
+    if (mappedAriaAttribute) {
+      if (value == null)  slider.removeAttribute(mappedAriaAttribute.name);
+      else                slider.setAttribute(mappedAriaAttribute.name, value);
+    }
 
     switch (attr) {
       case 'value': {
