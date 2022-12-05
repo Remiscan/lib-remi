@@ -65,6 +65,17 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         grid-row: 1;
       }
     </style>
+
+    <script type="module">
+      const sliders = document.querySelectorAll('input-slider');
+      for (const slider of sliders) {
+        for (const type of ['input', 'change']) {
+          slider.addEventListener(type, event => {
+            console.log(slider, event.type, event.detail.value);
+          })
+        }
+      }
+    </script>
   </head>
 
   <body>

@@ -90,6 +90,8 @@ export class InputSlider extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [sheet];
+
+    this.inputting = false;
   }
 
 
@@ -157,6 +159,11 @@ export class InputSlider extends HTMLElement {
           const valueText = eval(valueTextFormat.replace('{v}', currentValue));
           slider.setAttribute('aria-valuetext', valueText);
         }
+
+        this.dispatchEvent(new CustomEvent(this.inputting ? 'input' : 'change', {
+          bubbles: true,
+          detail: { value: currentValue }
+        }));
       }
 
       case 'min':
