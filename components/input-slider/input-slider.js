@@ -116,8 +116,6 @@ export class InputSlider extends HTMLElement {
   get step() { return Number(this.getAttribute('step')) ?? (Number(this.getAttribute('max')) - Number(this.getAttribute('min'))) / 100; }
 
 
-  static get observedAttributes() { return ['min', 'max', 'value', 'orientation', 'label', 'labelledby']; }
-
   static get ariaAttributesMap() {
     return new Map([
       ['min', { name: 'aria-valuemin', default: 0 }],
@@ -128,6 +126,9 @@ export class InputSlider extends HTMLElement {
       ['labelledby', { name: 'aria-labelledby', default: null }],
     ]);
   }
+
+
+  static get observedAttributes() { return [...InputSlider.ariaAttributesMap.keys()]; }
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
