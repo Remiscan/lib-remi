@@ -105,14 +105,6 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       color-picker::part(selector) {
         border-radius: 10px;
-        transform: translateY(-.2rem);
-        transition: opacity .2s ease,
-                    transform .2s ease;
-        margin-top: 10px;
-      }
-
-      color-picker[open]::part(selector) {
-        transform: translateY(0);
       }
     </style>
   </head>

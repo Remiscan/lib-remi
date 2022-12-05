@@ -5,7 +5,6 @@
     "color-picker": "/_common/components/color-picker/color-picker.js",
     "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
     "colori": "/colori/lib/dist/colori.min.js",
-    "trap-focus": "/_common/js/trap-focus.js",
     "translation-observer": "/_common/js/translation-observer.js"
   }
 }
@@ -14,7 +13,6 @@
 
 import Couleur from 'colori';
 import translationObserver from 'translation-observer';
-import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
 
 
 
@@ -34,7 +32,7 @@ template.innerHTML = /*html*/`
     <span part="button-label" data-string="pick-color"></span>
   </button>
 
-  <div part="selector" aria-hidden="true">
+  <dialog part="selector">
     <div part="format-choice">
       <label for="color-formats" data-string="color-format" part="select-label"></label>
       <select name="color-formats" id="color-formats" part="select">
@@ -212,7 +210,7 @@ template.innerHTML = /*html*/`
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input type="range" part="input-range" id="range-opacity" min="0" max="100" step="1">
     </label>
-  </div>
+  </dialog>
 `;
 
 
@@ -234,8 +232,8 @@ sheet.replaceSync(/*css*/`
     --checkered-light-cell-color: rgba(0, 0, 0, .1);
     /*--checkered-dark-background-color: #000;
     --checkered-dark-cell-color: rgba(255, 255, 255, .1);*/
-    --checkered-dark-background-color: #fff;
-    --checkered-dark-cell-color: rgba(0, 0, 0, .1);
+    --checkered-dark-background-color: var(--checkered-light-background-color);
+    --checkered-dark-cell-color: var(--checkered-light-cell-color);
     --border-color: black;
     --border-color-opposite: white;
     --checkered-background-color: var(--checkered-light-background-color);
@@ -326,19 +324,16 @@ sheet.replaceSync(/*css*/`
   /**********/
 
   [part="selector"] {
-    display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: .3rem;
-    position: absolute;
-    top: 100%;
-    grid-row: 1;
-    grid-column: 1;
-    opacity: 0;
-    pointer-events: none;
     background: #ddd;
     color: black;
     padding: 5px;
     border: 1px solid currentColor;
+    box-sizing: border-box;
+    max-width: 100vw;
+    max-height: 100vh;
+    overscroll-behavior: contain;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -348,25 +343,8 @@ sheet.replaceSync(/*css*/`
     }
   }
 
-  :host([open]) > [part="selector"] {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  :host([position="bottom"]) > [part="selector"] {
-    top: 100%;
-  }
-  :host([position="top"]) > [part="selector"] {
-    top: unset;
-    bottom: 100%;
-  }
-  :host([position="left"]) > [part="selector"] {
-    top: unset;
-    right: 100%;
-  }
-  :host([position="right"]) > [part="selector"] {
-    top: unset;
-    left: 100%;
+  [part="selector"][open] {
+    display: grid;
   }
 
 
@@ -474,10 +452,6 @@ sheet.replaceSync(/*css*/`
     --couleurs: white 0%, black 100%;
     background: paint(range-gradient),
                 paint(checkered);
-    /*background-size: 100% 100%, 100% 100%;
-    background-size: calc(100% - var(--cursor-width) * 1px) 100%;
-    background-position: 0 0, 0 0;
-    background-position: calc(.5 * var(--cursor-width) * 1px) 0;*/
     background-repeat: no-repeat, no-repeat;
     position: relative;
     outline-offset: 3px;
@@ -623,26 +597,17 @@ export class ColorPicker extends HTMLElement {
   /** Opens the options menu. */
   open() {
     const selector = this.shadowRoot.querySelector('[part="selector"]');
-    selector.removeAttribute('aria-hidden');
-    
-    // Disable focus outside the menu
-    trapFocusIn(this);
+    selector.showModal();
 
-    // Listens to inputs to close the menu
+    // Listens to clicks on the dialog backdrop to close the dialog
     const closeMenu = event => {
-      const eventPath = event.composedPath();
-      if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
-      if (event.type != 'keydown' && eventPath.includes(this)) return;
-      event.stopPropagation();
-      const button = this.shadowRoot.querySelector('button');
-      const focus = (event.type == 'click' && !eventPath.includes(button)) ? false : true;
-      this.close(focus);
-      window.removeEventListener(event.type, closeMenu);
+      const rect = selector.getBoundingClientRect();
+      const x = event.clientX, y = event.clientY;
+      // If click inside dialog rect, don't close the dialog
+      if (x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height) return;
+      this.close();
     };
-    window.addEventListener('click', closeMenu);
-    window.addEventListener('keydown', closeMenu);
-    // Display the menu
-    this.setAttribute('open', '');
+    selector.addEventListener('click', closeMenu);
   }
 
 
@@ -650,19 +615,9 @@ export class ColorPicker extends HTMLElement {
    * Closes the options menu.
    * @param {boolean} focus - Whether to focus on the toggle button after closing.
    */
-  close(focus = true) {
-    // Restore previous focusability
-    releaseFocusFrom(this, { exceptions: [this.shadowRoot.querySelector('button')] });
-
+  close() {
     const selector = this.shadowRoot.querySelector('[part="selector"]');
-    selector.setAttribute('aria-hidden', 'true');
-    
-    const button = this.shadowRoot.querySelector('button');
-    button.tabIndex = 0;
-    // Hide the menu
-    this.removeAttribute('open');
-    // Place focus on the button
-    if (focus) button.focus();
+    selector.close();
   }
 
 
@@ -883,9 +838,6 @@ export class ColorPicker extends HTMLElement {
     // Use the color attribute as the starting color
     const startColor = this.getAttribute('color') ?? 'red';
     this.selectColor(startColor);
-
-    // Disable focusability inside the color-picker
-    disableFocusInside(this, { exceptions: [this.shadowRoot.querySelector('button')] });
 
     // Remove the button's aria-label if the label is displayed
     this.attributeChangedCallback('label', null, this.getAttribute('label'));
