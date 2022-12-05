@@ -78,7 +78,7 @@ sheet.replaceSync(/*css*/`
 
   :host([orientation="vertical"]) [part="slider-thumb"] {
     height: var(--cursor-width);
-    transform: translateY(calc(var(--ratio) * var(--max-translate)));
+    transform: translateY(calc((1 - var(--ratio)) * var(--max-translate)));
   }
 `);
 
