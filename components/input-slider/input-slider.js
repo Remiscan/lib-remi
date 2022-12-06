@@ -152,7 +152,6 @@ export class InputSlider extends HTMLElement {
     // Handles pointer events
     this.pointerDownHandler = downEvent => {
       this.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
-      downEvent.preventDefault();
 
       const rect = this.getBoundingClientRect();
       const reversed = this.getAttribute('reversed') != null;
@@ -168,7 +167,6 @@ export class InputSlider extends HTMLElement {
       const pointerMoveHandler = moveEvent => {
         if (moving) return;
         moving = true;
-        moveEvent.preventDefault();
 
         const ratio = getPositionRatio(moveEvent, rect, orientation, reversed);
         const value = this.closestValidValue(min + ratio * (max - min));
@@ -178,7 +176,6 @@ export class InputSlider extends HTMLElement {
       };
 
       const pointerUpHandler = upEvent => {
-        upEvent.preventDefault();
 
         const ratio = getPositionRatio(upEvent, rect, orientation, reversed);
         const value = this.closestValidValue(min + ratio * (max - min));
