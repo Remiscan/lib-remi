@@ -46,7 +46,7 @@ sheet.replaceSync(/*css*/`
   }
 
   :host(:hover),
-  :host(:focus) {
+  [role="slider"]:focus {
     --thumb-border-color: var(--thumb-hover-border-color);
   }
 
@@ -102,7 +102,7 @@ sheet.replaceSync(/*css*/`
     background-color: var(--thumb-color);
     border: 2px solid var(--thumb-border-color);
     border-radius: var(--thumb-width);
-    outline-offset: 5px;
+    outline-offset: 3px;
     --applied-ratio: var(--ratio);
     box-sizing: border-box;
     will-change: transform;
