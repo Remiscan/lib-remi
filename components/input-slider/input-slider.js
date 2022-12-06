@@ -28,7 +28,7 @@ sheet.replaceSync(/*css*/`
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
     --rail-width: 4px;
-    --thumb-width: 8px;
+    --thumb-width: 12px;
     --thumb-color: black;
     --thumb-border-color: white;
     --thumb-hover-border-color: dodgerblue;
@@ -104,6 +104,7 @@ sheet.replaceSync(/*css*/`
     border-radius: var(--thumb-width);
     outline-offset: 5px;
     --applied-ratio: var(--ratio);
+    box-sizing: border-box;
   }
 
   :host([reversed]) [part="slider-thumb"] {
@@ -131,15 +132,17 @@ export class InputSlider extends HTMLElement {
     this.shadowRoot.adoptedStyleSheets = [sheet];
 
     // Gets the ratio of the nrequested position of the slider thumb
-    const getPositionRatio = (event, rect, orientation, reversed) => {
+    const getPositionRatio = (event, rect, thumbRect, orientation, reversed) => {
       let start, end, current;
       if (orientation === 'horizontal') {
-        start = rect.x;
-        end = rect.x + rect.width;
+        const thumbWidth = thumbRect.width;
+        start = rect.x + thumbWidth / 2;
+        end = rect.x + rect.width - thumbWidth / 2;
         current = event.clientX;
       } else if (orientation === 'vertical') {
-        start = rect.y;
-        end = rect.y + rect.height;
+        const thumbWidth = thumbRect.height;
+        start = rect.y + thumbWidth / 2;
+        end = rect.y + rect.height - thumbWidth / 2;
         current = event.clientY;
       }
       let ratio = (current - start) / (end - start);
@@ -154,10 +157,11 @@ export class InputSlider extends HTMLElement {
       this.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
 
       const rect = this.getBoundingClientRect();
+      const thumbRect = this.shadowRoot.querySelector('[role="slider"]').getBoundingClientRect();
       const reversed = this.getAttribute('reversed') != null;
       const orientation = this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal';
 
-      const ratio = getPositionRatio(downEvent, rect, orientation, reversed);
+      const ratio = getPositionRatio(downEvent, rect, thumbRect, orientation, reversed);
 
       const min = this.min, max = this.max;
       const value = this.closestValidValue(min + ratio * (max - min));
@@ -169,7 +173,7 @@ export class InputSlider extends HTMLElement {
         if (moving) return;
         moving = true;
 
-        const ratio = getPositionRatio(moveEvent, rect, orientation, reversed);
+        const ratio = getPositionRatio(moveEvent, rect, thumbRect, orientation, reversed);
         const value = this.closestValidValue(min + ratio * (max - min));
         this.setAttribute('value', value);
 
@@ -178,7 +182,7 @@ export class InputSlider extends HTMLElement {
 
       const pointerUpHandler = upEvent => {
 
-        const ratio = getPositionRatio(upEvent, rect, orientation, reversed);
+        const ratio = getPositionRatio(upEvent, rect, thumbRect, orientation, reversed);
         const value = this.closestValidValue(min + ratio * (max - min));
         this.setAttribute('value', value);
         this.dispatchUpdateEvent('change');
