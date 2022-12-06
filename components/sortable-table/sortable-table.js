@@ -1,8 +1,8 @@
 const arrowTemplate = document.createElement('template');
 arrowTemplate.innerHTML = /*html*/`
   <svg viewBox="0 0 14 28">
-    <path class="arrow ascending-arrow" d="M 0 12 L 7 0 L 14 12 z"/>
-    <path class="arrow descending-arrow" d="M 0 16 L 7 28 L 14 16 z"/>
+    <path class="arrow ascending-arrow" d="M 0 12 L 7 0 L 14 12"/>
+    <path class="arrow descending-arrow" d="M 0 16 L 7 28 L 14 16"/>
   </svg>
 `;
 
