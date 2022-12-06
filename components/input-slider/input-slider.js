@@ -45,7 +45,8 @@ sheet.replaceSync(/*css*/`
     }
   }
 
-  :host(:hover) {
+  :host(:hover),
+  :host(:focus) {
     --thumb-border-color: var(--thumb-hover-border-color);
   }
 
@@ -129,6 +130,7 @@ export class InputSlider extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [sheet];
 
+    // Gets the ratio of the nrequested position of the slider thumb
     const getPositionRatio = (event, rect, orientation, reversed) => {
       let start, end, current;
       if (orientation === 'horizontal') {
@@ -141,14 +143,15 @@ export class InputSlider extends HTMLElement {
         current = event.clientY;
       }
       let ratio = (current - start) / (end - start);
-      if (orientation === 'vertical') ratio = 1 - ratio;
-      if (reversed) ratio = 1 - ratio;
+      if (orientation === 'vertical') ratio = 1 - ratio; // because vertical sliders start from the bottom by default
+      if (reversed) ratio = 1 - ratio; // double reversal if vertical and reversed, to start from the top
 
       return Math.max(0, Math.min(ratio, 1));
     };
 
+    // Handles pointer events
     this.pointerDownHandler = downEvent => {
-      this.setPointerCapture(downEvent.pointerId);
+      this.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
       downEvent.preventDefault();
 
       const rect = this.getBoundingClientRect();
@@ -190,6 +193,67 @@ export class InputSlider extends HTMLElement {
       this.addEventListener('pointermove', pointerMoveHandler);
       this.addEventListener('pointerup', pointerUpHandler);
     };
+
+    // Handles focus events
+    this.focusHandler = focusEvent => {
+      const thumb = this.shadowRoot.querySelector('[role="slider"]');
+      const reversed = this.getAttribute('reversed') != null;
+      const vertical = this.getAttribute('orientation') === 'vertical';
+
+      const keydownHandler = keydownEvent => {
+        let newValue = this.value;
+
+        switch (keydownEvent.code) {
+          case 'ArrowRight': {
+            const step = (reversed && !vertical ? -1 : 1) * this.step;
+            newValue += step;
+          }  break;
+
+          case 'ArrowLeft': {
+            const step = (reversed && !vertical ? -1 : 1) * -this.step;
+            newValue += step;
+          } break;
+
+          case 'ArrowUp': {
+            const step = (reversed && vertical ? -1 : 1) * this.step;
+            newValue += step;
+          } break;
+
+          case 'ArrowDown': {
+            const step = (reversed && vertical ? -1 : 1) * -this.step;
+            newValue += step;
+          } break;
+
+          case 'PageUp': {
+            const step = (reversed && vertical ? -1 : 1) * 10 * this.step;
+            newValue += step;
+          } break;
+
+          case 'PageDown': {
+            const step = (reversed && vertical ? -1 : 1) * 10 * -this.step;
+            newValue += step;
+          } break;
+
+          case 'Home': {
+            newValue = this.min;
+          } break;
+
+          case 'End': {
+            newValue = this.max;
+          } break;
+        }
+
+        this.setAttribute('value', newValue);
+      };
+
+      const blurHandler = blurEvent => {
+        thumb.removeEventListener('keydown', keydownHandler);
+        thumb.removeEventListener('blur', blurHandler);
+      };
+
+      thumb.addEventListener('keydown', keydownHandler);
+      thumb.addEventListener('blur', blurHandler);
+    };
   }
 
 
@@ -201,11 +265,17 @@ export class InputSlider extends HTMLElement {
     if (!this.getAttribute('step')) this.setAttribute('step', this.step);
 
     this.addEventListener('pointerdown', this.pointerDownHandler);
+
+    const thumb = this.shadowRoot.querySelector('[role="slider"]');
+    thumb.addEventListener('focus', this.focusHandler);
   }
 
 
   disconnectedCallback() {
     this.removeEventListener('pointerdown', this.pointerDownHandler);
+
+    const thumb = this.shadowRoot.querySelector('[role="slider"]');
+    thumb.removeEventListener('focus', this.focusHandler);
   }
 
 
