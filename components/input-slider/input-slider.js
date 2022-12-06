@@ -205,6 +205,7 @@ export class InputSlider extends HTMLElement {
 
       const keydownHandler = keydownEvent => {
         let newValue = this.value;
+        let supportedKey = true;
 
         switch (keydownEvent.code) {
           case 'ArrowRight': {
@@ -244,9 +245,16 @@ export class InputSlider extends HTMLElement {
           case 'End': {
             newValue = this.max;
           } break;
+
+          default: {
+            supportedKey = false;
+          }
         }
 
-        this.setAttribute('value', newValue);
+        if (supportedKey) {
+          this.setAttribute('value', newValue);
+          keydownEvent.preventDefault();
+        }
       };
 
       const blurHandler = blurEvent => {
