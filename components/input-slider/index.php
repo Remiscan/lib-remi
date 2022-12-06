@@ -54,15 +54,19 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       body {
         background: var(--bg-color);
         display: grid;
+        grid-template-columns: repeat(2, 1fr);
         position: relative;
         gap: .5rem;
         place-items: center;
         font-family: system-ui;
         margin: 0;
+        padding: 10px;
+        box-sizing: border-box;
       }
 
-      body > * {
-        grid-row: 1;
+      .intro {
+        grid-column: 1 / -1;
+        max-width: 60ch;
       }
     </style>
 
@@ -79,6 +83,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
+    <p class="intro">I'm making a slider based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/slider/">ARIA slider pattern</a> because <code>&lt;input type="range"&gt;</code>'s support for customizing the appearance of vertical sliders wasn't good enough for me.</p>
     <input-slider orientation="horizontal" value-text-format="ratio {v}" step="0.1" value="0.3"></input-slider>
     <input-slider orientation="vertical"></input-slider>
   </body>
