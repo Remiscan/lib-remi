@@ -27,7 +27,23 @@ sheet.replaceSync(/*css*/`
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
-    --cursor-width: 8px;
+    --thumb-width: 8px;
+    --thumb-color: black;
+    --thumb-opposite-color: white;
+    --thumb-hover-color: dodgerblue;
+    --rail-color: grey;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --thumb-color: white;
+      --thumb-opposite-color: black;
+      --rail-color: lightgrey;
+    }
+  }
+
+  :host(:hover) {
+    --thumb-opposite-color: var(--thumb-hover-color);
   }
 
   :host([orientation="horizontal"]) {
@@ -49,7 +65,8 @@ sheet.replaceSync(/*css*/`
   [part="slider-rail"] {
     width: 100%;
     height: 100%;
-    border: 2px solid currentColor;
+    border: 2px solid var(--rail-color);
+    border-radius: 2px;
   }
 
   :host([orientation="horizontal"]) [part="slider-rail"] {
@@ -63,21 +80,22 @@ sheet.replaceSync(/*css*/`
   [part="slider-thumb"] {
     place-self: start;
     --size: min(var(--block-size), var(--inline-size));
-    --max-translate: calc(var(--inline-size) - var(--cursor-width));
+    --max-translate: calc(var(--inline-size) - var(--thumb-width));
     width: var(--size);
     height: var(--size);
-    box-shadow: inset 0 0 0 2px black,
-                0 0 0 2px white;
+    background-color: var(--thumb-color);
+    box-shadow: 0 0 0 2px var(--thumb-opposite-color);
+    border-radius: var(--thumb-width);
     outline-offset: 5px;
   }
 
   :host([orientation="horizontal"]) [part="slider-thumb"] {
-    width: var(--cursor-width);
+    width: var(--thumb-width);
     transform: translateX(calc(var(--ratio) * var(--max-translate)));
   }
 
   :host([orientation="vertical"]) [part="slider-thumb"] {
-    height: var(--cursor-width);
+    height: var(--thumb-width);
     transform: translateY(calc((1 - var(--ratio)) * var(--max-translate)));
   }
 `);
