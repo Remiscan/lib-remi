@@ -165,8 +165,8 @@ export class InputSlider extends HTMLElement {
 
       let moving = false;
       const pointerMoveHandler = moveEvent => {
-        if (moving) return;
         moveEvent.preventDefault();
+        if (moving) return;
         moving = true;
 
         const ratio = getPositionRatio(moveEvent, rect, orientation, reversed);
