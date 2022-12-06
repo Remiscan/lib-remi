@@ -161,12 +161,17 @@ export class InputSlider extends HTMLElement {
       const value = this.closestValidValue(min + ratio * (max - min));
       this.setAttribute('value', value);
 
+      let moving = false;
       const pointerMoveHandler = moveEvent => {
+        if (moving) return;
+        moving = true;
         moveEvent.preventDefault();
 
         const ratio = getPositionRatio(moveEvent, rect, orientation, reversed);
         const value = this.closestValidValue(min + ratio * (max - min));
         this.setAttribute('value', value);
+
+        requestAnimationFrame(() => { moving = false });
       };
 
       const pointerUpHandler = upEvent => {
