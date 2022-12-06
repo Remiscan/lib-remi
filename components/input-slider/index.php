@@ -84,8 +84,12 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
   <body>
     <p class="intro">I'm making a slider based on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/slider/">ARIA slider pattern</a> because <code>&lt;input type="range"&gt;</code>'s support for customizing the appearance of vertical sliders wasn't good enough for me.</p>
+
     <input-slider orientation="horizontal" value-text-format="ratio {v}" step="0.1" value="0.3"></input-slider>
     <input-slider orientation="vertical"></input-slider>
+
+    <input-slider reversed orientation="horizontal" value-text-format="ratio {v}" step="0.1" value="0.3"></input-slider>
+    <input-slider reversed orientation="vertical"></input-slider>
   </body>
 
 </html>
