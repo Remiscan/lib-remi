@@ -235,11 +235,19 @@ export class InputSlider extends HTMLElement {
 
 
   get min() {
-    return Number(this.getAttribute('min'));
+    const defaultMin = InputSlider.ariaAttributesMap.get('min').default;
+    const currentMin = this.getAttribute('min');
+
+    if (currentMin == null || isNaN(Number(currentMin))) return Number(defaultMin);
+    else return Number(currentMin);
   }
 
   get max() {
-    return Number(this.getAttribute('max'));
+    const defaultMax = InputSlider.ariaAttributesMap.get('max').default;
+    const currentMax = this.getAttribute('max');
+
+    if (currentMax == null || isNaN(Number(currentMax))) return Number(defaultMax);
+    else return Number(currentMax);
   }
 
   get step() {
