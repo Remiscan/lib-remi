@@ -87,16 +87,21 @@ sheet.replaceSync(/*css*/`
     box-shadow: 0 0 0 2px var(--thumb-opposite-color);
     border-radius: var(--thumb-width);
     outline-offset: 5px;
+    --applied-ratio: var(--ratio);
+  }
+
+  :host([reversed]) [part="slider-thumb"] {
+    --applied-ratio: calc(1 - var(--ratio));
   }
 
   :host([orientation="horizontal"]) [part="slider-thumb"] {
     width: var(--thumb-width);
-    transform: translateX(calc(var(--ratio) * var(--max-translate)));
+    transform: translateX(calc(var(--applied-ratio) * var(--max-translate)));
   }
 
   :host([orientation="vertical"]) [part="slider-thumb"] {
     height: var(--thumb-width);
-    transform: translateY(calc((1 - var(--ratio)) * var(--max-translate)));
+    transform: translateY(calc((1 - var(--applied-ratio)) * var(--max-translate)));
   }
 `);
 
