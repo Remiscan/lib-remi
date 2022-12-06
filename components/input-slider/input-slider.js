@@ -12,7 +12,7 @@
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <div part="slider-rail" role="none" aria-hidden="true"></div>
+  <div part="slider-track" role="none" aria-hidden="true"></div>
   <div part="slider-thumb" role="slider" tabindex="0"></div>
 `;
 
@@ -27,13 +27,13 @@ sheet.replaceSync(/*css*/`
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
-    --rail-width: 4px;
+    --track-width: 4px;
     --thumb-width: 12px;
     --thumb-color: black;
     --thumb-border-color: white;
     --thumb-hover-border-color: dodgerblue;
-    --rail-color: grey;
-    --rail-filled-color: dodgerblue;
+    --track-color: grey;
+    --track-filled-color: dodgerblue;
     touch-action: none;
   }
 
@@ -41,7 +41,7 @@ sheet.replaceSync(/*css*/`
     :host {
       --thumb-color: white;
       --thumb-border-color: black;
-      --rail-color: lightgrey;
+      --track-color: lightgrey;
     }
   }
 
@@ -60,36 +60,36 @@ sheet.replaceSync(/*css*/`
     height: var(--inline-size);
   }
 
-  [part="slider-rail"],
+  [part="slider-track"],
   [part="slider-thumb"] {
     grid-row: 1;
     grid-column: 1;
   }
 
-  [part="slider-rail"] {
+  [part="slider-track"] {
     width: 100%;
     height: 100%;
-    background-color: var(--rail-color);
-    --background-colors: var(--rail-filled-color) 0 calc(var(--ratio) * 100%), var(--rail-color) calc(var(--ratio) * 100%) 100%;
+    background-color: var(--track-color);
+    --background-colors: var(--track-filled-color) 0 calc(var(--ratio) * 100%), var(--track-color) calc(var(--ratio) * 100%) 100%;
     background: linear-gradient(var(--background-direction), var(--background-colors));
-    border-radius: var(--rail-width);
+    border-radius: var(--track-width);
   }
 
-  :host([orientation="horizontal"]) [part="slider-rail"] {
-    height: var(--rail-width);
+  :host([orientation="horizontal"]) [part="slider-track"] {
+    height: var(--track-width);
     --background-direction: to right;
   }
 
-  :host([orientation="vertical"]) [part="slider-rail"] {
-    width: var(--rail-width);
+  :host([orientation="vertical"]) [part="slider-track"] {
+    width: var(--track-width);
     --background-direction: to top;
   }
 
-  :host([orientation="horizontal"][reversed]) [part="slider-rail"] {
+  :host([orientation="horizontal"][reversed]) [part="slider-track"] {
     --background-direction: to left;
   }
 
-  :host([orientation="vertical"][reversed]) [part="slider-rail"] {
+  :host([orientation="vertical"][reversed]) [part="slider-track"] {
     --background-direction: to bottom;
   }
 
@@ -415,9 +415,9 @@ export class InputSlider extends HTMLElement {
         const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), value = Number(this.getAttribute('value'));
         const currentValue = Math.max(min, Math.min(value, max));
         const ratio = 1 - (max - currentValue) / (max - min);
-        const rail = this.shadowRoot.querySelector('[part="slider-rail"]');
+        const track = this.shadowRoot.querySelector('[part="slider-track"]');
         slider.style.setProperty('--ratio', ratio);
-        rail.style.setProperty('--ratio', ratio);
+        track.style.setProperty('--ratio', ratio);
       }
     }
   }
