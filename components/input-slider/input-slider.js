@@ -314,12 +314,20 @@ export class InputSlider extends HTMLElement {
     else return Number(currentMin);
   }
 
+  set min(value) {
+    this.setAttribute('min', value);
+  }
+
   get max() {
     const defaultMax = InputSlider.ariaAttributesMap.get('max').default;
     const currentMax = this.getAttribute('max');
 
     if (currentMax == null || isNaN(Number(currentMax))) return Number(defaultMax);
     else return Number(currentMax);
+  }
+
+  set max(value) {
+    this.setAttribute('max', value);
   }
 
   get step() {
@@ -330,9 +338,17 @@ export class InputSlider extends HTMLElement {
     else return Number(currentStep);
   }
 
+  set step(value) {
+    this.setAttribute('step', value);
+  }
+
   get value() {
     const value = Number(this.getAttribute('value'));
     return this.closestValidValue(value);
+  }
+
+  set value(val) {
+    this.setAttribute('value', val);
   }
 
   get valueText() {
@@ -340,6 +356,14 @@ export class InputSlider extends HTMLElement {
     const value = String(this.value.toFixed(decimals));
     const valueTextFormat = this.getAttribute('value-text-format');
     return valueTextFormat != null ? valueTextFormat.replace('{v}', value) : value;
+  }
+
+  get orientation() {
+    return this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal';
+  }
+
+  set orientation(val) {
+    this.setAttribute('orientation', val === 'vertical' ? 'vertical' : 'horizontal');
   }
 
 
