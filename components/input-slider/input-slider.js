@@ -228,7 +228,9 @@ export class InputSlider extends HTMLElement {
   closestValidValue(value) {
     const min = this.min, max = this.max, step = this.step;
     const closerValidStep = Math.round((value - min) / step);
-    return Math.max(min, Math.min(min + closerValidStep * step, max));
+    const decimals = (`${step}`.split('.')[1] ?? '').length;
+    const validValue = Math.max(min, Math.min(min + closerValidStep * step, max));
+    return Number(validValue.toFixed(decimals));
   }
 
 
@@ -254,7 +256,8 @@ export class InputSlider extends HTMLElement {
   }
 
   get valueText() {
-    const value = String(this.value);
+    const decimals = (`${this.step}`.split('.')[1] ?? '').length;
+    const value = String(this.value.toFixed(decimals));
     const valueTextFormat = this.getAttribute('value-text-format');
     return valueTextFormat != null ? valueTextFormat.replace('{v}', value) : value;
   }
@@ -276,6 +279,8 @@ export class InputSlider extends HTMLElement {
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
+    if (oldValue === newValue) return;
+
     const slider = this.shadowRoot.querySelector('[role="slider"]');
     const mappedAriaAttribute = InputSlider.ariaAttributesMap.get(attr);
 
@@ -291,9 +296,8 @@ export class InputSlider extends HTMLElement {
 
     switch (attr) {
       case 'value': {
-        const decimals = (`${this.step}`.split('.')[1] ?? '').length;
-        const currentValue = this.closestValidValue(Number(value)).toFixed(decimals);
-        if (Number(currentValue) !== Number(newValue)) return this.setAttribute('value', currentValue);
+        const currentValue = this.closestValidValue(Number(value));
+        if (String(currentValue) !== newValue) return this.setAttribute('value', currentValue);
 
         const valueText = this.valueText;
         slider.setAttribute('aria-valuetext', valueText);

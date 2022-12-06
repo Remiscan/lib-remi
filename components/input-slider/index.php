@@ -79,7 +79,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
-    <input-slider orientation="horizontal" value-text-format="ratio {v}"></input-slider>
+    <input-slider orientation="horizontal" value-text-format="ratio {v}" step="0.1"></input-slider>
     <input-slider orientation="vertical"></input-slider>
   </body>
 
