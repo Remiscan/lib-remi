@@ -33,6 +33,7 @@ sheet.replaceSync(/*css*/`
     --thumb-opposite-color: white;
     --thumb-hover-color: dodgerblue;
     --rail-color: grey;
+    touch-action: none;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -140,7 +141,62 @@ export class InputSlider extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [sheet];
 
-    this.inputting = false;
+    const getPositionRatio = (event, rect, orientation, reversed) => {
+      let start, end, current;
+      if (orientation === 'horizontal') {
+        start = rect.x;
+        end = rect.x + rect.width;
+        current = event.clientX;
+      } else if (orientation === 'vertical') {
+        start = rect.y;
+        end = rect.y + rect.height;
+        current = event.clientY;
+      }
+      let ratio = (current - start) / (end - start);
+      if (orientation === 'vertical') ratio = 1 - ratio;
+      if (reversed) ratio = 1 - ratio;
+
+      return Math.max(0, Math.min(ratio, 1));
+    };
+
+    this.pointerDownHandler = downEvent => {
+      this.setPointerCapture(downEvent.pointerId);
+      downEvent.preventDefault();
+
+      const rect = this.getBoundingClientRect();
+      const reversed = this.getAttribute('reversed') != null;
+      const orientation = this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal';
+
+      const ratio = getPositionRatio(downEvent, rect, orientation, reversed);
+
+      const min = this.min, max = this.max;
+      const value = this.closestValidValue(min + ratio * (max - min));
+      this.setAttribute('value', value);
+
+      const pointerMoveHandler = moveEvent => {
+        moveEvent.preventDefault();
+
+        const ratio = getPositionRatio(moveEvent, rect, orientation, reversed);
+        const value = this.closestValidValue(min + ratio * (max - min));
+        this.setAttribute('value', value);
+      };
+
+      const pointerUpHandler = upEvent => {
+        upEvent.preventDefault();
+
+        const ratio = getPositionRatio(upEvent, rect, orientation, reversed);
+        const value = this.closestValidValue(min + ratio * (max - min));
+        this.setAttribute('value', value);
+        this.dispatchUpdateEvent('change');
+
+        this.releasePointerCapture(upEvent.pointerId);
+        this.removeEventListener('pointermove', pointerMoveHandler);
+        this.removeEventListener('pointerup', pointerUpHandler);
+      };
+
+      this.addEventListener('pointermove', pointerMoveHandler);
+      this.addEventListener('pointerup', pointerUpHandler);
+    };
   }
 
 
@@ -150,11 +206,13 @@ export class InputSlider extends HTMLElement {
     }
 
     if (!this.getAttribute('step')) this.setAttribute('step', this.step);
+
+    this.addEventListener('pointerdown', this.pointerDownHandler);
   }
 
 
   disconnectedCallback() {
-    
+    this.removeEventListener('pointerdown', this.pointerDownHandler);
   }
 
 
@@ -175,18 +233,26 @@ export class InputSlider extends HTMLElement {
 
 
   closestValidValue(value) {
-    const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), step = Number(this.step);
+    const min = this.min, max = this.max, step = this.step;
     const closerValidStep = Math.round((value - min) / step);
     return Math.max(min, Math.min(min + closerValidStep * step, max));
   }
 
 
+  get min() {
+    return Number(this.getAttribute('min'));
+  }
+
+  get max() {
+    return Number(this.getAttribute('max'));
+  }
+
   get step() {
-    const defaultStep = (Number(this.getAttribute('max')) - Number(this.getAttribute('min'))) / 100;
+    const defaultStep = (this.max - this.min) / 100;
     const currentStep = this.getAttribute('step');
 
-    if (currentStep == null || isNaN(Number(currentStep))) return defaultStep;
-    else return currentStep;
+    if (currentStep == null || isNaN(Number(currentStep))) return Number(defaultStep);
+    else return Number(currentStep);
   }
 
   get value() {
@@ -239,7 +305,7 @@ export class InputSlider extends HTMLElement {
         const valueText = this.valueText;
         slider.setAttribute('aria-valuetext', valueText);
 
-        this.dispatchUpdateEvent('input', currentValue, valueText);
+        this.dispatchUpdateEvent('input', Number(currentValue), valueText);
       }
 
       case 'min':
