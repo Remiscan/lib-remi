@@ -30,22 +30,23 @@ sheet.replaceSync(/*css*/`
     --rail-width: 4px;
     --thumb-width: 8px;
     --thumb-color: black;
-    --thumb-opposite-color: white;
-    --thumb-hover-color: dodgerblue;
+    --thumb-border-color: white;
+    --thumb-hover-border-color: dodgerblue;
     --rail-color: grey;
+    --rail-filled-color: dodgerblue;
     touch-action: none;
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
       --thumb-color: white;
-      --thumb-opposite-color: black;
+      --thumb-border-color: black;
       --rail-color: lightgrey;
     }
   }
 
   :host(:hover) {
-    --thumb-opposite-color: var(--thumb-hover-color);
+    --thumb-border-color: var(--thumb-hover-border-color);
   }
 
   :host([orientation="horizontal"]) {
@@ -68,40 +69,27 @@ sheet.replaceSync(/*css*/`
     width: 100%;
     height: 100%;
     background-color: var(--rail-color);
-    border-radius: var(--rail-width);
-  }
-
-  [part="slider-rail"]::before {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: var(--thumb-hover-color);
+    --background-colors: var(--rail-filled-color) 0 calc(var(--ratio) * 100%), var(--rail-color) calc(var(--ratio) * 100%) 100%;
+    background: linear-gradient(var(--background-direction), var(--background-colors));
     border-radius: var(--rail-width);
   }
 
   :host([orientation="horizontal"]) [part="slider-rail"] {
     height: var(--rail-width);
+    --background-direction: to right;
   }
 
   :host([orientation="vertical"]) [part="slider-rail"] {
     width: var(--rail-width);
+    --background-direction: to top;
   }
 
-  :host([orientation="horizontal"]) [part="slider-rail"]::before {
-    clip-path: polygon(0 0, calc(var(--ratio) * 100%) 0, calc(var(--ratio) * 100%) 100%, 0 100%);
+  :host([orientation="horizontal"][reversed]) [part="slider-rail"] {
+    --background-direction: to left;
   }
 
-  :host([orientation="vertical"]) [part="slider-rail"]::before {
-    clip-path: polygon(100% 100%, 0 100%, 0 calc(100% - var(--ratio) * 100%), 100% calc(100% - var(--ratio) * 100%));
-  }
-
-  :host([orientation="horizontal"][reversed]) [part="slider-rail"]::before {
-    clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--ratio) * 100%) 100%, calc(100% - var(--ratio) * 100%) 0);
-  }
-
-  :host([orientation="vertical"][reversed]) [part="slider-rail"]::before {
-    clip-path: polygon(0 0, 100% 0, 100% calc(var(--ratio) * 100%), 0 calc(var(--ratio) * 100%));
+  :host([orientation="vertical"][reversed]) [part="slider-rail"] {
+    --background-direction: to bottom;
   }
 
   [part="slider-thumb"] {
@@ -111,7 +99,7 @@ sheet.replaceSync(/*css*/`
     width: var(--size);
     height: var(--size);
     background-color: var(--thumb-color);
-    border: 2px solid var(--thumb-opposite-color);
+    border: 2px solid var(--thumb-border-color);
     border-radius: var(--thumb-width);
     outline-offset: 5px;
     --applied-ratio: var(--ratio);
