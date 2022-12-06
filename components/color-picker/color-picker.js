@@ -4,6 +4,7 @@
   "imports": {
     "color-picker": "/_common/components/color-picker/color-picker.js",
     "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
+    "input-slider": "/_common/components/input-slider/input-slider.js",
     "colori": "/colori/lib/dist/colori.min.js",
     "translation-observer": "/_common/js/translation-observer.js"
   }
@@ -12,6 +13,7 @@
 */
 
 import Couleur from 'colori';
+import 'input-slider';
 import translationObserver from 'translation-observer';
 
 
@@ -54,161 +56,161 @@ template.innerHTML = /*html*/`
       <span data-string="prop-r-nom" part="property-name"></span>
       <span part="property-range">[0 ; 255]</span>
       <input type="number" part="input-number" min="0" max="255" step="1" part="input-number">
-      <input type="range" part="input-range" id="range-red" min="0" max="255" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-red" min="0" max="255" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-green" data-format="rgb" part="property-container" data-property="g" data-value-operation="Math.round(255 * {v})">
       <span data-string="prop-g-nom" part="property-name"></span>
       <span part="property-range">[0 ; 255]</span>
       <input type="number" part="input-number" min="0" max="255" step="1">
-      <input type="range" part="input-range" id="range-green" min="0" max="255" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-green" min="0" max="255" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-blue" data-format="rgb" part="property-container" data-property="b" data-value-operation="Math.round(255 * {v})">
       <span data-string="prop-b-nom" part="property-name"></span>
       <span part="property-range">[0 ; 255]</span>
       <input type="number" part="input-number" min="0" max="255" step="1">
-      <input type="range" part="input-range" id="range-blue" min="0" max="255" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-blue" min="0" max="255" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-hue" data-format="hsl hwb" part="property-container"  data-property="h"data-value-operation="Math.round({v})">
       <span data-string="prop-h-nom" part="property-name"></span>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
-      <input type="range" part="input-range" id="range-hue" min="0" max="359" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-hue" min="0" max="359" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-saturation" data-format="hsl" part="property-container" data-property="s" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-s-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-saturation" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-saturation" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-luminosity" data-format="hsl" part="property-container" data-property="l" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-l-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-luminosity" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-luminosity" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-whiteness" data-format="hwb" part="property-container" data-property="w" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-w-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-whiteness" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-whiteness" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-blackness" data-format="hwb" part="property-container" data-property="bk" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-bk-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-blackness" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-blackness" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-cie-lightness" data-format="lab lch" part="property-container" data-property="ciel" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-ciel-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-cie-lightness" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-cie-lightness" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-cie-a-axis" data-format="lab" part="property-container" data-property="ciea" data-value-operation="Math.round({v})">
       <span data-string="prop-ciea-nom" part="property-name"></span>
       <span part="property-range">[-80 ; 94]</span>
       <input type="number" part="input-number" min="-80" max="94" step="1">
-      <input type="range" part="input-range" id="range-cie-a-axis" min="-80" max="94" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-cie-a-axis" min="-80" max="94" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-cie-b-axis" data-format="lab" part="property-container" data-property="cieb" data-value-operation="Math.round({v})">
       <span data-string="prop-cieb-nom" part="property-name"></span>
       <span part="property-range">[-112 ; 94]</span>
       <input type="number" part="input-number" min="-112" max="94" step="1">
-      <input type="range" part="input-range" id="range-cie-b-axis" min="-112" max="94" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-cie-b-axis" min="-112" max="94" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-cie-chroma" data-format="lch" part="property-container" data-property="ciec" data-value-operation="Math.round({v})">
       <span data-string="prop-ciec-nom" part="property-name"></span>
       <span part="property-range">[0 ; 132]</span>
       <input type="number" part="input-number" min="0" max="132" step="1">
-      <input type="range" part="input-range" id="range-cie-chroma" min="0" max="132" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-cie-chroma" min="0" max="132" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-cie-hue" data-format="lch" part="property-container" data-property="cieh" data-value-operation="Math.round({v})">
       <span data-string="prop-cieh-nom" part="property-name"></span>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
-      <input type="range" part="input-range" id="range-cie-hue" min="0" max="359" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-cie-hue" min="0" max="359" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-lightness" data-format="oklab oklch" part="property-container" data-property="okl" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-okl-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-lightness" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-lightness" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-lightness-r" data-format="oklrab oklrch okhsl" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-oklr-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-lightness-r" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-lightness-r" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-value" data-format="okhsv" part="property-container" data-property="okv" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-okv-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-value" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-value" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-a-axis" data-format="oklab oklrab" part="property-container" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3">
       <span data-string="prop-oka-nom" part="property-name"></span>
       <span part="property-range">[-0.24 ; 0.28]</span>
       <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
-      <input type="range" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-b-axis" data-format="oklab oklrab" part="property-container" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3">
       <span data-string="prop-okb-nom" part="property-name"></span>
       <span part="property-range">[-0.32 ; 0.20]</span>
       <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
-      <input type="range" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-chroma" data-format="oklch oklrch" part="property-container" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3">
       <span data-string="prop-okc-nom" part="property-name"></span>
       <span part="property-range">[0 ; 0.32]</span>
       <input type="number" part="input-number" min="0" max="0.32" step="0.001">
-      <input type="range" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-saturation-l" data-format="okhsl" part="property-container" data-property="oksl" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-oksl-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-saturation-l" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-saturation-l" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-saturation-v" data-format="okhsv" part="property-container" data-property="oksv" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-oksv-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-ok-saturation-v" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-saturation-v" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-ok-hue" data-format="oklch oklrch okhsl okhsv" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
       <span data-string="prop-okh-nom" part="property-name"></span>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
-      <input type="range" part="input-range" id="range-ok-hue" min="0" max="359" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-ok-hue" min="0" max="359" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
 
     <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch oklrab oklrch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
       <span data-string="prop-a-nom" part="property-name"></span>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input type="range" part="input-range" id="range-opacity" min="0" max="100" step="1">
+      <input-slider orientation="vertical" part="input-range" id="range-opacity" min="0" max="100" step="1" exportparts="slider-rail,slider-thumb"></input-slider>
     </label>
   </dialog>
 `;
@@ -435,17 +437,9 @@ sheet.replaceSync(/*css*/`
     display: grid;
   }
   
-  input[type="range"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: var(--range-height);
-    height: var(--range-width);
-    margin: 0;
-    padding: 0;
-    rotate: -90deg;
-    translate: 0 calc(0.5 * (var(--range-full-height) - var(--range-full-width)));
-    display: block;
+  input-slider {
+    --block-size: var(--range-width);
+    --inline-size: var(--range-height);
     --border: var(--range-border-width, 0px) var(--range-border-style, solid) var(--range-border-color, var(--border-color-opposite));
     border: var(--border, none);
     border-radius: var(--range-border-radius);
@@ -454,15 +448,12 @@ sheet.replaceSync(/*css*/`
                 paint(checkered);
     background-repeat: no-repeat, no-repeat;
     position: relative;
-    outline-offset: 3px;
+    --rail-color: transparent;
+    --rail-filled-color: transparent;
   }
   
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: calc(var(--cursor-width) * 1px);
-    height: var(--tap-safe-size);
+  input-slider::part(slider-thumb) {
+    height: calc(var(--cursor-width) * 1px);
     background: transparent;
     border: none;
     border-radius: var(--range-border-radius);
@@ -470,26 +461,9 @@ sheet.replaceSync(/*css*/`
                 0 0 0 2px var(--border-color);
   }
   
-  input[type="range"]::-moz-range-thumb {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: calc(var(--cursor-width) * 1px);
-    height: var(--tap-safe-size);
-    background: transparent;
-    border: none;
-    border-radius: var(--range-border-radius);
-    box-shadow: inset 0 0 0 2px var(--border-color-opposite),
-                0 0 0 2px var(--border-color);
-  }
-  
-  input[type="range"]::-moz-range-track {
-    background: none;
-  }
-  
-  input[type="range"][data-property]:hover + input[type="number"][data-property],
-  input[type="range"][data-property]:focus + input[type="number"][data-property],
-  input[type="range"][data-property]:active + input[type="number"][data-property] {
+  input-slider[data-property]:hover + input[type="number"][data-property],
+  input-slider[data-property]:focus + input[type="number"][data-property],
+  input-slider[data-property]:active + input[type="number"][data-property] {
     opacity: 1;
     pointer-events: auto;
   }
@@ -627,7 +601,7 @@ export class ColorPicker extends HTMLElement {
    * @returns {string} The current input value.
    */
   #getCurrentRangeValue(prop) {
-    return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input[type="range"]`).value;
+    return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input-slider`).value;
   }
 
 
@@ -657,7 +631,7 @@ export class ColorPicker extends HTMLElement {
 
 
   /**
-   * Update the gradients of the input[type="range"]s.
+   * Update the gradients of the input-sliders.
    */
   #updateGradients() {
     const format = this.shadowRoot.querySelector('select').value;
@@ -667,7 +641,7 @@ export class ColorPicker extends HTMLElement {
     const formatIsSupported = CSS.supports(`color: ${black.toString(`color-${format}`)}`);
 
     for (const label of allLabels) {
-      const rangeInput = label.querySelector('input[type="range"]');
+      const rangeInput = label.querySelector('input-slider');
       const appliedFormat = formatLabels.includes(label) ? format : label.dataset.format.split(' ')[0];
 
       // Make the paint worklet recalculate the gradients
@@ -713,7 +687,7 @@ export class ColorPicker extends HTMLElement {
   #updateOtherInputs(colorExpr, format = this.shadowRoot.querySelector('select').value) {
     const color = new Couleur(colorExpr);
     for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
-      const rangeInput = label.querySelector(`input[type="range"]`);
+      const rangeInput = label.querySelector(`input-slider`);
       const numericInput = label.querySelector(`input[type="number"]`);
 
       const prop = label.dataset.property;
@@ -734,10 +708,10 @@ export class ColorPicker extends HTMLElement {
 
 
   /**
-   * Updates the selected color when an input[type="range"]'s value is modified.
+   * Updates the selected color when an input-slider's value is modified.
    * @param {Event} event - The event that triggered the color update.
    * @param {string} colorExpr - The expression of the selected color.
-   * @param {HTMLInputElement} rangeInput - The input[type="range"] element that triggered the event.
+   * @param {HTMLInputElement} rangeInput - The input-slider element that triggered the event.
    */
   #updateColor(event, colorExpr, rangeInput) {
     this.dispatchEvent(new CustomEvent(event.type, {
@@ -794,7 +768,7 @@ export class ColorPicker extends HTMLElement {
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
     for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
-      const rangeInput = label.querySelector(`input[type="range"]`);
+      const rangeInput = label.querySelector(`input-slider`);
       const numericInput = label.querySelector(`input[type="number"]`);
 
       rangeInput.style.setProperty('--property', label.dataset.property);

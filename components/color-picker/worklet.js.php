@@ -48,14 +48,15 @@ registerPaint('range-gradient', class {
       gradient.push(formatIsSupported ? expr : new Couleur(expr).rgb);
     }
 
-    const canvasGradient = ctx.createLinearGradient(0, 0, size.width, 0);
+    const canvasGradient = ctx.createLinearGradient(0, 0, 0, size.height);
     for (const [k, color] of Object.entries(gradient)) {
       if (k == 0) {
-        canvasGradient.addColorStop(0, color);
-      }
-      canvasGradient.addColorStop((cursorWidth / 2 + (k / (gradient.length - 1)) * (size.width - cursorWidth)) / size.width, color);
-      if (k == gradient.length - 1) {
         canvasGradient.addColorStop(1, color);
+      }
+      const offset = (cursorWidth / 2 + (k / (gradient.length - 1)) * (size.height - cursorWidth)) / size.height;
+      canvasGradient.addColorStop(1 - offset, color);
+      if (k == gradient.length - 1) {
+        canvasGradient.addColorStop(0, color);
       }
     }
 

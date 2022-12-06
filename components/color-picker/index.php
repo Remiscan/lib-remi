@@ -23,15 +23,15 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       "imports": {
         "color-picker": "/_common/components/color-picker/color-picker.js",
         "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
+        "input-slider": "/_common/components/input-slider/input-slider.js",
         "colori": "/colori/lib/dist/colori.min.js",
-        "trap-focus": "/_common/js/trap-focus.js",
         "translation-observer": "/_common/js/translation-observer.js"
       }
     }
     </script>
     
     <link rel="modulepreload" href="/_common/components/color-picker/color-picker.js">
-    <link rel="modulepreload" href="/_common/js/trap-focus.js">
+    <link rel="modulepreload" href="/_common/components/input-slider/input-slider.js">
     
     <!--<?php versionizeEnd(__DIR__); ?>-->
 
