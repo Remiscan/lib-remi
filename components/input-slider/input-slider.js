@@ -27,7 +27,7 @@ sheet.replaceSync(/*css*/`
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
-    --cursor-width: 14px;
+    --cursor-width: 8px;
   }
 
   :host([orientation="horizontal"]) {
@@ -95,17 +95,12 @@ export class InputSlider extends HTMLElement {
   }
 
 
-  closestValidValue(value) {
-    const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), step = Number(this.getAttribute('step'));
-    const closerValidStep = Math.round((value - min) / step);
-    return min + closerValidStep * step;
-  }
-
-
   connectedCallback() {
     for (const [attr, obj] of InputSlider.ariaAttributesMap) {
       this.initAttribute(attr, obj);
     }
+
+    if (!this.getAttribute('step')) this.setAttribute('step', this.step);
   }
 
 
@@ -122,7 +117,39 @@ export class InputSlider extends HTMLElement {
   }
 
 
-  get step() { return Number(this.getAttribute('step')) ?? (Number(this.getAttribute('max')) - Number(this.getAttribute('min'))) / 100; }
+  dispatchUpdateEvent(type = 'input', value = this.value, valueText = this.valueText) {
+    this.dispatchEvent(new CustomEvent(type, {
+      bubbles: true,
+      detail: { value, valueText }
+    }));
+  }
+
+
+  closestValidValue(value) {
+    const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), step = Number(this.step);
+    const closerValidStep = Math.round((value - min) / step);
+    return Math.max(min, Math.min(min + closerValidStep * step, max));
+  }
+
+
+  get step() {
+    const defaultStep = (Number(this.getAttribute('max')) - Number(this.getAttribute('min'))) / 100;
+    const currentStep = this.getAttribute('step');
+
+    if (currentStep == null || isNaN(Number(currentStep))) return defaultStep;
+    else return currentStep;
+  }
+
+  get value() {
+    const value = Number(this.getAttribute('value'));
+    return this.closestValidValue(value);
+  }
+
+  get valueText() {
+    const value = String(this.value);
+    const valueTextFormat = this.getAttribute('value-text-format');
+    return valueTextFormat != null ? valueTextFormat.replace('{v}', value) : value;
+  }
 
 
   static get ariaAttributesMap() {
@@ -149,29 +176,21 @@ export class InputSlider extends HTMLElement {
 
     // Set the corresponding aria-attribute on the slider
     const value = newValue ?? mappedAriaAttribute.default;
-    if (mappedAriaAttribute) {
+    if (mappedAriaAttribute.name) {
       if (value == null)  slider.removeAttribute(mappedAriaAttribute.name);
       else                slider.setAttribute(mappedAriaAttribute.name, value);
     }
 
     switch (attr) {
       case 'value': {
-        const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max'));
+        const decimals = (`${this.step}`.split('.')[1] ?? '').length;
+        const currentValue = this.closestValidValue(Number(value)).toFixed(decimals);
+        if (Number(currentValue) !== Number(newValue)) return this.setAttribute('value', currentValue);
 
-        const currentValue = Math.max(min, Math.min(Number(newValue), max));
-        if (currentValue !== Number(newValue)) return this.setAttribute('value', currentValue);
+        const valueText = this.valueText;
+        slider.setAttribute('aria-valuetext', valueText);
 
-        let valueText = String(currentValue);
-        const valueTextFormat = this.getAttribute('value-text-format');
-        if (valueTextFormat) {
-          valueText = valueTextFormat.replace('{v}', currentValue);
-          slider.setAttribute('aria-valuetext', valueText);
-        }
-
-        this.dispatchEvent(new CustomEvent(this.inputting ? 'input' : 'change', {
-          bubbles: true,
-          detail: { value: currentValue, valueText }
-        }));
+        this.dispatchUpdateEvent('input', currentValue, valueText);
       }
 
       case 'min':
