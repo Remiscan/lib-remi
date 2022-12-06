@@ -105,6 +105,7 @@ sheet.replaceSync(/*css*/`
     outline-offset: 5px;
     --applied-ratio: var(--ratio);
     box-sizing: border-box;
+    will-change: transform;
   }
 
   :host([reversed]) [part="slider-thumb"] {
