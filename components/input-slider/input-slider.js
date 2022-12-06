@@ -170,7 +170,7 @@ export class InputSlider extends HTMLElement {
 
       let moving = false;
       const pointerMoveHandler = moveEvent => {
-        moveEvent.preventDefault();
+        moveEvent.preventDefault(); // Prevents drag interference
         if (moving) return;
         moving = true;
 
