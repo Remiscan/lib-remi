@@ -27,6 +27,7 @@ sheet.replaceSync(/*css*/`
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
+    --rail-width: 4px;
     --thumb-width: 8px;
     --thumb-color: black;
     --thumb-opposite-color: white;
@@ -65,16 +66,41 @@ sheet.replaceSync(/*css*/`
   [part="slider-rail"] {
     width: 100%;
     height: 100%;
-    border: 2px solid var(--rail-color);
-    border-radius: 2px;
+    background-color: var(--rail-color);
+    border-radius: var(--rail-width);
+  }
+
+  [part="slider-rail"]::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--thumb-hover-color);
+    border-radius: var(--rail-width);
   }
 
   :host([orientation="horizontal"]) [part="slider-rail"] {
-    height: 0;
+    height: var(--rail-width);
   }
 
   :host([orientation="vertical"]) [part="slider-rail"] {
-    width: 0;
+    width: var(--rail-width);
+  }
+
+  :host([orientation="horizontal"]) [part="slider-rail"]::before {
+    clip-path: polygon(0 0, calc(var(--ratio) * 100%) 0, calc(var(--ratio) * 100%) 100%, 0 100%);
+  }
+
+  :host([orientation="vertical"]) [part="slider-rail"]::before {
+    clip-path: polygon(100% 100%, 0 100%, 0 calc(100% - var(--ratio) * 100%), 100% calc(100% - var(--ratio) * 100%));
+  }
+
+  :host([orientation="horizontal"][reversed]) [part="slider-rail"]::before {
+    clip-path: polygon(100% 0, 100% 100%, calc(100% - var(--ratio) * 100%) 100%, calc(100% - var(--ratio) * 100%) 0);
+  }
+
+  :host([orientation="vertical"][reversed]) [part="slider-rail"]::before {
+    clip-path: polygon(0 0, 100% 0, 100% calc(var(--ratio) * 100%), 0 calc(var(--ratio) * 100%));
   }
 
   [part="slider-thumb"] {
@@ -84,7 +110,7 @@ sheet.replaceSync(/*css*/`
     width: var(--size);
     height: var(--size);
     background-color: var(--thumb-color);
-    box-shadow: 0 0 0 2px var(--thumb-opposite-color);
+    border: 2px solid var(--thumb-opposite-color);
     border-radius: var(--thumb-width);
     outline-offset: 5px;
     --applied-ratio: var(--ratio);
@@ -221,7 +247,9 @@ export class InputSlider extends HTMLElement {
         const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), value = Number(this.getAttribute('value'));
         const currentValue = Math.max(min, Math.min(value, max));
         const ratio = 1 - (max - currentValue) / (max - min);
+        const rail = this.shadowRoot.querySelector('[part="slider-rail"]');
         slider.style.setProperty('--ratio', ratio);
+        rail.style.setProperty('--ratio', ratio);
       }
     }
   }
