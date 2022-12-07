@@ -213,7 +213,7 @@
 
     <div class="settings-content">
       <script>
-        if (!('paintWorklet' in CSS)) { document.write(`<p>Not supported in your browser yet 😭, sorry!</p>`); }
+        if (!('paintWorklet' in CSS)) { document.write(`<p>Uses CSS paint worklets that are not supported in your browser yet 😭, sorry!</p>`); }
       </script>
 
       <p>

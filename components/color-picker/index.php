@@ -110,6 +110,11 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
+    <script>
+      if (!('paintWorklet' in CSS)) {
+        document.write(`<p>This color-picker uses CSS paint worklets that are not supported in your browser yet 😭, sorry!</p>`);
+      }
+    </script>
     <color-picker position="bottom" format="hsl" color="blue"></color-picker>
     <color-picker position="bottom" format="oklch" label></color-picker>
   </body>
