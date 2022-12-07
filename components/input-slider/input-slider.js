@@ -27,27 +27,38 @@ sheet.replaceSync(/*css*/`
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
-    --track-width: 4px;
+    --track-width: 8px;
+    --track-color: #EFEFEF;
+    --track-filled-color: #0075FF;
+    --track-border-color: #B2B2B2;
+    --track-hover-color: #005CC8;
+    --track-active-color: #3793FF;
     --thumb-width: 12px;
-    --thumb-color: black;
+    --thumb-color: var(--track-filled-color);
     --thumb-border-color: white;
-    --thumb-hover-border-color: dodgerblue;
-    --track-color: grey;
-    --track-filled-color: dodgerblue;
     touch-action: none;
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --thumb-color: white;
+      --track-color: #3B3B3B;
+      --track-filled-color: #99C8FF;
+      --track-border-color: #858585;
+      --track-hover-color: #D1E6FF;
+      --track-active-color: #61A9FF;
       --thumb-border-color: black;
-      --track-color: lightgrey;
     }
   }
 
   :host(:hover),
   [role="slider"]:focus {
-    --thumb-border-color: var(--thumb-hover-border-color);
+    --thumb-color: var(--track-hover-color);
+  }
+
+  :host(:active),
+  [role="slider"]:active {
+    --track-filled-color: var(--track-active-color);
+    --thumb-color: var(--track-active-color);
   }
 
   :host([orientation="horizontal"]) {
@@ -73,6 +84,8 @@ sheet.replaceSync(/*css*/`
     --background-colors: var(--track-filled-color) 0 calc(var(--ratio) * 100%), var(--track-color) calc(var(--ratio) * 100%) 100%;
     background: linear-gradient(var(--background-direction), var(--background-colors));
     border-radius: var(--track-width);
+    border: 1px solid var(--track-border-color);
+    box-sizing: border-box;
   }
 
   :host([orientation="horizontal"]) [part="slider-track"] {

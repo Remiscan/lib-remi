@@ -38,7 +38,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
-        --bg-color: #eee;
+        --bg-color: white;
       }
 
       html[data-theme="dark"] {
