@@ -191,10 +191,12 @@ export class InputSlider extends HTMLElement {
         this.releasePointerCapture(upEvent.pointerId);
         this.removeEventListener('pointermove', pointerMoveHandler);
         this.removeEventListener('pointerup', pointerUpHandler);
+        this.removeEventListener('pointercancel', pointerUpHandler);
       };
 
       this.addEventListener('pointermove', pointerMoveHandler);
       this.addEventListener('pointerup', pointerUpHandler);
+      this.addEventListener('pointercancel', pointerUpHandler);
     };
 
     // Handles focus events
