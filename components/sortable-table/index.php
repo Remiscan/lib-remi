@@ -44,7 +44,7 @@
     <table is="sortable-table">
       <thead>
         <tr>
-          <td>Prénom</td>
+          <td>Name</td>
           <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</td>
           <td data-type="date" data-format='{ "dateStyle": "medium", "timeStyle": "medium" }'>Date 2</td>
         </tr>
