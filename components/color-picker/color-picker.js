@@ -448,8 +448,10 @@ sheet.replaceSync(/*css*/`
                 paint(checkered);
     background-repeat: no-repeat, no-repeat;
     position: relative;
-    --track-color: transparent;
-    --track-filled-color: transparent;
+  }
+
+  input-slider::part(slider-track) {
+    display: none;
   }
   
   input-slider::part(slider-thumb) {
