@@ -573,13 +573,13 @@ export class ColorPicker extends HTMLElement {
     const selector = this.shadowRoot.querySelector('[part="selector"]');
     selector.showModal();
 
-    // Listens to clicks on the dialog backdrop to close the dialog
     const closeMenu = event => {
       const rect = selector.getBoundingClientRect();
       const x = event.clientX, y = event.clientY;
       // If click inside dialog rect, don't close the dialog
       if (x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height) return;
       this.close();
+      selector.removeEventListener('click', closeMenu);
     };
     selector.addEventListener('click', closeMenu);
   }
