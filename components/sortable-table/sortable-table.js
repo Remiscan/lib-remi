@@ -1,9 +1,15 @@
+import translationObserver from 'translation-observer';
+
+
+
 const arrowTemplate = document.createElement('template');
 arrowTemplate.innerHTML = /*html*/`
-  <svg viewBox="0 0 14 28">
-    <path class="arrow ascending-arrow" d="M 0 12 L 7 0 L 14 12"/>
-    <path class="arrow descending-arrow" d="M 0 16 L 7 28 L 14 16"/>
-  </svg>
+  <button type="button" class="sorting-arrow-button" data-label="sort">
+    <svg viewBox="0 0 14 28">
+      <path class="arrow ascending-arrow" d="M 0 12 L 7 0 L 14 12"/>
+      <path class="arrow descending-arrow" d="M 0 16 L 7 28 L 14 16"/>
+    </svg>
+  </button>
 `;
 
 
@@ -12,13 +18,29 @@ const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   @layer sortable-table {
     table[is="sortable-table"] thead td {
-      cursor: pointer;
+      position: relative;
     }
 
-    table[is="sortable-table"] thead td::after {
-      content: '▼';
-      opacity: 0;
-      margin-left: 1ch;
+    table[is="sortable-table"] .sorting-arrow-button {
+      font-size: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+      padding: 0px;
+      margin: 0px;
+      text-align: initial;
+      margin: 0 .5ch;
+      outline-offset: 5px;
+    }
+
+    table[is="sortable-table"] .sorting-arrow-button::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     table[is="sortable-table"] thead td svg {
@@ -28,7 +50,6 @@ sheet.replaceSync(/*css*/`
       height: calc(2 * var(--width));
       vertical-align: text-bottom;
       overflow: visible;
-      margin-left: .5ch;
     }
 
     .ascending-arrow {
@@ -55,11 +76,15 @@ sheet.replaceSync(/*css*/`
 
 const strings = {
   "fr": {
-    "sort": "Trier par ${type} (${direction})"
+    "sort": "Trier cette colonne",
+    "ascending": "croissant",
+    "descending": "décroissant"
   },
   
   "en": {
-    "sort": "Sort by ${type} (${direction$})"
+    "sort": "Sort this column",
+    "ascending": "ascending",
+    "descending": "descending"
   }
 };
 
@@ -264,7 +289,8 @@ export class SortableTable extends HTMLTableElement {
   #startHandlingClicks() {
     const headers = this.querySelectorAll(`thead td`);
     for (const header of headers) {
-      header.addEventListener('click', this.headers.get(header.dataset.id).clickHandler);
+      const button = header.querySelector('.sorting-arrow-button');
+      button.addEventListener('click', this.headers.get(header.dataset.id).clickHandler);
     }
   }
 
@@ -272,7 +298,8 @@ export class SortableTable extends HTMLTableElement {
   #stopHandlingClicks() {
     const headers = this.querySelectorAll(`thead td`);
     for (const header of headers) {
-      header.removeEventListener('click', this.headers.get(header.dataset.id).clickHandler);
+      const button = header.querySelector('.sorting-arrow-button');
+      button.removeEventListener('click', this.headers.get(header.dataset.id).clickHandler);
     }
   }
 
@@ -283,6 +310,8 @@ export class SortableTable extends HTMLTableElement {
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
     this.#initHeaders();
+
+    translationObserver.serve(this, { method: 'attribute' });
 
     if (this.data.size === 0) {
       const rows = this.querySelectorAll('tbody > tr');
@@ -297,17 +326,23 @@ export class SortableTable extends HTMLTableElement {
 
 
   disconnectedCallback() {
+    translationObserver.unserve(this);
     this.#stopHandlingClicks();
   }
 
 
-  static get observedAttributes() { return ['sort-by', 'sort-direction']; }
+  static get observedAttributes() { return ['sort-by', 'sort-direction', 'lang']; }
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
     this.#initHeaders();
 
     switch (attr) {
+      case 'lang': {
+        const lang = newValue;
+        const defaultLang = 'en';
+        translationObserver.translate(this, strings, lang, defaultLang);
+      } break;
       case 'sort-by': {
         this.sortTable(newValue, undefined);
       } break;

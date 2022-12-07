@@ -18,7 +18,8 @@
     <script type="importmap">
     {
       "imports": {
-        "sortable-table": "/_common/components/sortable-table/sortable-table.js"
+        "sortable-table": "/_common/components/sortable-table/sortable-table.js",
+        "translation-observer": "/_common/js/translation-observer.js"
       }
     }
     </script>
