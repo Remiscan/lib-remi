@@ -575,9 +575,10 @@ export class ColorPicker extends HTMLElement {
 
     const closeMenu = event => {
       const rect = selector.getBoundingClientRect();
-      const x = event.clientX, y = event.clientY;
+      const x = event.offsetX, y = event.offsetY;
       // If click inside dialog rect, don't close the dialog
-      if (x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height) return;
+      if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) return;
+      if (event.screenX === 0 && event.screenY === 0) return; // prevent closing on clicking <select> option
       this.close();
       selector.removeEventListener('click', closeMenu);
     };
