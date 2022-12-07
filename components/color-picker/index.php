@@ -116,7 +116,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       }
     </script>
     <color-picker position="bottom" format="hsl" color="blue"></color-picker>
-    <color-picker position="bottom" format="oklch" label></color-picker>
+    <color-picker position="bottom" format="okhsl" label></color-picker>
   </body>
 
 </html>
