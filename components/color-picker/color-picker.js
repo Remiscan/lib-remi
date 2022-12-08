@@ -27,7 +27,10 @@ if (paintWorkletSupport) {
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <input type="color" part="backup-input">
+  <label for="fallback-input" class="fallback" part="fallback">
+    <input type="color" data-label="pick-color" part="fallback-input" id="fallback-input">
+    <span data-string="pick-color" part="fallback-text">
+  </label>
 
   <button type="button" data-label="pick-color" part="button">
     <span part="color-preview"></span>
@@ -259,29 +262,38 @@ sheet.replaceSync(/*css*/`
     }
   }
 
-  [part="backup-input"] {
+  [part="fallback"],
+  button {
+    color-scheme: light dark;
+    display: grid;
+    grid-template-columns: var(--size) auto;
+    align-items: center;
+    gap: 1ch;
+    padding: 0.2em;
+  }
+
+  [part="fallback"] {
     display: none;
   }
 
   @supports not (background: paint(checkered)) {
-    [part="backup-input"] {
-      display: revert;
+    [part="fallback"] {
+      display: grid;
+      grid-template-columns: auto auto;
+    }
+
+    :host(:not([label])) [part="fallback"] {
+      grid-template-columns: auto;
+    }
+
+    :host(:not([label])) [part="fallback-text"] {
+      display: none;
     }
 
     [part="button"],
     [part="selector"] {
       display: none;
     }
-  }
-
-  button {
-    color-scheme: light dark;
-
-    display: grid;
-    grid-template-columns: var(--size) auto;
-    align-items: center;
-    gap: 1ch;
-    padding: 0.2em;
   }
 
   /* Hit zone bigger than the actual button */
@@ -901,14 +913,9 @@ export class ColorPicker extends HTMLElement {
       } break;
 
       case 'label': {
-        if (!paintWorkletSupport) {
-          const backupInput = this.shadowRoot.querySelector('input[type="color"]');
-          backupInput.setAttribute('data-label', 'pick-color');
-          translationObserver.translate(this, strings, this.getAttribute('lang'));
-          return;
-        }
-
-        const button = this.shadowRoot.querySelector('button');
+        //if (!paintWorkletSupport) return;
+        
+        const button = paintWorkletSupport ? this.shadowRoot.querySelector('button') : this.shadowRoot.querySelector('input[type="color"]');
         if (!button) return;
         // If label shown, don't use aria-label
         if (newValue !== null) {
