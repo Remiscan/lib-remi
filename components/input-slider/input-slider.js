@@ -161,11 +161,11 @@ export class InputSlider extends HTMLElement {
     // Gets the ratio of the nrequested position of the slider thumb
     const getPositionRatio = (event, rect, thumbRect, direction) => {
       let start, end, current;
-      const thumbWidth = thumbRect.width;
 
       switch (direction) {
         case 'left-to-right':
         case 'right-to-left': {
+          const thumbWidth = thumbRect.width;
           start = rect.x + thumbWidth / 2;
           end = rect.x + rect.width - thumbWidth / 2;
           current = event.clientX;
@@ -173,6 +173,7 @@ export class InputSlider extends HTMLElement {
 
         case 'bottom-to-top':
         case 'top-to-bottom': {
+          const thumbWidth = thumbRect.height;
           start = rect.y + thumbWidth / 2;
           end = rect.y + rect.height - thumbWidth / 2;
           current = event.clientY;
