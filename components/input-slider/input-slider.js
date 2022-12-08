@@ -168,8 +168,9 @@ export class InputSlider extends HTMLElement {
 
     // Handles pointer events
     this.pointerDownHandler = downEvent => {
+      this.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
+
       const thumb = this.shadowRoot.querySelector('[role="slider"]');
-      thumb.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
 
       const rect = this.getBoundingClientRect();
       const thumbRect = thumb.getBoundingClientRect();
@@ -203,15 +204,15 @@ export class InputSlider extends HTMLElement {
         this.setAttribute('value', value);
         this.dispatchUpdateEvent('change');
 
-        thumb.releasePointerCapture(upEvent.pointerId);
-        thumb.removeEventListener('pointermove', pointerMoveHandler);
-        thumb.removeEventListener('pointerup', pointerUpHandler);
-        thumb.removeEventListener('pointercancel', pointerUpHandler);
+        this.releasePointerCapture(upEvent.pointerId);
+        this.removeEventListener('pointermove', pointerMoveHandler);
+        this.removeEventListener('pointerup', pointerUpHandler);
+        this.removeEventListener('pointercancel', pointerUpHandler);
       };
 
-      thumb.addEventListener('pointermove', pointerMoveHandler);
-      thumb.addEventListener('pointerup', pointerUpHandler);
-      thumb.addEventListener('pointercancel', pointerUpHandler);
+      this.addEventListener('pointermove', pointerMoveHandler);
+      this.addEventListener('pointerup', pointerUpHandler);
+      this.addEventListener('pointercancel', pointerUpHandler);
     };
 
     // Handles focus events
