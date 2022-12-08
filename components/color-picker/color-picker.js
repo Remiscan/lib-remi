@@ -607,8 +607,10 @@ export class ColorPicker extends HTMLElement {
       }
     }
 
-    this.lastinputcolor = null;
-    this.lastchangecolor = null;
+    this.lastEventColor = {
+      input: null,
+      change: null
+    };
   }
 
 
@@ -759,8 +761,8 @@ export class ColorPicker extends HTMLElement {
    * @param {HTMLInputElement} rangeInput - The input-slider element that triggered the event.
    */
   #updateColor(event, colorExpr, rangeInput) {
-    if (this[`last${event.type}color`] === colorExpr) return;
-    this[`last${event.type}color`] = colorExpr;
+    if (this.lastEventColor[event.type] === colorExpr) return;
+    this.lastEventColor[event.type] = colorExpr;
     
     this.dispatchEvent(new CustomEvent(event.type, {
       bubbles: true,
