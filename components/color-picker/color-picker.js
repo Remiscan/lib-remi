@@ -18,12 +18,17 @@ import translationObserver from 'translation-observer';
 
 
 
-CSS.paintWorklet.addModule(import.meta.resolve(`range-gradient-worklet`));
+const paintWorkletSupport = 'paintWorklet' in CSS;
+if (paintWorkletSupport) {
+  CSS.paintWorklet.addModule(import.meta.resolve(`range-gradient-worklet`));
+}
 
 
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
+  <input type="color" part="backup-input">
+
   <button type="button" data-label="pick-color" part="button">
     <span part="color-preview"></span>
 
@@ -251,6 +256,21 @@ sheet.replaceSync(/*css*/`
       --border-color-opposite: black;
       --checkered-background-color: var(--checkered-dark-background-color);
       --checkered-cell-color: var(--checkered-dark-cell-color);
+    }
+  }
+
+  [part="backup-input"] {
+    display: none;
+  }
+
+  @supports not (background: paint(checkered)) {
+    [part="backup-input"] {
+      display: revert;
+    }
+
+    [part="button"],
+    [part="selector"] {
+      display: none;
     }
   }
 
@@ -559,6 +579,22 @@ export class ColorPicker extends HTMLElement {
       else                                    this.open();
     };
 
+    this.backupHandler = event => {
+      switch (event.type) {
+        case 'input':
+        case 'change': {
+          //event.stopPropagation();
+          this.dispatchEvent(new CustomEvent(event.type, {
+            bubbles: true,
+            detail: { color: event.currentTarget.value }
+          }));
+        } break;
+
+        default:
+          return;
+      }
+    }
+
     this.lastinputcolor = null;
     this.lastchangecolor = null;
   }
@@ -804,13 +840,22 @@ export class ColorPicker extends HTMLElement {
   connectedCallback() {
     translationObserver.serve(this, { method: 'attribute' });
 
+    const startColor = this.getAttribute('color') ?? 'red';
+
+    if (!paintWorkletSupport) {
+      const backupInput = this.shadowRoot.querySelector('input[type="color"]');
+      backupInput.value = new Couleur(startColor).hex;
+      backupInput.addEventListener('input', this.backupHandler);
+      backupInput.addEventListener('change', this.backupHandler);
+      return;
+    }
+
     // If the format attribute is present, switch to that format
     const format = this.getAttribute('format') ?? 'rgb';
     const select = this.shadowRoot.querySelector('select');
     select.value = format;
 
     // Use the color attribute as the starting color
-    const startColor = this.getAttribute('color') ?? 'red';
     this.selectColor(startColor);
 
     // Remove the button's aria-label if the label is displayed
@@ -827,6 +872,13 @@ export class ColorPicker extends HTMLElement {
 
   disconnectedCallback() {
     translationObserver.unserve(this);
+
+    if (!paintWorkletSupport) {
+      const backupInput = this.shadowRoot.querySelector('input[type="color"]');
+      backupInput.removeEventListener('input', this.backupHandler);
+      backupInput.removeEventListener('change', this.backupHandler);
+      return;
+    }
 
     const button = this.shadowRoot.querySelector('button');
     button.removeEventListener('click', this.openHandler);
@@ -849,6 +901,13 @@ export class ColorPicker extends HTMLElement {
       } break;
 
       case 'label': {
+        if (!paintWorkletSupport) {
+          const backupInput = this.shadowRoot.querySelector('input[type="color"]');
+          backupInput.setAttribute('data-label', 'pick-color');
+          translationObserver.translate(this, strings, this.getAttribute('lang'));
+          return;
+        }
+
         const button = this.shadowRoot.querySelector('button');
         if (!button) return;
         // If label shown, don't use aria-label
