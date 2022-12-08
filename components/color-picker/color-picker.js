@@ -559,14 +559,8 @@ export class ColorPicker extends HTMLElement {
       else                                    this.open();
     };
 
-    this.changeHangler = async (event) => {
-      const choice = event.currentTarget;
-      
-      const themeEvent = new CustomEvent('themechange', { detail: {
-        color: choice.value
-      }});
-      window.dispatchEvent(themeEvent);
-    }
+    this.lastinputcolor = null;
+    this.lastchangecolor = null;
   }
 
 
@@ -717,6 +711,9 @@ export class ColorPicker extends HTMLElement {
    * @param {HTMLInputElement} rangeInput - The input-slider element that triggered the event.
    */
   #updateColor(event, colorExpr, rangeInput) {
+    if (this[`last${event.type}color`] === colorExpr) return;
+    this[`last${event.type}color`] = colorExpr;
+    
     this.dispatchEvent(new CustomEvent(event.type, {
       bubbles: true,
       detail: { color: colorExpr }
@@ -842,6 +839,8 @@ export class ColorPicker extends HTMLElement {
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    
     switch (attr) {
       case 'lang': {
         const lang = newValue;
