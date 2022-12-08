@@ -54,25 +54,16 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
-        --bg-color: #eee;
-        --sunmoon-color: black;
-        --sunray-color: hsl(40, 100%, 10%);
+        --bg-color: #fff;
+        --text-color: black;
       }
 
       html[data-theme="dark"] {
         color-scheme: dark;
         --bg-color: #111;
-        --sunmoon-color: white;
-        --sunray-color: lemonchiffon;
+        --text-color: white;
       }
       /*<?php themeSheetEnd(closeComment: true); ?>*/
-
-      html[data-theme="blue"] {
-        color-scheme: light;
-        --bg-color: skyblue;
-        --sunmoon-color: darkblue;
-        --sunray-color: royalblue;
-      }
 
       html, body {
         height: 100%;
@@ -81,7 +72,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       body {
         background: var(--bg-color);
         display: grid;
-        color: var(--sunmoon-color);
+        color: var(--text-color);
         position: relative;
         gap: .5rem;
         place-items: center;
