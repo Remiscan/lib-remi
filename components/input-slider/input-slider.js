@@ -271,6 +271,7 @@ export class InputSlider extends HTMLElement {
 
         if (supportedKey) {
           this.setAttribute('value', newValue);
+          this.dispatchUpdateEvent('change');
           keydownEvent.preventDefault();
         }
       };
