@@ -472,22 +472,22 @@ sheet.replaceSync(/*css*/`
   input-slider {
     --block-size: var(--range-width);
     --inline-size: var(--range-height);
-    --border: var(--range-border-width, 0px) var(--range-border-style, solid) var(--range-border-color, var(--border-color-opposite));
-    border: var(--border, none);
-    border-radius: var(--range-border-radius);
+    --thumb-width: calc(var(--cursor-width) * 1px);
+  }
+
+  input-slider::part(slider-track) {
     --couleurs: white 0%, black 100%;
     background: paint(range-gradient),
                 paint(checkered);
     background-repeat: no-repeat, no-repeat;
-    position: relative;
-  }
-
-  input-slider::part(slider-track) {
-    display: none;
+    width: 100%;
+    height: 100%;
+    --border: var(--range-border-width, 0px) var(--range-border-style, solid) var(--range-border-color, var(--border-color-opposite));
+    border: var(--border, none);
+    border-radius: var(--range-border-radius);
   }
   
   input-slider::part(slider-thumb) {
-    height: calc(var(--cursor-width) * 1px);
     background: transparent;
     border: none;
     border-radius: var(--range-border-radius);
