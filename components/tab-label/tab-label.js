@@ -133,12 +133,57 @@ class TabLabel extends HTMLElement {
   constructor() {
     super();
     this.ready = false;
+
+    this.changeHandler = event => {
+      this.toggle();
+    };
+
+    // Handles focus events
+    this.focusHandler = focusEvent => {
+      //return console.log(focusEvent);
+      const tabs = [...document.querySelectorAll(`input[name="${this.group}"]`)];
+
+      const keydownHandler = keydownEvent => {
+        let supportedKey = true;
+        let requestedInput = null;
+
+        switch (keydownEvent.code) {
+          case 'Home': {
+            requestedInput = tabs?.at(0);
+          } break;
+
+          case 'End': {
+            requestedInput = tabs?.at(-1);
+          } break;
+
+          default: {
+            supportedKey = false;
+          }
+        }
+
+        if (supportedKey && requestedInput) {
+          keydownEvent.preventDefault();
+          console.log(requestedInput);
+          requestedInput.checked = true;
+          requestedInput.focus();
+          this.toggle();
+        }
+      };
+
+      const blurHandler = blurEvent => {
+        focusEvent.target.removeEventListener('keydown', keydownHandler);
+        focusEvent.target.removeEventListener('blur', blurHandler);
+      };
+
+      focusEvent.target.addEventListener('keydown', keydownHandler);
+      focusEvent.target.addEventListener('blur', blurHandler);
+    };
   }
 
 
   toggle() {
-    if (!this.tabs) this.tabs = [...document.querySelectorAll(`input[name="${this.group}"]`)];
-    for (const tab of this.tabs) {
+    const tabs = [...document.querySelectorAll(`input[name="${this.group}"]`)];
+    for (const tab of tabs) {
       const element = document.getElementById(tab.getAttribute('aria-controls'));
       if (tab.checked) {
         element.removeAttribute('hidden');
@@ -212,12 +257,19 @@ class TabLabel extends HTMLElement {
     if (!this.input.checked)  this.controlledElement.setAttribute('hidden', 'hidden');
     else                      this.controlledElement.removeAttribute('hidden');
     
-    this.input.addEventListener('change', () => this.toggle());
+    this.input.addEventListener('change', this.changeHandler);
+    this.input.addEventListener('focus', this.focusHandler);
 
     this.ready = true;
     for (const attr of TabLabel.observedAttributes) {
       this.update(attr);
     }
+  }
+
+
+  disconnectedCallback() {
+    this.input?.removeEventListener('change', this.changeHandler);
+    this.input?.removeEventListener('focus', this.focusHandler);
   }
 
 
