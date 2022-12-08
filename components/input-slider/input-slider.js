@@ -24,6 +24,7 @@ sheet.replaceSync(/*css*/`
     display: grid;
     place-items: center;
     position: relative;
+    border: none; /* borders on the host perturb the cursor/thumb positioning */
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
