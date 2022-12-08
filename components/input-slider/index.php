@@ -88,8 +88,18 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     <input-slider orientation="horizontal" value-text-format="ratio {v}" step="0.1" value="0.3"></input-slider>
     <input-slider orientation="vertical" min="5" max="200" step="1" value="102"></input-slider>
 
+    <!-- for rtl languages
+    <input-slider dir="rtl" orientation="horizontal" value-text-format="ratio {v}" value="0.3"></input-slider>
+    <input-slider dir="rtl" orientation="vertical" min="-100" max="5" step="5" value="-52"></input-slider>
+    -->
+
     <input-slider reversed orientation="horizontal" value-text-format="ratio {v}" value="0.3"></input-slider>
     <input-slider reversed orientation="vertical" min="-100" max="5" step="5" value="-52"></input-slider>
+
+    <!-- for rtl languages
+    <input-slider reversed dir="rtl" orientation="horizontal" value-text-format="ratio {v}" value="0.3"></input-slider>
+    <input-slider reversed dir="rtl" orientation="vertical" min="-100" max="5" step="5" value="-52"></input-slider>
+    -->
   </body>
 
 </html>

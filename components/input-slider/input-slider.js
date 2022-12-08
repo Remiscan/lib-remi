@@ -36,6 +36,10 @@ sheet.replaceSync(/*css*/`
     --thumb-width: 12px;
     --thumb-color: var(--track-filled-color);
     --thumb-border-color: white;
+    --rtl: 1; /* -1 if rtl */
+    --reversed: 1; /* -1 if reversed */
+    --vertical: 1; /* -1 if vertical */
+    --ratio-coeff: calc(var(--rtl) * var(--reversed) * var(--vertical));
     touch-action: none;
   }
 
@@ -48,6 +52,20 @@ sheet.replaceSync(/*css*/`
       --track-active-color: #61A9FF;
       --thumb-border-color: black;
     }
+  }
+
+  :host([dir="rtl"]),
+  :host(:dir(rtl)) {
+    --rtl: -1;
+  }
+
+  :host([reversed]) {
+    --reversed: -1;
+  }
+
+  :host([orientation="vertical"]) {
+    --vertical: -1;
+    --rtl: 1; /* rtl doesn't matter in vertical orientation */
   }
 
   :host(:hover),
@@ -90,20 +108,12 @@ sheet.replaceSync(/*css*/`
 
   :host([orientation="horizontal"]) [part="slider-track"] {
     height: var(--track-width);
-    --background-direction: to right;
+    --background-direction: calc(var(--ratio-coeff) * 90deg);
   }
 
   :host([orientation="vertical"]) [part="slider-track"] {
     width: var(--track-width);
-    --background-direction: to top;
-  }
-
-  :host([orientation="horizontal"][reversed]) [part="slider-track"] {
-    --background-direction: to left;
-  }
-
-  :host([orientation="vertical"][reversed]) [part="slider-track"] {
-    --background-direction: to bottom;
+    --background-direction: calc(90deg + var(--ratio-coeff) * 90deg);
   }
 
   [part="slider-thumb"] {
@@ -116,13 +126,16 @@ sheet.replaceSync(/*css*/`
     border: 2px solid var(--thumb-border-color);
     border-radius: var(--thumb-width);
     outline-offset: 3px;
-    --applied-ratio: var(--ratio);
     box-sizing: border-box;
     will-change: transform;
+    --normal-ratio: calc(var(--ratio-coeff) * var(--ratio)); /* positive if --ratio-coeff = 1, negative if --ratio-coeff = -1 */
+    --reversed-ratio: calc(-1 * var(--ratio-coeff) - var(--ratio)); /* positive if --ratio-coeff = -1, negative if --ratio-coeff = 1 */
+    --applied-ratio: max(var(--normal-ratio), var(--reversed-ratio)); /* --normal-ratio if --ratio-coeff = 1, --reversed-ratio if --ratio-coeff = -1 */
   }
 
-  :host([reversed]) [part="slider-thumb"] {
-    --applied-ratio: calc(1 - var(--ratio));
+  :host([dir="rtl"]:not([orientation="vertical"])) [part="slider-thumb"],
+  :host(:dir(rtl):not([orientation="vertical"])) [part="slider-thumb"] {
+    place-self: end;
   }
 
   :host([orientation="horizontal"]) [part="slider-thumb"] {
@@ -132,7 +145,7 @@ sheet.replaceSync(/*css*/`
 
   :host([orientation="vertical"]) [part="slider-thumb"] {
     height: var(--thumb-width);
-    transform: translateY(calc((1 - var(--applied-ratio)) * var(--max-translate)));
+    transform: translateY(calc(var(--applied-ratio) * var(--max-translate)));
   }
 `);
 
@@ -146,22 +159,28 @@ export class InputSlider extends HTMLElement {
     this.shadowRoot.adoptedStyleSheets = [sheet];
 
     // Gets the ratio of the nrequested position of the slider thumb
-    const getPositionRatio = (event, rect, thumbRect, orientation, reversed) => {
+    const getPositionRatio = (event, rect, thumbRect, direction) => {
       let start, end, current;
-      if (orientation === 'horizontal') {
-        const thumbWidth = thumbRect.width;
-        start = rect.x + thumbWidth / 2;
-        end = rect.x + rect.width - thumbWidth / 2;
-        current = event.clientX;
-      } else if (orientation === 'vertical') {
-        const thumbWidth = thumbRect.height;
-        start = rect.y + thumbWidth / 2;
-        end = rect.y + rect.height - thumbWidth / 2;
-        current = event.clientY;
+      const thumbWidth = thumbRect.width;
+
+      switch (direction) {
+        case 'left-to-right':
+        case 'right-to-left': {
+          start = rect.x + thumbWidth / 2;
+          end = rect.x + rect.width - thumbWidth / 2;
+          current = event.clientX;
+        } break;
+
+        case 'bottom-to-top':
+        case 'top-to-bottom': {
+          start = rect.y + thumbWidth / 2;
+          end = rect.y + rect.height - thumbWidth / 2;
+          current = event.clientY;
+        } break;
       }
+
       let ratio = (current - start) / (end - start);
-      if (orientation === 'vertical') ratio = 1 - ratio; // because vertical sliders start from the bottom by default
-      if (reversed) ratio = 1 - ratio; // double reversal if vertical and reversed, to start from the top
+      if (direction === 'right-to-left' || direction === 'bottom-to-top') ratio = 1 - ratio;
 
       return Math.max(0, Math.min(ratio, 1));
     };
@@ -174,10 +193,20 @@ export class InputSlider extends HTMLElement {
 
       const rect = this.getBoundingClientRect();
       const thumbRect = thumb.getBoundingClientRect();
+
+      const rtl = this.getAttribute('dir') === 'rtl' || getComputedStyle(this).getPropertyValue('direction') === 'rtl';
+      console.log(this.getAttribute('dir'), getComputedStyle(this).getPropertyValue('direction') === 'rtl');
       const reversed = this.getAttribute('reversed') != null;
       const orientation = this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal';
 
-      const ratio = getPositionRatio(downEvent, rect, thumbRect, orientation, reversed);
+      let direction = reversed ? 'right-to-left' : 'left-to-right';
+      if (orientation === 'horizontal' && rtl) {
+        direction = reversed ? 'left-to-right' : 'right-to-left';
+      } else if (orientation === 'vertical') {
+        direction = reversed ? 'top-to-bottom' : 'bottom-to-top';
+      }
+
+      const ratio = getPositionRatio(downEvent, rect, thumbRect, direction);
 
       const min = this.min, max = this.max;
       const value = this.closestValidValue(min + ratio * (max - min));
@@ -189,7 +218,7 @@ export class InputSlider extends HTMLElement {
         if (moving) return;
         moving = true;
 
-        const ratio = getPositionRatio(moveEvent, rect, thumbRect, orientation, reversed);
+        const ratio = getPositionRatio(moveEvent, rect, thumbRect, direction);
         const value = this.closestValidValue(min + ratio * (max - min));
         this.setAttribute('value', value);
 
@@ -199,7 +228,7 @@ export class InputSlider extends HTMLElement {
       const pointerUpHandler = upEvent => {
         thumb.focus();
 
-        const ratio = getPositionRatio(upEvent, rect, thumbRect, orientation, reversed);
+        const ratio = getPositionRatio(upEvent, rect, thumbRect, direction);
         const value = this.closestValidValue(min + ratio * (max - min));
         this.setAttribute('value', value);
         this.dispatchUpdateEvent('change');
