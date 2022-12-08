@@ -170,8 +170,10 @@ export class InputSlider extends HTMLElement {
     this.pointerDownHandler = downEvent => {
       this.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
 
+      const thumb = this.shadowRoot.querySelector('[role="slider"]');
+
       const rect = this.getBoundingClientRect();
-      const thumbRect = this.shadowRoot.querySelector('[role="slider"]').getBoundingClientRect();
+      const thumbRect = thumb.getBoundingClientRect();
       const reversed = this.getAttribute('reversed') != null;
       const orientation = this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal';
 
@@ -195,6 +197,7 @@ export class InputSlider extends HTMLElement {
       };
 
       const pointerUpHandler = upEvent => {
+        thumb.focus();
 
         const ratio = getPositionRatio(upEvent, rect, thumbRect, orientation, reversed);
         const value = this.closestValidValue(min + ratio * (max - min));
