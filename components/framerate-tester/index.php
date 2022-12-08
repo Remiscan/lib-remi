@@ -28,8 +28,8 @@
   body {
     margin: 0;
     padding: 10px;
-    background-color: #DDD;
-    color: #222;
+    background-color: #fff;
+    color: #000;
   }
 
   @media (prefers-color-scheme: dark) {

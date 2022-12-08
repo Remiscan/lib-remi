@@ -30,7 +30,7 @@
       /*<?php themeSheetStart(); ?>*/
       html[data-theme="light"] {
         color-scheme: light;
-        --bg-color: rgb(224, 224, 224);
+        --bg-color: white;
         --text-color: black;
       }
 
