@@ -493,6 +493,7 @@ sheet.replaceSync(/*css*/`
     border-radius: var(--range-border-radius);
     box-shadow: inset 0 0 0 2px var(--border-color-opposite),
                 0 0 0 2px var(--border-color);
+    outline-offset: 5px;
   }
   
   input-slider[data-property]:hover + input[type="number"][data-property],
