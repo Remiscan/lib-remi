@@ -473,6 +473,7 @@ sheet.replaceSync(/*css*/`
     --block-size: var(--range-width);
     --inline-size: var(--range-height);
     --thumb-width: calc(var(--cursor-width) * 1px);
+    margin: var(--range-border-width);
   }
 
   input-slider::part(slider-track) {
@@ -482,8 +483,9 @@ sheet.replaceSync(/*css*/`
     background-repeat: no-repeat, no-repeat;
     width: 100%;
     height: 100%;
+    border: none;
     --border: var(--range-border-width, 0px) var(--range-border-style, solid) var(--range-border-color, var(--border-color-opposite));
-    border: var(--border, none);
+    outline: var(--border, none);
     border-radius: var(--range-border-radius);
   }
   
