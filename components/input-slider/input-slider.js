@@ -24,7 +24,9 @@ sheet.replaceSync(/*css*/`
     display: grid;
     place-items: center;
     position: relative;
-    border: none; /* borders on the host perturb the cursor/thumb positioning */
+    border: none; /* borders of the HOST perturb the cursor/thumb positioning */
+                  /* the slider thumb will move over borders of the TRACK */
+                  /* so if track visuals must be precisely aligned, use no border on track, only outlines */
     --tap-safe-size: 44px;
     --block-size: var(--tap-safe-size);
     --inline-size: calc(5 * var(--block-size));
@@ -197,7 +199,6 @@ export class InputSlider extends HTMLElement {
       const thumbRect = thumb.getBoundingClientRect();
 
       const rtl = this.getAttribute('dir') === 'rtl' || getComputedStyle(this).getPropertyValue('direction') === 'rtl';
-      console.log(this.getAttribute('dir'), getComputedStyle(this).getPropertyValue('direction') === 'rtl');
       const reversed = this.getAttribute('reversed') != null;
       const orientation = this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal';
 
