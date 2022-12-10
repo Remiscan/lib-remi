@@ -76,21 +76,18 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       body {
         background: var(--bg-color);
         display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        place-items: center;
+        justify-content: center;
         color: var(--sunmoon-color);
         position: relative;
         gap: .5rem;
-        place-items: center;
         font-family: system-ui;
         margin: 0;
       }
 
-      body > * {
-        grid-row: 1;
-      }
-
       theme-selector {
         --size: 5rem;
-        transform: translateY(calc(-0.5 * (44px * 3 + 10px * 2 + 1.4rem)));
         --primary-color: var(--sunmoon-color);
         --secondary-color: var(--sunray-color);
       }
@@ -111,6 +108,10 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
                     transform .2s ease;
         margin-top: 10px;
         overflow: hidden;
+      }
+
+      theme-selector[position="top"] > .selector {
+        transform: translateY(.2rem);
       }
 
       theme-selector[open="true"] > .selector {
@@ -136,7 +137,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
   <body>
     <theme-selector position="bottom"></theme-selector>
-    <theme-selector position="bottom" label></theme-selector>
+    <theme-selector position="top" label></theme-selector>
   </body>
 
 </html>

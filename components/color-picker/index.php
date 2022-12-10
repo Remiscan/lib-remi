@@ -72,16 +72,14 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       body {
         background: var(--bg-color);
         display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        place-items: center;
+        justify-content: center;
         color: var(--text-color);
         position: relative;
         gap: .5rem;
-        place-items: center;
         font-family: system-ui;
         margin: 0;
-      }
-
-      body > * {
-        grid-row: 1;
       }
 
       color-picker:nth-of-type(1) {
