@@ -359,7 +359,7 @@ sheet.replaceSync(/*css*/`
 
   [part="selector"] {
     grid-template-columns: repeat(4, 1fr);
-    gap: .3rem;
+    gap: 10px;
     background: #ddd;
     color: black;
     padding: 5px;
@@ -395,7 +395,7 @@ sheet.replaceSync(/*css*/`
 
   [part="select-label"],
   [part="property-name"] {
-    font-size: 1.1em;
+    font-size: 1.05em;
     font-weight: 600;
   }
 
