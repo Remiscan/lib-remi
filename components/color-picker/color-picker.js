@@ -552,7 +552,7 @@ const strings = {
     "prop-b-nom": "Blue",
     "prop-h-nom": "Hue",
     "prop-s-nom": "Saturation",
-    "prop-l-nom": "Luminosity",
+    "prop-l-nom": "Lightness",
     "prop-w-nom": "Whiteness",
     "prop-bk-nom": "Blackness",
     "prop-ciel-nom": "Lightness",
