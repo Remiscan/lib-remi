@@ -417,7 +417,7 @@ sheet.replaceSync(/*css*/`
     grid-template-columns: calc(2 * var(--range-width));
     grid-template-rows: auto auto var(--range-full-height);
     justify-items: center;
-    gap: 10px;
+    gap: 5px;
     position: relative;
     --gradient-steps: 25;
   }
