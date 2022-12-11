@@ -140,7 +140,6 @@ class TabLabel extends HTMLElement {
 
     // Handles focus events
     this.focusHandler = focusEvent => {
-      //return console.log(focusEvent);
       const tabs = [...document.querySelectorAll(`input[name="${this.group}"]`)];
 
       const keydownHandler = keydownEvent => {
@@ -163,7 +162,6 @@ class TabLabel extends HTMLElement {
 
         if (supportedKey && requestedInput) {
           keydownEvent.preventDefault();
-          console.log(requestedInput);
           requestedInput.checked = true;
           requestedInput.focus();
           this.toggle();

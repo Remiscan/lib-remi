@@ -53,7 +53,6 @@ export class FramerateTester extends HTMLElement {
       const rate = await FramerateTester.averageRate();
       loading.innerHTML = `${i === 1 ? '·' : '.'}${i === 2 ? '·' : '.'}${i === 3 ? '·' : '.'}`;
       span.innerHTML = `${rate} FPS`;
-      console.log('Rate updated');
       i = (i + 1) % 4;
     }
   }
