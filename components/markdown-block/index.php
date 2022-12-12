@@ -74,13 +74,13 @@
 <pre id="inert">
 # Inert example
 
-Simply write some markdown inside a &lt;markdown-block&gt; tag and it will be automatically converted to HTML.
+Simply write some markdown inside a \&lt;markdown-block\&gt; tag and it will be automatically converted to HTML.
 </pre>
 
 <markdown-block>
 # Inert example
 
-Simply write some markdown inside a &lt;markdown-block&gt; tag and it will be automatically converted to HTML.
+Simply write some markdown inside a \&lt;markdown-block\&gt; tag and it will be automatically converted to HTML.
 </markdown-block>
 
 <pre id="test" contenteditable="true">
