@@ -16,9 +16,11 @@
 
 ***** or ******************************
 
-<tab-label group="tabs-group-name" controls="controlled-element-1-id" label="Tab 1 name" active="true"></tab-label>
-<tab-label group="tabs-group-name" controls="controlled-element-2-id" label="Tab 2 name"></tab-label>
-<tab-label group="tabs-group-name" controls="controlled-element-3-id" label="Tab 3 name"></tab-label>
+<div role="tablist">
+  <tab-label group="tabs-group-name" controls="controlled-element-1-id" label="Tab 1 name" active="true"></tab-label>
+  <tab-label group="tabs-group-name" controls="controlled-element-2-id" label="Tab 2 name"></tab-label>
+  <tab-label group="tabs-group-name" controls="controlled-element-3-id" label="Tab 3 name"></tab-label>
+</div>
 
 <div id="controlled-element-1-id"></div>
 <div id="controlled-element-2-id" hidden></div>
@@ -43,7 +45,6 @@ sheet.replaceSync(/*css*/`
     [role="tablist"] {
       display: flex;
       margin: 0;
-      padding: 0;
       border: none;
       gap: .6em;
       padding: 0 .6em;
@@ -54,6 +55,14 @@ sheet.replaceSync(/*css*/`
       --active-bg-color: hsl(231, 40%, 50%, .4);
       --off-text-color: black;
       --on-text-color: white;
+    }
+
+    [role="tablist"][aria-orientation="vertical"] {
+      flex-direction: column;
+      width: fit-content;
+      padding: .6em 0;
+      box-shadow: inset -1px 0 0 var(--on-bg-color);
+      float: left;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -94,6 +103,10 @@ sheet.replaceSync(/*css*/`
       border: 1px solid var(--on-bg-color);
       color: var(--off-text-color);
       border-radius: 5px 5px 0 0;
+    }
+
+    [role="tablist"][aria-orientation="vertical"] input[type=radio][role="tab"] + label {
+      border-radius: 5px 0 0 5px;
     }
 
     input[type=radio][role="tab"] + label:hover {
@@ -197,6 +210,11 @@ class TabLabel extends HTMLElement {
   }
 
 
+  get tablist() {
+    return this.closest('[role="tablist"]');
+  }
+
+
   update(attr) {
     if (!this.ready) return;
 
@@ -247,7 +265,7 @@ class TabLabel extends HTMLElement {
     }
 
     if (!this.input.getAttribute('name')) {
-      this.group = this.parentElement.dataset.group;
+      this.group = this.tablist.dataset.group;
       this.input.setAttribute('name', this.group);
     }
 
