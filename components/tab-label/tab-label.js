@@ -60,6 +60,7 @@ sheet.replaceSync(/*css*/`
     [role="tablist"][aria-orientation="vertical"] {
       flex-direction: column;
       width: fit-content;
+      margin-right: .6em;
       padding: .6em 0;
       box-shadow: inset -1px 0 0 var(--on-bg-color);
       float: left;

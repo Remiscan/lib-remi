@@ -88,12 +88,6 @@
         margin: 0;
       }
 
-      .vertical {
-        display: grid;
-        grid-template-columns: fit-content(100%) auto;
-        gap: .6rem;
-      }
-
       /* Prevent flash on unstyled content */
       [role="tablist"]:has(tab-label:not(:defined)) {
         display: none;
@@ -119,21 +113,19 @@
 
     <hr>
 
-    <div class="vertical">
-      <fieldset role="tablist" aria-orientation="vertical" data-group="tabs-group-2-name" style="--hue: 100">
-        <legend data-string="tabs-group-name-label"></legend>
+    <fieldset role="tablist" aria-orientation="vertical" data-group="tabs-group-2-name" style="--hue: 100">
+      <legend data-string="tabs-group-name-label"></legend>
 
-        <tab-label controls="controlled-element-21-id" active="true" label="Tab 2.1"></tab-label>
-        <tab-label controls="controlled-element-22-id" label="Tab 2.2"></tab-label>
-        <tab-label controls="controlled-element-23-id" label="Tab 2.3"></tab-label>
-      </fieldset>
+      <tab-label controls="controlled-element-21-id" active="true" label="Tab 2.1"></tab-label>
+      <tab-label controls="controlled-element-22-id" label="Tab 2.2"></tab-label>
+      <tab-label controls="controlled-element-23-id" label="Tab 2.3"></tab-label>
+    </fieldset>
 
-      <div id="controlled-element-21-id" hidden>
-        <p>Testing vertical tab group with data-group attribute on fieldset.
-      </div>
-      <div id="controlled-element-22-id" hidden>Content 2.2</div>
-      <div id="controlled-element-23-id" hidden>Content 2.3</div>
+    <div id="controlled-element-21-id" hidden>
+      <p>Testing vertical tab group with data-group attribute on fieldset.
     </div>
+    <div id="controlled-element-22-id" hidden>Content 2.2</div>
+    <div id="controlled-element-23-id" hidden>Content 2.3</div>
 
     <hr>
 
