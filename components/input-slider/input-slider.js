@@ -154,6 +154,17 @@ sheet.replaceSync(/*css*/`
 
 
 
+const ariaAttributesMap = new Map([
+  ['min', { name: 'aria-valuemin', default: 0 }],
+  ['max', { name: 'aria-valuemax', default: 1 }],
+  ['value', { name: 'aria-valuenow', default: 0 }],
+  ['orientation', { name: 'aria-orientation', default: 'horizontal' }],
+  ['label', { name: 'aria-label', default: null }],
+  ['labelledby', { name: 'aria-labelledby', default: null }],
+]);
+
+
+
 export class InputSlider extends HTMLElement {
   constructor() {
     super();
@@ -320,7 +331,7 @@ export class InputSlider extends HTMLElement {
 
 
   connectedCallback() {
-    for (const [attr, obj] of InputSlider.ariaAttributesMap) {
+    for (const [attr, obj] of ariaAttributesMap) {
       this.initAttribute(attr, obj);
     }
 
@@ -367,7 +378,7 @@ export class InputSlider extends HTMLElement {
 
 
   get min() {
-    const defaultMin = InputSlider.ariaAttributesMap.get('min').default;
+    const defaultMin = ariaAttributesMap.get('min').default;
     const currentMin = this.getAttribute('min');
 
     if (currentMin == null || isNaN(Number(currentMin))) return Number(defaultMin);
@@ -379,7 +390,7 @@ export class InputSlider extends HTMLElement {
   }
 
   get max() {
-    const defaultMax = InputSlider.ariaAttributesMap.get('max').default;
+    const defaultMax = ariaAttributesMap.get('max').default;
     const currentMax = this.getAttribute('max');
 
     if (currentMax == null || isNaN(Number(currentMax))) return Number(defaultMax);
@@ -427,26 +438,14 @@ export class InputSlider extends HTMLElement {
   }
 
 
-  static get ariaAttributesMap() {
-    return new Map([
-      ['min', { name: 'aria-valuemin', default: 0 }],
-      ['max', { name: 'aria-valuemax', default: 1 }],
-      ['value', { name: 'aria-valuenow', default: 0 }],
-      ['orientation', { name: 'aria-orientation', default: 'horizontal' }],
-      ['label', { name: 'aria-label', default: null }],
-      ['labelledby', { name: 'aria-labelledby', default: null }],
-    ]);
-  }
-
-
-  static get observedAttributes() { return [...InputSlider.ariaAttributesMap.keys()]; }
+  static get observedAttributes() { return [...ariaAttributesMap.keys()]; }
   
 
   attributeChangedCallback(attr, oldValue, newValue) {
     if (oldValue === newValue) return;
 
     const slider = this.shadowRoot.querySelector('[role="slider"]');
-    const mappedAriaAttribute = InputSlider.ariaAttributesMap.get(attr);
+    const mappedAriaAttribute = ariaAttributesMap.get(attr);
 
     // Don't use aria-label when aria-labelledby is set
     if (attr === 'label' && this.getAttribute('labelledby')) return slider.removeAttribute('aria-label');
