@@ -28,6 +28,10 @@
 
     <script type="module">
       import 'tab-list';
+
+      window.addEventListener('tabchange', event => {
+        console.log(event.detail);
+      });
     </script>
 
     <style>
@@ -94,21 +98,21 @@
   </head>
 
   <body>
-    <div is="tab-list" group="tabs-group-name">
+    <div is="tab-list">
       <button role="tab" aria-controls="controlled-element-11-id">Tab 1.1</button>
       <button role="tab" aria-controls="controlled-element-12-id">Tab 1.2</button>
       <button role="tab" aria-controls="controlled-element-13-id">Tab 1.3</button>
     </div>
 
     <div id="controlled-element-11-id" hidden>
-      <p>Testing horizontal tab group. First tab automatically selected by default.
+      <p>Testing horizontal tab list. First tab automatically selected by default.
     </div>
     <div id="controlled-element-12-id" hidden>Content 1.2</div>
     <div id="controlled-element-13-id" hidden>Content 1.3</div>
     
     <hr>
 
-    <div is="tab-list" group="tabs-group-2-name" aria-orientation="vertical" style="--hue: 100">
+    <div is="tab-list" aria-orientation="vertical" style="--hue: 100">
       <button role="tab" aria-controls="controlled-element-21-id">Tab 2.1</button>
       <button role="tab" aria-controls="controlled-element-22-id" aria-selected="true">Tab 2.2</button>
       <button role="tab" aria-controls="controlled-element-23-id">Tab 2.3</button>
@@ -116,13 +120,13 @@
 
     <div id="controlled-element-21-id" hidden>Content 2.1</div>
     <div id="controlled-element-22-id" hidden>
-      <p>Testing vertical tab group. Second tab selected by default.
+      <p>Testing vertical tab list. Second tab selected by default.
     </div>
     <div id="controlled-element-23-id" hidden>Content 2.3</div>
 
     <hr>
 
-    <div is="tab-list" group="tabs-group-name" style="--hue: 300">
+    <div is="tab-list" style="--hue: 300">
       <button role="tab" aria-controls="controlled-element-31-id">Tab 3.1</button>
       <button role="tab" aria-controls="controlled-element-32-id">Tab 3.2</button>
       <button role="tab" aria-controls="controlled-element-33-id" aria-selected="true">Tab 3.3</button>
@@ -131,7 +135,7 @@
     <div id="controlled-element-31-id" hidden>Content 3.1</div>
     <div id="controlled-element-32-id" hidden>Content 3.2</div>
     <div id="controlled-element-33-id" hidden>
-      <p>Testing horizontal tab group again. Third tab selected by default.
+      <p>Testing horizontal tab list again. Third tab selected by default.
     </div>
   </body>
 

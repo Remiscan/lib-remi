@@ -2,7 +2,7 @@
 ***** EXAMPLE OF USE ******************
 ***************************************
 
-<div is="tab-list" group="tabs-group-name">
+<div is="tab-list">
   <button role="tab" aria-controls="controlled-element-1-id">Tab 1 name</button>
   <button role="tab" aria-controls="controlled-element-2-id">Tab 2 name</button>
   <button role="tab" aria-controls="controlled-element-3-id">Tab 3 name</button>
@@ -96,11 +96,18 @@ sheet.replaceSync(/*css*/`
 
 
 
+let tablistsNumber = 0;
+
+
+
 class TabList extends HTMLDivElement {
   constructor() {
     super();
     this.ready = false;
     this.initialized = false;
+    this.selectedTab = null;
+    this.tablistIndex = tablistsNumber;
+    tablistsNumber++;
 
     this.clickHandler = clickEvent => {
       const clickedTab = clickEvent.currentTarget;
@@ -182,7 +189,9 @@ class TabList extends HTMLDivElement {
   }
 
 
-  selectTab(requestedTab = this.selectedTab ?? this.allTabs[0], focus = true) {
+  selectTab(requestedTab = this.querySelector('[role="tab"][aria-selected="true"]') ?? this.allTabs[0], focus = true) {
+    if (this.selectedTab === requestedTab) return;
+
     const tabs = this.allTabs;
     for (const tab of tabs) {
       const controlledElement = this.getControlledElement(tab);
@@ -192,7 +201,8 @@ class TabList extends HTMLDivElement {
         tab.setAttribute('aria-selected', 'true');
         tab.setAttribute('tabindex', '0');
         if (focus) tab.focus();
-        window.dispatchEvent(new CustomEvent('tabchange', { detail: { group: this.group, value: tab.value } }));
+        this.selectedTab = tab;
+        window.dispatchEvent(new CustomEvent('tabchange', { detail: { tablist: this, selected: tab } }));
       } else {
         controlledElement.setAttribute('hidden', 'hidden');
         controlledElement.setAttribute('tabindex', '-1');
@@ -200,11 +210,6 @@ class TabList extends HTMLDivElement {
         tab.setAttribute('tabindex', '-1');
       }
     }
-  }
-
-
-  get group() {
-    return this.getAttribute('group');
   }
 
 
@@ -218,16 +223,10 @@ class TabList extends HTMLDivElement {
   }
 
 
-  get selectedTab() {
-    return this.querySelector('[role="tab"][aria-selected="true"]');
-  }
-
-
   initializeTabs() {
     if (this.initialized) return;
 
     const tabs = this.allTabs;
-    const group = this.group;
     const orientation = this.getAttribute('aria-orientation') === 'vertical' ? 'vertical' : 'horizontal';
 
     this.setAttribute('role', 'tablist');
@@ -235,7 +234,7 @@ class TabList extends HTMLDivElement {
 
     tabs.forEach((tab, k) => {
       const controlledElement = this.getControlledElement(tab);
-      const id = tab.getAttribute('id') ?? `${group}-tab-${k}`;
+      const id = tab.getAttribute('id') ?? `tablist-${this.tablistIndex}-tab-${k}`;
       const selected = tab.getAttribute('aria-selected') === 'true';
 
       // Pass the correct attributes to the tab button
