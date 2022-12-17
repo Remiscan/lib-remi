@@ -13,18 +13,20 @@
     <script defer src="/_common/polyfills/adoptedStyleSheets.min.js"></script>
     <script>window.esmsInitOptions = { polyfillEnable: ['css-modules', 'json-modules'] }</script>
     <script defer src="/_common/polyfills/es-module-shims.js"></script>
-    <script defer src="/_common/polyfills/custom-elements.js"></script> <!-- to support "is" attribute -->
     
     <script type="importmap">
     {
       "imports": {
         "sortable-table": "/_common/components/sortable-table/sortable-table.js",
-        "translation-observer": "/_common/js/translation-observer.js"
+        "translation-observer": "/_common/js/translation-observer.js",
+        "custom-elements-polyfill": "/_common/polyfills/custom-elements.js"
       }
     }
     </script>
     
     <link rel="modulepreload" href="/_common/components/sortable-table/sortable-table.js">
+    <link rel="modulepreload" href="/_common/js/translation-observer.js">
+    <link rel="modulepreload" href="/_common/polyfills/custom-elements.js">
     <link rel="stylesheet" href="/_common/components/basic.min.css">
     
     <!--<?php versionizeEnd(__DIR__); ?>-->

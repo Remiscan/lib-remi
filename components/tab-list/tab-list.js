@@ -16,6 +16,10 @@
 
 
 
+import 'custom-elements-polyfill';
+
+
+
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   @layer tab-list {

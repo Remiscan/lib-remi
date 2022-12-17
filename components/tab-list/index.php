@@ -12,17 +12,18 @@
     <script defer src="../../polyfills/adoptedStyleSheets.min.js"></script> <!-- to support constructed style sheets -->
     <script>window.esmsInitOptions = { "polyfillEnable": ["css-modules", "json-modules"] }</script>
     <script defer src="../../polyfills/es-module-shims.js"></script> <!-- to support import maps -->
-    <script defer src="/_common/polyfills/custom-elements.js"></script> <!-- to support "is" attribute -->
     
     <script type="importmap">
     {
       "imports": {
-        "tab-list": "/_common/components/tab-list/tab-list.js"
+        "tab-list": "/_common/components/tab-list/tab-list.js",
+        "custom-elements-polyfill": "/_common/polyfills/custom-elements.js"
       }
     }
     </script>
   
     <link rel="modulepreload" href="/_common/components/tab-list/tab-list.js">
+    <link rel="modulepreload" href="/_common/polyfills/custom-elements.js">
   
     <!--<?php versionizeEnd(__DIR__); ?>-->
 

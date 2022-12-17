@@ -1,3 +1,4 @@
+import 'custom-elements-polyfill';
 import translationObserver from 'translation-observer';
 
 
