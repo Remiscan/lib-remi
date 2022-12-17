@@ -12,11 +12,15 @@
 <div id="controlled-element-2-id" hidden></div>
 <div id="controlled-element-3-id" hidden></div>
 
+***
+
+Add the aria-selected="true" attribute on a button to make it selected by default.
+
 **************************************/
 
 
 
-import 'custom-elements-polyfill';
+import 'custom-elements-polyfill'; // to support the "is" HTML attribute
 
 
 
@@ -114,12 +118,13 @@ class TabList extends HTMLDivElement {
     this.tablistIndex = tablistsNumber;
     tablistsNumber++;
 
+    // Handles clicks on tab buttons
     this.clickHandler = clickEvent => {
       const clickedTab = clickEvent.currentTarget;
       this.selectTab(clickedTab);
     };
 
-    // Handles focus events
+    // Handles focus on tab buttons
     this.focusHandler = focusEvent => {
       const tabs = this.allTabs;
       const selectedTab = focusEvent.currentTarget;
@@ -128,48 +133,54 @@ class TabList extends HTMLDivElement {
 
       const orientation = this.getAttribute('aria-orientation') === 'vertical' ? 'vertical' : 'horizontal';
 
+      // Handles keyboard events while a tab button is focused
       const keydownHandler = keydownEvent => {
         let supportedKey = true;
         let requestedIndex = null;
 
         switch (keydownEvent.code) {
           case 'ArrowLeft': {
+            // Ignore horizontal arrows when the tab list is vertically oriented
             if (orientation === 'vertical') supportedKey = false;
             else {
-              requestedIndex = selectedIndex - 1;
+              requestedIndex = selectedIndex - 1; // select previous tab
             }
           } break;
 
           case 'ArrowRight': {
+            // Ignore horizontal arrows when the tab list is vertically oriented
             if (orientation === 'vertical') supportedKey = false;
             else {
-              requestedIndex = selectedIndex + 1;
+              requestedIndex = selectedIndex + 1; // select next tab
             }
           } break;
 
           case 'ArrowUp': {
+            // Ignore vertical arrows when the tab list is horizontally oriented
             if (orientation === 'horizontal') supportedKey = false;
             else {
-              requestedIndex = selectedIndex - 1;
+              requestedIndex = selectedIndex - 1; // select previous tab
             }
           } break;
 
           case 'ArrowDown': {
+            // Ignore vertical arrows when the tab list is horizontally oriented
             if (orientation === 'horizontal') supportedKey = false;
             else {
-              requestedIndex = selectedIndex + 1;
+              requestedIndex = selectedIndex + 1; // select next tab
             }
           } break;
 
           case 'Home': {
-            requestedIndex = 0;
+            requestedIndex = 0; // select first tab
           } break;
 
           case 'End': {
-            requestedIndex = -1;
+            requestedIndex = -1; // select last tab
           } break;
 
           default: {
+            // Ignore other key presses
             supportedKey = false;
           }
         }
@@ -194,6 +205,11 @@ class TabList extends HTMLDivElement {
   }
 
 
+  /**
+   * Selects a tab.
+   * @param {HTMLElement} requestedTab - The requested tab.
+   * @param {boolean} focus - Whether to move focus to the requested tab after selecting it.
+   */
   selectTab(requestedTab = this.querySelector('[role="tab"][aria-selected="true"]') ?? this.allTabs[0], focus = true) {
     if (this.selectedTab === requestedTab) return;
 
@@ -218,16 +234,23 @@ class TabList extends HTMLDivElement {
   }
 
 
+  /** Returns all tabs in the tab list. */
   get allTabs() {
     return [...this.querySelectorAll(`[role="tab"]`)];
   }
 
 
+  /**
+   * Returns the element controlled by a tab.
+   * @param {HTMLElement} tab - The tab controlling the element.
+   * @returns {HTMLElement}
+   */
   getControlledElement(tab) {
     return document.getElementById(tab.getAttribute('aria-controls'));
   }
 
 
+  /** Prepares the tab list and its tabs by placing the proper attributes on them. */
   initializeTabs() {
     if (this.initialized) return;
 
@@ -282,16 +305,6 @@ class TabList extends HTMLDivElement {
       tab.removeEventListener('click', this.clickHandler);
       tab.removeEventListener('focus', this.focusHandler);
     });
-  }
-
-
-  attributeChangedCallback(attr, oldValue, newValue) {
-    if (oldValue == newValue) return;
-  }
-
-
-  static get observedAttributes() {
-    return [];
   }
 }
 

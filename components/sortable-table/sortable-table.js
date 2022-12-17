@@ -1,4 +1,28 @@
-import 'custom-elements-polyfill';
+/**************************************
+***** EXAMPLE OF USE ******************
+***************************************
+
+<table is="sortable-table">
+  <thead>
+    <tr>
+      <td>Name</td>
+      <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rémi</td>
+      <td>1467842667293</td>
+    </tr>
+    ...
+  </tbody>
+</table>
+
+**************************************/
+
+
+
+import 'custom-elements-polyfill'; // to support the "is" HTML attribute
 import translationObserver from 'translation-observer';
 
 
