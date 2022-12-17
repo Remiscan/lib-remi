@@ -89,6 +89,7 @@ sheet.replaceSync(/*css*/`
     [role="tab"][aria-selected="true"] {
       background: var(--on-bg-color);
       color: var(--on-text-color);
+      font-weight: 600;
     }
 
     [hidden] {
