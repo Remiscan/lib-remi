@@ -1,20 +1,42 @@
 const template = document.createElement('template');
-template.innerHTML = `
-<button type="button">Start</button>
-<span class="rate"></span>
-<span class="loading">...</span>
+template.innerHTML = /*html*/`
+  <button type="button" part="button">Start</button>
+  <span part="rate"></span>
+  <span part="loading">...</span>
 `;
+
+
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(/*css*/`
+  @keyframes rotate {
+    0% { rotate: 0deg; }
+    100% { rotate: 360deg; }
+  }
+
+  [part="loading"] {
+    display: inline-block;
+  }
+
+  .anim {
+    animation: rotate 2s linear infinite;
+  }
+`);
 
 
 
 export class FramerateTester extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(template.content.cloneNode(true));
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.shadowRoot.adoptedStyleSheets = [sheet];
 
     this.stopped = true;
-    this.handler = () => {};
+    this.handler = event => {
+      if (this.stopped) this.start();
+      else              this.stop();
+    };
   }
 
 
@@ -24,6 +46,12 @@ export class FramerateTester extends HTMLElement {
         requestAnimationFrame(t2 => resolve(t2 - t1))
       )
     );
+  }
+
+  static async currentRate(precision = 1) {
+    const singleDuration = await FramerateTester.singleFrameDuration();
+    const frameRate = 1000 / singleDuration;
+    return Math.round(frameRate * precision) / precision;
   }
 
   static async averageRate(duration = 1000, precision = 1) {
@@ -41,34 +69,33 @@ export class FramerateTester extends HTMLElement {
 
   async start() {
     this.stopped = false;
-    this.shadow.querySelector('button').innerHTML = 'Stop';
+    this.shadowRoot.querySelector('button').innerHTML = 'Stop';
 
-    const span = this.shadow.querySelector('.rate');
-    const loading = this.shadow.querySelector('.loading');
-    loading.style.display = 'inline';
-    loading.innerHTML = '...';
+    const span = this.shadowRoot.querySelector('[part="rate"]');
+    const loading = this.shadowRoot.querySelector('[part="loading"]');
+    loading.style.removeProperty('display');
+    loading.innerHTML = '😵‍💫';
+    loading.classList.add('anim');
 
-    let i = 0;
     while (!this.stopped) {
-      const rate = await FramerateTester.averageRate();
-      loading.innerHTML = `${i === 1 ? '·' : '.'}${i === 2 ? '·' : '.'}${i === 3 ? '·' : '.'}`;
+      const rate = await FramerateTester.averageRate(100);
       span.innerHTML = `${rate} FPS`;
-      i = (i + 1) % 4;
     }
   }
 
   async stop() {
     this.stopped = true;
-    this.shadow.querySelector('button').innerHTML = 'Start';
-    this.shadow.querySelector('.loading').style.display = 'none';
+    this.shadowRoot.querySelector('button').innerHTML = 'Start';
+    this.shadowRoot.querySelector('[part="loading"]').style.setProperty('display', 'none');
   }
 
 
   connectedCallback() {
-    this.shadow.querySelector('button').addEventListener('click', this.handler = event => {
-      if (this.stopped) this.start();
-      else              this.stop();
-    });
+    this.shadowRoot.querySelector('button').addEventListener('click', this.handler);
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.querySelector('button').removeEventListener('click', this.handler);
   }
 }
 
