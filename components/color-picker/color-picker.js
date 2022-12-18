@@ -598,7 +598,8 @@ export class ColorPicker extends HTMLElement {
       switch (event.type) {
         case 'input':
         case 'change': {
-          //event.stopPropagation();
+          event.preventDefault();
+          event.stopPropagation();
           this.dispatchEvent(new CustomEvent(event.type, {
             bubbles: true,
             detail: { color: event.currentTarget.value }
@@ -614,6 +615,8 @@ export class ColorPicker extends HTMLElement {
       input: null,
       change: null
     };
+
+    this.monitoring = false;
   }
 
 
@@ -767,15 +770,14 @@ export class ColorPicker extends HTMLElement {
    * @param {Event} event - The event that triggered the color update.
    * @param {string} colorExpr - The expression of the selected color.
    * @param {HTMLInputElement} rangeInput - The input-slider element that triggered the event.
+   * @param {object} options
+   * @param {boolean} options.dispatch - Whether to dispatch an event.
    */
-  #updateColor(event, colorExpr, rangeInput) {
+  #updateColor(event, colorExpr, rangeInput, { dispatch = true } = {}) {
     if (this.lastEventColor[event.type] === colorExpr) return;
     this.lastEventColor[event.type] = colorExpr;
     
-    this.dispatchEvent(new CustomEvent(event.type, {
-      bubbles: true,
-      detail: { color: colorExpr }
-    }));
+    if (dispatch) this.#dispatchColorEvent(event.type, colorExpr);
 
     this.setAttribute('color', colorExpr);
 
@@ -807,15 +809,26 @@ export class ColorPicker extends HTMLElement {
   /**
    * Programmatically update the selected color.
    * @param {string} colorExpr - The expression of the selected color.
+   * @param {boolean} dispatch - Whether to dispatch a change event on color change.
    */
-  selectColor(colorExpr) {
+  selectColor(colorExpr, dispatch = false) {
+    this.monitoring = false; // will prevent events being fired for each property input successively being updated to the new color
     this.#updateOtherInputs(colorExpr, null);
-    this.#updateColor(new Event('change'), colorExpr);
+    this.#updateColor(new Event('change'), colorExpr, false, { dispatch: false });
+    this.monitoring = true;
+
+    if (dispatch) {
+      for (const type of ['input', 'change']) {
+        this.#dispatchColorEvent(type, colorExpr );
+      }
+    }
   }
 
 
   /** Starts monitoring changes to the selected color. */
   #startMonitoringChanges() {
+    this.monitoring = true;
+
     const select = this.shadowRoot.querySelector('select');
     let selectChangeHandler;
     select.addEventListener('change', selectChangeHandler = event => {
@@ -833,8 +846,16 @@ export class ColorPicker extends HTMLElement {
       rangeInput.style.setProperty('--min', rangeInput.getAttribute('min'));
       rangeInput.style.setProperty('--max', rangeInput.getAttribute('max'));
 
-      const rangeHandler = event => this.#updateColor(event, this.#getCurrentColorExpression(), rangeInput);
+      const rangeHandler = event => {
+        if (!this.monitoring) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.#updateColor(event, this.#getCurrentColorExpression(), rangeInput);
+      };
       const numericHandler = event => {
+        if (!this.monitoring) return;
+        event.preventDefault();
+        event.stopPropagation();
         // Update range input on numeric input change
         rangeInput.value = numericInput.value;
         rangeInput.dispatchEvent(new Event(event.type));
@@ -853,9 +874,24 @@ export class ColorPicker extends HTMLElement {
 
   /** Stops monitoring changes to the selected color. */
   #stopMonitoringChanges() {
+    this.monitoring = false;
+
     for (const [input, { type, handler }] of this.inputHandlers) {
       input.removeEventListener(type, handler);
     }
+  }
+
+
+  /**
+   * Dispatches an event on the color picker.
+   * @param {string} type - Type of the dispatched event.
+   * @param {string} colorExpr - Expression of the selected color.
+   */
+  #dispatchColorEvent(type, colorExpr) {
+    this.dispatchEvent(new CustomEvent(type, {
+      bubbles: true,
+      detail: { color: colorExpr }
+    }));
   }
 
 
