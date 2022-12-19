@@ -76,9 +76,9 @@
 
   <body>
     <p>
-      <remiscan-logo background="indigo" text-color="aquamarine" style="--width: 4rem;"></remiscan-logo>
-      <remiscan-logo background="indigo" text-color="aquamarine"></remiscan-logo>
-      <remiscan-logo background="linear-gradient(to right, indigo, darkblue)" text-gradient="linear-gradient(to right, palegreen, moccasin)"></remiscan-logo>
+      <remiscan-logo background="#321b32" text-color="#b3e6b3" style="--width: 4rem;"></remiscan-logo>
+      <remiscan-logo background="#321b32" text-color="#b3e6b3"></remiscan-logo>
+      <remiscan-logo background="linear-gradient(to right, #321b32, darkblue)" text-gradient="linear-gradient(to right, #b3e6b3, moccasin)"></remiscan-logo>
       <remiscan-logo style="--width: 16rem;" animate></remiscan-logo>
     </p>
 
