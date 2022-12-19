@@ -27,10 +27,10 @@ if (paintWorkletSupport) {
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <label for="fallback-input" class="fallback" part="fallback">
-    <input type="color" data-label="pick-color" part="fallback-input" id="fallback-input">
-    <span data-string="pick-color" part="fallback-text">
-  </label>
+  <div part="fallback">
+    <input type="color" id="fallback-input" part="fallback-input">
+    <label for="fallback-input" data-string="pick-color" part="fallback-label"></label>
+  </div>
 
   <button type="button" data-label="pick-color" part="button">
     <span part="color-preview"></span>
@@ -60,166 +60,166 @@ template.innerHTML = /*html*/`
       </select>
     </div>
 
-    <label for="range-red" data-format="rgb" part="property-container" data-property="r" data-value-operation="Math.round(255 * {v})">
-      <span data-string="prop-r-nom" part="property-name"></span>
+    <fieldset data-format="rgb" data-property="r" data-value-operation="Math.round(255 * {v})" part="property-container">
+      <legend data-string="prop-r-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 255]</span>
       <input type="number" part="input-number" min="0" max="255" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-red" min="0" max="255" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="255" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-green" data-format="rgb" part="property-container" data-property="g" data-value-operation="Math.round(255 * {v})">
-      <span data-string="prop-g-nom" part="property-name"></span>
+    <fieldset data-format="rgb" data-property="g" data-value-operation="Math.round(255 * {v})" part="property-container">
+      <legend data-string="prop-g-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 255]</span>
       <input type="number" part="input-number" min="0" max="255" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-green" min="0" max="255" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="255" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-blue" data-format="rgb" part="property-container" data-property="b" data-value-operation="Math.round(255 * {v})">
-      <span data-string="prop-b-nom" part="property-name"></span>
+    <fieldset data-format="rgb" data-property="b" data-value-operation="Math.round(255 * {v})" part="property-container">
+      <legend data-string="prop-b-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 255]</span>
       <input type="number" part="input-number" min="0" max="255" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-blue" min="0" max="255" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="255" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-hue" data-format="hsl hwb" part="property-container"  data-property="h"data-value-operation="Math.round({v})">
-      <span data-string="prop-h-nom" part="property-name"></span>
+    <fieldset data-format="hsl hwb" part="property-container"  data-property="h"data-value-operation="Math.round({v})" part="property-container">
+      <legend data-string="prop-h-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-hue" min="0" max="359" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="359" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-saturation" data-format="hsl" part="property-container" data-property="s" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-s-nom" part="property-name"></span>
+    <fieldset data-format="hsl" data-property="s" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-s-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-saturation" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-luminosity" data-format="hsl" part="property-container" data-property="l" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-l-nom" part="property-name"></span>
+    <fieldset data-format="hsl" data-property="l" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-l-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-luminosity" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-whiteness" data-format="hwb" part="property-container" data-property="w" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-w-nom" part="property-name"></span>
+    <fieldset data-format="hwb" data-property="w" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-w-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-whiteness" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-blackness" data-format="hwb" part="property-container" data-property="bk" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-bk-nom" part="property-name"></span>
+    <fieldset data-format="hwb" data-property="bk" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-bk-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-blackness" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-cie-lightness" data-format="lab lch" part="property-container" data-property="ciel" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-ciel-nom" part="property-name"></span>
+    <fieldset data-format="lab lch" data-property="ciel" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-ciel-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-cie-lightness" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-cie-a-axis" data-format="lab" part="property-container" data-property="ciea" data-value-operation="Math.round({v})">
-      <span data-string="prop-ciea-nom" part="property-name"></span>
+    <fieldset data-format="lab" data-property="ciea" data-value-operation="Math.round({v})" part="property-container">
+      <legend data-string="prop-ciea-nom" part="property-name"></legend>
       <span part="property-range">[-80 ; 94]</span>
       <input type="number" part="input-number" min="-80" max="94" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-cie-a-axis" min="-80" max="94" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="-80" max="94" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-cie-b-axis" data-format="lab" part="property-container" data-property="cieb" data-value-operation="Math.round({v})">
-      <span data-string="prop-cieb-nom" part="property-name"></span>
+    <fieldset data-format="lab" data-property="cieb" data-value-operation="Math.round({v})" part="property-container">
+      <legend data-string="prop-cieb-nom" part="property-name"></legend>
       <span part="property-range">[-112 ; 94]</span>
       <input type="number" part="input-number" min="-112" max="94" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-cie-b-axis" min="-112" max="94" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="-112" max="94" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-cie-chroma" data-format="lch" part="property-container" data-property="ciec" data-value-operation="Math.round({v})">
-      <span data-string="prop-ciec-nom" part="property-name"></span>
+    <fieldset data-format="lch" data-property="ciec" data-value-operation="Math.round({v})" part="property-container">
+      <legend data-string="prop-ciec-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 132]</span>
       <input type="number" part="input-number" min="0" max="132" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-cie-chroma" min="0" max="132" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="132" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-cie-hue" data-format="lch" part="property-container" data-property="cieh" data-value-operation="Math.round({v})">
-      <span data-string="prop-cieh-nom" part="property-name"></span>
+    <fieldset data-format="lch" data-property="cieh" data-value-operation="Math.round({v})" part="property-container">
+      <legend data-string="prop-cieh-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-cie-hue" min="0" max="359" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="359" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-lightness" data-format="oklab oklch" part="property-container" data-property="okl" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-okl-nom" part="property-name"></span>
+    <fieldset data-format="oklab oklch" data-property="okl" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-okl-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-lightness" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-lightness-r" data-format="oklrab oklrch okhsl" part="property-container" data-property="oklr" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-oklr-nom" part="property-name"></span>
+    <fieldset data-format="oklrab oklrch okhsl" data-property="oklr" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-oklr-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-lightness-r" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-value" data-format="okhsv" part="property-container" data-property="okv" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-okv-nom" part="property-name"></span>
+    <fieldset data-format="okhsv" data-property="okv" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-okv-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-value" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-a-axis" data-format="oklab oklrab" part="property-container" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3">
-      <span data-string="prop-oka-nom" part="property-name"></span>
+    <fieldset data-format="oklab oklrab" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3" part="property-container">
+      <legend data-string="prop-oka-nom" part="property-name"></legend>
       <span part="property-range">[-0.24 ; 0.28]</span>
       <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-a-axis" min="-0.24" max="0.28" step="0.001" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="-0.24" max="0.28" step="0.001" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-b-axis" data-format="oklab oklrab" part="property-container" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3">
-      <span data-string="prop-okb-nom" part="property-name"></span>
+    <fieldset data-format="oklab oklrab" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3" part="property-container">
+      <legend data-string="prop-okb-nom" part="property-name"></legend>
       <span part="property-range">[-0.32 ; 0.20]</span>
       <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-b-axis" min="-0.32" max="0.20" step="0.001" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="-0.32" max="0.20" step="0.001" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-chroma" data-format="oklch oklrch" part="property-container" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3">
-      <span data-string="prop-okc-nom" part="property-name"></span>
+    <fieldset data-format="oklch oklrch" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3" part="property-container">
+      <legend data-string="prop-okc-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 0.32]</span>
       <input type="number" part="input-number" min="0" max="0.32" step="0.001">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-chroma" min="0" max="0.32" step="0.001" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="0.32" step="0.001" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-saturation-l" data-format="okhsl" part="property-container" data-property="oksl" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-oksl-nom" part="property-name"></span>
+    <fieldset data-format="okhsl" data-property="oksl" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-oksl-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-saturation-l" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-saturation-v" data-format="okhsv" part="property-container" data-property="oksv" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-oksv-nom" part="property-name"></span>
+    <fieldset data-format="okhsv" data-property="oksv" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-oksv-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-saturation-v" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
 
-    <label for="range-ok-hue" data-format="oklch oklrch okhsl okhsv" part="property-container" data-property="okh" data-value-operation="Math.round({v})">
-      <span data-string="prop-okh-nom" part="property-name"></span>
+    <fieldset data-format="oklch oklrch okhsl okhsv" data-property="okh" data-value-operation="Math.round({v})" part="property-container">
+      <legend data-string="prop-okh-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 359]</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-ok-hue" min="0" max="359" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="359" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
     
-    <label for="range-opacity" data-format="rgb hsl hwb lab lch oklab oklch oklrab oklrch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})">
-      <span data-string="prop-a-nom" part="property-name"></span>
+    <fieldset data-format="rgb hsl hwb lab lch oklab oklch oklrab oklrch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})" part="property-container">
+      <legend data-string="prop-a-nom" part="property-name"></legend>
       <span part="property-range">[0 ; 100]</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
-      <input-slider orientation="vertical" part="input-range" id="range-opacity" min="0" max="100" step="1" exportparts="slider-track,slider-thumb"></input-slider>
-    </label>
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+    </fieldset>
   </dialog>
 `;
 
@@ -286,7 +286,7 @@ sheet.replaceSync(/*css*/`
       grid-template-columns: auto;
     }
 
-    :host(:not([label])) [part="fallback-text"] {
+    :host(:not([label])) [part="fallback-label"] {
       display: none;
     }
 
@@ -399,6 +399,12 @@ sheet.replaceSync(/*css*/`
     font-weight: 600;
   }
 
+  [part="property-name"] {
+    display: contents;
+    padding: 0;
+    border: none;
+  }
+
   [part="property-range"] {
     display: none;
   }
@@ -409,7 +415,10 @@ sheet.replaceSync(/*css*/`
   /* INPUTS */
   /**********/
 
-  label[data-format] {
+  [part="property-container"] {
+    border: none;
+    margin: 0;
+    padding: 0;
     display: none;
     --range-width: var(--tap-safe-size);
     --range-full-width: calc(var(--range-width) + 2 * var(--range-border-width));
@@ -423,49 +432,49 @@ sheet.replaceSync(/*css*/`
   }
 
   /* Gradient steps per format */
-  label[data-property="r"],
-  label[data-property="g"],
-  label[data-property="b"],
-  label[data-property="a"] {
+  [part="property-container"][data-property="r"],
+  [part="property-container"][data-property="g"],
+  [part="property-container"][data-property="b"],
+  [part="property-container"][data-property="a"] {
     --gradient-steps: 1;
   }
-  label[data-property="h"],
-  label[data-property="s"],
-  label[data-property="l"],
-  label[data-property="w"],
-  label[data-property="bk"] {
+  [part="property-container"][data-property="h"],
+  [part="property-container"][data-property="s"],
+  [part="property-container"][data-property="l"],
+  [part="property-container"][data-property="w"],
+  [part="property-container"][data-property="bk"] {
     --gradient-steps: 25;
   }
-  label[data-property="ciel"],
-  label[data-property="ciea"],
-  label[data-property="cieb"],
-  label[data-property="ciec"],
-  label[data-property="cieh"],
-  label[data-property="okl"],
-  label[data-property="oka"],
-  label[data-property="okb"],
-  label[data-property="okc"],
-  label[data-property="okh"],
-  label[data-property="oklr"],
-  label[data-property="okv"],
-  label[data-property="oksl"],
-  label[data-property="oksv"] {
+  [part="property-container"][data-property="ciel"],
+  [part="property-container"][data-property="ciea"],
+  [part="property-container"][data-property="cieb"],
+  [part="property-container"][data-property="ciec"],
+  [part="property-container"][data-property="cieh"],
+  [part="property-container"][data-property="okl"],
+  [part="property-container"][data-property="oka"],
+  [part="property-container"][data-property="okb"],
+  [part="property-container"][data-property="okc"],
+  [part="property-container"][data-property="okh"],
+  [part="property-container"][data-property="oklr"],
+  [part="property-container"][data-property="okv"],
+  [part="property-container"][data-property="oksl"],
+  [part="property-container"][data-property="oksv"] {
     --gradient-steps: 50;
   }
 
   /* Properties displayed per format */
-  :host(:not([format])) label[data-format~="rgb"],
-  :host([format="rgb"]) label[data-format~="rgb"],
-  :host([format="hsl"]) label[data-format~="hsl"],
-  :host([format="hwb"]) label[data-format~="hwb"],
-  :host([format="lab"]) label[data-format~="lab"],
-  :host([format="lch"]) label[data-format~="lch"],
-  :host([format="oklab"]) label[data-format~="oklab"],
-  :host([format="oklch"]) label[data-format~="oklch"],
-  :host([format="oklrab"]) label[data-format~="oklrab"],
-  :host([format="oklrch"]) label[data-format~="oklrch"],
-  :host([format="okhsl"]) label[data-format~="okhsl"],
-  :host([format="okhsv"]) label[data-format~="okhsv"] {
+  :host(:not([format])) [part="property-container"][data-format~="rgb"],
+  :host([format="rgb"]) [part="property-container"][data-format~="rgb"],
+  :host([format="hsl"]) [part="property-container"][data-format~="hsl"],
+  :host([format="hwb"]) [part="property-container"][data-format~="hwb"],
+  :host([format="lab"]) [part="property-container"][data-format~="lab"],
+  :host([format="lch"]) [part="property-container"][data-format~="lch"],
+  :host([format="oklab"]) [part="property-container"][data-format~="oklab"],
+  :host([format="oklch"]) [part="property-container"][data-format~="oklch"],
+  :host([format="oklrab"]) [part="property-container"][data-format~="oklrab"],
+  :host([format="oklrch"]) [part="property-container"][data-format~="oklrch"],
+  :host([format="okhsl"]) [part="property-container"][data-format~="okhsl"],
+  :host([format="okhsv"]) [part="property-container"][data-format~="okhsv"] {
     display: grid;
   }
   
@@ -659,7 +668,7 @@ export class ColorPicker extends HTMLElement {
    * @returns {string} The current input value.
    */
   #getCurrentRangeValue(prop) {
-    return this.shadowRoot.querySelector(`label[data-property="${prop}"] > input-slider`).value;
+    return this.shadowRoot.querySelector(`[part="property-container"][data-property="${prop}"] > input-slider`).value;
   }
 
 
@@ -694,8 +703,8 @@ export class ColorPicker extends HTMLElement {
   #updateGradients() {
     const format = this.shadowRoot.querySelector('select').value;
 
-    const allLabels = [...this.shadowRoot.querySelectorAll(`label[data-format]`)];
-    const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`label[data-format~="${format}"]`)] : [];
+    const allLabels = [...this.shadowRoot.querySelectorAll(`[part="property-container"][data-format]`)];
+    const formatLabels = format ? [...this.shadowRoot.querySelectorAll(`[part="property-container"][data-format~="${format}"]`)] : [];
     const formatIsSupported = CSS.supports(`color: ${black.toString(`color-${format}`)}`);
 
     for (const label of allLabels) {
@@ -744,7 +753,7 @@ export class ColorPicker extends HTMLElement {
    */
   #updateOtherInputs(colorExpr, format = this.shadowRoot.querySelector('select').value) {
     const color = new Couleur(colorExpr);
-    for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
+    for (const label of [...this.shadowRoot.querySelectorAll('[part="property-container"][data-property]')]) {
       const rangeInput = label.querySelector(`input-slider`);
       const numericInput = label.querySelector(`input[type="number"]`);
 
@@ -838,7 +847,7 @@ export class ColorPicker extends HTMLElement {
     });
     this.inputHandlers.push({ input: select, type: 'change', handler: selectChangeHandler });
 
-    for (const label of [...this.shadowRoot.querySelectorAll('label[data-property]')]) {
+    for (const label of [...this.shadowRoot.querySelectorAll('[part="property-container"][data-property]')]) {
       const rangeInput = label.querySelector(`input-slider`);
       const numericInput = label.querySelector(`input[type="number"]`);
 
