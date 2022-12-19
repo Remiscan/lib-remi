@@ -50,19 +50,17 @@
       }
 
       :root[data-theme="light"] [role="tablist"] {
-        --hue: 231;
-        --on-bg-color: hsl(var(--hue), 40%, 50%);
-        --hover-bg-color: hsl(var(--hue), 40%, 50%, .3);
-        --active-bg-color: hsl(var(--hue), 40%, 50%, .4);
+        --on-bg-color: #0075FF;
+        --hover-bg-color: #0075FF4D;
+        --active-bg-color: #0075FF80;
         --off-text-color: black;
         --on-text-color: white;
       }
 
       :root[data-theme="dark"] [role="tablist"] {
-        --hue: 217;
-        --on-bg-color: hsl(var(--hue), 89%, 75%);
-        --hover-bg-color: hsl(var(--hue), 89%, 75%, .3);
-        --active-bg-color: hsl(var(--hue), 89%, 75%, .4);
+        --on-bg-color: #99C8FF;
+        --hover-bg-color: #99C8FF4D;
+        --active-bg-color: #99C8FF80;
         --off-text-color: white;
         --on-text-color: rgb(48, 48, 48);
       }
@@ -113,7 +111,7 @@
     
     <hr>
 
-    <div is="tab-list" aria-orientation="vertical" style="--hue: 100">
+    <div is="tab-list" aria-orientation="vertical" style="filter: hue-rotate(-120deg)">
       <button role="tab" aria-controls="controlled-element-21-id">Tab 2.1</button>
       <button role="tab" aria-controls="controlled-element-22-id" aria-selected="true">Tab 2.2</button>
       <button role="tab" aria-controls="controlled-element-23-id">Tab 2.3</button>
@@ -127,7 +125,7 @@
 
     <hr>
 
-    <div is="tab-list" style="--hue: 300">
+    <div is="tab-list" style="filter: hue-rotate(120deg)">
       <button role="tab" aria-controls="controlled-element-31-id">Tab 3.1</button>
       <button role="tab" aria-controls="controlled-element-32-id">Tab 3.2</button>
       <button role="tab" aria-controls="controlled-element-33-id" aria-selected="true">Tab 3.3</button>
