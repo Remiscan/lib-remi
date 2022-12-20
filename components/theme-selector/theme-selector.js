@@ -503,6 +503,9 @@ export class ThemeSelector extends HTMLElement {
     }
 
     for (const selector of [...document.querySelectorAll('theme-selector')]) {
+      const alreadyHasTheme = selector.querySelector(`#theme-${selector.count}-${name}`);
+      if (alreadyHasTheme) return;
+      
       const lastElement = selector.querySelector('.selector > :last-child');
       lastElement.outerHTML = `
         <input type="radio" name="theme-${selector.count}" id="theme-${selector.count}-${name}" value="${name}" data-scheme="${scheme}">
