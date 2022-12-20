@@ -590,11 +590,17 @@ const black = new Couleur('black');
 
 
 export class ColorPicker extends HTMLElement {
+  static formAssociated = true;
+  #internals;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [sheet];
+    if ('ElementInternals' in window && 'setFormValue' in window.ElementInternals.prototype) {
+      this.#internals = this.attachInternals();
+    }
 
     this.inputHandlers = []; // Array<{ input, type, handler }>
 
@@ -627,6 +633,17 @@ export class ColorPicker extends HTMLElement {
 
     this.monitoring = false;
   }
+
+
+  // Useful properties and methods for form-associated elements
+  get form() { return this.#internals?.form; }
+  get name() { return this.getAttribute('name'); }
+  get type() { return this.localName; }
+  get validity() {return this.#internals?.validity; }
+  get validationMessage() {return this.#internals?.validationMessage; }
+  get willValidate() {return this.#internals?.willValidate; }
+  checkValidity() { return this.#internals?.checkValidity(); }
+  reportValidity() {return this.#internals?.reportValidity(); }
 
 
   /** Opens the options menu. */
@@ -787,6 +804,7 @@ export class ColorPicker extends HTMLElement {
     this.lastEventColor[event.type] = colorExpr;
     
     if (dispatch) this.#dispatchColorEvent(event.type, colorExpr);
+    this.#internals?.setFormValue(colorExpr);
 
     this.setAttribute('color', colorExpr);
 

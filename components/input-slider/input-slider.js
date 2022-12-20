@@ -166,11 +166,17 @@ const ariaAttributesMap = new Map([
 
 
 export class InputSlider extends HTMLElement {
+  static formAssociated = true;
+  #internals;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.shadowRoot.adoptedStyleSheets = [sheet];
+    if ('ElementInternals' in window && 'setFormValue' in window.ElementInternals.prototype) {
+      this.#internals = this.attachInternals();
+    }
 
     // Gets the ratio of the nrequested position of the slider thumb
     const getPositionRatio = (event, rect, thumbRect, direction) => {
@@ -438,6 +444,17 @@ export class InputSlider extends HTMLElement {
   }
 
 
+  // Useful properties and methods for form-associated elements
+  get form() { return this.#internals?.form; }
+  get name() { return this.getAttribute('name'); }
+  get type() { return this.localName; }
+  get validity() {return this.#internals?.validity; }
+  get validationMessage() {return this.#internals?.validationMessage; }
+  get willValidate() {return this.#internals?.willValidate; }
+  checkValidity() { return this.#internals?.checkValidity(); }
+  reportValidity() {return this.#internals?.reportValidity(); }
+
+
   static get observedAttributes() { return [...ariaAttributesMap.keys()]; }
   
 
@@ -465,7 +482,8 @@ export class InputSlider extends HTMLElement {
         const valueText = this.valueText;
         slider.setAttribute('aria-valuetext', valueText);
 
-        this.dispatchUpdateEvent('input', Number(currentValue), valueText);
+        this.#internals?.setFormValue(currentValue);
+        this.dispatchUpdateEvent('input', currentValue, valueText);
       }
 
       case 'min':

@@ -82,16 +82,6 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         margin: 0;
       }
 
-      color-picker:nth-of-type(1) {
-        --size: 3rem;
-      }
-
-      color-picker:nth-of-type(2) {
-        --size: 2rem;
-        --range-border-width: 5px;
-        --range-border-radius: 5px;
-      }
-
       color-picker::part(selector) {
         border-radius: 10px;
       }
@@ -99,8 +89,12 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
-    <color-picker position="bottom" format="hsl" color="blue"></color-picker>
-    <color-picker position="bottom" format="okhsl" label></color-picker>
+    <color-picker position="bottom" format="hsl" color="blue" style="--size: 3rem"></color-picker>
+    <form>
+      <color-picker position="bottom" format="okhsl" label name="color"
+                    style="--size: 2rem; --range-border-width: 5px; --range-border-radius: 5px;">
+      </color-picker>
+    </form>
   </body>
 
 </html>

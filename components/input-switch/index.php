@@ -187,10 +187,12 @@
       <input-switch id="switch-1" label="Switch 1" checked hint="text" style="--width: 12rem;"></input-switch>
       <input-switch id="switch-2" label="Switch 2" style="--width: 12rem;"></input-switch>
 
-      <label for="switch-3">
-        Switch 3
-        <input-switch id="switch-3" checked hint="icon"></input-switch>
-      </label>
+      <form>
+        <label for="switch-3">
+          Switch 3
+          <input-switch id="switch-3" checked hint="icon" name="switch"></input-switch>
+        </label>
+      </form>
 
       <label for="switch-4" dir="rtl">
         Switch 4

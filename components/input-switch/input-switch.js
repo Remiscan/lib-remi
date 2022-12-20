@@ -289,11 +289,17 @@ const getTouch = event => event.touches?.[0] ?? event;
 const intentionalDragLimit = 3; // pixels
 
 export default class InputSwitch extends HTMLElement {
+  static formAssociated = true;
+  #internals;
+
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: 'open', delegatesFocus: true });
     this.shadow.appendChild(template.content.cloneNode(true));
     this.shadow.adoptedStyleSheets = [sheet];
+    if ('ElementInternals' in window && 'setFormValue' in window.ElementInternals.prototype) {
+      this.#internals = this.attachInternals();
+    }
     
     this.button = this.shadowRoot.querySelector('button');
     this.moving = false;
@@ -304,9 +310,21 @@ export default class InputSwitch extends HTMLElement {
   }
 
 
+  // Useful properties and methods for form-associated elements
+  get form() { return this.#internals?.form; }
+  get name() { return this.getAttribute('name'); }
+  get type() { return this.localName; }
+  get validity() {return this.#internals?.validity; }
+  get validationMessage() {return this.#internals?.validationMessage; }
+  get willValidate() {return this.#internals?.willValidate; }
+  checkValidity() { return this.#internals?.checkValidity(); }
+  reportValidity() {return this.#internals?.reportValidity(); }
+
+
   toggle() {
     if (this.disabled) return;
     this.button.setAttribute('aria-checked', !this.checked);
+    this.#internals?.setFormValue(this.checked);
     this.dispatchEvent(new Event('change', { bubbles: true, cancelable: false }));
   }
 
@@ -537,6 +555,7 @@ export default class InputSwitch extends HTMLElement {
 
     // Set initial state
     this.button.setAttribute('aria-checked', this.getAttribute('checked') !== null);
+    this.#internals?.setFormValue(this.checked);
     this.removeAttribute('checked');
     this.button.style.setProperty('--dir', this.rtl ? -1 : 1); // for broswers that don't support the :dir() pseudo-class
 
