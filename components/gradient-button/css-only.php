@@ -107,7 +107,7 @@
   html, body {
     height: 100%;
     margin: 0;
-    color-scheme: light dark;
+    color-scheme: dark;
   }
 
   body {
@@ -130,11 +130,14 @@
     flex-wrap: wrap;
   }
 
-  a {
-    color: white;
+  p:last-of-type {
     opacity: .7;
     position: absolute;
     bottom: 1em;
+  }
+
+  a {
+    color: white;
   }
   </style>
 </head>

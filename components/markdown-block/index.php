@@ -28,23 +28,18 @@
   <!--<?php versionizeEnd(__DIR__); ?>-->
 
   <style>
+    html {
+      color-scheme: light dark;
+    }
+    
     body {
       margin: 0;
       padding: 10px;
-      background-color: #fff;
-      color: #000;
       margin: 20px;
 
       display: grid;
       grid-template-columns: 1fr 1fr;
       column-gap: 20px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #222;
-        color: #DDD;
-      }
     }
 
     .intro { 

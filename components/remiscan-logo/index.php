@@ -27,31 +27,15 @@
     <!--<?php versionizeEnd(__DIR__); ?>-->
 
     <style>
-      /*<?php themeSheetStart(); ?>*/
-      html[data-theme="light"] {
-        color-scheme: light;
-        --bg-color: white;
-        --text-color: black;
-      }
-
-      html[data-theme="dark"] {
-        color-scheme: dark;
-        --bg-color: rgb(34, 34, 34);
-        --text-color: white;
-      }
-      /*<?php themeSheetEnd(closeComment: true); ?>*/
-
       html {
-        background: var(--bg-color);
         height: 100%;
         width: 100%;
+        color-scheme: light dark;
       }
 
       body {
-        background: var(--bg-color);
         position: relative;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-        color: var(--text-color);
+        font-family: system-ui, sans-serif;
         padding: 1rem;
         height: 100%;
         box-sizing: border-box;

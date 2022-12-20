@@ -106,7 +106,7 @@
     html {
       width: 100%;
       height: 100%;
-      color-scheme: dark light;
+      color-scheme: light dark;
     }
 
     body {

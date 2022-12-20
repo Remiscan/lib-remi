@@ -25,18 +25,13 @@
 <!--<?php versionizeEnd(__DIR__); ?>-->
 
 <style>
+  html {
+    color-scheme: light dark;
+  }
+  
   body {
     margin: 0;
     padding: 10px;
-    background-color: #fff;
-    color: #000;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #222;
-      color: #DDD;
-    }
   }
 </style>
 

@@ -36,46 +36,14 @@
     </script>
 
     <style>
-      /*<?php themeSheetStart(); ?>*/
-      html[data-theme="light"] {
-        color-scheme: light;
-        --bg-color: white;
-        --text-color: black;
-      }
-
-      html[data-theme="dark"] {
-        color-scheme: dark;
-        --bg-color: rgb(34, 34, 34);
-        --text-color: white;
-      }
-
-      :root[data-theme="light"] [role="tablist"] {
-        --on-bg-color: #0075FF;
-        --hover-bg-color: #0075FF4D;
-        --active-bg-color: #0075FF80;
-        --off-text-color: black;
-        --on-text-color: white;
-      }
-
-      :root[data-theme="dark"] [role="tablist"] {
-        --on-bg-color: #99C8FF;
-        --hover-bg-color: #99C8FF4D;
-        --active-bg-color: #99C8FF80;
-        --off-text-color: white;
-        --on-text-color: rgb(48, 48, 48);
-      }
-      /*<?php themeSheetEnd(closeComment: true); ?>*/
-
       html {
-        background: var(--bg-color);
         height: 100%;
         width: 100%;
+        color-scheme: light dark;
       }
 
       body {
-        background: var(--bg-color);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-        color: var(--text-color);
+        font-family: system-ui, sans-serif;
         padding: 16px;
       }
 

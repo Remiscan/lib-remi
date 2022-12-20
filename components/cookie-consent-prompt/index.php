@@ -44,15 +44,13 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
       }
 
       body {
-        background: var(--bg-color);
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr 10rem;
-        color: var(--sunmoon-color);
         position: relative;
         gap: .5rem;
         place-items: center;
-        font-family: system-ui;
+        font-family: system-ui, sans-serif;
         margin: 0;
       }
 

@@ -7,20 +7,7 @@
     <title>&lt;input-switch&gt;</title>
 
     <style>
-      /*<?php themeSheetStart(); ?>*/
-      html[data-theme="light"] {
-        color-scheme: light;
-        --bg-color: white;
-        --text-color: black;
-      }
-
-      html[data-theme="dark"] {
-        color-scheme: dark;
-        --bg-color: rgb(34, 34, 34);
-        --text-color: white;
-      }
-
-      :root[data-theme="light"] input-switch {
+      input-switch {
         --off-bg-color: #828282;
         --on-bg-color: hsl(231, 40%, 50%);
         --handle-color: #ebebeb;
@@ -31,17 +18,18 @@
         --focus-color: black;
       }
 
-      :root[data-theme="dark"] input-switch {
-        --off-bg-color: #929292;
-        --on-bg-color: hsl(217, 89%, 75%);
-        --handle-color: rgb(48, 48, 48);
-        --handle-hover-color: #3a3a3a;
-        --handle-active-color: #222;
-        --off-text-color: var(--handle-color);
-        --on-text-color: var(--handle-color);
-        --focus-color: white;
+      @media (prefers-color-scheme: dark) {
+        input-switch {
+          --off-bg-color: #929292;
+          --on-bg-color: hsl(217, 89%, 75%);
+          --handle-color: rgb(48, 48, 48);
+          --handle-hover-color: #3a3a3a;
+          --handle-active-color: #222;
+          --off-text-color: var(--handle-color);
+          --on-text-color: var(--handle-color);
+          --focus-color: white;
+        }
       }
-      /*<?php themeSheetEnd(closeComment: true); ?>*/
 
       @media (forced-colors: active) {
         input-switch {
@@ -57,17 +45,15 @@
       }
 
       html {
-        background: var(--bg-color);
+        color-scheme: light dark;
         height: 100%;
         width: 100%;
       }
 
       body {
-        background: var(--bg-color);
         display: flex;
         position: relative;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-        color: var(--text-color);
+        font-family: system-ui, sans-serif;
         padding: 1rem;
         height: 100%;
         box-sizing: border-box;

@@ -82,7 +82,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         color: var(--sunmoon-color);
         position: relative;
         gap: .5rem;
-        font-family: system-ui;
+        font-family: system-ui, sans-serif;
         margin: 0;
       }
 

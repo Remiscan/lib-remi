@@ -34,8 +34,9 @@
     html, body {
       height: 100%;
       margin: 0;
-      color-scheme: light dark;
+      color-scheme: dark;
     }
+
     body {
       background-color: hsl(250, 40%, 30%);
       background-image: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25% 75%, rgba(0, 0, 0, .1) 75%), 
@@ -47,6 +48,7 @@
       justify-content: center;
       align-items: center;
     }
+
     p {
       display: flex;
       flex-direction: row;
@@ -54,11 +56,15 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    a {
-      color: white;
+
+    p:last-of-type {
       opacity: .7;
       position: absolute;
       bottom: 1em;
+    }
+
+    a {
+      color: white;
     }
 
     gradient-button {

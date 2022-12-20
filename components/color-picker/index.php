@@ -51,34 +51,19 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
     </script>
 
     <style>
-      /*<?php themeSheetStart(); ?>*/
-      html[data-theme="light"] {
-        color-scheme: light;
-        --bg-color: #fff;
-        --text-color: black;
-      }
-
-      html[data-theme="dark"] {
-        color-scheme: dark;
-        --bg-color: #111;
-        --text-color: white;
-      }
-      /*<?php themeSheetEnd(closeComment: true); ?>*/
-
       html, body {
+        color-scheme: light dark;
         height: 100%;
       }
 
       body {
-        background: var(--bg-color);
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         place-items: center;
         justify-content: center;
-        color: var(--text-color);
         position: relative;
         gap: .5rem;
-        font-family: system-ui;
+        font-family: system-ui, sans-serif;
         margin: 0;
       }
 

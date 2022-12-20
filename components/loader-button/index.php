@@ -46,6 +46,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      font-family: system-ui, sans-serif;
     }
     p {
       display: flex;
@@ -62,7 +63,6 @@
     }
 
     loader-button {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
       font-weight: 600;
       margin: .5em;
     }

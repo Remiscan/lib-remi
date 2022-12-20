@@ -38,8 +38,8 @@ sheet.replaceSync(/*css*/`
       box-shadow: inset 0 -1px 0 var(--on-bg-color);
 
       --on-bg-color: #0075FF;
-      --hover-bg-color: #0075FF4D;
-      --active-bg-color: #0075FF80;
+      --hover-bg-color: #0075FF33;
+      --active-bg-color: #0075FF1a;
       --off-text-color: black;
       --on-text-color: white;
     }
@@ -56,8 +56,8 @@ sheet.replaceSync(/*css*/`
     @media (prefers-color-scheme: dark) {
       [role="tablist"] {
         --on-bg-color: #99C8FF;
-        --hover-bg-color: #99C8FF4D;
-        --active-bg-color: #99C8FF80;
+        --hover-bg-color: #99C8FF4d;
+        --active-bg-color: #99C8FF33;
         --off-text-color: white;
         --on-text-color: rgb(48, 48, 48);
       }
