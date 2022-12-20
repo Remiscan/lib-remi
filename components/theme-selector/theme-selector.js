@@ -367,8 +367,8 @@ sheet.replaceSync(/*css*/`
 const strings = {
   "fr": {
     "change-theme": "Changer la palette de couleurs de la page",
-    "change-theme-short": "Changer palette",
-    "selector-title": "Palette de couleurs",
+    "change-theme-short": "Thème",
+    "selector-title": "Thème",
     "theme-auto": "Suivre le réglage système",
     "theme-light": "Claire",
     "theme-dark": "Sombre",
@@ -377,8 +377,8 @@ const strings = {
   
   "en": {
     "change-theme": "Change the page's color scheme",
-    "change-theme-short": "Change color scheme",
-    "selector-title": "Color scheme",
+    "change-theme-short": "Theme",
+    "selector-title": "Theme",
     "theme-auto": "Follow system setting",
     "theme-light": "Light",
     "theme-dark": "Dark",
