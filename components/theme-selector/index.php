@@ -118,13 +118,13 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         transform: translateY(0);
       }
 
-      theme-selector > .selector > input {
+      theme-selector .selector-choices > input {
         width: 1.5em;
         margin: 10px;
         margin-right: 0;
       }
 
-      theme-selector > .selector > input + label {
+      theme-selector .selector-choices > input + label {
         box-sizing: border-box;
         height: 44px;
         padding: 10px;
@@ -137,7 +137,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
   <body>
     <theme-selector position="bottom"></theme-selector>
-    <theme-selector position="top" label></theme-selector>
+    <theme-selector position="top" label cookie></theme-selector>
   </body>
 
 </html>

@@ -59,28 +59,32 @@ template.innerHTML = /*html*/`
     <span data-string="change-theme-short"></span>
   </button>
 
-  <div class="selector" aria-hidden="true">
-    <span class="selector-title" data-string="selector-title"></span>
+  <fieldset class="selector" aria-hidden="true">
+    <legend class="selector-title">
+      <span class="selector-title-text" data-string="selector-title"></span>
+    </legend>
 
-    <input type="radio" name="theme" id="theme-auto" value="auto" data-scheme="auto" checked>
-    <label for="theme-auto">
-      <span class="theme-name" data-string="theme-auto"></span>
-    </label>
+    <div class="selector-choices">
+      <input type="radio" name="theme" id="theme-auto" value="auto" data-scheme="auto" checked>
+      <label for="theme-auto">
+        <span class="theme-name" data-string="theme-auto"></span>
+      </label>
 
-    <input type="radio" name="theme" id="theme-light" value="light" data-scheme="light">
-    <label for="theme-light">
-      <span class="theme-name" data-string="theme-light"></span>
-      <span class="theme-cookie-star">*</span>
-    </label>
+      <input type="radio" name="theme" id="theme-light" value="light" data-scheme="light">
+      <label for="theme-light">
+        <span class="theme-name" data-string="theme-light"></span>
+        <span class="theme-cookie-star">*</span>
+      </label>
 
-    <input type="radio" name="theme" id="theme-dark" value="dark" data-scheme="dark">
-    <label for="theme-dark">
-      <span class="theme-name" data-string="theme-dark"></span>
-      <span class="theme-cookie-star">*</span>
-    </label>
+      <input type="radio" name="theme" id="theme-dark" value="dark" data-scheme="dark">
+      <label for="theme-dark">
+        <span class="theme-name" data-string="theme-dark"></span>
+        <span class="theme-cookie-star">*</span>
+      </label>
+    </div>
 
     <span class="selector-cookie-notice" data-string="cookie-notice"></span>
-  </div>
+  </fieldset>
 `;
 
 
@@ -278,14 +282,17 @@ sheet.replaceSync(/*css*/`
     /**********/
 
     theme-selector > .selector {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
+      border: none;
+      margin: 0;
+      padding: 0;
       position: absolute;
       top: 100%;
       grid-row: 1;
       grid-column: 1;
       opacity: 0;
       pointer-events: none;
+      display: flex;
+      flex-direction: column;
     }
 
     theme-selector[open="true"] > .selector {
@@ -293,21 +300,41 @@ sheet.replaceSync(/*css*/`
       pointer-events: auto;
     }
 
+    theme-selector .selector-title {
+      display: contents;
+      border: none;
+      padding: 0;
+    }
+
+    theme-selector .selector-title-text {
+      border-bottom: 1px solid;
+      padding: 10px;
+      text-align: center;
+    }
+
+    theme-selector .selector-choices {
+      display: grid;
+      grid-template-columns: auto 1fr;
+    }
+
+    theme-selector > .selector > *:first-child,
     theme-selector .selector-title,
     theme-selector .selector-cookie-notice {
       grid-column: 1 / -1;
     }
 
-    theme-selector > .selector > input {
+    theme-selector .selector-choices > input {
       grid-column: 1;
     }
 
-    theme-selector > .selector > label {
+    theme-selector .selector-choices > label {
       grid-column: 2;
+      display: grid;
+      grid-template-columns: 1fr auto;
     }
 
-    theme-selector > .selector > label > span {
-      grid-column: 2;
+    theme-selector .selector-choices > label > span {
+      line-height: 1em;
     }
 
     theme-selector[position="bottom"] > .selector {
@@ -342,7 +369,7 @@ const strings = {
     "change-theme": "Changer la palette de couleurs de la page",
     "change-theme-short": "Changer palette",
     "selector-title": "Palette de couleurs",
-    "theme-auto": "Claire/sombre auto.",
+    "theme-auto": "Suivre le réglage système",
     "theme-light": "Claire",
     "theme-dark": "Sombre",
     "cookie-notice": "* Ce choix sera stocké dans un cookie."
@@ -352,7 +379,7 @@ const strings = {
     "change-theme": "Change the page's color scheme",
     "change-theme-short": "Change color scheme",
     "selector-title": "Color scheme",
-    "theme-auto": "Auto light/dark",
+    "theme-auto": "Follow system setting",
     "theme-light": "Light",
     "theme-dark": "Dark",
     "cookie-notice": "* This choice will be stored in a cookie."
@@ -455,7 +482,7 @@ export class ThemeSelector extends HTMLElement {
 
   /** Starts monitoring changes to the selected theme. */
   startMonitoringChanges() {
-    for (const choice of [...this.querySelectorAll('.selector > input')]) {
+    for (const choice of [...this.querySelectorAll('.selector-choices > input')]) {
       choice.addEventListener('change', this.changeHangler);
     }
   }
@@ -463,7 +490,7 @@ export class ThemeSelector extends HTMLElement {
 
   /** Stops monitoring changes to the selected theme. */
   stopMonitoringChanges() {
-    for (const choice of [...this.querySelectorAll('.selector > input')]) {
+    for (const choice of [...this.querySelectorAll('.selector-choices > input')]) {
       choice.removeEventListener('change', this.changeHangler);
     }
   }
@@ -506,15 +533,13 @@ export class ThemeSelector extends HTMLElement {
       const alreadyHasTheme = selector.querySelector(`#theme-${selector.count}-${name}`);
       if (alreadyHasTheme) return;
       
-      const lastElement = selector.querySelector('.selector > :last-child');
-      lastElement.outerHTML = `
+      const selectorChoices = selector.querySelector('.selector-choices');
+      selectorChoices.innerHTML += `
         <input type="radio" name="theme-${selector.count}" id="theme-${selector.count}-${name}" value="${name}" data-scheme="${scheme}">
         <label for="theme-${selector.count}-${name}">
           <span class="theme-name" data-string="theme-${name}"></span>
           <span class="theme-cookie-star">*</span>
         </label>
-
-        ${lastElement.outerHTML}
       `;
 
       translationObserver.translate(selector, strings);
