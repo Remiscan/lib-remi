@@ -73,6 +73,21 @@ const strings = {
 export class CookieConsentPrompt extends HTMLElement {
   constructor() {
     super();
+    this.uuid = crypto.randomUUID();
+    this.consentYes = event => this.dispatchConsentEvent(true);
+    this.consentNo = event => this.dispatchConsentEvent(false);
+  }
+
+
+  dispatchConsentEvent(bool) {
+    window.dispatchEvent(
+      new CustomEvent('cookieconsent', {
+        detail: {
+          name: this.getAttribute('cookie'),
+          consent: bool
+        }
+      })
+    );
   }
 
 
@@ -88,25 +103,18 @@ export class CookieConsentPrompt extends HTMLElement {
     // Listen to button clicks
     const buttonYes = this.querySelector('.cookie-consent-prompt-button-yes');
     const buttonNo = this.querySelector('.cookie-consent-prompt-button-no');
-    const consentEvent = bool => window.dispatchEvent(
-      new CustomEvent('cookieconsent', {
-        detail: {
-          name: this.getAttribute('cookie'),
-          consent: bool
-        }
-      })
-    );
-    buttonYes.addEventListener('click', () => {
-      consentEvent(true);
-    });
-    buttonNo.addEventListener('click', () => {
-      consentEvent(false);
-    });
+    buttonYes.addEventListener('click', this.consentYes);
+    buttonNo.addEventListener('click', this.consentNo);
   }
 
 
   disconnectedCallback() {
     translationObserver.unserve(this);
+
+    const buttonYes = this.querySelector('.cookie-consent-prompt-button-yes');
+    const buttonNo = this.querySelector('.cookie-consent-prompt-button-no');
+    buttonYes.removeEventListener('click', this.consentYes);
+    buttonNo.removeEventListener('click', this.consentNo);
   }
 
 

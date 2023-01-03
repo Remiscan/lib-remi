@@ -3,16 +3,12 @@
 {
   "imports": {
     "cookie-consent-prompt": "/_common/components/cookie-consent-prompt/cookie-consent-prompt.js",
-    "cookie-consent-prompt-styles": "/_common/components/cookie-consent-prompt/styles.css.php",
-    "cookie-consent-prompt-strings": "/_common/components/cookie-consent-prompt/strings.json",
     "cookie-consent-prompt-template": "/_common/components/cookie-consent-prompt/template.js",
     "cookie-factory": "/_common/js/cookie-factory.js"
   }
 }
 </script>
 */
-
-import 'cookie-consent-prompt';
 
 
 
@@ -28,11 +24,12 @@ export default function CookieFactory(path, noConsent = []) {
       for (const node of mutation.removedNodes) {
         const cookieName = node.getAttribute('cookie');
         if (!cookieName) continue;
+        const uuid = node.uuid;
         window.dispatchEvent(
-          new CustomEvent('cookieconsent', {
+          new CustomEvent('promptremoved', {
             detail: {
               name: cookieName,
-              consent: false
+              uuid
             }
           })
         );
@@ -123,10 +120,12 @@ export default function CookieFactory(path, noConsent = []) {
 
       // Prepares the request for user consent.
       const container = document.querySelector('.cookie-consent-container') || document.body;
+      await import('cookie-consent-prompt');
       const popup = document.createElement('cookie-consent-prompt');
       popup.setAttribute('open', false);
       popup.setAttribute('cookie', this.name);
       popup.setAttribute('value', this.value);
+      const popupId = popup.uuid;
       
       // If another prompt for the same cookie is already displayed, hide it.
       const previousPrompt = document.querySelector(`cookie-consent-prompt[cookie="${this.name}"]`);
@@ -140,17 +139,30 @@ export default function CookieFactory(path, noConsent = []) {
       // A "cookieconsent" event will be sent for each cookie name if:
       // - names.length === 1 and the user gave an answer,
       // - names.length > 1 and the user clicked the cross or outside of the prompt to exit it.
-      let consentHandler;
       const promise = new Promise(resolve => {
         // If this cookie requires consent, listen for the user's response.
         removeObserver.observe(container, { childList: true, subtree: false });
-        window.addEventListener('cookieconsent', consentHandler = event => {
+
+        const removeHandler = event => {
+          if (event.detail.uuid !== popupId) return;
+          window.removeEventListener('promptremoved', removeHandler);
+
+          popup.dispatchConsentEvent(false);
+        };
+
+        const consentHandler = event => {
           if (event.detail.name != this.name) return;
+          window.removeEventListener('promptremoved', removeHandler);
+
           Cookie.#setSavedConsent(this.name, event.detail.consent);
           if (event.detail.consent === true) resolve(true);
           else                               resolve(false);
+
           window.removeEventListener('cookieconsent', consentHandler);
-        });
+        };
+        
+        window.addEventListener('promptremoved', removeHandler);
+        window.addEventListener('cookieconsent', consentHandler);
       });
 
       const consent = await promise;
