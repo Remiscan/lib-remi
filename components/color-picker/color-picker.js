@@ -840,8 +840,13 @@ export class ColorPicker extends HTMLElement {
    */
   selectColor(colorExpr, dispatch = false) {
     this.monitoring = false; // will prevent events being fired for each property input successively being updated to the new color
-    this.#updateOtherInputs(colorExpr, null);
-    this.#updateColor(new Event('change'), colorExpr, false, { dispatch: false });
+    if (paintWorkletSupport) {
+      this.#updateOtherInputs(colorExpr, null);
+      this.#updateColor(new Event('change'), colorExpr, false, { dispatch: false });
+    } else {
+      const input = this.shadowRoot.querySelector('input[type="color"]');
+      input.value = (new Couleur(colorExpr)).hex;
+    }
     this.monitoring = true;
 
     if (dispatch) {
