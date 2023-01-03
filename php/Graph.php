@@ -137,4 +137,31 @@ class Graph {
       throw $error;
     }
   }
+
+  public function subGraphFrom(string|int $startID): Graph {
+    // Source of the math: https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+    $nodes = [];
+
+    $visit = function(GraphNode $node) use (&$visit, &$nodes): void {
+      if ($node->getVisitedState() === true) return;
+      if ($node->getVisitedState() === 'temp') throw new \Exception("The graph is not a directed acyclic graph");
+
+      $node->visit('temp'); // Mark visit as temporary to detect if we loop back to this node
+      foreach ($node->links as $link) { $visit($this->getNode($link)); }
+      $node->visit(true);
+
+      $nodes[] = ['id' => $node->id, 'links' => $node->links];
+    };
+
+    try {
+      $startNode = $this->getNode($startID);
+      $visit($startNode);
+
+      $this->cleanUp();
+      return new Graph($nodes);
+    } catch (\Throwable $error) {
+      $this->cleanUp();
+      throw $error;
+    }
+  }
 }
