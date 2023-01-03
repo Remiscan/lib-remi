@@ -282,6 +282,11 @@ sheet.replaceSync(/*css*/`
       grid-template-columns: auto auto;
     }
 
+    input[type="color"] {
+      width: var(--size);
+      height: var(--size);
+    }
+
     :host(:not([label])) [part="fallback"] {
       grid-template-columns: auto;
     }
