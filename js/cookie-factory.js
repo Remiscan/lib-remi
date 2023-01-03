@@ -85,7 +85,35 @@ export default function CookieFactory(path, noConsent = []) {
      * Waits for user consent then sets a cookie.
      */
     async prompt(reprompt = false) {
-      const userConsent = await this.#openPrompt(reprompt);
+      const popup = await this.#openPrompt(reprompt);
+
+      // A "cookieconsent" event will be sent for each cookie name if:
+      // - names.length === 1 and the user gave an answer,
+      // - names.length > 1 and the user clicked the cross or outside of the prompt to exit it.
+      const userConsent = await new Promise(resolve => {
+        // If this cookie requires consent, listen for the user's response.
+        const removeHandler = event => {
+          if (event.detail.uuid !== popup.uuid) return;
+          window.removeEventListener('promptremoved', removeHandler);
+          popup.dispatchConsentEvent(false);
+        };
+
+        const consentHandler = event => {
+          if (event.detail.name != this.name) return;
+          window.removeEventListener('promptremoved', removeHandler);
+          Cookie.#setSavedConsent(this.name, event.detail.consent);
+          if (event.detail.consent === true) resolve(true);
+          else                               resolve(false);
+          window.removeEventListener('cookieconsent', consentHandler);
+        };
+        
+        window.addEventListener('promptremoved', removeHandler);
+        window.addEventListener('cookieconsent', consentHandler);
+      });
+
+      // The cookie-prompt element removes itself after its closing animation ends.
+      Cookie.#closePrompt(this.name);
+
       try {
         if (userConsent) {
           this.#set();
@@ -106,7 +134,7 @@ export default function CookieFactory(path, noConsent = []) {
 
     /**
      * Asks for user consent about the cookie.
-     * @returns {boolean} User response.
+     * @returns {HTMLElement} The prompt element.
      */
     async #openPrompt(reprompt) {
       // If we're asking the user to consent to a single cookie and he already did so, don't ask again.
@@ -125,7 +153,6 @@ export default function CookieFactory(path, noConsent = []) {
       popup.setAttribute('open', false);
       popup.setAttribute('cookie', this.name);
       popup.setAttribute('value', this.value);
-      const popupId = popup.uuid;
       
       // If another prompt for the same cookie is already displayed, hide it.
       const previousPrompt = document.querySelector(`cookie-consent-prompt[cookie="${this.name}"]`);
@@ -136,41 +163,9 @@ export default function CookieFactory(path, noConsent = []) {
       await new Promise(resolve => setTimeout(resolve, 10));
       popup.setAttribute('open', true);
 
-      // A "cookieconsent" event will be sent for each cookie name if:
-      // - names.length === 1 and the user gave an answer,
-      // - names.length > 1 and the user clicked the cross or outside of the prompt to exit it.
-      const promise = new Promise(resolve => {
-        // If this cookie requires consent, listen for the user's response.
-        removeObserver.observe(container, { childList: true, subtree: false });
+      removeObserver.observe(container, { childList: true, subtree: false });
 
-        const removeHandler = event => {
-          if (event.detail.uuid !== popupId) return;
-          window.removeEventListener('promptremoved', removeHandler);
-
-          popup.dispatchConsentEvent(false);
-        };
-
-        const consentHandler = event => {
-          if (event.detail.name != this.name) return;
-          window.removeEventListener('promptremoved', removeHandler);
-
-          Cookie.#setSavedConsent(this.name, event.detail.consent);
-          if (event.detail.consent === true) resolve(true);
-          else                               resolve(false);
-
-          window.removeEventListener('cookieconsent', consentHandler);
-        };
-        
-        window.addEventListener('promptremoved', removeHandler);
-        window.addEventListener('cookieconsent', consentHandler);
-      });
-
-      const consent = await promise;
-
-      // The cookie-prompt element removes itself after its closing animation ends.
-      Cookie.#closePrompt(this.name);
-
-      return consent;
+      return popup;
     }
 
 
