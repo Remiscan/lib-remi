@@ -428,9 +428,8 @@ sheet.replaceSync(/*css*/`
     --range-width: var(--tap-safe-size);
     --range-full-width: calc(var(--range-width) + 2 * var(--range-border-width));
     --range-full-height: calc(var(--range-height) + 2 * var(--range-border-width));
-    grid-template-columns: calc(2 * var(--range-width));
-    grid-template-rows: auto auto var(--range-full-height);
-    justify-items: center;
+    flex-direction: column;
+    align-items: center;
     gap: 5px;
     position: relative;
     --gradient-steps: 25;
@@ -480,7 +479,7 @@ sheet.replaceSync(/*css*/`
   :host([format="oklrch"]) [part="property-container"][data-format~="oklrch"],
   :host([format="okhsl"]) [part="property-container"][data-format~="okhsl"],
   :host([format="okhsv"]) [part="property-container"][data-format~="okhsv"] {
-    display: grid;
+    display: flex;
   }
   
   input-slider {
