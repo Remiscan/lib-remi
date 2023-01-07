@@ -46,23 +46,32 @@
 
     async function yip(...v) {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('yip', ...v);
+      return ['yip', ...v];
     }
 
     async function yop(...v) {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('yop', ...v);
+      return ['yop', ...v];
     }
 
     yip = queueable(yip);
     yop = queueable(yop);
 
-    for (let i = 0; i < 3; i++) {
-      yip(i, 2 * i);
-      yop(i, 3 * i);
+    for (let i = 0; i < 2; i++) {
+      yip(i, 2 * i).then(v => console.log(...v));
+      yop(i, 3 * i).then(v => console.log(...v));
     }
 
-    setTimeout(() => yip('This should appear after everything else'), 100);
+    const messages = await yip('💚 There should be a blue heart right after this');
+    console.log(...messages);
+    console.log('💙 There should be a green heart right before this');
+
+    for (let i = 2; i < 4; i++) {
+      yip(i, 2 * i).then(v => console.log(...v));
+      yop(i, 3 * i).then(v => console.log(...v));
+    }
+
+    setTimeout(async () => console.log(...await yip('This should be the last message')), 100);
   </script>
 
 </body>
