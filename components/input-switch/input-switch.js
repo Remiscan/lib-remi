@@ -301,7 +301,7 @@ export default class InputSwitch extends HTMLElement {
       this.#internals = this.attachInternals();
     }
     
-    this.button = this.shadowRoot.querySelector('button');
+    this.button = this.shadow.querySelector('button');
     this.moving = false;
     this.handlers = {
       labelDown: () => {},
@@ -323,8 +323,9 @@ export default class InputSwitch extends HTMLElement {
 
   toggle() {
     if (this.disabled) return;
-    this.button.setAttribute('aria-checked', !this.checked);
-    this.#internals?.setFormValue(this.checked);
+    const newState = !this.checked;
+    this.button?.setAttribute('aria-checked', String(newState));
+    this.#internals?.setFormValue(String(newState));
     this.dispatchEvent(new Event('change', { bubbles: true, cancelable: false }));
   }
 
@@ -337,8 +338,8 @@ export default class InputSwitch extends HTMLElement {
 
     if (event.composedPath().includes(this.button)) return;
     this.moving = false;
-    this.button.style.removeProperty('--duration');
-    this.button.style.removeProperty('--easing');
+    this.button?.style.removeProperty('--duration');
+    this.button?.style.removeProperty('--easing');
 
     // Swiping on the label (or selecting its text) shouldn't toggle the switch
     let cancel = false;
@@ -347,7 +348,7 @@ export default class InputSwitch extends HTMLElement {
     const clickSafetyMargin = intentionalDragLimit; // px
 
     const labelMove = event => {
-      if (!cancel & Math.abs(iniX - getTouch(event).clientX) > clickSafetyMargin) cancel = true;
+      if (!cancel && Math.abs(iniX - getTouch(event).clientX) > clickSafetyMargin) cancel = true;
     }
 
     const labelStop = event => {
@@ -359,7 +360,7 @@ export default class InputSwitch extends HTMLElement {
         event.preventDefault(); // Prevents mouseup event which would fire labelUp again
       }
       if (!(event.composedPath().includes(this.button) || this.moving || cancel)) {
-        this.button.focus();
+        this.button?.focus();
         this.toggle(); // Toggle instead of click, to work after a small move that canceled the previous click
       }
 
@@ -380,7 +381,7 @@ export default class InputSwitch extends HTMLElement {
     if (event.type === 'touchstart') {
       event.preventDefault(); // Prevents lag before first touchmove event
       this.defaultPrevented = true;
-      this.button.classList.add('active');
+      this.button?.classList.add('active');
     }
 
     if (this.disabled) return;
@@ -395,20 +396,20 @@ export default class InputSwitch extends HTMLElement {
     
     this.moving = false; // whether the user is dragging the handle
     let durationChanged = false;
-    this.button.style.removeProperty('--duration');
-    this.button.style.removeProperty('--easing');
+    this.button?.style.removeProperty('--duration');
+    this.button?.style.removeProperty('--easing');
 
     const coords = this.getBoundingClientRect();
     const slidableWidth = 0.5 * coords.width * (1 - .2 * .5);
     const textDir = this.rtl ? -1 : 1;
-    this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
+    this.button?.style.setProperty('--dir', String(textDir)); // for broswers that don't support the :dir() pseudo-class
     
     // Gets the coordinates of an event relative to the button
     const getCoords = touch => { return { x: getTouch(touch).clientX - coords.x, y: getTouch(touch).clientY - coords.y } };
     const initialTouch = getCoords(event);
 
     // Ratio of (distance moved) / (slidable width)
-    const initialRatio = Number(this.button.getAttribute('aria-checked') != 'true');
+    const initialRatio = Number(this.button?.getAttribute('aria-checked') != 'true');
     const updateDistance = touch => textDir * Math.max(-1, Math.min((touch.x - initialTouch.x) / slidableWidth, 1));
     const updateRatio = touch => Math.max(0, Math.min(initialRatio - updateDistance(touch), 1));
     
@@ -431,7 +432,7 @@ export default class InputSwitch extends HTMLElement {
       // Disable transition, the handle should follow the finger/cursor immediately
       if (!durationChanged) {
         durationChanged = true;
-        this.button.style.setProperty('--duration', 0);
+        this.button?.style.setProperty('--duration', '0');
       }
 
       lastTouch = getCoords(event);
@@ -446,15 +447,15 @@ export default class InputSwitch extends HTMLElement {
 
       // Safety margin to differentiate a click and a drag
       if (!this.moving && Math.abs(distance) > clickSafetyMargin) this.moving = true;
-      this.button.style.setProperty('--ratio', ratio);
+      this.button?.style.setProperty('--ratio', String(ratio));
 
       requestAnimationFrame(() => { frameReady = true });
     };
 
     const endHandle = event => {
       const distance = updateDistance(lastTouch);
-      this.button.style.removeProperty('--ratio');
-      if (event.type === 'touchend') this.button.classList.remove('active');
+      this.button?.style.removeProperty('--ratio');
+      if (event.type === 'touchend') this.button?.classList.remove('active');
       let simulateClick = this.defaultPrevented;
 
       // If it's a drag and it moved to the other side of the switch
@@ -462,19 +463,19 @@ export default class InputSwitch extends HTMLElement {
       if (Math.abs(distance) > 0.5 && correctDirection) {
         // Calculate the remaining animation time based on the current speed
         const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
-        this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
-        this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
+        this.button?.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
+        this.button?.style.setProperty('--easing', 'var(--easing-decelerate)');
         // If dragged outside of the button, no click event will be dispatched on it
         if (!event.composedPath().includes(this.button)) simulateClick = true;
       } else {
-        this.button.style.removeProperty('--duration');
+        this.button?.style.removeProperty('--duration');
         // If it's not a click (over safety margin)
         if (maxDistance > clickSafetyMargin) this.cancelNextClick = true;
       }
 
       if (simulateClick) {
-        this.button.click();
-        this.button.focus();
+        this.button?.click();
+        this.button?.focus();
       }
 
       window.removeEventListener(moveEvent, moveHandle, { passive: false });
@@ -487,24 +488,24 @@ export default class InputSwitch extends HTMLElement {
 
 
   get checked() {
-    return this.button.getAttribute('aria-checked') === 'true';
+    return this.button?.getAttribute('aria-checked') === 'true';
   }
 
   set checked(value) {
-    const checked = this.button.getAttribute('aria-checked') === 'true';
+    const checked = this.button?.getAttribute('aria-checked') === 'true';
     if (checked === value) return;
     this.toggle();
   }
 
   get disabled() {
-    return this.button.getAttribute('disabled') !== null;
+    return this.button?.getAttribute('disabled') !== null;
   }
 
   set disabled(value) {
     if (value === true) {
-      this.button.setAttribute('disabled', 'true');
+      this.button?.setAttribute('disabled', 'true');
     } else {
-      this.button.removeAttribute('disabled');
+      this.button?.removeAttribute('disabled');
     }
   }
 
@@ -516,11 +517,11 @@ export default class InputSwitch extends HTMLElement {
   update(attr, newValue) {
     switch (attr) {
       case 'label':
-        this.button.setAttribute('aria-label', newValue || '');
+        this.button?.setAttribute('aria-label', newValue || '');
         break;
       case 'labelledby':
         const labelText = document.getElementById(newValue)?.innerText || '';
-        this.button.setAttribute('aria-label', labelText);
+        this.button?.setAttribute('aria-label', labelText);
         break;
       case 'disabled':
         this.disabled = newValue !== null;
@@ -532,8 +533,8 @@ export default class InputSwitch extends HTMLElement {
           case 'text': {
             const textOn = hints[1] || 'On';
             const textOff = hints[2] || 'Off';
-            this.shadowRoot.querySelector('[data-state="on"]').innerHTML = `<span>${textOn}</span>`;
-            this.shadowRoot.querySelector('[data-state="off"]').innerHTML = `<span>${textOff}</span>`;
+            this.shadow.querySelector('[data-state="on"]').innerHTML = `<span>${textOn}</span>`;
+            this.shadow.querySelector('[data-state="off"]').innerHTML = `<span>${textOff}</span>`;
           } break;
           case 'icon': {
             const iconOn = `<svg viewBox="0 0 24 24" class="default-icon"><path d="M 6 12 L 10 16 L 18 8" fill="transparent"/></svg>`;
@@ -551,13 +552,13 @@ export default class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
-    this.button.style.setProperty('--duration', 0);
+    this.button?.style.setProperty('--duration', 0);
 
     // Set initial state
-    this.button.setAttribute('aria-checked', this.getAttribute('checked') !== null);
-    this.#internals?.setFormValue(this.checked);
+    this.button?.setAttribute('aria-checked', String(this.getAttribute('checked') !== null));
+    this.#internals?.setFormValue(String(this.checked));
     this.removeAttribute('checked');
-    this.button.style.setProperty('--dir', this.rtl ? -1 : 1); // for broswers that don't support the :dir() pseudo-class
+    this.button?.style.setProperty('--dir', String(this.rtl ? -1 : 1)); // for broswers that don't support the :dir() pseudo-class
 
     // If <label for="id"> exists, use it to label the button
     // and make it clickable.
@@ -565,7 +566,7 @@ export default class InputSwitch extends HTMLElement {
     const label = document.querySelector(`label[for="${id}"]`);
     if (label) {
       if (this.getAttribute('label') === null) {
-        this.button.setAttribute('aria-label', label.innerText); // aria-labelledby doesn't work through shadow DOM
+        this.button?.setAttribute('aria-label', label.innerText); // aria-labelledby doesn't work through shadow DOM
       }
 
       // Clicking on the label toggles the switch
@@ -576,8 +577,8 @@ export default class InputSwitch extends HTMLElement {
 
     // Make switch touchmoveable
     this.handlers.start = this.onStart.bind(this);
-    this.button.addEventListener('mousedown', this.handlers.start, { passive: true });
-    this.button.addEventListener('touchstart', this.handlers.start, { passive: false });
+    this.button?.addEventListener('mousedown', this.handlers.start, { passive: true });
+    this.button?.addEventListener('touchstart', this.handlers.start, { passive: false });
 
     // Toggle on click (manual or keyboard)
     const clickHandle = event => {
@@ -586,16 +587,16 @@ export default class InputSwitch extends HTMLElement {
       else {
         // If no mousedown / touchstart event happened before click, reset style variables
         if (!this.lastClickWasManual) {
-          this.button.style.removeProperty('--duration');
-          this.button.style.removeProperty('--easing');
+          this.button?.style.removeProperty('--duration');
+          this.button?.style.removeProperty('--easing');
         }
         this.lastClickWasManual = false;
         this.toggle();
       }
     }
-    this.button.addEventListener('click', clickHandle);
+    this.button?.addEventListener('click', clickHandle);
 
-    this.button.style.removeProperty('--duration');
+    this.button?.style.removeProperty('--duration');
   }
 
 
@@ -603,11 +604,11 @@ export default class InputSwitch extends HTMLElement {
     const id = this.getAttribute('id');
     const label = document.querySelector(`label[for="${id}"]`);
     if (label) {
-      label.removeEventListener('mousedown', this.handlers.labelDown, { passive: true });
-      label.removeEventListener('touchstart', this.handlers.labelDown, { passive: true });
+      label?.removeEventListener('mousedown', this.handlers.labelDown, { passive: true });
+      label?.removeEventListener('touchstart', this.handlers.labelDown, { passive: true });
     }
-    this.button.removeEventListener('mousedown', this.handlers.start, { passive: true });
-    this.button.removeEventListener('touchstart', this.handlers.start, { passive: false });
+    this.button?.removeEventListener('mousedown', this.handlers.start, { passive: true });
+    this.button?.removeEventListener('touchstart', this.handlers.start, { passive: false });
   }
 
 
