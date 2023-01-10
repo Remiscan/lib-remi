@@ -502,11 +502,8 @@ export default class InputSwitch extends HTMLElement {
   }
 
   set disabled(value) {
-    if (value === true) {
-      this.button?.setAttribute('disabled', 'true');
-    } else {
-      this.button?.removeAttribute('disabled');
-    }
+    if (value) this.setAttribute('disabled', String(value));
+    else       this.removeAttribute('disabled');
   }
 
   get rtl() {
@@ -524,7 +521,11 @@ export default class InputSwitch extends HTMLElement {
         this.button?.setAttribute('aria-label', labelText);
         break;
       case 'disabled':
-        this.disabled = newValue !== null;
+        if (newValue !== null) {
+          this.button?.setAttribute('disabled', 'true');
+        } else {
+          this.button?.removeAttribute('disabled');
+        }
         break;
       case 'hint': {
         const hints = (newValue || '').split(' ');
