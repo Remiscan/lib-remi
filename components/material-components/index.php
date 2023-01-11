@@ -66,6 +66,12 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
 
       const palette = new MaterialLikePalette(280);
       document.querySelector('style#palette').innerHTML = `:root { ${palette.toCSS()} }`;
+
+      const hueInput = document.querySelector('input[name="hue-choice"]');
+      hueInput.addEventListener('input', event => {
+        const palette = new MaterialLikePalette(Number(hueInput.value));
+        document.querySelector('style#palette').innerHTML = `:root { ${palette.toCSS()} }`;
+      });
     </script>
 
     <style id="palette"></style>
@@ -77,6 +83,7 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         color-scheme: light dark;
         height: 100%;
         font-family: 'Roboto';
+        accent-color: rgb(var(--primary));
       }
 
       body {
@@ -99,6 +106,8 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   </head>
 
   <body>
+    <input name="hue-choice" type="range" min="0" max="359" step="1" value="255">
+
     <!-- Buttons -->
 
     <material-button class="elevated">
