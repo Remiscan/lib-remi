@@ -55,6 +55,19 @@ function unmodularize(string $moduleId, string $importMapPath) {
         return $result;
       },
 
+      // Replace 'import name from ...;' by 'var name = def${i};'
+      '/(import) *?([^{}]*?) *?(?:from ?\'(.*?)\' *?)?;/' => function ($matches) use (&$path, &$importMap, &$defaultExports, &$defaultCount) {
+        $name = $matches[2]; // 'name'
+        $from = $matches[3] ?? null; // identifier of the imported module
+
+        $result = '';
+
+        $alias = $defaultExports[$importMap[trim($from)]];
+        if ($name && $alias) $result .= "var $name = $alias;";
+
+        return $result;
+      },
+
       // Replace 'import/export name;' and 'export default name;' by ''
       '/(?:export|import)(.+?);/' => function ($matches) { return ''; },
       
