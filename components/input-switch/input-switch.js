@@ -19,11 +19,17 @@ template.innerHTML = /*html*/`
     <span part="border" aria-hidden="true"></span>
     <span part="track" aria-hidden="true"></span>
     <span part="thumb" aria-hidden="true">
-      <svg class="icon-off" part="icon" viewBox="2.4 2.4 19.2 19.2">
+      <svg class="bg-off" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="14"/>
+      </svg>
+      <svg class="bg-on" viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="14"/>
+      </svg>
+      <svg class="icon-off" part="icon" viewBox="-2.4 -2.4 28.8 28.8">
         <path d="M 6 6 L 18 18" fill="transparent"/>
         <path d="M 18 6 L 6 18" fill="transparent"/>
       </svg>
-      <svg class="icon-on" part="icon" viewBox="2.4 2.4 19.2 19.2">
+      <svg class="icon-on" part="icon" viewBox="-2.4 -2.4 28.8 28.8">
         <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
       </svg>
     </span>
@@ -49,6 +55,7 @@ sheet.replaceSync(/*css*/`
     --easing: var(--easing-standard);
     --duration: .2s;
     --off-thumb-scale: .6;
+    --interaction-ring-width: max(4px, var(--border-width));
 
     --off-track-color: #f1f1f1; /* white.blend(--on-track-color, .1) to OKLrCH, then chroma 0 */
     --on-track-color: #4d5cb3;
@@ -114,6 +121,27 @@ sheet.replaceSync(/*css*/`
     grid-column: 1;
   }
 
+  [role="switch"]::before {
+    content: '';
+    display: flex;
+    width: calc(100% + 2 * var(--interaction-ring-width));
+    height: calc(100% + 2 * var(--interaction-ring-width));
+    border-radius: calc(.5 * (var(--height) + 2 * var(--border-width) + 2 * var(--interaction-ring-width)));
+    position: absolute;
+    z-index: 1;
+    background-color: var(--interaction-ring-color);
+    transition: inherit;
+    opacity: 0;
+  }
+
+  [role="switch"]:hover::before {
+    opacity: .08;
+  }
+
+  [role="switch"]:active::before {
+    opacity: .12;
+  }
+
   [part="border"] {
     display: grid;
     width: 100%;
@@ -143,22 +171,17 @@ sheet.replaceSync(/*css*/`
 
   [part="thumb"] {
     display: grid;
-    width: calc(var(--height) - 2 * var(--border-width));
-    height: calc(var(--height) - 2 * var(--border-width));
-    padding: calc(2 * var(--border-width));
-    margin: calc(2 * var(--border-width));
+    height: 100%;
+    aspect-ratio: 1 / 1;
     box-sizing: border-box;
-    background-color: var(--off-thumb-color);
     justify-self: start;
-    border-radius: calc(.5 * var(--height));
     --scale: calc(var(--off-thumb-scale) + var(--delayed-ratio) * (1 - var(--off-thumb-scale)));
-    --min-translation: 0px;
     --max-translation: calc(var(--height) - 2 * var(--border-width));
-    --translation: calc(var(--dir) * max(var(--min-translation), var(--ratio) * var(--max-translation)));
+    --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
     transform:
       translateX(var(--translation))
       scale(var(--scale))
-      rotate(0.05deg) /* fix for jerky half-pixel transitions in Firefox */
+      rotate(.05deg) /* fix for jerky half-pixel transitions in Firefox */
       ;
     transition: inherit;
     will-change: transform;
@@ -166,37 +189,14 @@ sheet.replaceSync(/*css*/`
     z-index: 3;
   }
 
-  [part="thumb"]::before {
-    content: '';
-    display: flex;
-    width: calc(100% + 3 * var(--border-width));
-    height: calc(100% + 3 * var(--border-width));
-    transform: translate(calc(-1.5 * var(--dir) * var(--border-width)), calc(-1.5 * var(--border-width)));
-    border-radius: 50%;
-    position: absolute;
-    z-index: 1;
-    background-color: var(--interaction-ring-color);
-    transition: inherit;
-    opacity: 0;
+  .bg-off {
+    stroke: none;
+    fill: var(--off-thumb-color);
   }
 
-  button:hover [part="thumb"]::before {
-    opacity: .08;
-  }
-
-  button:active [part="thumb"]::before {
-    opacity: .12;
-  }
-
-  [part="thumb"]::after {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    position: absolute;
-    z-index: 2;
-    background-color: var(--on-thumb-color);
+  .bg-on {
+    stroke: none;
+    fill: var(--on-thumb-color);
     opacity: var(--delayed-ratio);
     transition: inherit;
     will-change: opacity;
@@ -240,7 +240,7 @@ sheet.replaceSync(/*css*/`
   }
   [role="switch"][aria-checked="true"] {
     --ratio: 1;
-    --interaction-ring-color: var(--on-thumb-color);
+    --interaction-ring-color: var(--on-track-color);
   }
 
   @media (prefers-reduced-motion: reduce) {
