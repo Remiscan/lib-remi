@@ -107,7 +107,7 @@ sheet.replaceSync(/*css*/`
     --ratio: 0;
     --dir: 1;
     --transform-ratio: calc(var(--dir) * var(--ratio));
-    --ratio-margin: .33;
+    --ratio-margin: .25;
     --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1);
   }
 
