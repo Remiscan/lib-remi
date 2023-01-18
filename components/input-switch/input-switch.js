@@ -9,7 +9,7 @@ Chrome's behaviour is the one I want here.
 
 (see https://github.com/w3c/pointerevents/issues/356)
 
-*************************************************/
+**********************************************************/
 
 
 
@@ -55,7 +55,8 @@ sheet.replaceSync(/*css*/`
     aspect-ratio: 1 / 2;
     --height: 2em;
     --border-width: .125em;
-    width: calc(2 * var(--height));
+    --width: calc(1.625 * var(--height));
+    width: calc(var(--width) + 2 * var(--border-width));
     height: calc(var(--height) + 2 * var(--border-width));
 
     display: inline-block;
@@ -184,7 +185,7 @@ sheet.replaceSync(/*css*/`
     box-sizing: border-box;
     justify-self: start;
     --scale: calc(var(--off-thumb-scale) + var(--delayed-ratio) * (1 - var(--off-thumb-scale)));
-    --max-translation: calc(var(--height) - 2 * var(--border-width));
+    --max-translation: calc(var(--width) - var(--height));
     --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
     translate: var(--translation);
     scale: var(--scale);
@@ -337,7 +338,7 @@ export default class InputSwitch extends HTMLElement {
     this.button.style.removeProperty('--easing');
 
     const coords = this.getBoundingClientRect();
-    const slidableWidth = 0.8 * coords.height;
+    const slidableWidth = coords.width - coords.height;
     const textDir = this.rtl ? -1 : 1;
     this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
     
