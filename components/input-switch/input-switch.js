@@ -258,11 +258,17 @@ const intentionalDragLimit = 3; // pixels
 
 
 export default class InputSwitch extends HTMLElement {
+  static formAssociated = true;
+  #internals;
+
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: 'open', delegatesFocus: true });
     this.shadow.appendChild(template.content.cloneNode(true));
     this.shadow.adoptedStyleSheets = [sheet];
+    if ('ElementInternals' in window && 'setFormValue' in window.ElementInternals.prototype) {
+      this.#internals = this.attachInternals();
+    }
     
     this.button = this.shadowRoot.querySelector('button');
     this.moving = false;
@@ -271,6 +277,17 @@ export default class InputSwitch extends HTMLElement {
       start: () => {}
     };
   }
+
+
+  // Useful properties and methods for form-associated elements
+  get form() { return this.#internals?.form; }
+  get name() { return this.getAttribute('name'); }
+  get type() { return this.localName; }
+  get validity() {return this.#internals?.validity; }
+  get validationMessage() {return this.#internals?.validationMessage; }
+  get willValidate() {return this.#internals?.willValidate; }
+  checkValidity() { return this.#internals?.checkValidity(); }
+  reportValidity() {return this.#internals?.reportValidity(); }
 
 
   get checked() {
@@ -283,6 +300,7 @@ export default class InputSwitch extends HTMLElement {
     const bool = Boolean(value);
     const shouldDispatchEvent = bool !== this.checked;
     this.button.setAttribute('aria-checked', String(bool));
+    this.#internals?.setFormValue(String(bool));
     if (shouldDispatchEvent) {
       this.dispatchEvent(new Event('change', { bubbles: true, cancelable: false }));
     }
@@ -296,8 +314,8 @@ export default class InputSwitch extends HTMLElement {
 
   // Clicking on the label toggles the switch
   onLabelClick(event) {
+    event.preventDefault();
     if (event.composedPath().includes(this.button)) {
-      event.preventDefault();
     } else {
       this.button.style.removeProperty('--duration');
       this.button.style.removeProperty('--easing');
@@ -434,7 +452,9 @@ export default class InputSwitch extends HTMLElement {
     this.button.style.setProperty('--duration', 0);
 
     // Set initial state
-    this.button.setAttribute('aria-checked', this.getAttribute('checked') !== null);
+    const initialState = this.getAttribute('checked') !== null;
+    this.button.setAttribute('aria-checked', String(initialState));
+    this.#internals?.setFormValue(String(initialState));
     this.removeAttribute('checked');
     this.button.style.setProperty('--dir', this.rtl ? -1 : 1); // for broswers that don't support the :dir() pseudo-class
 
