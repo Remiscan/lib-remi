@@ -21,20 +21,31 @@ template.innerHTML = /*html*/`
     <span part="thumb" aria-hidden="true">
       <svg part="bg bg-off" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14"/>
+        <svg part="icon icon-off" viewBox="-2.4 -2.4 28.8 28.8">
+          <path d="M 6 6 L 18 18" fill="transparent"/>
+          <path d="M 18 6 L 6 18" fill="transparent"/>
+        </svg>
       </svg>
       <svg part="bg bg-on" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14"/>
-      </svg>
-      <svg part="icon icon-off" viewBox="-2.4 -2.4 28.8 28.8">
-        <path d="M 6 6 L 18 18" fill="transparent"/>
-        <path d="M 18 6 L 6 18" fill="transparent"/>
-      </svg>
-      <svg part="icon icon-on" viewBox="-2.4 -2.4 28.8 28.8">
-        <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
+        <svg part="icon icon-on" viewBox="-2.4 -2.4 28.8 28.8">
+          <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
+        </svg>
       </svg>
     </span>
   </button>
 `;
+
+
+
+if ('registerProperty' in CSS) {
+  CSS.registerProperty({
+    name: '--ratio',
+    syntax: '<number>',
+    inherits: true,
+    initialValue: 0,
+  });
+}
 
 
 
@@ -53,7 +64,7 @@ sheet.replaceSync(/*css*/`
     --easing-standard: cubic-bezier(.2, 0, 0, 1);
     --easing-decelerate: cubic-bezier(0, 0, 0, 1);
     --easing: var(--easing-standard);
-    --duration: .2s;
+    --duration: .3s;
     --off-thumb-scale: .6;
     --interaction-ring-width: max(4px, var(--border-width));
 
@@ -99,14 +110,13 @@ sheet.replaceSync(/*css*/`
     width: 100%;
     height: 100%;
     border-radius: calc(.5 * (var(--height) + 2 * var(--border-width)));
-    transition:
-      transform var(--duration) var(--easing),
-      opacity var(--duration) var(--easing);
+    --delayed-duration: calc(var(--duration) * (1 - 2 * var(--ratio-margin)));
+    --delayed-delay: calc(var(--duration) * var(--ratio-margin));
+    transition: --ratio var(--duration) var(--easing);
 
     touch-action: none;
     --ratio: 0;
     --dir: 1;
-    --transform-ratio: calc(var(--dir) * var(--ratio));
     --ratio-margin: .25;
     --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1);
   }
@@ -130,7 +140,6 @@ sheet.replaceSync(/*css*/`
     position: absolute;
     z-index: 1;
     background-color: var(--interaction-ring-color);
-    transition: inherit;
     opacity: 0;
   }
 
@@ -163,8 +172,7 @@ sheet.replaceSync(/*css*/`
     background-color: var(--on-track-color);
     box-sizing: border-box;
     opacity: var(--delayed-ratio);
-    transform: scale(var(--scale, 1));
-    transition: inherit;
+    scale: var(--scale, 1);
     position: relative;
     z-index: 2;
   }
@@ -178,13 +186,9 @@ sheet.replaceSync(/*css*/`
     --scale: calc(var(--off-thumb-scale) + var(--delayed-ratio) * (1 - var(--off-thumb-scale)));
     --max-translation: calc(var(--height) - 2 * var(--border-width));
     --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
-    transform:
-      translateX(var(--translation))
-      scale(var(--scale))
-      rotate(.05deg) /* fix for jerky half-pixel transitions in Firefox */
-      ;
-    transition: inherit;
-    will-change: transform;
+    translate: var(--translation);
+    scale: var(--scale);
+    rotate: .05deg; /* fix for jerky half-pixel transitions in Firefox */
     position: relative;
     z-index: 3;
   }
@@ -198,14 +202,9 @@ sheet.replaceSync(/*css*/`
     stroke: none;
     fill: var(--on-thumb-color);
     opacity: var(--delayed-ratio);
-    transition: inherit;
-    will-change: opacity;
   }
 
   [part~="icon-off"] {
-    opacity: calc(1 - var(--delayed-ratio));
-    transition: inherit;
-    will-change: opacity;
     stroke: var(--off-track-color);
     stroke-width: 2.5; /* (1 / --off-thumb-scale) * .icon-on--stroke-width */
     position: relative;
@@ -214,8 +213,6 @@ sheet.replaceSync(/*css*/`
 
   [part~="icon-on"] {
     opacity: var(--delayed-ratio);
-    transition: inherit;
-    will-change: opacity;
     stroke: var(--on-track-color);
     stroke-width: 2;
     position: relative;
