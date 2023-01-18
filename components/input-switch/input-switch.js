@@ -19,17 +19,17 @@ template.innerHTML = /*html*/`
     <span part="border" aria-hidden="true"></span>
     <span part="track" aria-hidden="true"></span>
     <span part="thumb" aria-hidden="true">
-      <svg class="bg-off" viewBox="0 0 36 36">
+      <svg part="bg bg-off" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14"/>
       </svg>
-      <svg class="bg-on" viewBox="0 0 36 36">
+      <svg part="bg bg-on" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14"/>
       </svg>
-      <svg class="icon-off" part="icon" viewBox="-2.4 -2.4 28.8 28.8">
+      <svg part="icon icon-off" viewBox="-2.4 -2.4 28.8 28.8">
         <path d="M 6 6 L 18 18" fill="transparent"/>
         <path d="M 18 6 L 6 18" fill="transparent"/>
       </svg>
-      <svg class="icon-on" part="icon" viewBox="-2.4 -2.4 28.8 28.8">
+      <svg part="icon icon-on" viewBox="-2.4 -2.4 28.8 28.8">
         <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
       </svg>
     </span>
@@ -116,7 +116,7 @@ sheet.replaceSync(/*css*/`
   }
 
   [role="switch"] > *,
-  [part="thumb"] > * {
+  [part~="thumb"] > * {
     grid-row: 1;
     grid-column: 1;
   }
@@ -142,7 +142,7 @@ sheet.replaceSync(/*css*/`
     opacity: .12;
   }
 
-  [part="border"] {
+  [part~="border"] {
     display: grid;
     width: 100%;
     height: 100%;
@@ -154,7 +154,7 @@ sheet.replaceSync(/*css*/`
     z-index: 1;
   }
 
-  [part="track"] {
+  [part~="track"] {
     display: grid;
     width: 100%;
     height: 100%;
@@ -169,7 +169,7 @@ sheet.replaceSync(/*css*/`
     z-index: 2;
   }
 
-  [part="thumb"] {
+  [part~="thumb"] {
     display: grid;
     height: 100%;
     aspect-ratio: 1 / 1;
@@ -189,12 +189,12 @@ sheet.replaceSync(/*css*/`
     z-index: 3;
   }
 
-  .bg-off {
+  [part~="bg-off"] {
     stroke: none;
     fill: var(--off-thumb-color);
   }
 
-  .bg-on {
+  [part~="bg-on"] {
     stroke: none;
     fill: var(--on-thumb-color);
     opacity: var(--delayed-ratio);
@@ -202,7 +202,7 @@ sheet.replaceSync(/*css*/`
     will-change: opacity;
   }
 
-  .icon-off {
+  [part~="icon-off"] {
     opacity: calc(1 - var(--delayed-ratio));
     transition: inherit;
     will-change: opacity;
@@ -212,7 +212,7 @@ sheet.replaceSync(/*css*/`
     z-index: 3;
   }
 
-  .icon-on {
+  [part~="icon-on"] {
     opacity: var(--delayed-ratio);
     transition: inherit;
     will-change: opacity;
@@ -222,11 +222,11 @@ sheet.replaceSync(/*css*/`
     z-index: 3;
   }
 
-  :host(:not([icon-on])) .icon-on {
+  :host(:not([icon-on])) [part~="icon-on"] {
     display: none;
   }
 
-  :host(:not([icon-off])) .icon-off {
+  :host(:not([icon-off])) [part~="icon-off"] {
     display: none;
   }
 
