@@ -185,7 +185,7 @@ sheet.replaceSync(/*css*/`
     box-sizing: border-box;
     justify-self: start;
     --scale: calc(var(--off-thumb-scale) + var(--delayed-ratio) * (1 - var(--off-thumb-scale)));
-    --max-translation: calc(var(--width) - var(--height));
+    --max-translation: calc(var(--width) - var(--height)); /* because the thumb's width is --height - border */
     --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
     translate: var(--translation);
     scale: var(--scale);
@@ -338,7 +338,7 @@ export default class InputSwitch extends HTMLElement {
     this.button.style.removeProperty('--easing');
 
     const coords = this.getBoundingClientRect();
-    const slidableWidth = coords.width - coords.height;
+    const slidableWidth = coords.width - coords.height; /* see css --max-translation */
     const textDir = this.rtl ? -1 : 1;
     this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
     
