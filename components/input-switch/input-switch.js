@@ -327,6 +327,8 @@ export default class InputSwitch extends HTMLElement {
 
   // Make switch touchmoveable
   onStart(event) {
+    if (event.button !== 0) return; // Only act on left mouse click, touch or pen contact
+    
     this.button.setPointerCapture(event.pointerId);
     
     this.cancelNextClick = false; // whether the click should be prevented
