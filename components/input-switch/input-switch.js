@@ -114,6 +114,7 @@ sheet.replaceSync(/*css*/`
     --delayed-duration: calc(var(--duration) * (1 - 2 * var(--ratio-margin)));
     --delayed-delay: calc(var(--duration) * var(--ratio-margin));
     transition: --ratio var(--duration) var(--easing);
+    overflow: hidden;
 
     touch-action: none;
     --ratio: 0;
