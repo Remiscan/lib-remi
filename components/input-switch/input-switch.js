@@ -327,6 +327,7 @@ export default class InputSwitch extends HTMLElement {
   // Make switch touchmoveable
   onStart(event) {
     if (event.button !== 0) return; // Only act on left mouse click, touch or pen contact
+    if (this.disabled) return;
     
     this.button.setPointerCapture(event.pointerId);
     
@@ -341,7 +342,7 @@ export default class InputSwitch extends HTMLElement {
     const coords = this.getBoundingClientRect();
     const slidableWidth = coords.width - coords.height; /* see css --max-translation */
     const textDir = this.rtl ? -1 : 1;
-    this.button.style.setProperty('--dir', textDir); // for broswers that don't support the :dir() pseudo-class
+    this.button.style.setProperty('--dir', String(textDir)); // for broswers that don't support the :dir() pseudo-class
     
     // Gets the coordinates of an event relative to the button
     const getCoords = touch => { return { x: touch.clientX - coords.x, y: touch.clientY - coords.y } };
@@ -366,7 +367,7 @@ export default class InputSwitch extends HTMLElement {
       // Disable transition, the handle should follow the finger/cursor immediately
       if (!durationChanged) {
         durationChanged = true;
-        this.button.style.setProperty('--duration', 0);
+        this.button.style.setProperty('--duration', '0');
       }
 
       lastTouch = getCoords(event);
@@ -421,10 +422,10 @@ export default class InputSwitch extends HTMLElement {
   }
 
   set disabled(value) {
-    if (value === true) {
-      this.button.setAttribute('disabled', 'true');
+    if (value == null || value === false) {
+      this.removeAttribute('disabled');
     } else {
-      this.button.removeAttribute('disabled');
+      this.setAttribute('disabled', 'true');
     }
   }
 
@@ -443,7 +444,11 @@ export default class InputSwitch extends HTMLElement {
         this.button.setAttribute('aria-label', labelText);
         break;
       case 'disabled':
-        this.disabled = newValue !== null;
+        if (newValue == null) {
+          this.button.removeAttribute('disabled');
+        } else {
+          this.button.setAttribute('disabled', 'true');
+        }
         break;
     }
   }
