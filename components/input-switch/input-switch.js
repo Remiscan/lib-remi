@@ -105,7 +105,7 @@ sheet.replaceSync(/*css*/`
     appearance: none;
     font: inherit;
     color: inherit;
-    outline-offset: 3px;
+    outline-offset: 2px;
 
     display: grid;
     place-items: center;
