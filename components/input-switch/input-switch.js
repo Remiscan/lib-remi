@@ -39,6 +39,7 @@ template.innerHTML = /*html*/`
 
 
 const cssPropertiesApiSupported = 'registerProperty' in CSS;
+const cssTranslatePropertySupported = CSS.supports('translate: 0');
 
 
 
@@ -287,10 +288,22 @@ sheet.replaceSync(/*css*/`
 
   [role="switch"].fallback {
     --fallback-transition:
-      translate var(--duration) var(--easing),
-      scale var(--duration) var(--easing),
+      transform var(--duration) var(--easing),
       opacity var(--duration) var(--easing);
     transition: var(--fallback-transition);
+  }
+
+  [role="switch"].fallback [part~="track"] {
+    scale: unset;
+    transform: scale(var(--scale, 1));
+  }
+
+  [role="switch"].fallback [part~="thumb"] {
+    scale: unset;
+    translate: unset;
+    transform:
+      scale(var(--scale))
+      translate(var(--translation));
   }
 
   [role="switch"].fallback :is(
@@ -330,7 +343,7 @@ export default class InputSwitch extends HTMLElement {
     }
     
     this.button = this.shadowRoot.querySelector('button');
-    if (!cssPropertiesApiSupported) {
+    if (!cssPropertiesApiSupported || !cssTranslatePropertySupported) {
       this.button.classList.add('fallback');
     }
 
