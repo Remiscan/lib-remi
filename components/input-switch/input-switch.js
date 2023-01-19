@@ -122,8 +122,17 @@ sheet.replaceSync(/*css*/`
     touch-action: none;
     --ratio: 0;
     --dir: 1;
-    --ratio-margin: .2;
+    --ratio-margin: .1;
     --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1);
+    --interpolated-delayed-ratio: clamp(
+      0,
+      2.4975 * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio)
+      - 6.24376 * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio)
+      + 3.20513 * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio)
+      + 1.43606 * var(--delayed-ratio) * var(--delayed-ratio)
+      + 0.105062 * var(--delayed-ratio),
+      1
+    ); /* https://www.wolframalpha.com/input?i=interpolating+polynomial++{{-0.2,+0},{-0.1,+0},{0,+0},{1,+1},{1.1,+1},{1.2,+1}} */
   }
 
   [role="switch"]:dir(rtl) {
@@ -202,7 +211,7 @@ sheet.replaceSync(/*css*/`
     border-radius: calc(.5 * (var(--height) + 2 * var(--border-width)));
     background-color: var(--on-track-color);
     box-sizing: border-box;
-    opacity: var(--delayed-ratio);
+    opacity: var(--interpolated-delayed-ratio);
     scale: var(--scale, 1);
     position: relative;
     z-index: 2;
@@ -214,7 +223,7 @@ sheet.replaceSync(/*css*/`
     aspect-ratio: 1 / 1;
     box-sizing: border-box;
     justify-self: start;
-    --scale: calc(var(--off-thumb-scale) + var(--delayed-ratio) * (1 - var(--off-thumb-scale)));
+    --scale: calc(var(--off-thumb-scale) + var(--interpolated-delayed-ratio) * (1 - var(--off-thumb-scale)));
     --max-translation: calc(var(--width) - var(--height)); /* because the thumb's width is --height - border */
     --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
     translate: var(--translation);
@@ -232,7 +241,7 @@ sheet.replaceSync(/*css*/`
   [part~="bg-on"] {
     stroke: none;
     fill: var(--on-thumb-color);
-    opacity: var(--delayed-ratio);
+    opacity: var(--interpolated-delayed-ratio);
   }
 
   [part~="icon-off"] {
@@ -243,7 +252,7 @@ sheet.replaceSync(/*css*/`
   }
 
   [part~="icon-on"] {
-    opacity: var(--delayed-ratio);
+    opacity: var(--interpolated-delayed-ratio);
     stroke: var(--on-track-color);
     stroke-width: 2;
     position: relative;
