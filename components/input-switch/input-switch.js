@@ -116,6 +116,7 @@ sheet.replaceSync(/*css*/`
     --delayed-delay: calc(var(--duration) * var(--ratio-margin));
     transition: --ratio var(--duration) var(--easing);
     overflow: hidden;
+    padding: 1px; /* to prevent cutting part of the border with overflow hidden */
 
     touch-action: none;
     --ratio: 0;
