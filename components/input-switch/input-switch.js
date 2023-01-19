@@ -228,7 +228,7 @@ sheet.replaceSync(/*css*/`
     --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
     translate: var(--translation);
     scale: var(--scale);
-    rotate: .05deg; /* fix for jerky half-pixel transitions in Firefox */
+    /*rotate: .05deg;*/ /* fix for jerky half-pixel transitions in Firefox */ /* disable: makes it too blurry */
     position: relative;
     z-index: 3;
   }
