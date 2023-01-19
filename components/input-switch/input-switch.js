@@ -73,7 +73,7 @@ sheet.replaceSync(/*css*/`
     --off-track-color: #f1f1f1; /* white.blend(--on-track-color, .1) to OKLrCH, then chroma 0 */
     --on-track-color: #4d5cb3;
     --off-thumb-color: #7f7f7f; /* --on-track-color to OKLrCH, then chroma 0 and lightness +10% */
-    --on-thumb-color: #e1efff; /* --on-track-color to OKLrCH, then lightness 95% */
+    --on-thumb-color: #f7feff; /* --on-track-color to OKLrCH, then chroma * .5 and lightness 99% */
   }
 
   @media (prefers-color-scheme: dark) {
