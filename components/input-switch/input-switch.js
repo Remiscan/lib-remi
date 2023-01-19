@@ -245,6 +245,7 @@ sheet.replaceSync(/*css*/`
   }
 
   [part~="icon-off"] {
+    opacity: calc(1 - var(--interpolated-delayed-ratio));
     stroke: var(--off-track-color);
     stroke-width: 2.5; /* (1 / --off-thumb-scale) * .icon-on--stroke-width */
     position: relative;
