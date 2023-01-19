@@ -68,6 +68,7 @@ sheet.replaceSync(/*css*/`
     --duration: .3s;
     --off-thumb-scale: .6;
     --interaction-ring-width: max(4px, var(--border-width));
+    --interaction-ring-color: currentColor;
 
     --off-track-color: #f1f1f1; /* white.blend(--on-track-color, .1) to OKLrCH, then chroma 0 */
     --on-track-color: #4d5cb3;
@@ -235,11 +236,9 @@ sheet.replaceSync(/*css*/`
 
   [role="switch"][aria-checked="false"] {
     --ratio: 0;
-    --interaction-ring-color: var(--off-thumb-color);
   }
   [role="switch"][aria-checked="true"] {
     --ratio: 1;
-    --interaction-ring-color: var(--on-track-color);
   }
 
   @media (prefers-reduced-motion: reduce) {
