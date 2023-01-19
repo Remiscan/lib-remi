@@ -178,6 +178,10 @@ sheet.replaceSync(/*css*/`
     --interaction-coeff: 2.5;
   }
 
+  [role="switch"]:disabled::before {
+    display: none;
+  }
+
   [part~="border"] {
     display: grid;
     width: 100%;
