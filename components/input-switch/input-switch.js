@@ -117,6 +117,7 @@ sheet.replaceSync(/*css*/`
     transition: --ratio var(--duration) var(--easing);
     overflow: hidden;
     padding: 1px; /* to prevent cutting part of the border with overflow hidden */
+    box-sizing: content-box; /* so the previous padding doesn't affect visible button size */
 
     touch-action: none;
     --ratio: 0;
