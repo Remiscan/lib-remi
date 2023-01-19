@@ -122,7 +122,7 @@ sheet.replaceSync(/*css*/`
     touch-action: none;
     --ratio: 0;
     --dir: 1;
-    --ratio-margin: .25;
+    --ratio-margin: .2;
     --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1);
   }
 
