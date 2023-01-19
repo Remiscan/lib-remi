@@ -47,6 +47,7 @@
       <thead>
         <tr>
           <td>Name</td>
+          <td data-type="number">Name n°</td>
           <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</td>
           <td data-type="date" data-format='{ "dateStyle": "medium", "timeStyle": "medium" }'>Date 2</td>
         </tr>
@@ -54,26 +55,31 @@
       <tbody>
         <tr>
           <td>Rémi</td>
+          <td>1</td>
           <td>1467842667293</td>
           <td>1667942667393</td>
         </tr>
         <tr>
           <td>Flavien</td>
+          <td>2</td>
           <td>1667542667593</td>
           <td>1167342667493</td>
         </tr>
         <tr>
           <td>Skander</td>
+          <td>1</td>
           <td>1362542667593</td>
           <td>1267442667493</td>
         </tr>
         <tr>
           <td>Alexandre</td>
+          <td>2</td>
           <td>1647542667593</td>
           <td>1267342667493</td>
         </tr>
         <tr>
           <td>Giovanni</td>
+          <td>3</td>
           <td>1657542667593</td>
           <td>1457342667493</td>
         </tr>
