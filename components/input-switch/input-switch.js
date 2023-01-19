@@ -139,21 +139,43 @@ sheet.replaceSync(/*css*/`
   [role="switch"]::before {
     content: '';
     display: flex;
-    width: calc(100% + 2 * var(--interaction-ring-width));
-    height: calc(100% + 2 * var(--interaction-ring-width));
-    border-radius: calc(.5 * (var(--height) + 2 * var(--border-width) + 2 * var(--interaction-ring-width)));
+    width: calc(100% + var(--interaction-coeff, 0) * var(--interaction-ring-width));
+    height: calc(100% + var(--interaction-coeff, 0) * var(--interaction-ring-width));
+    border-radius: calc(3 * var(--height));
     position: absolute;
     z-index: 1;
     background-color: var(--interaction-ring-color);
     opacity: 0;
+    --interaction-duration: .2s;
+    transition:
+      width var(--interaction-duration) var(--easing-standard),
+      height var(--interaction-duration) var(--easing-standard),
+      opacity var(--interaction-duration) var(--easing-standard)
+      ;
+    contain: size;
+  }
+
+  [role="switch"]:is(:hover, :active, .active, .dragged)::before {
+    --interaction-duration: .1s;
   }
 
   [role="switch"]:hover::before {
+    --interaction-coeff: 2;
     opacity: .08;
   }
 
   [role="switch"]:active::before {
     opacity: .12;
+  }
+
+  /* .active only on pointer events, whereas :active also on keyboard event */
+  [role="switch"].active::before {
+    --interaction-coeff: 2.5;
+  }
+
+  [role="switch"].dragged::before {
+    opacity: .16;
+    --interaction-coeff: 2.5;
   }
 
   [part~="border"] {
@@ -344,6 +366,7 @@ export default class InputSwitch extends HTMLElement {
     const slidableWidth = coords.width - coords.height; /* see css --max-translation */
     const textDir = this.rtl ? -1 : 1;
     this.button.style.setProperty('--dir', String(textDir)); // for broswers that don't support the :dir() pseudo-class
+    this.button.classList.add('active');
     
     // Gets the coordinates of an event relative to the button
     const getCoords = touch => { return { x: touch.clientX - coords.x, y: touch.clientY - coords.y } };
@@ -382,7 +405,10 @@ export default class InputSwitch extends HTMLElement {
       maxDistance = Math.max(Math.abs(distance), maxDistance);
 
       // Safety margin to differentiate a click and a drag
-      if (!this.moving && Math.abs(distance) > clickSafetyMargin) this.moving = true;
+      if (!this.moving && Math.abs(distance) > clickSafetyMargin) {
+        this.moving = true;
+        this.button.classList.add('dragged');
+      }
       this.button.style.setProperty('--ratio', ratio);
 
       requestAnimationFrame(() => { frameReady = true });
@@ -391,6 +417,18 @@ export default class InputSwitch extends HTMLElement {
     const endHandle = event => {
       const distance = updateDistance(lastTouch);
       this.button.style.removeProperty('--ratio');
+
+      if (this.moving) {
+        this.cancelNextClick = true;
+      }
+
+      this.button.classList.remove('active', 'dragged');
+
+      this.button.removeEventListener('pointermove', moveHandle, { passive: true });
+      this.button.removeEventListener('pointerup', endHandle);
+      this.button.removeEventListener('pointercancel', endHandle);
+
+      if (event.type === 'pointercancel') return;
 
       // If it's a drag and it moved to the other side of the switch
       const correctDirection = (Math.sign(distance) === -1 && initialRatio === 1) || (Math.sign(distance) === 1 && initialRatio === 0);
@@ -405,17 +443,11 @@ export default class InputSwitch extends HTMLElement {
         // If it's not a click (over safety margin)
         if (maxDistance > clickSafetyMargin) this.cancelNextClick = true;
       }
-
-      if (this.moving) {
-        this.cancelNextClick = true;
-      }
-
-      this.button.removeEventListener('pointermove', moveHandle, { passive: true });
-      this.button.removeEventListener('pointerup', endHandle);
     };
 
     this.button.addEventListener('pointermove', moveHandle, { passive: true });
     this.button.addEventListener('pointerup', endHandle);
+    this.button.addEventListener('pointercancel', endHandle);
   }
 
   get disabled() {
