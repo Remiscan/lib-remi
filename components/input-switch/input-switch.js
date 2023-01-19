@@ -38,7 +38,11 @@ template.innerHTML = /*html*/`
 
 
 
-if ('registerProperty' in CSS) {
+const cssPropertiesApiSupported = 'registerProperty' in CSS;
+
+
+
+if (cssPropertiesApiSupported) {
   CSS.registerProperty({
     name: '--ratio',
     syntax: '<number>',
@@ -133,6 +137,13 @@ sheet.replaceSync(/*css*/`
       + 0.105062 * var(--delayed-ratio),
       1
     ); /* https://www.wolframalpha.com/input?i=interpolating+polynomial++{{-0.2,+0},{-0.1,+0},{0,+0},{1,+1},{1.1,+1},{1.2,+1}} */
+  }
+
+  [role="switch"][aria-checked="false"] {
+    --ratio: 0;
+  }
+  [role="switch"][aria-checked="true"] {
+    --ratio: 1;
   }
 
   [role="switch"]:dir(rtl) {
@@ -272,12 +283,24 @@ sheet.replaceSync(/*css*/`
     --off-thumb-scale: .8;
   }
 
-  [role="switch"][aria-checked="false"] {
-    --ratio: 0;
+  /* Fallback animation when CSS Properties API not supported */
+
+  [role="switch"].fallback {
+    --fallback-transition:
+      translate var(--duration) var(--easing),
+      scale var(--duration) var(--easing),
+      opacity var(--duration) var(--easing);
+    transition: var(--fallback-transition);
   }
-  [role="switch"][aria-checked="true"] {
-    --ratio: 1;
+
+  [role="switch"].fallback :is(
+    [part~="track"],
+    [part~="thumb"],
+    [part~="bg-on"]
+  ) {
+    transition: var(--fallback-transition);
   }
+
 
   @media (prefers-reduced-motion: reduce) {
     :host {
@@ -307,6 +330,10 @@ export default class InputSwitch extends HTMLElement {
     }
     
     this.button = this.shadowRoot.querySelector('button');
+    if (!cssPropertiesApiSupported) {
+      this.button.classList.add('fallback');
+    }
+
     this.moving = false;
     this.handlers = {
       labelClick: () => {},
