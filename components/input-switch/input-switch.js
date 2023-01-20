@@ -20,25 +20,25 @@ click handler deal with updating the switch's state in every case.
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
   <button type="button" part="button" role="switch" aria-checked="false">
-    <span part="border" aria-hidden="true"></span>
-    <span part="track" aria-hidden="true"></span>
+    <span part="track-unchecked" aria-hidden="true"></span>
+    <span part="track-checked" aria-hidden="true"></span>
     <span part="thumb" aria-hidden="true">
-      <svg part="bg bg-off" viewBox="0 0 36 36">
-        <circle cx="18" cy="18" r="14"/>
-        <svg part="icon icon-unchecked" viewBox="-2.4 -2.4 28.8 28.8">
-          <path d="M 6 6 L 18 18" fill="transparent"/>
-          <path d="M 18 6 L 6 18" fill="transparent"/>
-        </svg>
+      <svg part="visible-thumb" viewBox="0 0 36 36">
+        <g part="thumb-unchecked">
+          <circle part="bg bg-unchecked" cx="18" cy="18" r="14"/>
+          <svg part="icon icon-unchecked" viewBox="-2.4 -2.4 28.8 28.8">
+            <path d="M 6 6 L 18 18" fill="transparent"/>
+            <path d="M 18 6 L 6 18" fill="transparent"/>
+          </svg>
+        </g>
+        <g part="thumb-checked">
+          <circle part="bg bg-checked" cx="18" cy="18" r="14"/>
+          <svg part="icon icon-checked" viewBox="-2.4 -2.4 28.8 28.8">
+            <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
+          </svg>
+        </g>
       </svg>
-      <svg part="bg bg-on" viewBox="0 0 36 36">
-        <circle cx="18" cy="18" r="14"/>
-        <svg part="icon icon-checked" viewBox="-2.4 -2.4 28.8 28.8">
-          <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
-        </svg>
-      </svg>
-    </span>
-    <span part="interaction-hint" aria-hidden="true">
-      <svg viewBox="0 0 36 36">
+      <svg part="interaction-hint" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="18"/>
       </svg>
     </span>
@@ -119,6 +119,31 @@ sheet.replaceSync(/*css*/`
     }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    :host {
+      --duration: 0;
+    }
+  }
+
+  /*
+   * Elaborate animation:
+   * |- ✅ --ratio transition on [role="switch"]
+   * | |- implicit opacity transition on [part~="track-checked"]
+   * | |- implicit translate transition on [part~="thumb"]
+   * | |- implicit scale transition on [part="visible-thumb"]
+   * | |- implicit opacity transition on [part~="thumb-checked"]
+   * |- opacity transition on [part~="interaction-hint"]
+   * 
+   * Fallback animation:
+   * |- ❌ --ratio transition impossible
+   * |- opacity transition on [part~="track-checked"]
+   * |- transform (translate) transition on [part~="thumb"]
+   * |- transform (scale) transition on [part~="visible-thumb"]
+   * |- opacity transition on [part~="thumb-checked"]
+   * |- opacity transition on [part~="interaction-hint"]
+   */
+
+  /* Button */
   [role="switch"] {
     border: none;
     background: none;
@@ -135,17 +160,16 @@ sheet.replaceSync(/*css*/`
     width: 100%;
     height: 100%;
     border-radius: calc(.5 * (var(--height) + 2 * var(--border-width)));
-    --delayed-duration: calc(var(--duration) * (1 - 2 * var(--ratio-margin)));
-    --delayed-delay: calc(var(--duration) * var(--ratio-margin));
     transition: --ratio var(--duration) var(--easing);
     padding: 1px; /* to prevent cutting part of the border with overflow hidden */
     box-sizing: content-box; /* so the previous padding doesn't affect visible button size */
+    overflow: hidden; /* stops focus outline from deforming around overflowing content */
+    touch-action: none; /* prevents 300ms delay on pointerdown on mobile */
 
-    touch-action: none;
     --ratio: 0;
     --dir: 1;
     --ratio-margin: .1;
-    --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1);
+    --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1); /* so the scaling and opacity transitions start a bit after and end a bit before the translation */
     --interpolated-delayed-ratio: clamp(
       0,
       2.4975 * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio) * var(--delayed-ratio)
@@ -154,7 +178,7 @@ sheet.replaceSync(/*css*/`
       + 1.43606 * var(--delayed-ratio) * var(--delayed-ratio)
       + 0.105062 * var(--delayed-ratio),
       1
-    ); /* https://www.wolframalpha.com/input?i=interpolating+polynomial++{{-0.2,+0},{-0.1,+0},{0,+0},{1,+1},{1.1,+1},{1.2,+1}} */
+    ); /* https://www.wolframalpha.com/input?i=interpolating+polynomial++{{-0.2,+0},{-0.1,+0},{0,+0},{1,+1},{1.1,+1},{1.2,+1}} so thescaling and opacity transitions are smoothed instead of linear during the translation */
   }
 
   [role="switch"][aria-checked="false"] {
@@ -174,63 +198,48 @@ sheet.replaceSync(/*css*/`
     grid-column: 1;
   }
 
-  [part~="border"] {
-    display: grid;
+  [part~="track-unchecked"] {
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
     border: var(--border-width, 0px) solid var(--off-thumb-color);
     border-radius: calc(.5 * (var(--height) + 2 * var(--border-width)));
     background-color: var(--off-track-color);
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
     --integer-ratio: calc(var(--ratio) - .5); /* rounded to 1 when ratio = 1, else 0 */
-    opacity: calc(1 - var(--integer-ratio)); /* having opacity 0 when checked hides the underlying border and makes the track border more rounded */
+    opacity: calc(1 - var(--integer-ratio)); /* having opacity 0 when checked hides the underlying border and makes the track-checked border more rounded */
   }
 
-  [part~="track"] {
-    display: grid;
+  [part~="track-checked"] {
     width: 100%;
     height: 100%;
-    border: none;
     border-radius: calc(.5 * (var(--height) + 2 * var(--border-width)));
     background-color: var(--on-track-color);
-    box-sizing: border-box;
     opacity: var(--interpolated-delayed-ratio);
-    scale: var(--scale, 1);
-    position: relative;
-    z-index: 2;
   }
 
-  [part~="interaction-hint"],
   [part~="thumb"] {
     display: grid;
     height: 100%;
     aspect-ratio: 1 / 1;
-    box-sizing: border-box;
     justify-self: start;
-    --scale: calc(var(--off-thumb-scale) + var(--interpolated-delayed-ratio) * (1 - var(--off-thumb-scale)));
     --max-translation: calc(var(--width) - var(--height)); /* because the thumb's width is --height - border */
     --translation: calc(var(--dir) *var(--ratio) * var(--max-translation));
     translate: var(--translation);
-    scale: var(--scale);
-    /*rotate: .05deg;*/ /* fix for jerky half-pixel transitions in Firefox */ /* disable: makes it too blurry */
     position: relative;
-    z-index: 3;
+  }
+
+  [part~="visible-thumb"] {
+    --scale: calc(var(--off-thumb-scale) + var(--interpolated-delayed-ratio) * (1 - var(--off-thumb-scale)));
+    scale: var(--scale);
   }
 
   [part~="interaction-hint"] {
-    --ring-height: max(calc(var(--height) + 4 * var(--border-width)), calc(40px + 2 * var(--border-width)));
+    --ring-height: calc(var(--height) + 2 * var(--border-width));
     height: var(--ring-height);
     position: absolute;
-    translate: unset;
-    scale: unset;
     fill: var(--interaction-ring-color);
-    transform: translate(var(--translation));
     opacity: 0;
-    transition:
-      opacity var(--interaction-ring-duration) var(--easing-standard) var(--interaction-ring-delay, 0s);
-    margin: calc(-.5 * (var(--ring-height) - var(--height) - 2 * var(--border-width)));
+    transition: opacity var(--interaction-ring-duration) var(--easing-standard) var(--interaction-ring-delay, 0s);
   }
 
   @media (hover) {
@@ -252,31 +261,30 @@ sheet.replaceSync(/*css*/`
     display: none;
   }
 
-  [part~="bg-off"] {
+  [part~="bg-unchecked"] {
     stroke: none;
     fill: var(--off-thumb-color);
   }
 
-  [part~="bg-on"] {
+  [part~="bg-checked"] {
     stroke: none;
     fill: var(--on-thumb-color);
+  }
+
+  [part~="thumb-checked"] {
     opacity: var(--interpolated-delayed-ratio);
   }
 
   [part~="icon-unchecked"] {
-    opacity: calc(1 - var(--interpolated-delayed-ratio));
     stroke: var(--off-track-color);
-    stroke-width: 2.5; /* (1 / --off-thumb-scale) * .icon-checked--stroke-width */
+    stroke-width: 2.5; /* (1 / --off-thumb-scale) * .icon-checked's --stroke-width */
     position: relative;
-    z-index: 3;
   }
 
   [part~="icon-checked"] {
-    opacity: var(--interpolated-delayed-ratio);
     stroke: var(--on-track-color);
     stroke-width: 2;
     position: relative;
-    z-index: 3;
   }
 
   :host(:not([icons~="checked"], [icons~="both"])) [part~="icon-checked"] {
@@ -300,42 +308,27 @@ sheet.replaceSync(/*css*/`
     transition: var(--fallback-transition);
   }
 
-  [role="switch"].fallback [part~="border"] {
-    opacity: 1;
-  }
-
-  [role="switch"].fallback [part~="track"] {
-    scale: unset;
-    transform: scale(var(--scale, 1));
-  }
-
-  [role="switch"].fallback [part~="thumb"] {
-    scale: unset;
-    translate: unset;
-    transform:
-      translate(var(--translation))
-      scale(var(--scale));
-  }
-
-  [role="switch"].fallback [part~="interaction-hint"] {
-    transition:
-      opacity var(--interaction-ring-duration) var(--easing-standard) var(--interaction-ring-delay, 0s),
-      transform var(--duration) var(--easing) 0s;
-  }
-
   [role="switch"].fallback :is(
-    [part~="track"],
+    [part~="track-checked"],
     [part~="thumb"],
-    [part~="bg-on"]
+    [part~="visible-thumb"],
+    [part~="thumb-checked"]
   ) {
     transition: var(--fallback-transition);
   }
 
+  [role="switch"].fallback [part~="track-unchecked"] {
+    opacity: 1;
+  }
 
-  @media (prefers-reduced-motion: reduce) {
-    :host {
-      --duration: 0;
-    }
+  [role="switch"].fallback [part~="thumb"] {
+    translate: unset;
+    transform: translate(var(--translation));
+  }
+
+  [role="switch"].fallback [part="visible-thumb"] {
+    scale: unset;
+    transform: scale(var(--scale));
   }
 `);
 
