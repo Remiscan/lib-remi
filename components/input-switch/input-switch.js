@@ -23,14 +23,14 @@ template.innerHTML = /*html*/`
     <span part="thumb" aria-hidden="true">
       <svg part="bg bg-off" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14"/>
-        <svg part="icon icon-off" viewBox="-2.4 -2.4 28.8 28.8">
+        <svg part="icon icon-unchecked" viewBox="-2.4 -2.4 28.8 28.8">
           <path d="M 6 6 L 18 18" fill="transparent"/>
           <path d="M 18 6 L 6 18" fill="transparent"/>
         </svg>
       </svg>
       <svg part="bg bg-on" viewBox="0 0 36 36">
         <circle cx="18" cy="18" r="14"/>
-        <svg part="icon icon-on" viewBox="-2.4 -2.4 28.8 28.8">
+        <svg part="icon icon-checked" viewBox="-2.4 -2.4 28.8 28.8">
           <path d="M 6 12 L 10 16 L 18 8" fill="transparent"/>
         </svg>
       </svg>
@@ -267,15 +267,15 @@ sheet.replaceSync(/*css*/`
     opacity: var(--interpolated-delayed-ratio);
   }
 
-  [part~="icon-off"] {
+  [part~="icon-unchecked"] {
     opacity: calc(1 - var(--interpolated-delayed-ratio));
     stroke: var(--off-track-color);
-    stroke-width: 2.5; /* (1 / --off-thumb-scale) * .icon-on--stroke-width */
+    stroke-width: 2.5; /* (1 / --off-thumb-scale) * .icon-checked--stroke-width */
     position: relative;
     z-index: 3;
   }
 
-  [part~="icon-on"] {
+  [part~="icon-checked"] {
     opacity: var(--interpolated-delayed-ratio);
     stroke: var(--on-track-color);
     stroke-width: 2;
@@ -283,15 +283,15 @@ sheet.replaceSync(/*css*/`
     z-index: 3;
   }
 
-  :host(:not([icon-on])) [part~="icon-on"] {
+  :host(:not([icons~="checked"], [icons~="both"])) [part~="icon-checked"] {
     display: none;
   }
 
-  :host(:not([icon-off])) [part~="icon-off"] {
+  :host(:not([icons~="unchecked"], [icons~="both"])) [part~="icon-unchecked"] {
     display: none;
   }
 
-  :host([icon-off]) {
+  :host(:is([icons~="unchecked"], [icons~="both"])) {
     --off-thumb-scale: .8;
   }
 

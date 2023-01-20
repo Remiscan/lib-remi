@@ -104,20 +104,20 @@
         <br>Click or drag. (<a class="other-version" href="v1.php">See v1</a>)
       </span>
 
-      <input-switch id="switch-0" label='Switch 1 (with "on" and "off" icons)' icon-off icon-on style="font-size: 3rem"></input-switch>
-      <input-switch id="switch-1" label='Switch 2 (with "on" icon only)' checked icon-on style="font-size: 3rem"></input-switch>
-      <input-switch id="switch-2" label="Switch 3 (with no icon)" style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-0" label='Switch 1 (with "on" and "off" icons)' icons="both" style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-1" label='Switch 2 (with "on" icon only)' checked icons="checked" style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-2" label="Switch 3 (with no icon)" icons="none" style="font-size: 3rem"></input-switch>
 
       <form>
         <label for="switch-3">
           Switch 4
-          <input-switch id="switch-3" checked icon-off icon-on name="switch"></input-switch>
+          <input-switch id="switch-3" checked icons="checked unchecked" name="switch"></input-switch>
         </label>
       </form>
 
       <label for="switch-4" dir="rtl">
         Right-to-left
-        <input-switch id="switch-4" icon-on></input-switch>
+        <input-switch id="switch-4" icons="checked"></input-switch>
       </label>
 
       <label for="switch-5">
