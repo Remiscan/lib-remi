@@ -47,6 +47,7 @@
         position: sticky;
         bottom: .6rem;
         opacity: 0;
+        white-space: nowrap;
       }
       .action.on {
         opacity: 1;
@@ -103,24 +104,24 @@
         <br>Click or drag. (<a class="other-version" href="v1.php">See v1</a>)
       </span>
 
-      <input-switch id="switch-0" label="Switch 0" icon-off icon-on style="font-size: 3rem"></input-switch>
-      <input-switch id="switch-1" label="Switch 1" checked icon-on style="font-size: 3rem"></input-switch>
-      <input-switch id="switch-2" label="Switch 2" style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-0" label='Switch 1 (with "on" and "off" icons)' icon-off icon-on style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-1" label='Switch 2 (with "on" icon only)' checked icon-on style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-2" label="Switch 3 (with no icon)" style="font-size: 3rem"></input-switch>
 
       <form>
         <label for="switch-3">
-          Switch 3
+          Switch 4
           <input-switch id="switch-3" checked icon-off icon-on name="switch"></input-switch>
         </label>
       </form>
 
       <label for="switch-4" dir="rtl">
-        Switch 4
+        Right-to-left
         <input-switch id="switch-4" icon-on></input-switch>
       </label>
 
       <label for="switch-5">
-        Switch 5
+        Disabled
         <input-switch id="switch-5" checked disabled></input-switch>
       </label>
 
