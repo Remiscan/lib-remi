@@ -75,18 +75,18 @@ sheet.replaceSync(/*css*/`
     --interaction-ring-width: max(4px, var(--border-width));
     --interaction-ring-color: currentColor;
 
-    --off-track-color: #f1f1f1; /* white.blend(--on-track-color, .1) to OKLrCH, then chroma 0 */
-    --on-track-color: #4d5cb3;
-    --off-thumb-color: #7f7f7f; /* --on-track-color to OKLrCH, then chroma 0 and lightness +10% */
-    --on-thumb-color: #f7feff; /* --on-track-color to OKLrCH, then chroma * .5 and lightness 99% */
+    --off-track-color: #EFEFEF; /* track color from chrome's default input[type="range"] */
+    --on-track-color: #0075FF; /* filled color from chrome's default input[type="checkbox"] */
+    --off-thumb-color: #808080; /* border-color from chrome's default input[type="checkbox"] */
+    --on-thumb-color: white;
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --off-track-color: #222222; /* #121212.blend(--on-track-color, .1) to OKLCH, then chroma 0 */
-      --on-track-color: #87b2f8;
-      --off-thumb-color: #929292; /* --on-track-color to OKLCH, then chroma 0 and lightness -10% */
-      --on-thumb-color: #000329; /* --on-track-color to OKLrCH, then lightness 5% */
+      --off-track-color: #3B3B3B; /* track color from chrome's default input[type="range"] */
+      --on-track-color: #99C8FF; /* filled color from chrome's default input[type="checkbox"] */
+      --off-thumb-color: #bfbfbf; /* border-color from chrome's default input[type="checkbox"], then improveContrast with --off-track-color to 60 */
+      --on-thumb-color: #000e2c; /* --on-track-color to OKLrCH, then lightness from --off-track-color * .5 */
     }
   }
 
