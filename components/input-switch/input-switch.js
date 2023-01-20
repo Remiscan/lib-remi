@@ -254,6 +254,8 @@ sheet.replaceSync(/*css*/`
   }
 
   [role="switch"].dragged [part~="interaction-hint"] {
+    --interaction-ring-delay: 0s;
+    --interaction-ring-duration: 0s;
     opacity: .16;
   }
 
