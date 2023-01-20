@@ -91,6 +91,7 @@ sheet.replaceSync(/*css*/`
     --off-thumb-scale: .6;
     --interaction-ring-width: max(4px, var(--border-width));
     --interaction-ring-color: currentColor;
+    --interaction-ring-duration: .2s;
 
     --off-track-color: #EFEFEF; /* track color from chrome's default input[type="range"] */
     --on-track-color: #0075FF; /* filled color from chrome's default input[type="checkbox"] */
@@ -219,7 +220,7 @@ sheet.replaceSync(/*css*/`
   }
 
   [part~="interaction-hint"] {
-    --ring-height: max(calc(var(--height) + 2 * var(--border-width) + 16px), 48px);
+    --ring-height: max(calc(var(--height) + 4 * var(--border-width)), calc(40px + 2 * var(--border-width)));
     height: var(--ring-height);
     position: absolute;
     translate: unset;
@@ -227,9 +228,8 @@ sheet.replaceSync(/*css*/`
     fill: var(--interaction-ring-color);
     transform: translate(var(--translation));
     opacity: 0;
-    --interaction-duration: .15s;
     transition:
-      opacity var(--interaction-duration) var(--easing-standard);
+      opacity var(--interaction-ring-duration) var(--easing-standard) var(--interaction-ring-delay, 0s);
     margin: calc(-.5 * (var(--ring-height) - var(--height) - 2 * var(--border-width)));
   }
 
@@ -240,6 +240,7 @@ sheet.replaceSync(/*css*/`
   }
 
   [role="switch"]:active [part~="interaction-hint"] {
+    --interaction-ring-delay: .2s;
     opacity: .12;
   }
 
@@ -318,7 +319,7 @@ sheet.replaceSync(/*css*/`
 
   [role="switch"].fallback [part~="interaction-hint"] {
     transition:
-      opacity var(--interaction-duration) var(--easing-standard),
+      opacity var(--interaction-ring-duration) var(--easing-standard),
       transform var(--duration) var(--easing);
   }
 
