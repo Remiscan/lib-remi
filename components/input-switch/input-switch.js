@@ -50,6 +50,13 @@ if (cssPropertiesApiSupported) {
     inherits: true,
     initialValue: 0,
   });
+
+  CSS.registerProperty({
+    name: '--integer-ratio',
+    syntax: '<integer>',
+    inherits: false,
+    initialValue: 0,
+  });
 }
 
 
@@ -213,6 +220,8 @@ sheet.replaceSync(/*css*/`
     box-sizing: border-box;
     position: relative;
     z-index: 1;
+    --integer-ratio: calc(var(--ratio) - .5); /* rounded to 1 when ratio = 1, else 0 */
+    opacity: calc(1 - var(--integer-ratio)); /* having opacity 0 when checked hides the underlying border and makes the track border more rounded */
   }
 
   [part~="track"] {
@@ -291,6 +300,10 @@ sheet.replaceSync(/*css*/`
       transform var(--duration) var(--easing),
       opacity var(--duration) var(--easing);
     transition: var(--fallback-transition);
+  }
+
+  [role="switch"].fallback [part~="border"] {
+    opacity: 1;
   }
 
   [role="switch"].fallback [part~="track"] {
