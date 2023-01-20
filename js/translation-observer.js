@@ -1,4 +1,11 @@
 /**
+ * The method used to notify an element of a language change.
+ * @typedef { 'attribute' | 'event' | 'both' } notificationMethod
+ */
+
+
+
+/**
  * Finds the closest element to a base element that matches a selector.
  * @param {string} selector 
  * @param {Element} base 
@@ -37,10 +44,13 @@ export class TranslationObserver {
    * Here "serve" an element means observe its source and notify the element when the source's lang attribute changes.
    * @param {Element} element - The element to serve.
    * @param {boolean} init - Whether to immediately update the element's lang attribute before observing changes.
+   * @param {notificationMethod} method - The method used to notify the element.
    */
   serve(element, { init = true, method = 'attribute' } = {}) {
     const source = closestElement('[lang]', element) || document.documentElement;
     const jobsWithSameSource = this.#jobs.get(source) || new Set();
+
+    if (element === document.documentElement) method = 'event';
 
     this.#jobs.set(source, new Set([...jobsWithSameSource, { element, method }]));
     if (init) this.notify(element, source, method);
@@ -120,7 +130,7 @@ export class TranslationObserver {
    * Notifies an element that it's source's lang attribute changed.
    * @param {Element} element 
    * @param {Element} source 
-   * @param {'attribute'|'event'|'both'} method 
+   * @param {notificationMethod} method
    */
   notify(element, source, method) {
     if (!source) return;
