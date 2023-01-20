@@ -7,7 +7,9 @@ However:
 
 Chrome's behaviour is the one I want here.
 White it's not implemented the same way in all browsers, I have to update the checked state of the switch manually instead of
-relying on the click after pointerup.
+relying on the click after pointerup. In a hypothetical future where every browser works like Chrome now, I could remove the
+"cancelNextClick" check, remove the manual updating of the switch's "checked" property in the pointerup handler, and let the
+click handler deal with updating the switch's state in every case.
 
 (see https://github.com/w3c/pointerevents/issues/356)
 
@@ -487,9 +489,7 @@ export default class InputSwitch extends HTMLElement {
       const distance = updateDistance(lastTouch);
       this.button.style.removeProperty('--ratio');
 
-      if (this.moving) {
-        this.cancelNextClick = true;
-      }
+      this.cancelNextClick = true;
 
       this.button.classList.remove('active', 'dragged');
 
@@ -501,16 +501,27 @@ export default class InputSwitch extends HTMLElement {
 
       // If it's a drag and it moved to the other side of the switch
       const correctDirection = (Math.sign(distance) === -1 && initialRatio === 1) || (Math.sign(distance) === 1 && initialRatio === 0);
+
+      // If moved by more than half width, treat as a successful drag and change the switch's state
       if (Math.abs(distance) > 0.5 && correctDirection) {
         // Calculate the remaining animation time based on the current speed
         const remainingDuration = Math.round(100 * .001 * (Date.now() - time) * (1 - Math.abs(distance)) / Math.abs(distance)) / 100;
         this.button.style.setProperty('--duration', `${Math.min(1, remainingDuration)}s`);
         this.button.style.setProperty('--easing', 'var(--easing-decelerate)');
+
+        // Change the switch's state
         this.checked = !initialRatio;
-      } else {
+      }
+
+      // If moved by less than safety margin, treat as a click and change the switch's state
+      else if (Math.abs(distance) <= clickSafetyMargin) {
         this.button.style.removeProperty('--duration');
-        // If it's not a click (over safety margin)
-        if (maxDistance > clickSafetyMargin) this.cancelNextClick = true;
+        this.checked = !initialRatio;
+      }
+      
+      // Else, don't change the switch's state
+      else {
+        this.button.style.removeProperty('--duration');
       }
     };
 
