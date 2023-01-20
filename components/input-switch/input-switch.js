@@ -6,6 +6,8 @@ However:
 - In Chrome, after a pointerup event, a click event is fired on the button no matter where the pointer is.
 
 Chrome's behaviour is the one I want here.
+White it's not implemented the same way in all browsers, I have to update the checked state of the switch manually instead of
+relying on the click after pointerup.
 
 (see https://github.com/w3c/pointerevents/issues/356)
 
