@@ -184,7 +184,6 @@ sheet.replaceSync(/*css*/`
       box-shadow var(--interaction-duration) var(--easing-standard),
       opacity var(--interaction-duration) var(--easing-standard)
       ;
-    contain: size;
     --interaction-coeff: 0;
     box-shadow: 0 0 0 calc(var(--interaction-coeff) * var(--interaction-ring-width));
   }
