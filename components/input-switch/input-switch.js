@@ -319,8 +319,8 @@ sheet.replaceSync(/*css*/`
 
   [role="switch"].fallback [part~="interaction-hint"] {
     transition:
-      opacity var(--interaction-ring-duration) var(--easing-standard),
-      transform var(--duration) var(--easing);
+      opacity var(--interaction-ring-duration) var(--easing-standard) var(--interaction-ring-delay, 0s),
+      transform var(--duration) var(--easing) 0s;
   }
 
   [role="switch"].fallback :is(
