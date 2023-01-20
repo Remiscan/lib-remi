@@ -37,6 +37,11 @@ template.innerHTML = /*html*/`
         </svg>
       </svg>
     </span>
+    <span part="interaction-hint" aria-hidden="true">
+      <svg viewBox="0 0 36 36">
+        <circle cx="18" cy="18" r="18"/>
+      </svg>
+    </span>
   </button>
 `;
 
@@ -132,7 +137,6 @@ sheet.replaceSync(/*css*/`
     --delayed-duration: calc(var(--duration) * (1 - 2 * var(--ratio-margin)));
     --delayed-delay: calc(var(--duration) * var(--ratio-margin));
     transition: --ratio var(--duration) var(--easing);
-    overflow: hidden;
     padding: 1px; /* to prevent cutting part of the border with overflow hidden */
     box-sizing: content-box; /* so the previous padding doesn't affect visible button size */
 
@@ -169,48 +173,6 @@ sheet.replaceSync(/*css*/`
     grid-column: 1;
   }
 
-  [role="switch"]::before {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 100%;
-    border-radius: calc(3 * var(--height));
-    position: absolute;
-    z-index: 1;
-    background-color: var(--interaction-ring-color);
-    opacity: 0;
-    --interaction-duration: .1s;
-    transition:
-      box-shadow var(--interaction-duration) var(--easing-standard),
-      opacity var(--interaction-duration) var(--easing-standard)
-      ;
-    --interaction-coeff: 0;
-    box-shadow: 0 0 0 calc(var(--interaction-coeff) * var(--interaction-ring-width));
-  }
-
-  [role="switch"]:hover::before {
-    --interaction-coeff: 1;
-    opacity: .08;
-  }
-
-  [role="switch"]:active::before {
-    opacity: .12;
-  }
-
-  /* .active only on pointer events, whereas :active also on keyboard event */
-  [role="switch"].active::before {
-    --interaction-coeff: 1.25;
-  }
-
-  [role="switch"].dragged::before {
-    opacity: .16;
-    --interaction-coeff: 1.25;
-  }
-
-  [role="switch"]:disabled::before {
-    display: none;
-  }
-
   [part~="border"] {
     display: grid;
     width: 100%;
@@ -239,6 +201,7 @@ sheet.replaceSync(/*css*/`
     z-index: 2;
   }
 
+  [part~="interaction-hint"],
   [part~="thumb"] {
     display: grid;
     height: 100%;
@@ -253,6 +216,39 @@ sheet.replaceSync(/*css*/`
     /*rotate: .05deg;*/ /* fix for jerky half-pixel transitions in Firefox */ /* disable: makes it too blurry */
     position: relative;
     z-index: 3;
+  }
+
+  [part~="interaction-hint"] {
+    --ring-height: max(calc(var(--height) + 2 * var(--border-width) + 16px), 48px);
+    height: var(--ring-height);
+    position: absolute;
+    translate: unset;
+    scale: unset;
+    fill: var(--interaction-ring-color);
+    transform: translate(var(--translation));
+    opacity: 0;
+    --interaction-duration: .15s;
+    transition:
+      opacity var(--interaction-duration) var(--easing-standard);
+    margin: calc(-.5 * (var(--ring-height) - var(--height) - 2 * var(--border-width)));
+  }
+
+  @media (hover) {
+    [role="switch"]:hover [part~="interaction-hint"] {
+      opacity: .08;
+    }
+  }
+
+  [role="switch"]:active [part~="interaction-hint"] {
+    opacity: .12;
+  }
+
+  [role="switch"].dragged [part~="interaction-hint"] {
+    opacity: .16;
+  }
+
+  [role="switch"]:disabled [part~="interaction-hint"] {
+    display: none;
   }
 
   [part~="bg-off"] {
@@ -316,8 +312,14 @@ sheet.replaceSync(/*css*/`
     scale: unset;
     translate: unset;
     transform:
-      scale(var(--scale))
-      translate(var(--translation));
+      translate(var(--translation))
+      scale(var(--scale));
+  }
+
+  [role="switch"].fallback [part~="interaction-hint"] {
+    transition:
+      opacity var(--interaction-duration) var(--easing-standard),
+      transform var(--duration) var(--easing);
   }
 
   [role="switch"].fallback :is(

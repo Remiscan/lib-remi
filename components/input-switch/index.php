@@ -100,7 +100,7 @@
   <body>
     <div class="container">
       <span class="info">
-        <a href="#"><strong>Flip a switch!</strong></a>
+      <strong>Flip a switch!</strong>
         <br>Click or drag. (<a class="other-version" href="v1.php">See v1</a>)
       </span>
 
