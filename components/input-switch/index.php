@@ -104,9 +104,9 @@
         <br>Click or drag. (<a class="other-version" href="v1.php">See v1</a>)
       </span>
 
-      <input-switch id="switch-0" label='Switch 1 (with "on" and "off" icons)' icons="both" style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-0" label='Switch 1 (with no icon)' icons="none" style="font-size: 3rem"></input-switch>
       <input-switch id="switch-1" label='Switch 2 (with "on" icon only)' checked icons="checked" style="font-size: 3rem"></input-switch>
-      <input-switch id="switch-2" label="Switch 3 (with no icon)" icons="none" style="font-size: 3rem"></input-switch>
+      <input-switch id="switch-2" label='Switch 3 (with "on" and "off" icons)' icons="both" style="font-size: 3rem"></input-switch>
 
       <form>
         <label for="switch-3">
