@@ -71,7 +71,8 @@ sheet.replaceSync(/*css*/`
     aspect-ratio: 1 / 2;
     --height: 2em;
     --border-width: .125em;
-    --width: calc(1.625 * var(--height));
+    --aspect-ratio: 1.625;
+    --width: calc(var(--aspect-ratio) * var(--height));
     width: calc(var(--width) + 2 * var(--border-width));
     height: calc(var(--height) + 2 * var(--border-width));
 
@@ -171,28 +172,25 @@ sheet.replaceSync(/*css*/`
   [role="switch"]::before {
     content: '';
     display: flex;
-    width: calc(100% + var(--interaction-coeff, 0) * var(--interaction-ring-width));
-    height: calc(100% + var(--interaction-coeff, 0) * var(--interaction-ring-width));
+    width: 100%;
+    height: 100%;
     border-radius: calc(3 * var(--height));
     position: absolute;
     z-index: 1;
     background-color: var(--interaction-ring-color);
     opacity: 0;
-    --interaction-duration: .2s;
+    --interaction-duration: .1s;
     transition:
-      width var(--interaction-duration) var(--easing-standard),
-      height var(--interaction-duration) var(--easing-standard),
+      box-shadow var(--interaction-duration) var(--easing-standard),
       opacity var(--interaction-duration) var(--easing-standard)
       ;
     contain: size;
-  }
-
-  [role="switch"]:is(:hover, :active, .active, .dragged)::before {
-    --interaction-duration: .1s;
+    --interaction-coeff: 0;
+    box-shadow: 0 0 0 calc(var(--interaction-coeff) * var(--interaction-ring-width));
   }
 
   [role="switch"]:hover::before {
-    --interaction-coeff: 2;
+    --interaction-coeff: 1;
     opacity: .08;
   }
 
@@ -202,12 +200,12 @@ sheet.replaceSync(/*css*/`
 
   /* .active only on pointer events, whereas :active also on keyboard event */
   [role="switch"].active::before {
-    --interaction-coeff: 2.5;
+    --interaction-coeff: 1.25;
   }
 
   [role="switch"].dragged::before {
     opacity: .16;
-    --interaction-coeff: 2.5;
+    --interaction-coeff: 1.25;
   }
 
   [role="switch"]:disabled::before {
