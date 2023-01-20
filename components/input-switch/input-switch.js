@@ -341,12 +341,8 @@ sheet.replaceSync(/*css*/`
 
 
 
-// How many pixels the finger must move to consider it an intentional drag
-const intentionalDragLimit = 3; // pixels
-
-
-
 export default class InputSwitch extends HTMLElement {
+  static intentionalDragFloor = 3; // How many pixels the pointer must move to consider it an intentional drag
   static formAssociated = true;
   #internals;
 
@@ -453,7 +449,7 @@ export default class InputSwitch extends HTMLElement {
     let maxDistance = 0;
     let frameReady = true;
 
-    const clickSafetyMargin = intentionalDragLimit / slidableWidth; // % of slidable width
+    const clickSafetyMargin = InputSwitch.intentionalDragFloor / slidableWidth; // % of slidable width
 
     const moveHandle = event => {
       if (!frameReady) return;
