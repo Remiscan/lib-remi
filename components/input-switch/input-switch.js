@@ -162,6 +162,7 @@ sheet.replaceSync(/*css*/`
     border-radius: calc(.5 * (var(--height) + 2 * var(--border-width)));
     transition: --ratio var(--duration) var(--easing);
     padding: 1px; /* to prevent cutting part of the border with overflow hidden */
+    margin: -1px; /* to compensate for the added padding */
     box-sizing: content-box; /* so the previous padding doesn't affect visible button size */
     overflow: hidden; /* stops focus outline from deforming around overflowing content */
     touch-action: none; /* prevents 300ms delay on pointerdown on mobile */
