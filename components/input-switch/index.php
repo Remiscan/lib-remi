@@ -29,7 +29,7 @@
         place-items: center;
         --cell-size: 12rem;
         grid-template-columns: repeat(auto-fit, var(--cell-size));
-        gap: 1rem;
+        gap: 8px;
         width: min(95%, 3 * (var(--cell-size) + 1rem));
         justify-content: center;
       }
@@ -48,6 +48,10 @@
         bottom: .6rem;
         opacity: 0;
         white-space: nowrap;
+        padding: 4px 8px;
+        background-color: Canvas;
+        border-radius: 2rem;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 30%);
       }
       .action.on {
         opacity: 1;
