@@ -95,6 +95,17 @@
     <link rel="modulepreload" href="/_common/components/input-switch/input-switch.js">
   
     <!--<?php versionizeEnd(__DIR__); ?>-->
+
+    <script type="module">
+      import 'input-switch';
+
+      for (const input of [...document.querySelectorAll('input-switch')]) {
+        input.addEventListener('change', event => {
+          document.querySelector('.action').classList.add('on');
+          document.querySelector('.action').innerHTML = `<em>${event.currentTarget.shadowRoot.querySelector('button').getAttribute('aria-label')}</em> turned ${event.currentTarget.checked ? 'on' : 'off'}`;
+        });
+      }
+    </script>
   </head>
 
   <body>
@@ -110,7 +121,7 @@
 
       <form>
         <label for="switch-3">
-          Switch 4
+          Labeled
           <input-switch id="switch-3" checked icons="checked unchecked" name="switch"></input-switch>
         </label>
       </form>
@@ -127,17 +138,6 @@
 
       <span class="action">...</span>
     </div>
-
-    <script type="module">
-      import 'input-switch';
-
-      for (const input of [...document.querySelectorAll('input-switch')]) {
-        input.addEventListener('change', event => {
-          document.querySelector('.action').classList.add('on');
-          document.querySelector('.action').innerHTML = `${event.currentTarget.shadowRoot.querySelector('button').getAttribute('aria-label')} turned ${event.currentTarget.checked ? 'on' : 'off'}`;
-        });
-      }
-    </script>
   </body>
 
 </html>
