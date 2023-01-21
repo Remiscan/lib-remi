@@ -57,23 +57,36 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
       }
 
       body {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        place-items: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
         position: relative;
-        gap: .5rem;
+        gap: 38px;
         font-family: system-ui, sans-serif;
-        margin: 0;
+        margin: 16px;
       }
 
       color-picker::part(selector) {
         border-radius: 10px;
       }
+
+      .intro {
+        margin: 0;
+        padding: 0;
+      }
+
+      @supports (background: paint(a)) {
+        .fallback {
+          display: none;
+        }
+      }
     </style>
   </head>
 
   <body>
+    <p class="intro">This color-picker uses my own library <a href="/colori/">Colori</a> and paint worklets.</p>
+    <p class="fallback">Your browser does not support paint worklets yet, so the color-picker is using your browser's native color input element as a fallback.</p>
     <color-picker position="bottom" format="hsl" color="blue" style="--size: 3rem"></color-picker>
     <form>
       <color-picker position="bottom" format="okhsl" label name="color"
