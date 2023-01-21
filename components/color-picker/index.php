@@ -87,10 +87,10 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
   <body>
     <p class="intro">This color-picker uses my own library <a href="/colori/">Colori</a> and paint worklets.</p>
     <p class="fallback">Your browser does not support paint worklets yet, so the color-picker is using your browser's native color input element as a fallback.</p>
-    <color-picker position="bottom" format="hsl" color="blue" style="--size: 3rem"></color-picker>
+    <color-picker position="bottom" format="hsl" color="blue"></color-picker>
     <form>
       <color-picker position="bottom" format="okhsl" label name="color"
-                    style="--size: 2rem; --range-border-width: 5px; --range-border-radius: 5px;">
+                    style="--size: 24px; --range-border-width: 5px; --range-border-radius: 5px;">
       </color-picker>
     </form>
   </body>

@@ -231,9 +231,9 @@ sheet.replaceSync(/*css*/`
     display: grid;
     place-items: center;
     position: relative;
-    --size: 3rem;
+    --size: calc(48px - 2 * 3px);
     --tap-safe-size: 44px;
-    --range-height: 12rem;
+    --range-height: 192px;
     --gradient-steps: 25;
     --cursor-width: 14;
     --range-border-width: 2px;
@@ -269,7 +269,7 @@ sheet.replaceSync(/*css*/`
     grid-template-columns: var(--size) auto;
     align-items: center;
     gap: 1ch;
-    padding: 0.2em;
+    padding: 3px;
   }
 
   [part="fallback"] {
