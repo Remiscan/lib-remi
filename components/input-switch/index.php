@@ -68,6 +68,27 @@
         gap: .6rem;
       }
 
+      label:has(> input-switch) {
+        min-height: 44px;
+        min-width: 44px;
+        justify-content: center;
+      }
+
+      @supports not selector(label:has(a)) {
+        label > input-switch::before {
+          content: '';
+          display: flex;
+          width: 100%;
+          min-width: 44px;
+          height: 100%;
+          min-height: 44px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+
       input-switch[disabled]::part(button) {
         cursor: not-allowed;
       }
