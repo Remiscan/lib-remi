@@ -243,21 +243,29 @@ sheet.replaceSync(/*css*/`
     transition: opacity var(--interaction-ring-duration) var(--easing-standard) var(--interaction-ring-delay, 0s);
   }
 
-  @media (hover) {
+  @media (hover: hover) {
     [role="switch"]:hover [part~="interaction-hint"] {
       opacity: .08;
     }
   }
 
   [role="switch"]:active [part~="interaction-hint"] {
-    --interaction-ring-delay: .2s;
     opacity: .12;
   }
 
   [role="switch"].dragged [part~="interaction-hint"] {
-    --interaction-ring-delay: 0s;
-    --interaction-ring-duration: 0s;
     opacity: .16;
+    --interaction-ring-duration: 0s;
+  }
+
+  @media (pointer: coarse) {
+    [role="switch"]:active [part~="interaction-hint"] {
+      --interaction-ring-delay: .2s;
+    }
+
+    [role="switch"].dragged [part~="interaction-hint"] {
+      --interaction-ring-delay: 0s;
+    }
   }
 
   [role="switch"]:disabled [part~="interaction-hint"] {
