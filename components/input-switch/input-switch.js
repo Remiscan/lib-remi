@@ -514,7 +514,7 @@ export default class InputSwitch extends HTMLElement {
       }
 
       // If moved by less than safety margin, treat as a click and change the switch's state
-      else if (Math.abs(distance) <= clickSafetyMargin) {
+      else if (Math.abs(distance) <= clickSafetyMargin && Math.abs(maxDistance) <= clickSafetyMargin) {
         this.button.style.removeProperty('--duration');
         this.checked = !initialRatio;
       }
