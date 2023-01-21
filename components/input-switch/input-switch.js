@@ -169,7 +169,7 @@ sheet.replaceSync(/*css*/`
 
     --ratio: 0;
     --dir: 1;
-    --ratio-margin: .1;
+    --ratio-margin: calc(1/6);
     --delayed-ratio: clamp(0, (var(--ratio) - var(--ratio-margin)) / (1 - 2 * var(--ratio-margin)), 1); /* so the scaling and opacity transitions start a bit after and end a bit before the translation */
     --interpolated-delayed-ratio: clamp(
       0,
