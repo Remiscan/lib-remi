@@ -53,8 +53,6 @@ template.innerHTML = /*html*/`
         <option value="lch">LCH</option>
         <option value="oklab">OKLAB</option>
         <option value="oklch">OKLCH</option>
-        <option value="oklrab">OKLrAB</option>
-        <option value="oklrch">OKLrCH</option>
         <option value="okhsl">OKHSL</option>
         <option value="okhsv">OKHSV</option>
       </select>
