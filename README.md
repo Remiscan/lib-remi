@@ -12,7 +12,7 @@ Here are some examples of components I've been working on:
 
 ![color-picker](https://user-images.githubusercontent.com/1685446/226451346-28fc8638-d865-4a6e-a47a-3253998a62b2.jpg)
 
-- `<gradient-button>`, a button with rounded corners, gradient text and border, and a transparent background
+- `<gradient-button>`, a button with rounded corners, gradient text and border, and a transparent background, that changes into solid colored text and gradient background on hover
 
 ![gradient-button](https://user-images.githubusercontent.com/1685446/226995814-71ea3923-6825-498b-9fb9-c3ab39e98153.jpg)
 
