@@ -47,41 +47,35 @@
       <thead>
         <tr>
           <td>Name</td>
-          <td data-type="number">Name n°</td>
-          <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</td>
-          <td data-type="date" data-format='{ "dateStyle": "medium", "timeStyle": "medium" }'>Date 2</td>
+          <td data-type="number">Letters in name</td>
+          <td data-type="date" data-format='{ "dateStyle": "medium" }'>Birthday</td>
+          <!--<td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "medium" }'>Random time</td>-->
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>Rémi</td>
-          <td>1</td>
-          <td>1467842667293</td>
-          <td>1667942667393</td>
+          <td>4</td>
+          <td>752025600000</td>
+          <!--<td>1667942667393</td>-->
         </tr>
         <tr>
-          <td>Flavien</td>
-          <td>2</td>
-          <td>1667542667593</td>
-          <td>1167342667493</td>
+          <td>Guillaume</td>
+          <td>9</td>
+          <td>373766400000</td>
+          <!--<td>1167342667493</td>-->
         </tr>
         <tr>
-          <td>Skander</td>
-          <td>1</td>
-          <td>1362542667593</td>
-          <td>1267442667493</td>
+          <td>Christophe</td>
+          <td>10</td>
+          <td>236131200000</td>
+          <!--<td>1267442667493</td>-->
         </tr>
         <tr>
-          <td>Alexandre</td>
-          <td>2</td>
-          <td>1647542667593</td>
-          <td>1267342667493</td>
-        </tr>
-        <tr>
-          <td>Giovanni</td>
-          <td>3</td>
-          <td>1657542667593</td>
-          <td>1457342667493</td>
+          <td>Marino</td>
+          <td>6</td>
+          <td>155084400000</td>
+          <!--<td>1267342667493</td>-->
         </tr>
       </tbody>
     </table>
