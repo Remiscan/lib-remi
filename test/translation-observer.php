@@ -63,7 +63,7 @@
     };
     
     const source = document.documentElement;
-    source.addEventListener('translate', event => translationObserver.translate(source, strings, event.lang));
+    source.addEventListener('translate', event => translationObserver.translate(source, strings, event.detail.lang));
     translationObserver.serve(source);
 
     const button = document.querySelector('button[data-action="translate"]');
