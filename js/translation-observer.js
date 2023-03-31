@@ -93,7 +93,7 @@ export class TranslationObserver {
    */
   reconnect() {
     for (const source of this.#jobs.keys()) {
-      this.#observer.observe(source);
+      this.#observer.observe(source, { attributes: true });
     }
   }
 
