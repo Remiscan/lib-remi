@@ -94,7 +94,7 @@ export class TranslationObserver {
    * Starts observing every source currently remembered by the observer.
    */
   reconnect() {
-    for (const source of this.#jobs.keys) {
+    for (const source of this.#jobs.keys()) {
       this.#observer.observe(source);
     }
   }
