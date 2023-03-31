@@ -47,13 +47,16 @@ export class TranslationObserver {
    * @param {notificationMethod} method - The method used to notify the element.
    */
   serve(element, { init = true, method = 'attribute' } = {}) {
-    const source = closestElement('[lang]', element) || document.documentElement;
-    const jobsWithSameSource = this.#jobs.get(source) || new Map();
-
     if (element === document.documentElement) method = 'event';
+    const source = closestElement('[lang]', element) || document.documentElement;
 
+    let jobsWithSameSource = this.#jobs.get(source);
+    if (!jobsWithSameSource) {
+      jobsWithSameSource = new Map();
+      this.#jobs.set(source, jobsWithSameSource);
+    }
     jobsWithSameSource.set(element, { method });
-    this.#jobs.set(source, jobsWithSameSource);
+
     if (init) this.notify(element, source, method);
     this.#observer.observe(source, { attributes: true });
   }
@@ -68,16 +71,11 @@ export class TranslationObserver {
     if (!source) return;
 
     const jobsWithSameSource = this.#jobs.get(source) || new Map();
-    const existingJob = jobsWithSameSource.get(element);
-    if (existingJob) {
-      jobsWithSameSource.delete(existingJob);
-      if (jobsWithSameSource.size > 0) {
-        this.#jobs.set(source, jobsWithSameSource);
-      } else {
-        this.#jobs.delete(source);
-        this.disconnect();
-        this.reconnect();
-      }
+    jobsWithSameSource.delete(element);
+    if (jobsWithSameSource.keys().next().done) {
+      this.#jobs.delete(source);
+      this.disconnect();
+      this.reconnect();
     }
   }
 
