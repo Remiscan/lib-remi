@@ -26,13 +26,13 @@ function closestElement(selector, base) {
  * to translate their content when their container changes language.
  */
 export class TranslationObserver {
-  #jobs = new Map(); // Map<source: Element, jobs: Set<{ element: Element, method: 'attribute'|'event'|'both' }>>
+  #jobs = new Map(); // Map<source: Element, jobs: Map<Element, { method: 'attribute'|'event'|'both' }>>
   #observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
         const source = mutation.target;
-        const jobs = this.#jobs.get(source) || new Set();
-        for (const { element, method } of jobs) {
+        const jobs = this.#jobs.get(source) || new Map();
+        for (const [element, { method }] of jobs.entries()) {
           this.notify(element, source, method);
         }
       }
@@ -48,11 +48,12 @@ export class TranslationObserver {
    */
   serve(element, { init = true, method = 'attribute' } = {}) {
     const source = closestElement('[lang]', element) || document.documentElement;
-    const jobsWithSameSource = this.#jobs.get(source) || new Set();
+    const jobsWithSameSource = this.#jobs.get(source) || new Map();
 
     if (element === document.documentElement) method = 'event';
 
-    this.#jobs.set(source, new Set([...jobsWithSameSource, { element, method }]));
+    jobsWithSameSource.set(element, { method });
+    this.#jobs.set(source, jobsWithSameSource);
     if (init) this.notify(element, source, method);
     this.#observer.observe(source, { attributes: true });
   }
@@ -66,8 +67,8 @@ export class TranslationObserver {
     const source = this.getSourceOf(element);
     if (!source) return;
 
-    const jobsWithSameSource = this.#jobs.get(source) || new Set();
-    const existingJob = [...jobsWithSameSource].find(job => job.element === element);
+    const jobsWithSameSource = this.#jobs.get(source) || new Map();
+    const existingJob = jobsWithSameSource.get(element);
     if (existingJob) {
       jobsWithSameSource.delete(existingJob);
       if (jobsWithSameSource.size > 0) {
