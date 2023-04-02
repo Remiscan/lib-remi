@@ -4,7 +4,7 @@
 function closestElement(selector, base) {
     if (!base || !(base instanceof Element))
         return null;
-    let result = base.closest(selector);
+    let result = base.parentElement?.closest(selector);
     if (!result) {
         let newBase = base.getRootNode();
         if (newBase instanceof ShadowRoot)
@@ -29,8 +29,8 @@ export class TranslationObserver {
                 if (!(source instanceof Element))
                     throw new TypeError('Expecting Element');
                 const jobs = this.#jobs.get(source) || new Map();
-                for (const [element, { method }] of jobs.entries()) {
-                    this.notify(element, source, method);
+                for (const [node, { method }] of jobs.entries()) {
+                    this.notify(node, source, method);
                 }
             }
         }
@@ -114,7 +114,7 @@ export class TranslationObserver {
      * Notifies an element that it's source's lang attribute changed.
      */
     notify(node, source, method) {
-        if (!source)
+        if (!source || !node)
             return;
         const language = source.getAttribute('lang') ?? this.defaultLang;
         if (node instanceof Element && (method === 'attribute' || method === 'both')) {
