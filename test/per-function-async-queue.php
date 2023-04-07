@@ -54,8 +54,14 @@
       return ['yop', ...v];
     }
 
+    async function err(...v) {
+      await new Promise((resolve, reject) => setTimeout(() => reject(v), 1000));
+      return [...v];
+    }
+
     yip = queueable(yip);
     yop = queueable(yop);
+    err = queueable(err);
 
     for (let i = 0; i < 2; i++) {
       yip(i, 2 * i).then(v => console.log(...v));
@@ -67,6 +73,10 @@
     console.log('💙 There should be a green heart right before this');
 
     for (let i = 2; i < 4; i++) {
+      err(i).then(v => console.log(...v));
+    }
+
+    for (let i = 4; i < 6; i++) {
       yip(i, 2 * i).then(v => console.log(...v));
       yop(i, 3 * i).then(v => console.log(...v));
     }
