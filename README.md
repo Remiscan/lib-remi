@@ -16,7 +16,7 @@ Here are some examples of components I've been working on:
 
 ![gradient-button](https://user-images.githubusercontent.com/1685446/226995814-71ea3923-6825-498b-9fb9-c3ab39e98153.jpg)
 
-- `<input-switch>`, a switch that can be toggled both bu clicking or dragging
+- `<input-switch>`, a switch that can be toggled both by clicking or dragging
 
 ![input-switch](https://user-images.githubusercontent.com/1685446/226995804-c84bed50-0583-464b-aacc-84592d3ddd3a.jpg)
 
