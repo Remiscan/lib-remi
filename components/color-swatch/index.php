@@ -70,9 +70,9 @@ $theme = isset($_COOKIE['theme']) ? ($_COOKIE['theme'] == 'light' ? 'light' : ($
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 1em;
-        border: 1px solid currentColor;
-        padding: 4px;
+        gap: .5em;
+        border: 1px dashed currentColor;
+        padding: 5px;
       }
 
       color-swatch {
