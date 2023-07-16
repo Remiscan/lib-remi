@@ -36,7 +36,7 @@ sheet.replaceSync(/*css*/`
       grid-template-columns: var(--color-preview-width) auto auto;
       gap: 1ch;
       align-items: center;
-      min-height: 2em;
+      min-height: 1em;
       --echiquier-transparence: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
       linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
       linear-gradient(to right, #ddd 0% 100%);
@@ -46,6 +46,11 @@ sheet.replaceSync(/*css*/`
     @media (prefers-color-scheme: dark) {
       color-swatch {
         --warning-color: lightpink;
+      }
+    }
+    @media (any-pointer: coarse) {
+      color-swatch {
+        min-height: 2em;
       }
     }
     color-swatch[clipped] {
@@ -92,8 +97,10 @@ sheet.replaceSync(/*css*/`
     }
     color-swatch > button {
       grid-row: 1 / -1;
-      display: inline-grid;
-      place-items: center;
+      align-self: stretch;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     color-swatch > button > svg {
       width: 1.5em;
