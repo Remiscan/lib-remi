@@ -1,0 +1,14 @@
+{
+  "title": "<color-swatch>",
+  "imports": {
+    "color-swatch": "/_common/components/color-swatch/color-swatch.js",
+    "colori": "/colori/lib/dist/colori.min.js",
+    "translation-observer": "/_common/js/translation-observer.js"
+  },
+  "intro": "The color-swatch component uses my own library <a href=\"/colori/\">Colori</a>. It takes a color expression and a format as HTML arguments. It displays a preview of the color, its expression in the requested format, and a button to copy that expression.",
+  "examples": [
+    "<color-swatch format=\"hex\" color=\"skyblue\"></color-swatch>",
+    "<color-swatch format=\"rgb\" color=\"skyblue\"></color-swatch>",
+    "<color-swatch format=\"oklch\" color=\"skyblue\"></color-swatch>"
+  ]
+}
