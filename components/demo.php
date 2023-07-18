@@ -31,7 +31,6 @@ try {
 
       :root {
         color: black;
-        --body-background-color: #FFFFFF;
         --code-background-color: #ECECEC;
         --example-border-color: #ECECEC;
       }
@@ -39,7 +38,6 @@ try {
       @media (prefers-color-scheme: dark) {
         :root {
           color: white;
-          --body-background-color: #121212;
           --code-background-color: #242424;
           --example-border-color: #242424;
         }
@@ -56,7 +54,6 @@ try {
         margin: 0;
         padding: 16px;
         box-sizing: border-box;
-        background-color: var(--body-background-color);
         height: auto;
         min-height: 100%;
       }

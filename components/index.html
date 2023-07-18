@@ -13,12 +13,25 @@
         height: 100%;
       }
 
+      :root {
+        color: black;
+        --body-background-color: #FFFFFF;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color: white;
+          --body-background-color: #121212;
+        }
+      }
+
       body {
         height: 100%;
         margin: 0;
         display: grid;
         grid-template-columns: auto 1fr;
         grid-template-rows: 1fr;
+        background-color: var(--body-background-color);
       }
 
       nav {
@@ -155,7 +168,7 @@
       </ul>
     </nav>
 
-    <iframe name="iframe" src="initial-page.html" title="Selected component preview"></iframe>
+    <iframe name="iframe" src="initial-page.html" title="Selected component preview" style="visibility: hidden"></iframe>
 
     <script type="module">
       const links = [...document.querySelector('nav').querySelectorAll('a')];
@@ -174,6 +187,7 @@
 
       // Change title and update link styles on component choice
       iframe.addEventListener('load', event => {
+        iframe.style.removeProperty('visibility');
         const component = iframe.contentWindow.location.href.split('/').at(-2);
         const isHomePage = !component || component === 'components';
 
