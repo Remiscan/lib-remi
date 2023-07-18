@@ -1,5 +1,3 @@
-import 'color-picker';
-
 let i = 0;
 for (const colorPicker of [...document.querySelectorAll('color-picker')]) {
   for (const type of ['input', 'change']) {

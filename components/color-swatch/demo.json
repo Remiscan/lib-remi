@@ -1,7 +1,6 @@
 {
   "title": "<color-swatch>",
   "imports": {
-    "color-swatch": "/_common/components/color-swatch/color-swatch.js",
     "colori": "/colori/lib/dist/colori.min.js",
     "translation-observer": "/_common/js/translation-observer.js"
   },
@@ -9,6 +8,7 @@
   "examples": [
     "<color-swatch format=\"hex\" color=\"skyblue\"></color-swatch>",
     "<color-swatch format=\"rgb\" color=\"skyblue\"></color-swatch>",
-    "<color-swatch format=\"oklch\" color=\"skyblue\"></color-swatch>"
+    "<color-swatch format=\"oklch\" color=\"#87ceeb\"></color-swatch>",
+    "<color-swatch format=\"rgb\" color=\"oklab(56% -0.11 -0.18)\"></color-swatch>"
   ]
 }

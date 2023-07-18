@@ -1,7 +1,6 @@
 {
   "title": "<color-picker>",
   "imports": {
-    "color-picker": "/_common/components/color-picker/color-picker.js",
     "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
     "input-slider": "/_common/components/input-slider/input-slider.js",
     "colori": "/colori/lib/dist/colori.min.js",

@@ -72,7 +72,7 @@
     </div>
 
     <div id="controlled-element-11-id" hidden>
-      <p>Testing horizontal tab list. First tab automatically selected by default.
+      <p>Testing horizontal tab list. First tab selected by default.
     </div>
     <div id="controlled-element-12-id" hidden>Content 1.2</div>
     <div id="controlled-element-13-id" hidden>Content 1.3</div>

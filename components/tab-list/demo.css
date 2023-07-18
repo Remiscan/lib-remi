@@ -1,0 +1,4 @@
+.example > .element {
+  display: block;
+  width: 100%;
+}

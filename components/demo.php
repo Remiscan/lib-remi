@@ -1,8 +1,9 @@
 <?php
-$component = $_GET['component'] ?? '';
+$component = trim($_GET['component'] ?? '', '/');
 try {
   $data = file_get_contents(__DIR__."/$component/demo.json");
   $data = json_decode($data, true);
+  $data['imports'][$component] = "/_common/components/$component/$component.js";
 } catch (\Throwable $error) {
   $indexPath = __DIR__."/$component/index.php";
   if (file_exists($indexPath)) {
@@ -31,16 +32,16 @@ try {
       :root {
         color: black;
         --body-background-color: #FFFFFF;
-        --example-border-color: #ECECEC;
         --code-background-color: #ECECEC;
+        --example-border-color: #ECECEC;
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
           color: white;
           --body-background-color: #121212;
-          --example-border-color: #242424;
           --code-background-color: #242424;
+          --example-border-color: #242424;
         }
       }
 
@@ -50,12 +51,18 @@ try {
         align-items: center;
         justify-content: center;
         position: relative;
-        gap: 2rem;
+        gap: 1.5rem;
         font-family: system-ui, sans-serif;
         margin: 0;
         padding: 16px;
         box-sizing: border-box;
         background-color: var(--body-background-color);
+        height: auto;
+        min-height: 100%;
+      }
+
+      body:has(:not(:defined)) {
+        display: none;
       }
 
       h1, h2, h3, pre {
@@ -70,43 +77,64 @@ try {
       }
 
       .list-of-examples {
-        margin: 0;
+        margin: 0 auto;
         padding: 0;
         list-style-type: none;
-        display: flex;
-        gap: 2rem;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
-        max-width: 140ch;
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(60ch, 1fr));
+        max-width: min(100%, 150ch);
+        align-items: stretch;
+      }
+
+      @media (max-width: 70ch) {
+        .list-of-examples {
+          width: 100%;
+          grid-template-columns: 1fr;
+        }
       }
 
       .example {
-        align-self: center;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: start;
         align-items: center;
-        gap: 4px;
-        border: 1px solid var(--example-border-color);
-        padding: 6px;
+        gap: 6px;
+        border: 2px solid var(--code-background-color);
+        padding: 0 6px 6px;
       }
 
       .example > h3 {
-        font-size: 1.05em;
+        font-size: .9em;
+        align-self: start;
       }
 
       .example h3:not(:first-child) {
-        margin-top: 4px;
+        margin-top: 8px;
       }
 
-      .example > code {
+      .example > pre {
+        width: 100%;
+        max-height: 5rem;
+        overflow-y: auto;
+        scrollbar-width: thin;
         background: var(--code-background-color);
         padding: 8px 0;
+        display: flex;
         box-shadow:
           -7px 0 var(--code-background-color),
           7px 0 var(--code-background-color);
+      }
+
+      .example > pre > code {
+        max-width: 80ch;
+        margin: auto;
+      }
+
+      .example > .element {
+        margin: auto;
+        display: flex;
+        border: 2px dashed var(--example-border-color);
       }
 
       .visually-hidden {
@@ -136,6 +164,14 @@ try {
     }
     </script>
 
+    <script src="/_common/components/prism.js"></script>
+    <link rel="stylesheet" media="not (prefers-color-scheme: dark)" href="/_common/components/prism-light.css">
+    <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="/_common/components/prism-dark.css">
+
+    <script type="module">
+      import '<?=$component?>';
+    </script>
+
     <?php if (is_file(__DIR__."/$component/demo.css")) { ?>
       <link rel="stylesheet" href="/_common/components/<?=$component?>/demo.css">
     <?php } ?>
@@ -148,7 +184,7 @@ try {
   </head>
 
   <body>
-    <h1><?=htmlentities($data["title"])?></h1>
+    <h1 class="visually-hidden"><?=htmlentities($data["title"])?></h1>
 
     <h2 class="visually-hidden">What is it?</h2>
 
@@ -159,10 +195,10 @@ try {
     <ul class="list-of-examples">
       <?php foreach ($data["examples"] as $example) { ?>
         <li class="example">
-          <h3>HTML</h3>
-          <code><pre><?=htmlentities($example)?></pre></code>
-          <h3>Output</h3>
-          <?=$example?>
+          <h3 class="visually-hidden">HTML</h3>
+          <pre><code class="language-html"><?=htmlentities($example)?></code></pre>
+          <h3 class="visually-hidden">Output</h3>
+          <div class="element"><?=$example?></div>
         </li>
       <?php } ?>
     </ul>

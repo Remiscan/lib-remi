@@ -1,0 +1,9 @@
+{
+  "title": "<framerate-tester>",
+  "imports": {
+  },
+  "intro": "This components tests the frame rate of your main screen.",
+  "examples": [
+    "<framerate-tester></framerate-tester>"
+  ]
+}
