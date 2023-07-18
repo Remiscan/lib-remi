@@ -65,11 +65,30 @@
       }
 
       a.github {
-        display: inline-block;
-        width: 100%;
+        display: block;
         text-align: center;
+        background-color: inherit;
+        margin: .5em 0;
+        position: relative;
+      }
+
+      a.github::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
         position: absolute;
-        bottom: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: currentColor;
+        z-index: 0;
+      }
+
+      a.github > span {
+        z-index: 1;
+        position: relative;
+        background-color: inherit;
+        padding: 5px;
       }
 
       @media (orientation: portrait) {
@@ -102,6 +121,11 @@
           right: 1rem;
           left: unset;
           bottom: unset;
+          margin: 0;
+        }
+
+        a.github::before {
+          display: none;
         }
       }
     </style>
@@ -110,6 +134,9 @@
   <body>
     <nav>
       <h1>Components</h1>
+      <a class="github" href="https://github.com/Remiscan/libremi/tree/main/components" rel="external">
+        <span>GitHub</span>
+      </a>
       <ul>
         <li><a href="./artsy-block/" target="iframe">artsy-block</a>
         <li><a href="./color-picker/" target="iframe">color-picker</a>
@@ -126,7 +153,6 @@
         <li><a href="./tab-list/" target="iframe">tab-list</a>
         <li><a href="./theme-selector/" target="iframe">theme-selector</a>
       </ul>
-      <a class="github" href="https://github.com/Remiscan/libremi/tree/main/components" rel="external">GitHub</a>
     </nav>
 
     <iframe name="iframe" src="initial-page.html" title="Selected component preview"></iframe>
