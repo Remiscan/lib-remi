@@ -1,0 +1,5 @@
+@supports (background: paint(a)) {
+  .fallback {
+    display: none;
+  }
+}
