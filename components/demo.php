@@ -29,14 +29,18 @@ try {
       }
 
       :root {
-        --example-border-color: rgb(0, 0, 0, .25);
-        --code-background-color: rgb(0, 0, 0, .075);
+        color: black;
+        --body-background-color: #FFFFFF;
+        --example-border-color: #ECECEC;
+        --code-background-color: #ECECEC;
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
-          --example-border-color: rgb(255, 255, 255, .15);
-          --code-background-color: rgb(255, 255, 255, .075);
+          color: white;
+          --body-background-color: #121212;
+          --example-border-color: #242424;
+          --code-background-color: #242424;
         }
       }
 
@@ -51,6 +55,7 @@ try {
         margin: 0;
         padding: 16px;
         box-sizing: border-box;
+        background-color: var(--body-background-color);
       }
 
       h1, h2, h3, pre {
@@ -84,8 +89,8 @@ try {
         justify-content: center;
         align-items: center;
         gap: 4px;
-        border: 1px dashed var(--example-border-color);
-        padding: 8px;
+        border: 1px solid var(--example-border-color);
+        padding: 6px;
       }
 
       .example > h3 {
@@ -98,8 +103,10 @@ try {
 
       .example > code {
         background: var(--code-background-color);
-        padding: 8px;
-        border-radius: 4px;
+        padding: 8px 0;
+        box-shadow:
+          -7px 0 var(--code-background-color),
+          7px 0 var(--code-background-color);
       }
 
       .visually-hidden {
