@@ -229,7 +229,7 @@ sheet.replaceSync(/*css*/`
     display: grid;
     place-items: center;
     position: relative;
-    --size: calc(48px - 2 * 3px);
+    --size: 2rem;
     --tap-safe-size: 44px;
     --range-height: 192px;
     --gradient-steps: 25;
@@ -249,6 +249,12 @@ sheet.replaceSync(/*css*/`
     --checkered-transparence: linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
                               linear-gradient(45deg, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, .1) 75%),
                               linear-gradient(to right, var(--checkered-background-color) 0% 100%);
+  }
+
+  @media (any-pointer: coarse) {
+    :host {
+      --size: calc(48px - 2 * 3px);
+    }
   }
 
   @media (prefers-color-scheme: dark) {
