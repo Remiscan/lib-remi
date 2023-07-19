@@ -1,0 +1,56 @@
+* { -webkit-tap-highlight-color: transparent; }
+
+@media not (prefers-color-scheme: dark) {
+  .example {
+    --example-border-color: #444;
+    --example-background-color: #080808;
+    background-color: #222;
+  }
+}
+
+gradient-button {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  --hover-text-color: black;
+}
+
+.example:nth-of-type(4n+1) gradient-button {
+  --gradient: linear-gradient(135deg,
+    #ff5d4b 0% calc(1 * 100% / 7),
+    #ff8d00 calc(2 * 100% / 7),
+    #ffee00 calc(3 * 100% / 7),
+    #51b859 calc(4 * 100% / 7),
+    #5997ff calc(5 * 100% / 7),
+    #d36ee7 calc(6 * 100% / 7) 100%
+  );
+}
+
+.example:nth-of-type(4n+2) gradient-button {
+  --gradient: linear-gradient(to right,
+    #7CCDF6 0%,
+    #EAAEBA calc(1 * 100% / 4),
+    #FFFFFF calc(2 * 100% / 4),
+    #EAAEBA calc(3 * 100% / 4),
+    #7CCDF6 100%
+  );
+}
+
+.example:nth-of-type(4n+3) gradient-button {
+  --gradient: linear-gradient(to bottom,
+    #f95f9c 0%,
+    #c583c7 35% 65%,
+    #6999ff 100%
+  );
+}
+
+.example:nth-of-type(4n+4) gradient-button {
+  --gradient: linear-gradient(135deg,
+    #f86e4f 0% calc(1 * 100% / 8),
+    #e48142 calc(2 * 100% / 8),
+    #F19E63 calc(3 * 100% / 8),
+    #FFFFFF calc(4 * 100% / 8),
+    #d67bb5 calc(5 * 100% / 8),
+    #d080b3 calc(6 * 100% / 8),
+    #e86ea9 calc(7 * 100% / 8) 100%
+  );
+}

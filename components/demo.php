@@ -31,8 +31,9 @@ try {
 
       :root {
         color: black;
-        --code-background-color: #ECECEC;
-        --example-border-color: #ECECEC;
+        --code-background-color: #DBDBDB;
+        --example-border-color: #DBDBDB;
+        --example-background-color: #F7F7F7;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -40,6 +41,7 @@ try {
           color: white;
           --code-background-color: #242424;
           --example-border-color: #242424;
+          --example-background-color: #080808;
         }
       }
 
@@ -99,6 +101,18 @@ try {
         gap: 6px;
         border: 2px solid var(--code-background-color);
         padding: 0 6px 6px;
+        background-image:
+          linear-gradient(45deg, 
+            var(--example-background-color) 25%, 
+            transparent 25% 75%, 
+            var(--example-background-color) 75%
+          ), linear-gradient(45deg, 
+            var(--example-background-color) 25%, 
+            transparent 25% 75%, 
+            var(--example-background-color) 75%
+          );
+        background-size: 32px 32px;
+        background-position: 0 0, 16px 16px;
       }
 
       .example > h3 {

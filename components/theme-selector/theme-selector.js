@@ -427,7 +427,7 @@ export class ThemeSelector extends HTMLElement {
       const autoScheme = ThemeSelector.osTheme ?? 'light';
       autoChoice.setAttribute('data-scheme', autoScheme);
       const root = document.documentElement;
-      if (root.dataset.theme === 'auto') this.setAttribute('scheme', autoScheme);
+      if (!(root.dataset.theme) || root.dataset.theme === 'auto') this.setAttribute('scheme', autoScheme);
     };
 
     this.count = count;

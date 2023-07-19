@@ -1,0 +1,12 @@
+{
+  "title": "<gradient-button>",
+  "imports": {
+  },
+  "intro": "The challenge was to create a <u>rounded</u> button with <u>transparent background</u>, <u>gradient border</u> and <u>gradient text</u>, which on hover fills the background with the gradient and switches the text to a solid color.<br><br>I couldn't find any CSS-only solution to get the precise effect I was looking for, so I threw in some JavaScript-generated SVG mask (used for the border) to do the trick.<br><br>I also have a <a href=\"./css-only.php\">partial CSS-only solution</a>, but it doesn't have rounded corners.",
+  "examples": [
+    "<gradient-button text=\"Gradient button\"></gradient-button>",
+    "<gradient-button style=\"--padding: .25em .5em;\" text=\"Smaller padding\"></gradient-button>",
+    "<gradient-button style=\"--border-width: 1px;\" text=\"1px border\"></gradient-button>",
+    "<gradient-button style=\"--border-width: .2em;\" text=\"0.2em border\"></gradient-button>"
+  ]
+}

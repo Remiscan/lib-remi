@@ -148,10 +148,7 @@ const observer = new ResizeObserver(entries => {
   for (const entry of entries) {
     if (entry.borderBoxSize) {
       const element = entry.target.getRootNode().host;
-      if (element.observedOnce) {
-        element.update('size');
-      }
-      element.observedOnce = true;
+      element.update('size');
     }
   }
 });
@@ -164,7 +161,6 @@ class GradientButton extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(template.content.cloneNode(true));
     this.shadow.adoptedStyleSheets = [sheet];
-    this.observedOnce = false;
   }
 
   get borderWidth() {
