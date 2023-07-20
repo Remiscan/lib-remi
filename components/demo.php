@@ -51,13 +51,20 @@ try {
         align-items: center;
         justify-content: center;
         position: relative;
-        gap: 1.5rem;
+        --gap: 1rem;
+        gap: var(--gap);
         font-family: system-ui, sans-serif;
         margin: 0;
         padding: 16px;
         box-sizing: border-box;
         height: auto;
         min-height: 100%;
+      }
+
+      @media (orientation: landscape) {
+        body {
+          --gap: 1.5rem;
+        }
       }
 
       body:has(:not(:defined)) {
@@ -77,13 +84,31 @@ try {
 
       .log {
         position: sticky;
-        top: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        bottom: 0;
         z-index: 2;
-        background-color: Canvas;
-        padding: 4px 8px;
-        margin: -4px;
-        border-radius: 50px;
-        box-shadow: 0 1px 5px rgb(0, 0, 0, .2);
+        background-color: var(--code-background-color);
+        padding: 8px 0;
+        margin-bottom: -16px;
+        margin-top: calc(-1 * var(--gap) + 16px);
+        --shadow-offset: max(20px, 50vh);
+        box-shadow:0 var(--shadow-offset) 0 var(--shadow-offset) var(--code-background-color);
+        white-space: nowrap;
+        overflow-x: auto;
+        scrollbar-width: thin;
+      }
+
+      @media (orientation: landscape) {
+        .log {
+          padding: 8px;
+          margin: 0;
+          box-shadow: none;
+        }
+      }
+
+      .log::before {
+        content: 'Log:\0000A0\0000A0';
       }
 
       .log:empty {
@@ -95,7 +120,7 @@ try {
         padding: 0;
         list-style-type: none;
         display: grid;
-        gap: 1.5rem;
+        gap: var(--gap);
         grid-template-columns: repeat(auto-fit, minmax(60ch, 1fr));
         max-width: min(100%, 150ch);
         align-items: stretch;
@@ -221,7 +246,6 @@ try {
     <h2 class="visually-hidden">What is it?</h2>
 
     <p class="intro"><?=$data["intro"] ?? ""?></p>
-    <p class="log"><?=$data["log"] ?? ""?></p>
 
     <h2 class="visually-hidden">Examples of use</h2>
 
@@ -235,6 +259,8 @@ try {
         </li>
       <?php } ?>
     </ul>
+
+    <p class="log"><?=$data["log"] ?? ""?></p>
   </body>
 
 </html>
