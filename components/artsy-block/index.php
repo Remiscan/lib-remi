@@ -60,6 +60,14 @@
         }
         block.dataset[previousType] = previousPropsString;
 
+        // Adjust cell-size if needed
+        let previousCellSize = block.style.getPropertyValue('--cell-size');
+        if (previousCellSize) {
+          if (previousType === 'rainfall') previousCellSize = previousCellSize / 2;
+          else if (select.value === 'rainfall') previousCellSize = previousCellSize * 2;
+        }
+        block.style.setProperty('--cell-size', previousCellSize ?? '');
+
         // Switch to new type
         block.setAttribute('type', select.value);
 
@@ -90,7 +98,11 @@
         const prop = input.id.replace(`${type}-`, '');
         const value = input.value;
         for (const block of blocks) {
-          block.style.setProperty(`--${prop}`, value);
+          if (prop === 'cell-size' && document.body.dataset.type === 'rainfall') {
+            block.style.setProperty(`--${prop}`, 2 * value);
+          } else {
+            block.style.setProperty(`--${prop}`, value);
+          }
         }
         document.querySelector(`.${input.id}-value`).innerHTML = value;
       });
@@ -135,6 +147,10 @@
       resize: both;
       overflow: hidden;
       box-shadow: 0 0 0 2px currentColor;
+    }
+
+    artsy-block[type="rainfall"] {
+      --cell-size: 80;
     }
 
     .settings {
