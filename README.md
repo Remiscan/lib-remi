@@ -1,6 +1,6 @@
-# Libremi
+# lib-remi
 
-It's a play on words, library + Rémi (my name)... I'm using some of these components and functions in many of my projets.
+I'm using some of these components and functions in many of my projets.
 
 Here are some examples of components I've been working on:
 
