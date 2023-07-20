@@ -1,0 +1,1 @@
+@layer basic{:root{--c2:#eee}@media (prefers-color-scheme:dark){:root{--c2:#333}}table{border-collapse:collapse;border-spacing:0;margin:0}td,th{text-align:left;vertical-align:top;border:1px solid;padding:.4em}tfoot,thead{background:var(--c2)}}

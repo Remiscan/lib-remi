@@ -3,6 +3,7 @@
   "imports": {
   },
   "intro": "I made a slider based on the <a href=\"https://www.w3.org/WAI/ARIA/apg/patterns/slider/\">ARIA slider pattern</a> because <code>&lt;input type=\"range\"&gt;</code>'s support for customizing the appearance of vertical sliders wasn't good enough for me.",
+  "log": "...",
   "examples": [
     "<input-slider step=\"0.1\" value=\"0.3\"></input-slider>",
     "<input-slider value=\"0.3\" value-text-format=\"ratio {v}\" reversed></input-slider>",

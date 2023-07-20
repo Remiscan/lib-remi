@@ -165,7 +165,7 @@
     <div class="container">
       <span class="info">
         <a href="#"><strong>Flip a switch!</strong></a>
-        <br>Click or drag. (<a class="other-version" href="index.php">See v2</a>)
+        <br>Click or drag. (<a class="other-version" href="./">See v2</a>)
       </span>
 
       <input-switch id="switch-0" label="Switch 0" hint="icon" style="--width: 12rem; --stroke-width: 2;"></input-switch>

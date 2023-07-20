@@ -75,6 +75,21 @@ try {
         max-width: 70ch;
       }
 
+      .log {
+        position: sticky;
+        top: 10px;
+        z-index: 2;
+        background-color: Canvas;
+        padding: 4px 8px;
+        margin: -4px;
+        border-radius: 50px;
+        box-shadow: 0 1px 5px rgb(0, 0, 0, .2);
+      }
+
+      .log:empty {
+        display: none;
+      }
+
       .list-of-examples {
         margin: 0 auto;
         padding: 0;
@@ -126,7 +141,7 @@ try {
 
       .example > pre {
         width: 100%;
-        max-height: 5rem;
+        max-height: 8rem;
         overflow-y: auto;
         scrollbar-width: thin;
         background: var(--code-background-color);
@@ -135,6 +150,12 @@ try {
         box-shadow:
           -7px 0 var(--code-background-color),
           7px 0 var(--code-background-color);
+      }
+
+      @media (orientation: portrait) {
+        .example > pre {
+          max-height: 5rem;
+        }
       }
 
       .example > pre > code {
@@ -176,7 +197,7 @@ try {
     </script>
 
     <script src="/_common/components/prism.js"></script>
-    <link rel="stylesheet" media="not (prefers-color-scheme: dark)" href="/_common/components/prism-light.css">
+    <link rel="stylesheet" media="(prefers-color-scheme: light)" href="/_common/components/prism-light.css">
     <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="/_common/components/prism-dark.css">
 
     <script type="module">
@@ -199,7 +220,8 @@ try {
 
     <h2 class="visually-hidden">What is it?</h2>
 
-    <p class="intro"><?=$data["intro"]?></p>
+    <p class="intro"><?=$data["intro"] ?? ""?></p>
+    <p class="log"><?=$data["log"] ?? ""?></p>
 
     <h2 class="visually-hidden">Examples of use</h2>
 
