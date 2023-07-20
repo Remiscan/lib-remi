@@ -6,7 +6,7 @@
   "examples": [
     "<gradient-button text=\"Gradient button\"></gradient-button>",
     "<gradient-button style=\"--padding: .25em .5em;\" text=\"Smaller padding\"></gradient-button>",
-    "<gradient-button style=\"--border-width: 1px;\" text=\"1px border\"></gradient-button>",
-    "<gradient-button style=\"--border-width: .2em;\" text=\"0.2em border\"></gradient-button>"
+    "<gradient-button style=\"--border-width: .3em;\" text=\"Bigger border\"></gradient-button>",
+    "<gradient-button style=\"--border-width: 0;\" text=\"No border\"></gradient-button>"
   ]
 }

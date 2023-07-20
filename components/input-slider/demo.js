@@ -7,7 +7,7 @@ for (const slider of sliders) {
   for (const type of ['input', 'change']) {
     slider.addEventListener(type, event => {
       console.log(`${sliderNumber}: ${event.type} value ${slider.value}`);
-      log.innerHTML = `Slider ${sliderNumber}: ${slider.valueText}`;
+      log.innerHTML = `Slider ${sliderNumber}: ${slider.valueText}${event.type === 'change' ? ' ✅' : ''}`;
     });
   }
   k++;

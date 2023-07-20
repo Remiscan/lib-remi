@@ -1,0 +1,20 @@
+.example > .element {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  container-name: element-container;
+  container-type: inline-size;
+}
+
+artsy-block {
+  resize: vertical;
+  overflow: hidden;
+  width: 100cqw;
+  min-height: 400px;
+  background-color: Canvas;
+  content-visibility: auto;
+}
+
+artsy-block[type="rainfall"] {
+  --cell-size: 80;
+}

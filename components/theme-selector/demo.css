@@ -59,7 +59,6 @@ theme-selector > .selector {
   transform: translateY(-.2rem);
   transition: opacity .2s ease,
               transform .2s ease;
-  margin-top: 10px;
   overflow: hidden;
   z-index: 10000;
 }
