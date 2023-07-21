@@ -253,7 +253,7 @@ try {
       <?php foreach ($data["examples"] as $example) { ?>
         <li class="example">
           <h3 class="visually-hidden">HTML</h3>
-          <pre><code class="language-html"><?=htmlentities($example)?></code></pre>
+          <pre tabindex="-1"><code class="language-html"><?=htmlentities($example)?></code></pre>
           <h3 class="visually-hidden">Output</h3>
           <div class="element"><?=$example?></div>
         </li>
