@@ -90,6 +90,23 @@
       }
     });
 
+    // Settings toggle button
+    const dialog = document.querySelector('dialog');
+    const settingsToggleButton = document.querySelector('#settings-toggle');
+    const settingsCloseButton = document.querySelector('#close-settings');
+    settingsToggleButton.addEventListener('click', event => {
+      if (!dialog.getAttribute('open')) dialog.showModal();
+      else dialog.close();
+    });
+    dialog.addEventListener('click', event => {
+      if (!(event.composedPath().includes(dialog.querySelector('.settings-content')))) {
+        dialog.close();
+      }
+    });
+    settingsCloseButton.addEventListener('click', event => {
+      dialog.close();
+    });
+
     // All common and specific settings
     const inputs = document.querySelectorAll('.settings input');
     for (const input of inputs) {
@@ -124,16 +141,17 @@
     body {
       width: 100%;
       height: 100%;
+      box-sizing: border-box;
       margin: 0;
-      padding: 0;
+      padding: 16px;
       display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: 1fr;
+      grid-template-rows: auto 1fr;
+      row-gap: 16px;
       place-items: center;
       --hue: 260;
       overflow: hidden;
       color: black;
-      background-color: hsl(var(--hue), 30%, 92%);
       accent-color: hsl(var(--hue), 100%, 50%);
     }
 
@@ -142,43 +160,53 @@
     }
 
     artsy-block {
-      grid-row: 1 / -1;
-      grid-column: 1 / -1;
       resize: both;
       overflow: hidden;
-      box-shadow: 0 0 0 2px currentColor;
+      border: 2px solid currentColor;
+      box-sizing: border-box;
+      background-color: hsl(var(--hue), 30%, 92%);
     }
 
     artsy-block[type="rainfall"] {
       --cell-size: 80;
     }
 
-    .settings {
-      grid-row: 1;
-      grid-column: 1;
+    .settings-bar {
       place-self: start;
       z-index: 2;
-      background-color: rgb(255, 255, 255, .9);
-      border-radius: 0 0 20px 0;
+      background-color: #DBDBDB;
       box-sizing: border-box;
-      position: fixed;
-      max-height: 100%;
-      overflow: auto;
+      display: flex;
+      flex-direction: column;
     }
 
-    .settings > summary {
-      padding: 10px;
+    .settings-always {
+      margin: 8px;
+    }
+
+    dialog {
+      max-width: 100%;
+      max-height: 100%;
+      overflow: auto;
+      backdrop-filter: blur(5px);
+      background-color: #DBDBDBBF;
+      padding: 0;
+      border: 2px solid currentColor;
+    }
+
+    dialog::backdrop {
+      background: transparent;
     }
 
     .settings-content {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding: 10px;
-      border-top: 1px solid currentColor;
+      gap: 8px;
+      padding: 16px;
     }
 
     .settings-content > p {
+      max-width: 40ch;
       margin: 0;
     }
 
@@ -193,169 +221,192 @@
 
     @media (prefers-color-scheme: dark) {
       body {
-        background-color: hsl(var(--hue), 30%, 8%);
         accent-color: hsl(var(--hue), 100%, 80%);
         color: white;
       }
 
-      .settings {
-        background-color: rgb(255, 255, 255, .7);
-        background-color: rgb(0, 0, 0, .6);
+      artsy-block {
+        background-color: hsl(var(--hue), 30%, 8%);
+      }
+
+      .settings-bar {
+        background-color: #242424;
+      }
+
+      dialog {
+        background-color: #242424BF;
+      }
+    }
+
+    @media (any-pointer: coarse) {
+      button, select {
+        min-height: 38px;
+        min-width: 38px;
+      }
+
+      artsy-block {
+        --margin-block: 6rem;
       }
     }
   </style>
 </head>
 
 <body>
-  <artsy-block type="diamonds"></artsy-block>
+  <div class="settings-bar">
+    <script>
+      if (!('paintWorklet' in CSS)) { document.write(`<p class="settings-always">Uses CSS paint worklets that are not supported in your browser yet 😭, sorry!</p>`); }
+    </script>
 
-  <details class="settings" open>
-    <summary>Settings</summary>
+    <p class="settings-always">
+      <label for="effect-selection">Type:</label>
+      <select id="effect-selection">
+        <option value="diamonds">Diamonds</option>
+        <option value="bigdots">Big dots</option>
+        <option value="starfield">Star field</option>
+        <option value="labyrinth">Labyrinth</option>
+        <option value="rainfall">Rainfall</option>
+      </select>
 
-    <div class="settings-content">
-      <script>
-        if (!('paintWorklet' in CSS)) { document.write(`<p>Uses CSS paint worklets that are not supported in your browser yet 😭, sorry!</p>`); }
-      </script>
+      <button type="button" id="request-update">Change seed</button>
 
-      <p>
-        <label for="effect-selection">Type:</label>
-        <select id="effect-selection">
-          <option value="diamonds">Diamonds</option>
-          <option value="bigdots">Big dots</option>
-          <option value="starfield">Star field</option>
-          <option value="labyrinth">Labyrinth</option>
-          <option value="rainfall">Rainfall</option>
-        </select>
-      </p>
+      <button type="button" id="settings-toggle">Settings</button>
+    </p>
 
-      <p>
-        <button type="button" id="request-update">Change seed</button>
-      </p>
+    <dialog class="settings">
+      <div class="settings-content">
+        <p>Grab the bottom right corner to resize the block. Only the visible part of the background is generated.</p>
 
-      <fieldset data-type="common">
-        <legend>Common settings</legend>
+        <fieldset data-type="common">
+          <legend>Common settings</legend>
+
+          <p>
+            <label for="common-cell-size">Cell size:</label>
+            <input type="range" id="common-cell-size" min="20" max="200" step="1" value="40">
+            <span class="common-cell-size-value">40</span>px
+          </p>
+
+          <p>
+            <label for="common-frequency">Frequency:</label>
+            <input type="range" id="common-frequency" min="0" max="100" step="1" value="100">
+            <span class="common-frequency-value">100</span>%
+          </p>
+
+          <p>
+            <label for="common-base-hue">Hue:</label>
+            <input type="range" id="common-base-hue" min="0" max="360" step="1" value="260">
+            <span class="common-base-hue-value">260</span>°
+          </p>
+
+          <p>
+            <label for="common-max-hue-spread">Max hue spread:</label>
+            <input type="range" id="common-max-hue-spread" min="0" max="180" step="1" value="30">
+            <span class="common-max-hue-spread-value">30</span>°
+          </p>
+        </fieldset>
+
+        <fieldset data-type="diamonds">
+          <legend>Diamonds settings</legend>
+
+          <p>
+            <label for="diamonds-max-offset">Max offset:</label>
+            <input type="range" id="diamonds-max-offset" min="0" max="100" step="1" value="50">
+            <span class="diamonds-max-offset-value">50</span>%
+          </p>
+
+          <p>
+            <label for="diamonds-min-scale">Min scale:</label>
+            <input type="range" id="diamonds-min-scale" min="1" max="100" step="1" value="10">
+            <span class="diamonds-min-scale-value">10</span>%
+          </p>
+
+          <p>
+            <label for="diamonds-max-scale">Max scale:</label>
+            <input type="range" id="diamonds-max-scale" min="1" max="100" step="1" value="60">
+            <span class="diamonds-max-scale-value">60</span>%
+          </p>
+        </fieldset>
+
+        <fieldset data-type="bigdots">
+          <legend>Big dots settings</legend>
+
+          <p>
+            <label for="bigdots-max-saturation-spread">Max saturation spread:</label>
+            <input type="range" id="bigdots-max-saturation-spread" min="0" max="100" step="1" value="40">
+            <span class="bigdots-max-saturation-spread-value">40</span>
+          </p>
+
+          <p>
+            <label for="bigdots-max-lightness-spread">Max lightness spread:</label>
+            <input type="range" id="bigdots-max-lightness-spread" min="0" max="100" step="1" value="15">
+            <span class="bigdots-max-lightness-spread-value">15</span>
+          </p>
+        </fieldset>
+
+        <fieldset data-type="starfield">
+          <legend>Star field settings</legend>
+
+          <p>
+            <label for="starfield-max-offset">Max offset:</label>
+            <input type="range" id="starfield-max-offset" min="0" max="100" step="1" value="50">
+            <span class="starfield-max-offset-value">50</span>%
+          </p>
+
+          <p>
+            <label for="starfield-min-scale">Min scale:</label>
+            <input type="range" id="starfield-min-scale" min="1" max="100" step="1" value="2">
+            <span class="starfield-min-scale-value">2</span>%
+          </p>
+
+          <p>
+            <label for="starfield-max-scale">Max scale:</label>
+            <input type="range" id="starfield-max-scale" min="1" max="100" step="1" value="8">
+            <span class="starfield-max-scale-value">8</span>%
+          </p>
+        </fieldset>
+
+        <fieldset data-type="rainfall">
+          <legend>Rainfall settings</legend>
+
+          <p>
+            <label for="rainfall-fall-duration">Fall duration:</label>
+            <input type="range" id="rainfall-fall-duration" min="100" max="5000" step="100" value="1500">
+            <span class="rainfall-fall-duration-value">1500</span>ms
+          </p>
+
+          <p>
+            <label for="rainfall-wave-duration">Wave duration:</label>
+            <input type="range" id="rainfall-wave-duration" min="100" max="1000" step="100" value="500">
+            <span class="rainfall-wave-duration-value">500</span>ms
+          </p>
+
+          <p>
+            <label for="rainfall-drop-height-ratio">Raindrop height ratio:</label>
+            <input type="range" id="rainfall-drop-height-ratio" min="1" max="20" step="1" value="2">
+            <span class="rainfall-drop-height-ratio-value">2</span>
+          </p>
+
+          <p>
+            <label for="rainfall-min-depth-scale">Min depth scale:</label>
+            <input type="range" id="rainfall-min-depth-scale" min="1" max="100" step="1" value="50">
+            <span class="rainfall-min-depth-scale-value">50</span>%
+          </p>
+
+          <p>
+            <label for="rainfall-min-depth-opacity">Min depth opacity:</label>
+            <input type="range" id="rainfall-min-depth-opacity" min="1" max="100" step="1" value="50">
+            <span class="rainfall-min-depth-opacity-value">50</span>%
+          </p>
+        </fieldset>
 
         <p>
-          <label for="common-cell-size">Cell size:</label>
-          <input type="range" id="common-cell-size" min="20" max="200" step="1" value="40">
-          <span class="common-cell-size-value">40</span>px
+          <a href="/_common/components/artsy-css/">Older &lt;div&gt;s version</a>
         </p>
 
         <p>
-          <label for="common-frequency">Frequency:</label>
-          <input type="range" id="common-frequency" min="0" max="100" step="1" value="100">
-          <span class="common-frequency-value">100</span>%
+          <button type="button" id="close-settings">Close</button>
         </p>
+      </div>
+  </dialog>
+</div>
 
-        <p>
-          <label for="common-base-hue">Hue:</label>
-          <input type="range" id="common-base-hue" min="0" max="360" step="1" value="260">
-          <span class="common-base-hue-value">260</span>°
-        </p>
-
-        <p>
-          <label for="common-max-hue-spread">Max hue spread:</label>
-          <input type="range" id="common-max-hue-spread" min="0" max="180" step="1" value="30">
-          <span class="common-max-hue-spread-value">30</span>°
-        </p>
-      </fieldset>
-
-      <fieldset data-type="diamonds">
-        <legend>Diamonds settings</legend>
-
-        <p>
-          <label for="diamonds-max-offset">Max offset:</label>
-          <input type="range" id="diamonds-max-offset" min="0" max="100" step="1" value="50">
-          <span class="diamonds-max-offset-value">50</span>%
-        </p>
-
-        <p>
-          <label for="diamonds-min-scale">Min scale:</label>
-          <input type="range" id="diamonds-min-scale" min="1" max="100" step="1" value="10">
-          <span class="diamonds-min-scale-value">10</span>%
-        </p>
-
-        <p>
-          <label for="diamonds-max-scale">Max scale:</label>
-          <input type="range" id="diamonds-max-scale" min="1" max="100" step="1" value="60">
-          <span class="diamonds-max-scale-value">60</span>%
-        </p>
-      </fieldset>
-
-      <fieldset data-type="bigdots">
-        <legend>Big dots settings</legend>
-
-        <p>
-          <label for="bigdots-max-saturation-spread">Max saturation spread:</label>
-          <input type="range" id="bigdots-max-saturation-spread" min="0" max="100" step="1" value="40">
-          <span class="bigdots-max-saturation-spread-value">40</span>
-        </p>
-
-        <p>
-          <label for="bigdots-max-lightness-spread">Max lightness spread:</label>
-          <input type="range" id="bigdots-max-lightness-spread" min="0" max="100" step="1" value="15">
-          <span class="bigdots-max-lightness-spread-value">15</span>
-        </p>
-      </fieldset>
-
-      <fieldset data-type="starfield">
-        <legend>Star field settings</legend>
-
-        <p>
-          <label for="starfield-max-offset">Max offset:</label>
-          <input type="range" id="starfield-max-offset" min="0" max="100" step="1" value="50">
-          <span class="starfield-max-offset-value">50</span>%
-        </p>
-
-        <p>
-          <label for="starfield-min-scale">Min scale:</label>
-          <input type="range" id="starfield-min-scale" min="1" max="100" step="1" value="2">
-          <span class="starfield-min-scale-value">2</span>%
-        </p>
-
-        <p>
-          <label for="starfield-max-scale">Max scale:</label>
-          <input type="range" id="starfield-max-scale" min="1" max="100" step="1" value="8">
-          <span class="starfield-max-scale-value">8</span>%
-        </p>
-      </fieldset>
-
-      <fieldset data-type="rainfall">
-        <legend>Rainfall settings</legend>
-
-        <p>
-          <label for="rainfall-fall-duration">Fall duration:</label>
-          <input type="range" id="rainfall-fall-duration" min="100" max="5000" step="100" value="1500">
-          <span class="rainfall-fall-duration-value">1500</span>ms
-        </p>
-
-        <p>
-          <label for="rainfall-wave-duration">Wave duration:</label>
-          <input type="range" id="rainfall-wave-duration" min="100" max="1000" step="100" value="500">
-          <span class="rainfall-wave-duration-value">500</span>ms
-        </p>
-
-        <p>
-          <label for="rainfall-drop-height-ratio">Raindrop height ratio:</label>
-          <input type="range" id="rainfall-drop-height-ratio" min="1" max="20" step="1" value="2">
-          <span class="rainfall-drop-height-ratio-value">2</span>
-        </p>
-
-        <p>
-          <label for="rainfall-min-depth-scale">Min depth scale:</label>
-          <input type="range" id="rainfall-min-depth-scale" min="1" max="100" step="1" value="50">
-          <span class="rainfall-min-depth-scale-value">50</span>%
-        </p>
-
-        <p>
-          <label for="rainfall-min-depth-opacity">Min depth opacity:</label>
-          <input type="range" id="rainfall-min-depth-opacity" min="1" max="100" step="1" value="50">
-          <span class="rainfall-min-depth-opacity-value">50</span>%
-        </p>
-      </fieldset>
-
-      <p>
-        <a href="/_common/components/artsy-css/">Older &lt;div&gt;s version</a>
-      </p>
-    </div>
-  </details>
+<artsy-block type="diamonds"></artsy-block>
