@@ -55,6 +55,10 @@ dialog::backdrop {
   padding: 16px;
 }
 
+.settings-content p {
+  margin: revert;
+}
+
 .settings-content > p {
   max-width: 40ch;
   margin: 0;
