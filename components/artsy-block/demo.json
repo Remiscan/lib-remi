@@ -7,12 +7,8 @@
     "labyrinth-worklet": "/_common/components/artsy-block/worklets/labyrinth.js",
     "rainfall-worklet": "/_common/components/artsy-block/worklets/rainfall.js"
   },
-  "intro": "This block generates some simple procedural art as its background, using paint worklets. <a href=\"/_common/components/artsy-css/\">See an older version using &lt;div&gt;s and CSS instead.</a><span class=\"fallback\"><br><br>Your browser does not support paint worklets yet, so this component will not work.",
+  "intro": "This block procedurally generates a pattern as its background, using paint worklets. <a href=\"/_common/components/artsy-css/\">See an older version using &lt;div&gt;s and CSS instead.</a><span class=\"fallback\"><br><br>Your browser does not support paint worklets yet, so this component will not work.",
   "examples": [
-    "<artsy-block type=\"diamonds\"></artsy-block>",
-    "<artsy-block type=\"bigdots\"></artsy-block>",
-    "<artsy-block type=\"starfield\"></artsy-block>",
-    "<artsy-block type=\"labyrinth\"></artsy-block>",
-    "<artsy-block type=\"rainfall\"></artsy-block>"
+    "<artsy-block type=\"diamonds\"></artsy-block>"
   ]
 }
