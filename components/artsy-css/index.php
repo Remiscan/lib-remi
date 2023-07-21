@@ -199,7 +199,7 @@
       </p>
 
       <p>
-        <a href="/_common/components/artsy-block/">Newer paint worklets version</a>
+        <a href="/components/artsy-block/">Newer paint worklets version</a>
       </p>
     </div>
   </details>
