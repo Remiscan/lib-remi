@@ -64,6 +64,10 @@ dialog::backdrop {
   margin: 0;
 }
 
+p:has(> #close-settings) {
+  align-self: center;
+}
+
 body:not([data-type="diamonds"]) fieldset[data-type="diamonds"],
 body:not([data-type="bigdots"]) fieldset[data-type="bigdots"],
 body:not([data-type="starfield"]) fieldset[data-type="starfield"],

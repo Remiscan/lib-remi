@@ -9,10 +9,10 @@ mainSettingsTemplate.innerHTML = /*html*/`
       <option value="bigdots">Big dots</option>
       <option value="starfield">Star field</option>
       <option value="labyrinth">Labyrinth</option>
-      <option value="rainfall">Rainfall</option>
+      <option value="rainfall">Rainfall (animated)</option>
     </select>
 
-    <button type="button" id="request-update">Change seed</button>
+    <button type="button" id="request-update">Randomize</button>
 
     <button type="button" id="settings-toggle">Settings</button>
   </p>
