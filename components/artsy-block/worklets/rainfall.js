@@ -121,7 +121,8 @@ registerPaint('rainfall', class {
           );
 
           // Ignore rain drops that are out of screen
-          if (currentPoint.x < 0 || currentPoint.x > size.width) continue;
+          const visibleDropWidth = Math.abs(Math.sin(fallAngle) * dropHeight * distanceCoeff);
+          if (currentPoint.x < -visibleDropWidth || currentPoint.x > size.width + visibleDropWidth) continue;
 
           const corners = drop.map(point => point
             .translate(-.5 * dropWidth, -dropHeight)      // move origin to bottom center of shape
