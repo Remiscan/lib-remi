@@ -103,9 +103,8 @@ sheet.replaceSync(/*css*/`
 
 const resizeObserver = new ResizeObserver(entries => {
   for (const entry of entries) {
-    const height = entry.contentRect?.height ?? 0;
-    entry.target.style.setProperty('--self-height', height);
-    console.log(entry, height);
+    entry.target.style.setProperty('--self-width', entry.contentRect?.width ?? 0);
+    entry.target.style.setProperty('--self-height', entry.contentRect?.height ?? 0);
   }
 });
 
