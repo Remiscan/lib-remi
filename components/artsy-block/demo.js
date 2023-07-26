@@ -116,9 +116,9 @@ settingsDialogTemplate.innerHTML = /*html*/ `
         <legend>Rainfall settings</legend>
 
         <p>
-          <label for="rainfall-fall-duration">Fall duration:</label>
-          <input type="range" id="rainfall-fall-duration" min="100" max="5000" step="100" value="1000">
-          <span class="rainfall-fall-duration-value">1000</span>ms
+          <label for="rainfall-fall-speed">Fall speed:</label>
+          <input type="range" id="rainfall-fall-speed" min="100" max="2000" step="100" value="800">
+          <span class="rainfall-fall-speed-value">800</span>px/s
         </p>
 
         <p>

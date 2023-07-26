@@ -32,7 +32,6 @@ artsy-block {
 
 artsy-block[type="rainfall"] {
   --cell-size: 120;
-  --fall-duration: 1000;
 }
 
 dialog {

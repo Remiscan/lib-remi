@@ -5,7 +5,7 @@ import { mulberry32, xmur3a } from '/_common/js/prng.js';
 
 registerPaint('rainfall', class {
   static get contextOptions() { return {alpha: true}; }
-  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--fall-duration', '--wave-duration', '--drop-width-ratio', '--drop-height-ratio', '--min-depth-scale', '--min-depth-opacity', '--anim-progress']; }
+  static get inputProperties() { return ['--base-seed', '--cell-size', '--frequency', '--base-hue', '--base-saturation', '--base-lightness', '--max-hue-spread', '--fall-speed', '--wave-duration', '--drop-width-ratio', '--drop-height-ratio', '--min-depth-scale', '--min-depth-opacity', '--anim-progress']; }
 
   paint(ctx, size, props) {
     const baseSeed = props.get('--base-seed');
@@ -16,7 +16,8 @@ registerPaint('rainfall', class {
     const baseSaturation = Number(props.get('--base-saturation'));
     const baseLightness = Number(props.get('--base-lightness'));
     const maxHueSpread = Number(props.get('--max-hue-spread'));
-    const fallDuration = Number(props.get('--fall-duration'));
+    const fallSpeed = Number(props.get('--fall-speed'));
+    const fallDuration = 1000 * size.height / fallSpeed;
     const waveDuration = Number(props.get('--wave-duration'));
     const animDuration = fallDuration + waveDuration;
     const animProgress = Number(props.get('--anim-progress'));

@@ -78,13 +78,14 @@ sheet.replaceSync(/*css*/`
 
     artsy-block[type="rainfall"] {
       --base-lightness: 20;
-      --fall-duration: 1500; /* ms */
+      --fall-speed: 800; /* px per second */
       --wave-duration: 500; /* ms */
       --drop-width-ratio: 40; /* fraction of cell size */
       --drop-height-ratio: 2; /* fraction of cell size */
       --min-depth-scale: 50; /* % */
       --min-depth-opacity: 50; /* % */
-      --anim-duration: calc(var(--fall-duration) * 1ms + var(--wave-duration) * 1ms);
+      --fall-duration: calc(var(--self-height) / var(--fall-speed));
+      --anim-duration: calc(var(--fall-duration) * 1000ms + var(--wave-duration) * 1ms);
       background: paint(rainfall);
       animation: progress var(--anim-duration) linear infinite;
     }
@@ -97,6 +98,16 @@ sheet.replaceSync(/*css*/`
 
   }
 `);
+
+
+
+const resizeObserver = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const height = entry.contentRect?.height ?? 0;
+    entry.target.style.setProperty('--self-height', height);
+    console.log(entry, height);
+  }
+});
 
 
 
@@ -125,10 +136,12 @@ class ArtsyBlock extends HTMLElement {
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
     this.addEventListener('updaterequest', this.updateBaseSeed);
+    resizeObserver.observe(this);
   }
 
   disconnectedCallback() {
     this.removeEventListener('updaterequest', this.updateBaseSeed);
+    resizeObserver.unobserve(this);
   }
 
   static get observedAttributes() {
