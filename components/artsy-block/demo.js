@@ -117,8 +117,8 @@ settingsDialogTemplate.innerHTML = /*html*/ `
 
         <p>
           <label for="rainfall-fall-duration">Fall duration:</label>
-          <input type="range" id="rainfall-fall-duration" min="100" max="5000" step="100" value="1500">
-          <span class="rainfall-fall-duration-value">1500</span>ms
+          <input type="range" id="rainfall-fall-duration" min="100" max="5000" step="100" value="1000">
+          <span class="rainfall-fall-duration-value">1000</span>ms
         </p>
 
         <p>
@@ -168,6 +168,9 @@ const blocks = document.querySelectorAll('artsy-block');
 const startType = blocks[0].getAttribute('type');
 document.body.dataset.type = startType;
 
+// For performance reasons
+const rainfallCellSizeCoeff = 2.2; // size of rainfall cells compared to other types of cells
+
 // Listen to settings changes
 
 // Type of effect
@@ -191,8 +194,8 @@ select.addEventListener('input', () => {
     // Adjust cell-size if needed
     let previousCellSize = block.style.getPropertyValue('--cell-size');
     if (previousCellSize) {
-      if (previousType === 'rainfall') previousCellSize = previousCellSize / 2;
-      else if (select.value === 'rainfall') previousCellSize = previousCellSize * 2;
+      if (previousType === 'rainfall') previousCellSize = previousCellSize / rainfallCellSizeCoeff;
+      else if (select.value === 'rainfall') previousCellSize = previousCellSize * rainfallCellSizeCoeff;
     }
     block.style.setProperty('--cell-size', previousCellSize ?? '');
 
@@ -248,7 +251,7 @@ for (const input of inputs) {
     const value = input.value;
     for (const block of blocks) {
       if (prop === 'cell-size' && document.body.dataset.type === 'rainfall') {
-        block.style.setProperty(`--${prop}`, 2 * value);
+        block.style.setProperty(`--${prop}`, rainfallCellSizeCoeff * value);
       } else {
         block.style.setProperty(`--${prop}`, value);
       }
