@@ -167,6 +167,7 @@ try {
       .example > pre {
         width: 100%;
         max-height: 8rem;
+        flex-shrink: 0;
         overflow-y: auto;
         scrollbar-width: thin;
         background: var(--code-background-color);
