@@ -11,7 +11,7 @@
 <script type="importmap">
 {
   "imports": {
-    "per-function-async-queue": "/_common/js/per-function-async-queue.js"
+    "per-function-async-queue": "/_common/js/per-function-async-queue/mod.js"
   }
 }
 </script>

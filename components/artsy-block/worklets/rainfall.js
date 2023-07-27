@@ -1,5 +1,5 @@
-import { Point2D, Point3D } from '/_common/js/geometry.js';
-import { mulberry32, xmur3a } from '/_common/js/prng.js';
+import { Point2D, Point3D } from '/_common/js/geometry/mod.js';
+import { mulberry32, xmur3a } from '/_common/js/prng/mod.js';
 
 
 

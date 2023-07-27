@@ -15,7 +15,7 @@
   <script type="importmap">
   {
     "imports": {
-      "cancelable-async": "/_common/js/cancelable-async.js",
+      "cancelable-async": "/_common/js/cancelable-async/mod.js",
       "markdown-wasm": "/_common/components/markdown-block/markdown-wasm/markdown.es.js",
       "markdown-block": "/_common/components/markdown-block/markdown-block.js"
     }

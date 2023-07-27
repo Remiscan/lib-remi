@@ -11,7 +11,7 @@
 <script type="importmap">
 {
   "imports": {
-    "cancelable-async": "/_common/js/cancelable-async.js"
+    "cancelable-async": "/_common/js/cancelable-async/mod.js"
   }
 }
 </script>

@@ -6,7 +6,7 @@
     "range-gradient-worklet": "/_common/components/color-picker/worklet.js.php",
     "input-slider": "/_common/components/input-slider/input-slider.js",
     "colori": "/colori/lib/dist/colori.min.js",
-    "translation-observer": "/_common/js/translation-observer.js"
+    "translation-observer": "/_common/js/translation-observer/mod.js"
   }
 }
 </script>

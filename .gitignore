@@ -1,1 +1,8 @@
+# JS files compiled from a TS file
+js/bracket-pairs/mod.js
+js/cancelable-async/mod.js
+js/multidimensional-map/mod.js
+js/per-function-async-queue/mod.js
+js/translation-observer/mod.js
+
 tsconfig.tsbuildinfo

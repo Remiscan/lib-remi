@@ -3,8 +3,8 @@
 {
   "imports": {
     "theme-selector": "/_common/components/theme-selector/theme-selector.js",
-    "trap-focus": "/_common/js/trap-focus.js",
-    "translation-observer": "/_common/js/translation-observer.js"
+    "trap-focus": "/_common/js/trap-focus/mod.js",
+    "translation-observer": "/_common/js/translation-observer/mod.js"
   }
 }
 </script>

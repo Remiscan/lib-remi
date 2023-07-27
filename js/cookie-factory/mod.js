@@ -4,7 +4,7 @@
   "imports": {
     "cookie-consent-prompt": "/_common/components/cookie-consent-prompt/cookie-consent-prompt.js",
     "cookie-consent-prompt-template": "/_common/components/cookie-consent-prompt/template.js",
-    "cookie-factory": "/_common/js/cookie-factory.js"
+    "cookie-factory": "/_common/js/cookie-factory/mod.js"
   }
 }
 </script>

@@ -11,7 +11,7 @@
 <script type="importmap">
 {
   "imports": {
-    "inline-worker": "/_common/js/inline-worker.js"
+    "inline-worker": "/_common/js/inline-worker/mod.js"
   }
 }
 </script>

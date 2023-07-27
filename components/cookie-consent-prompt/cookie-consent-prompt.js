@@ -1,4 +1,4 @@
-// See /_common/js/cookie-factory.js for how to use.
+// See /_common/js/cookie-factory/mod.js for how to use.
 
 import translationObserver from 'translation-observer';
 

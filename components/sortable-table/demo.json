@@ -1,7 +1,7 @@
 {
   "title": "<table is=\"sortable-table\">",
   "imports": {
-    "translation-observer": "/_common/js/translation-observer.js",
+    "translation-observer": "/_common/js/translation-observer/mod.js",
     "custom-elements-polyfill": "/_common/polyfills/custom-elements.js"
   },
   "intro": "A table that can be sorted by columns. Supported data types: strings, numbers, dates.",

@@ -170,7 +170,7 @@ export default class Traduction {
  *************************/
 
 /*
-import DefTraduction from '/_common/js/traduction.js';
+import DefTraduction from '/_common/js/traduction/mod.js';
 
 class ExtTraduction extends DefTraduction {
   constructor() {

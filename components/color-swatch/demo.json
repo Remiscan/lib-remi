@@ -2,7 +2,7 @@
   "title": "<color-swatch>",
   "imports": {
     "colori": "/colori/lib/dist/colori.min.js",
-    "translation-observer": "/_common/js/translation-observer.js"
+    "translation-observer": "/_common/js/translation-observer/mod.js"
   },
   "intro": "The color-swatch component uses my own library <a href=\"/colori/\">Colori</a>. It takes a color expression and a format as HTML arguments. It displays a preview of the color, its expression in the requested format, and a button to copy that expression.",
   "examples": [

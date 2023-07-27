@@ -22,15 +22,15 @@ $testCookie = isset($_COOKIE['test']) ? $_COOKIE['test'] : '';
     {
       "imports": {
         "cookie-consent-prompt": "/_common/components/cookie-consent-prompt/cookie-consent-prompt.js",
-        "cookie-factory": "/_common/js/cookie-factory.js",
-        "translation-observer": "/_common/js/translation-observer.js"
+        "cookie-factory": "/_common/js/cookie-factory/mod.js",
+        "translation-observer": "/_common/js/translation-observer/mod.js"
       }
     }
     </script>
     
     <link rel="modulepreload" href="/_common/components/cookie-consent-prompt/cookie-consent-prompt.js">
-    <link rel="modulepreload" href="/_common/js/cookie-factory.js">
-    <link rel="modulepreload" href="/_common/js/translation-observer.js">
+    <link rel="modulepreload" href="/_common/js/cookie-factory/mod.js">
+    <link rel="modulepreload" href="/_common/js/translation-observer/mod.js">
     
     <!--<?php versionizeEnd(__DIR__); ?>-->
 

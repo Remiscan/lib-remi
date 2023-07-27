@@ -4,7 +4,7 @@ type AsyncFunction = (...args: any[]) => Promise<any>;
  * Makes an async function queueable, such that every call to that function will be executed successively,
  * each waiting for the previous call to be done before being executed.
  */
-export function queueable(fn: AsyncFunction) {
+export function queueable(fn: AsyncFunction): AsyncFunction {
   const queue: Array< () => Promise<void> > = [];
   return (...args: any[]) => {
     return new Promise(async (resolve, reject) => {
