@@ -31,6 +31,7 @@ try {
 
       :root {
         color: black;
+        --body-background-color: #EDEDED;
         --code-background-color: #DBDBDB;
         --example-border-color: #DBDBDB;
         --example-background-color: #F7F7F7;
@@ -39,6 +40,7 @@ try {
       @media (prefers-color-scheme: dark) {
         :root {
           color: white;
+          --body-background-color: #121212;
           --code-background-color: #242424;
           --example-border-color: #242424;
           --example-background-color: #080808;
@@ -93,7 +95,10 @@ try {
         margin-bottom: -16px;
         margin-top: calc(-1 * var(--gap) + 16px);
         --shadow-offset: max(20px, 50vh);
-        box-shadow:0 var(--shadow-offset) 0 var(--shadow-offset) var(--code-background-color);
+        --border-shadow: 0 -2px 0 0 var(--body-background-color);
+        box-shadow:
+          0 var(--shadow-offset) 0 var(--shadow-offset) var(--code-background-color),
+          var(--border-shadow);
         white-space: nowrap;
         overflow-x: auto;
         scrollbar-width: thin;
@@ -103,7 +108,7 @@ try {
         .log {
           padding: 8px;
           margin: 0;
-          box-shadow: none;
+          box-shadow: var(--border-shadow);
         }
       }
 
