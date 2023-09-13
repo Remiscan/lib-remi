@@ -138,6 +138,7 @@ try {
         flex-direction: column;
         justify-content: start;
         align-items: center;
+        overflow: hidden;
         gap: 6px;
         border: 2px solid var(--code-background-color);
         padding: 0 6px 6px;
