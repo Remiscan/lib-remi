@@ -6,50 +6,82 @@
   <title>&lt;gradient-button&gt; (CSS-only)</title>
 
   <style>
+  /* Native button functionality */
   button {
-    /* --- Customizable properties --- */
-    /* Background & text gradient */
-    --gradient: linear-gradient(to right, royalblue 0% 100%);
-    /* Border width */
-    --border-width: 2;
-    /* Padding around text */
-    --padding: .5em 1em;
-    /* Color of text on hover */
-    --hover-text-color: black;
-    /* Overlay over background on click */
-    --active-background-overlay: linear-gradient(to right, rgba(0, 0, 0, .1) 0% 100%);
-    
+    grid-row: 1;
+    grid-column: 1;
     -webkit-appearance: none;
     appearance: none;
-    background: none;
-    border: calc(1px * var(--border-width)) solid;
-    border-image: var(--gradient) var(--border-width);
-    color: transparent;
-    position: relative;
+    font: inherit;
+    color: inherit;
+    padding: .5em 1em;
+    margin: 0;
     display: grid;
     place-items: center;
-    margin: 0;
-    padding: var(--padding);
-    font: inherit;
     outline-offset: 3px;
+    white-space: nowrap;
 
     background-image: var(--gradient);
-    background-size: calc(100% + 2px * var(--border-width)) calc(100% + 2px * var(--border-width));
-    background-position: calc(-1px * var(--border-width)) calc(-1px * var(--border-width));
+    background-size: calc(100% + 2 * var(--border-width)) calc(100% + 2 * var(--border-width));
+    background-position: calc(-1 * var(--border-width)) calc(-1 * var(--border-width));
+    -webkit-text-fill-color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+
+    position: relative;
+    border: solid var(--border-width) transparent;
+    border-radius: 2em;
+
+    /* --- Customizable properties --- */
+    /* Background & text gradient */
+    --gradient: linear-gradient(royalblue 0% 100%);
+    /* Width of the gradient border */
+    --border-width: 2px;
+    /* Interaction state layer */
+    --state-layer-rgb: 0, 0, 0;
   }
 
-  button:hover,
-  button:focus,
-  button:active {
-    color: var(--hover-text-color);
-    -webkit-background-clip: unset;
-    background-clip: unset;
+  /* Border gradient */
+  button::before {
+    background-size: calc(100% + 2 * var(--border-width)) calc(100% + 2 * var(--border-width));
+    background-position: calc(-1 * var(--border-width)) calc(-1 * var(--border-width));
+    background-image: var(--gradient);
+    background-clip: border-box;
+
+    --full: linear-gradient(black 0% 100%);
+    -webkit-mask: var(--full) padding-box, var(--full);
+    -webkit-mask-composite: xor;
+    mask: var(--full) padding-box exclude, var(--full);
+  }
+
+  /* State layer */
+  button::after {
+    background-image: linear-gradient(to right, rgb(var(--state-layer-rgb), var(--state-layer-opacity, 0)) 0% 100%);
+  }
+
+  button::before,
+  button::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--border-width));
+    border: inherit;
+    border-radius: inherit;
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  /* On interaction */
+  button:hover, button:focus-visible, button:active {
+    background-clip: initial;
+    -webkit-text-fill-color: inherit;
+  }
+
+  button:hover {
+    --state-layer-opacity: .0;
   }
 
   button:active {
-    background-image: var(--active-background-overlay), var(--gradient);
+    --state-layer-opacity: .1;
   }
 
   /* Button examples */
@@ -58,7 +90,7 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
     font-weight: 600;
     margin: .5em;
-    --hover-text-color: black;
+    color: black;
   }
 
   button:nth-of-type(4n+1) {
@@ -153,14 +185,14 @@
   <p>
 
   <button style="--border-width: 0">No border</button>
-  <button style="--border-width: 1">1px border</button>
-  <button style="--border-width: 3">3px border</button>
+  <button style="--border-width: 1px">1px border</button>
+  <button style="--border-width: .3em">.3em border</button>
 
   <p>
 
-  <button style="--padding: .25em .5em;">Smaller padding</button>
-  <button style="--padding: .75em 1.5em;">Bigger padding</button>
+  <button style="padding: .25em .5em;">Smaller padding</button>
+  <button style="padding: .75em 1.5em;">Bigger padding</button>
 
   <p>
     
-  <a href="./">Custom element version (with JS-generated SVG mask, rounded corners & transitions ✨)</a>
+  <a href="./">Custom element version (with JS-generated SVG mask for cleaner borders & transitions ✨)</a>

@@ -11,7 +11,7 @@
 gradient-button {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
   font-weight: 600;
-  --hover-text-color: black;
+  color: black;
 }
 
 .example:nth-of-type(4n+1) gradient-button {

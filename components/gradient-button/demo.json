@@ -2,11 +2,11 @@
   "title": "<gradient-button>",
   "imports": {
   },
-  "intro": "The challenge was to create a <u>rounded</u> button with <u>transparent background</u>, <u>gradient border</u> and <u>gradient text</u>, which on hover fills the background with the gradient and switches the text to a solid color.<br><br>I couldn't find any CSS-only solution to get the precise effect I was looking for, so I threw in some JavaScript-generated SVG mask (used for the border) to do the trick.<br><br>I also have a <a href=\"./css-only.php\">partial CSS-only solution</a>, but it doesn't have rounded corners.",
+  "intro": "The challenge was to create a <u>rounded</u> button with <u>transparent background</u>, <u>gradient border</u> and <u>gradient text</u>, which on hover fills the background with the gradient and switches the text to a solid color.<br><br>⚠️ There is an issue with the gradient bleeding through the edge of the button when the border-width is zero and the border is rounded.",
   "examples": [
-    "<gradient-button text=\"Gradient button\"></gradient-button>",
-    "<gradient-button style=\"--padding: .25em .5em;\" text=\"Smaller padding\"></gradient-button>",
-    "<gradient-button style=\"--border-width: .3em;\" text=\"Bigger border\"></gradient-button>",
-    "<gradient-button style=\"--border-width: 0;\" text=\"No border\"></gradient-button>"
+    "<gradient-button>Gradient button</gradient-button>",
+    "<style>.small::part(button) { border-radius: 8px; }</style>\n<gradient-button class=\"small\">Smaller radius</gradient-button>",
+    "<style>.big::part(button) { border-width: .3em; }</style>\n<gradient-button class=\"big\">Bigger border</gradient-button>",
+    "<style>.no-border::part(button) { border: none; }</style>\n<gradient-button class=\"no-border\">No border</gradient-button>"
   ]
 }
