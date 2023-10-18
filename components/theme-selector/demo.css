@@ -85,3 +85,7 @@ theme-selector .selector-choices > input + label {
   align-content: center;
   justify-content: start;
 }
+
+.example {
+  overflow: visible;
+}
