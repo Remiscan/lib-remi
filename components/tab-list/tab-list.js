@@ -3,9 +3,9 @@
 ***************************************
 
 <div is="tab-list">
-  <button role="tab" aria-controls="controlled-element-1-id">Tab 1 name</button>
-  <button role="tab" aria-controls="controlled-element-2-id">Tab 2 name</button>
-  <button role="tab" aria-controls="controlled-element-3-id">Tab 3 name</button>
+  <button aria-controls="controlled-element-1-id">Tab 1 name</button>
+  <button aria-controls="controlled-element-2-id">Tab 2 name</button>
+  <button aria-controls="controlled-element-3-id">Tab 3 name</button>
 </div>
 
 <div id="controlled-element-1-id" hidden></div>
@@ -236,7 +236,7 @@ class TabList extends HTMLDivElement {
 
   /** Returns all tabs in the tab list. */
   get allTabs() {
-    return [...this.querySelectorAll(`[role="tab"]`)];
+    return [...this.querySelectorAll(`button`)];
   }
 
 
@@ -267,6 +267,7 @@ class TabList extends HTMLDivElement {
 
       // Pass the correct attributes to the tab button
       tab.setAttribute('type', 'button');
+      tab.setAttribute('role', 'tab');
       tab.setAttribute('id', id);
       tab.setAttribute('aria-selected', selected ? 'true' : 'false');
       tab.setAttribute('tabindex', '-1');
