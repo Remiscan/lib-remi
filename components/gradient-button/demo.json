@@ -2,7 +2,7 @@
   "title": "<gradient-button>",
   "imports": {
   },
-  "intro": "The challenge was to create a <u>rounded</u> button with <u>transparent background</u>, <u>gradient border</u> and <u>gradient text</u>, which on hover fills the background with the gradient and switches the text to a solid color.<br><br>⚠️ There is an issue with the gradient bleeding through the edge of the button when the border-width is zero and the border is rounded.",
+  "intro": "The challenge was to create, with CSS only, a <u>rounded</u> button with <u>transparent background</u>, <u>gradient border</u> and <u>gradient text</u>, which on hover fills the background with the gradient and switches the text to a solid color.<br><br>⚠️ There is an issue with the gradient bleeding through the edge of the button when the border-width is zero and the border is rounded.",
   "examples": [
     "<gradient-button>Gradient button</gradient-button>",
     "<style>.small::part(button) { border-radius: 8px; }</style>\n<gradient-button class=\"small\">Smaller radius</gradient-button>",
