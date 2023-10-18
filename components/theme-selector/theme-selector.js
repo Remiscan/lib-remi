@@ -4,20 +4,24 @@
   "imports": {
     "theme-selector": "/_common/components/theme-selector/theme-selector.js",
     "trap-focus": "/_common/js/trap-focus/mod.js",
-    "translation-observer": "/_common/js/translation-observer/mod.js"
+    "translation-observer": "/_common/js/translation-observer/mod.js",
+    "popover-polyfill": "/_common/polyfills/popover.min.js",
+    "css-anchor-polyfill": "/_common/polyfills/css-anchor-polyfill.js"
   }
 }
 </script>
 */
 
+import 'css-anchor-polyfill';
+import 'popover-polyfill';
 import translationObserver from 'translation-observer';
-import { disableFocusInside, releaseFocusFrom, trapFocusIn } from 'trap-focus';
+import { disableFocusInside } from 'trap-focus';
 
 
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <button type="button" data-label="change-theme">
+  <button type="button" data-label="change-theme" popovertarget="selector">
     <svg viewBox="0 0 120 120">
       <defs>
         <mask id="sun-mask">
@@ -59,7 +63,7 @@ template.innerHTML = /*html*/`
     <span data-string="change-theme-short"></span>
   </button>
 
-  <fieldset class="selector" aria-hidden="true">
+  <fieldset popover id="selector" class="selector" aria-hidden="true">
     <legend class="selector-title">
       <span class="selector-title-text" data-string="selector-title"></span>
     </legend>
@@ -91,7 +95,7 @@ template.innerHTML = /*html*/`
 
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
-  theme-selector > button {
+  button {
     border: none;
     background-color: transparent;
     padding: 0;
@@ -107,258 +111,254 @@ sheet.replaceSync(/*css*/`
     align-items: center;
     gap: 1ch;
     color: currentColor;
+
+    anchor-name: --theme-selector-button;
   }
 
-  theme-selector:not([label]) > button {
+  :host(:not([label])) > button {
     grid-template-columns: var(--size) 0;
     gap: 0;
   }
 
-  @layer theme-selector {
+  :host {
+    display: grid;
+    place-items: center;
+    position: relative;
+    --size: 3rem;
+  }
 
-    theme-selector {
-      display: grid;
-      place-items: center;
-      position: relative;
-      --size: 3rem;
-    }
+  :host(:not([label])) > button > span {
+    display: none;
+  }
 
-    theme-selector:not([label]) > button > span {
-      display: none;
-    }
+  svg {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    fill: var(--primary-color, var(--default-color));
+    --sun-resize: .5s;
+    --moon-hole-apparition: .5s;
+    --moon-hole-disparition: .3s;
+  }
 
-    theme-selector svg {
-      width: 100%;
-      height: 100%;
-      aspect-ratio: 1;
-      fill: var(--primary-color, var(--default-color));
-      --sun-resize: .5s;
-      --moon-hole-apparition: .5s;
-      --moon-hole-disparition: .3s;
-    }
+  .ray > path {
+    stroke: var(--secondary-color, var(--default-color));
+  }
 
-    theme-selector .ray > path {
-      stroke: var(--secondary-color, var(--default-color));
-    }
+  .sun-size,
+  .moon-hole {
+    will-change: transform;
+    transform-style: preserve-3d;
+  }
 
-    theme-selector .sun-size,
-    theme-selector .moon-hole {
-      will-change: transform;
-      transform-style: preserve-3d;
-    }
-
-    theme-selector .unusable {
-      pointer-events: none !important;
-    }
+  .unusable {
+    pointer-events: none !important;
+  }
 
 
 
-    /*************/
-    /* ANIMATION */
-    /*************/
+  /*************/
+  /* ANIMATION */
+  /*************/
 
 
-    /************************************/
-    /* Thème clair - on affiche la lune */
-    /************************************/
+  /************************************/
+  /* Thème clair - on affiche la lune */
+  /************************************/
 
-    theme-selector[scheme="light"] {
-      --default-color: black;
-    }
+  :host([scheme="light"]) {
+    --default-color: black;
+  }
 
-    /* Si on affiche l'icône du thème en cours */
+  /* Si on affiche l'icône du thème en cours */
 
-    /* - Étape 1 : la lune devient soleil */
-    theme-selector[scheme="light"] .moon-hole {
-      transform: translate(40%, -40%);
-      transition: transform var(--moon-hole-disparition) ease;
-      transition-delay: 0s;
-    }
+  /* - Étape 1 : la lune devient soleil */
+  :host([scheme="light"]) .moon-hole {
+    transform: translate(40%, -40%);
+    transition: transform var(--moon-hole-disparition) ease;
+    transition-delay: 0s;
+  }
 
-    /* - Étape 2 : le soleil rétrécit */
-    theme-selector[scheme="light"] .sun {
-      transform: scale(.5);
-      transition: transform var(--sun-resize) ease;
-      transition-delay: calc(.5 * var(--moon-hole-disparition));
-    }
+  /* - Étape 2 : le soleil rétrécit */
+  :host([scheme="light"]) .sun {
+    transform: scale(.5);
+    transition: transform var(--sun-resize) ease;
+    transition-delay: calc(.5 * var(--moon-hole-disparition));
+  }
 
-    /* - Étape 3 : les rayons apparaissent */
-    theme-selector[scheme="light"] .ray {
-      opacity: 1;
-      transform: scale(1);
-      transition: transform .3s ease,
-                  opacity .3s ease;
-      transition-delay: calc(.5 * var(--moon-hole-disparition) + .2s + var(--m, 0) * 60ms);
-    }
+  /* - Étape 3 : les rayons apparaissent */
+  :host([scheme="light"]) .ray {
+    opacity: 1;
+    transform: scale(1);
+    transition: transform .3s ease,
+                opacity .3s ease;
+    transition-delay: calc(.5 * var(--moon-hole-disparition) + .2s + var(--m, 0) * 60ms);
+  }
 
-    /* Si on affiche l'icône du thème opposé */
+  /* Si on affiche l'icône du thème opposé */
 
-    /* - Étape 1 : le soleil s'agrandit */
-    theme-selector[scheme="light"][icon="reverse"] .sun {
-      transform: scale(1);
-      transition: transform var(--sun-resize) ease;
-      transition-delay: 0s;
-    }
+  /* - Étape 1 : le soleil s'agrandit */
+  :host([scheme="light"][icon="reverse"]) .sun {
+    transform: scale(1);
+    transition: transform var(--sun-resize) ease;
+    transition-delay: 0s;
+  }
 
-    /* - Étape 2 : les rayons disparaissent */
-    theme-selector[scheme="light"][icon="reverse"] .ray {
-      opacity: 0;
-      transform: scale(.5);
-      transition: transform .15s ease-in,
-                  opacity .15s ease-in;
-      transition-delay: 0s;
-    }
+  /* - Étape 2 : les rayons disparaissent */
+  :host([scheme="light"][icon="reverse"]) .ray {
+    opacity: 0;
+    transform: scale(.5);
+    transition: transform .15s ease-in,
+                opacity .15s ease-in;
+    transition-delay: 0s;
+  }
 
-    /* - Étape 3 : le soleil devient lune */
-    theme-selector[scheme="light"][icon="reverse"] .moon-hole {
-      transform: translate(0, 0);
-      transition: transform var(--moon-hole-apparition) ease;
-      transition-delay: calc(.5 * var(--sun-resize));
-    }
-
-
-    /***************************************/
-    /* Thème sombre - on affiche le soleil */
-    /***************************************/
-
-    theme-selector[scheme="dark"] {
-      --default-color: white;
-    }
-
-    /* Si on affiche l'icône du thème en cours */
-
-    /* - Étape 1 : le soleil s'agrandit */
-    theme-selector[scheme="dark"] .sun {
-      transform: scale(1);
-      transition: transform var(--sun-resize) ease;
-      transition-delay: 0s;
-    }
-
-    /* - Étape 2 : les rayons disparaissent */
-    theme-selector[scheme="dark"] .ray {
-      opacity: 0;
-      transform: scale(.5);
-      transition: transform .15s ease-in,
-                  opacity .15s ease-in;
-      transition-delay: 0s;
-    }
-
-    /* - Étape 3 : le soleil devient lune */
-    theme-selector[scheme="dark"] .moon-hole {
-      transform: translate(0, 0);
-      transition: transform var(--moon-hole-apparition) ease;
-      transition-delay: calc(.5 * var(--sun-resize));
-    }
-
-    /* Si on affiche l'icône du thème opposé */
-
-    /* - Étape 1 : la lune devient soleil */
-    theme-selector[scheme="dark"][icon="reverse"] .moon-hole {
-      transform: translate(40%, -40%);
-      transition: transform var(--moon-hole-disparition) ease;
-      transition-delay: 0s;
-    }
-
-    /* - Étape 2 : le soleil rétrécit */
-    theme-selector[scheme="dark"][icon="reverse"] .sun {
-      transform: scale(.5);
-      transition: transform var(--sun-resize) ease;
-      transition-delay: calc(.5 * var(--moon-hole-disparition));
-    }
-
-    /* - Étape 3 : les rayons apparaissent */
-    theme-selector[scheme="dark"][icon="reverse"] .ray {
-      opacity: 1;
-      transform: scale(1);
-      transition: transform .3s ease,
-                  opacity .3s ease;
-      transition-delay: calc(.5 * var(--moon-hole-disparition) + .2s + var(--m, 0) * 60ms);
-    }
+  /* - Étape 3 : le soleil devient lune */
+  :host([scheme="light"][icon="reverse"]) .moon-hole {
+    transform: translate(0, 0);
+    transition: transform var(--moon-hole-apparition) ease;
+    transition-delay: calc(.5 * var(--sun-resize));
+  }
 
 
+  /***************************************/
+  /* Thème sombre - on affiche le soleil */
+  /***************************************/
 
-    /**********/
-    /* POP-UP */
-    /**********/
+  :host([scheme="dark"]) {
+    --default-color: white;
+  }
 
-    theme-selector > .selector {
-      border: none;
-      margin: 0;
-      padding: 0;
-      position: absolute;
-      top: 100%;
-      grid-row: 1;
-      grid-column: 1;
-      opacity: 0;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-    }
+  /* Si on affiche l'icône du thème en cours */
 
-    theme-selector[open="true"] > .selector {
-      opacity: 1;
-      pointer-events: auto;
-    }
+  /* - Étape 1 : le soleil s'agrandit */
+  :host([scheme="dark"]) .sun {
+    transform: scale(1);
+    transition: transform var(--sun-resize) ease;
+    transition-delay: 0s;
+  }
 
-    theme-selector .selector-title {
-      display: contents;
-      border: none;
-      padding: 0;
-    }
+  /* - Étape 2 : les rayons disparaissent */
+  :host([scheme="dark"]) .ray {
+    opacity: 0;
+    transform: scale(.5);
+    transition: transform .15s ease-in,
+                opacity .15s ease-in;
+    transition-delay: 0s;
+  }
 
-    theme-selector .selector-title-text {
-      border-bottom: 1px solid;
-      padding: 10px;
-      text-align: center;
-    }
+  /* - Étape 3 : le soleil devient lune */
+  :host([scheme="dark"]) .moon-hole {
+    transform: translate(0, 0);
+    transition: transform var(--moon-hole-apparition) ease;
+    transition-delay: calc(.5 * var(--sun-resize));
+  }
 
-    theme-selector .selector-choices {
-      display: grid;
-      grid-template-columns: auto 1fr;
-    }
+  /* Si on affiche l'icône du thème opposé */
 
-    theme-selector > .selector > *:first-child,
-    theme-selector .selector-title,
-    theme-selector .selector-cookie-notice {
-      grid-column: 1 / -1;
-    }
+  /* - Étape 1 : la lune devient soleil */
+  :host([scheme="dark"][icon="reverse"]) .moon-hole {
+    transform: translate(40%, -40%);
+    transition: transform var(--moon-hole-disparition) ease;
+    transition-delay: 0s;
+  }
 
-    theme-selector .selector-choices > input {
-      grid-column: 1;
-    }
+  /* - Étape 2 : le soleil rétrécit */
+  :host([scheme="dark"][icon="reverse"]) .sun {
+    transform: scale(.5);
+    transition: transform var(--sun-resize) ease;
+    transition-delay: calc(.5 * var(--moon-hole-disparition));
+  }
 
-    theme-selector .selector-choices > label {
-      grid-column: 2;
-      display: grid;
-      grid-template-columns: 1fr auto;
-    }
-
-    theme-selector .selector-choices > label > span {
-      line-height: 1em;
-    }
-
-    theme-selector[position="bottom"] > .selector {
-      top: 100%;
-    }
-    theme-selector[position="top"] > .selector {
-      top: unset;
-      bottom: 100%;
-    }
-    theme-selector[position="left"] > .selector {
-      top: unset;
-      right: 100%;
-    }
-    theme-selector[position="right"] > .selector {
-      top: unset;
-      left: 100%;
-    }
-
-    theme-selector:not([cookie]) .theme-cookie-star,
-    theme-selector:not([cookie]) .selector-cookie-notice {
-      display: none;
-    }
+  /* - Étape 3 : les rayons apparaissent */
+  :host([scheme="dark"][icon="reverse"]) .ray {
+    opacity: 1;
+    transform: scale(1);
+    transition: transform .3s ease,
+                opacity .3s ease;
+    transition-delay: calc(.5 * var(--moon-hole-disparition) + .2s + var(--m, 0) * 60ms);
+  }
 
 
+
+  /**********/
+  /* POP-UP */
+  /**********/
+
+  .selector {
+    border: none;
+    padding: 0;
+    flex-direction: column;
+    position: absolute;
+    top: anchor(--theme-selector-button bottom);
+    left: anchor(--theme-selector-button left);
+  }
+
+  .selector:is(:popover-open, [open]) {
+    display: flex;
+  }
+
+  :host([open="true"]) > .selector {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .selector-title {
+    display: contents;
+    border: none;
+    padding: 0;
+  }
+
+  .selector-title-text {
+    border-bottom: 1px solid;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .selector-choices {
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
+
+  .selector > *:first-child,
+  .selector-title,
+  .selector-cookie-notice {
+    grid-column: 1 / -1;
+  }
+
+  .selector-choices > input {
+    grid-column: 1;
+  }
+
+  .selector-choices > label {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .selector-choices > label > span {
+    line-height: 1em;
+  }
+
+  /*theme-selector[position="bottom"] > .selector {
+    top: 100%;
+  }
+  theme-selector[position="top"] > .selector {
+    top: unset;
+    bottom: 100%;
+  }
+  theme-selector[position="left"] > .selector {
+    top: unset;
+    right: 100%;
+  }
+  theme-selector[position="right"] > .selector {
+    top: unset;
+    left: 100%;
+  }*/
+
+  :host(:not([cookie])) .theme-cookie-star,
+  :host(:not([cookie])) .selector-cookie-notice {
+    display: none;
   }
 `);
 
@@ -388,56 +388,52 @@ const strings = {
 
 
 
-let count = 0;
-
-
-
 export class ThemeSelector extends HTMLElement {
+  openHandler = event => {
+    //event.stopPropagation();
+    if (this.getAttribute('open') == 'true')  this.close();
+    else                                      this.open();
+  };
+
+  changeHangler = async (event) => {
+    const choice = event.currentTarget;
+    const root = document.documentElement;
+    root.dataset.theme = choice.value;
+
+    for (const selector of [...document.querySelectorAll('theme-selector')]) {
+      selector.setAttribute('scheme', ThemeSelector.resolve(choice.getAttribute('data-scheme')));
+      if (selector !== this) {
+        const input = selector.shadow.querySelector(`input[value="${choice.value}"]`);
+        input.checked = true;
+      }
+    }
+    
+    const themeEvent = new CustomEvent('themechange', { detail: {
+      theme: choice.value,
+      resolvedTheme: ['light', 'dark', 'auto'].includes(choice.value) ? ThemeSelector.resolve(choice.value) : choice.value
+    }});
+    window.dispatchEvent(themeEvent);
+  }
+
+  schemeHandler = event => {
+    const autoChoice = this.shadow.querySelector('input[value="auto"]');
+    const autoScheme = ThemeSelector.osTheme ?? 'light';
+    autoChoice.setAttribute('data-scheme', autoScheme);
+    const root = document.documentElement;
+    if (!(root.dataset.theme) || root.dataset.theme === 'auto') this.setAttribute('scheme', autoScheme);
+  };
+
   constructor() {
     super();
-
-    this.openHandler = event => {
-      //event.stopPropagation();
-      if (this.getAttribute('open') == 'true')  this.close();
-      else                                      this.open();
-    };
-
-    this.changeHangler = async (event) => {
-      const choice = event.currentTarget;
-      const root = document.documentElement;
-      root.dataset.theme = choice.value;
-
-      for (const selector of [...document.querySelectorAll('theme-selector')]) {
-        selector.setAttribute('scheme', ThemeSelector.resolve(choice.getAttribute('data-scheme')));
-        if (selector !== this) {
-          const input = selector.querySelector(`input[value="${choice.value}"]`);
-          input.checked = true;
-        }
-      }
-      
-      const themeEvent = new CustomEvent('themechange', { detail: {
-        theme: choice.value,
-        resolvedTheme: ['light', 'dark', 'auto'].includes(choice.value) ? ThemeSelector.resolve(choice.value) : choice.value
-      }});
-      window.dispatchEvent(themeEvent);
-    }
-
-    this.schemeHandler = event => {
-      const autoChoice = this.querySelector('input[value="auto"]');
-      const autoScheme = ThemeSelector.osTheme ?? 'light';
-      autoChoice.setAttribute('data-scheme', autoScheme);
-      const root = document.documentElement;
-      if (!(root.dataset.theme) || root.dataset.theme === 'auto') this.setAttribute('scheme', autoScheme);
-    };
-
-    this.count = count;
-    count++;
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(template.content.cloneNode(true));
+    this.shadow.adoptedStyleSheets = [sheet];
   }
 
 
   /** Opens the options menu. */
-  open() {
-    const selector = this.querySelector('.selector');
+  /*open() {
+    const selector = this.shadow.querySelector('.selector');
     selector.removeAttribute('aria-hidden');
     
     // Disable focus outside the menu
@@ -449,7 +445,7 @@ export class ThemeSelector extends HTMLElement {
       if (event.type == 'keydown' && !['Escape', 'Esc'].includes(event.key)) return;
       if (event.type != 'keydown' && eventPath.includes(this)) return;
       event.stopPropagation();
-      const button = this.querySelector('button');
+      const button = this.shadow.querySelector('button');
       const focus = (event.type == 'click' && !eventPath.includes(button)) ? false : true;
       this.close(focus);
       window.removeEventListener(event.type, closeMenu);
@@ -459,30 +455,30 @@ export class ThemeSelector extends HTMLElement {
     // Display the menu
     this.setAttribute('open', 'true');
     // Place focus on checked input
-    this.querySelector('input[type="radio"]:checked').focus();
-  }
+    this.shadow.querySelector('input[type="radio"]:checked').focus();
+  }*/
 
 
   /** Closes the options menu. */
-  close(focus = true) {
+  /*close(focus = true) {
     // Restore previous focusability
-    releaseFocusFrom(this, { exceptions: [this.querySelector('button')] });
+    releaseFocusFrom(this, { exceptions: [this.shadow.querySelector('button')] });
 
-    const selector = this.querySelector('.selector');
+    const selector = this.shadow.querySelector('.selector');
     selector.setAttribute('aria-hidden', 'true');
     
-    const button = this.querySelector('button');
+    const button = this.shadow.querySelector('button');
     button.tabIndex = 0;
     // Hide the menu
     this.removeAttribute('open');
     // Place focus on the button
     if (focus) button.focus();
-  }
+  }*/
 
 
   /** Starts monitoring changes to the selected theme. */
   startMonitoringChanges() {
-    for (const choice of [...this.querySelectorAll('.selector-choices > input')]) {
+    for (const choice of [...this.shadow.querySelectorAll('.selector-choices > input')]) {
       choice.addEventListener('change', this.changeHangler);
     }
   }
@@ -490,7 +486,7 @@ export class ThemeSelector extends HTMLElement {
 
   /** Stops monitoring changes to the selected theme. */
   stopMonitoringChanges() {
-    for (const choice of [...this.querySelectorAll('.selector-choices > input')]) {
+    for (const choice of [...this.shadow.querySelectorAll('.selector-choices > input')]) {
       choice.removeEventListener('change', this.changeHangler);
     }
   }
@@ -530,13 +526,13 @@ export class ThemeSelector extends HTMLElement {
     }
 
     for (const selector of [...document.querySelectorAll('theme-selector')]) {
-      const alreadyHasTheme = selector.querySelector(`#theme-${selector.count}-${name}`);
+      const alreadyHasTheme = selector.shadow.querySelector(`#theme-${name}`);
       if (alreadyHasTheme) return;
       
-      const selectorChoices = selector.querySelector('.selector-choices');
+      const selectorChoices = selector.shadow.querySelector('.selector-choices');
       selectorChoices.innerHTML += `
-        <input type="radio" name="theme-${selector.count}" id="theme-${selector.count}-${name}" value="${name}" data-scheme="${scheme}">
-        <label for="theme-${selector.count}-${name}">
+        <input type="radio" name="theme" id="theme-${name}" value="${name}" data-scheme="${scheme}">
+        <label for="theme-${name}">
           <span class="theme-name" data-string="theme-${name}"></span>
           <span class="theme-cookie-star">*</span>
         </label>
@@ -552,33 +548,33 @@ export class ThemeSelector extends HTMLElement {
 
   connectedCallback() {
     // Add HTML and CSS to the element
-    if (!document.adoptedStyleSheets.includes(sheet))
+    /*if (!document.adoptedStyleSheets.includes(sheet))
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
     const html = template.content.cloneNode(true);
     if (!this.innerHTML) {
       // Give unique name/id to elements in case there are mutiple theme-selectors
       for (const choice of [...html.querySelectorAll('input')]) {
-        choice.name = `theme-${this.count}`;
-        choice.id = `theme-${this.count}-${choice.value}`;
+        choice.name = `theme`;
+        choice.id = `theme-${choice.value}`;
         const label = html.querySelector(`label[for="theme-${choice.value}"]`);
         label.setAttribute('for', choice.id);
       }
       this.appendChild(html);
-    }
+    }*/
 
     translationObserver.serve(this, { method: 'attribute' });
 
     // Check the current selected theme, if any
     const root = document.documentElement;
     const currentTheme = root.dataset.theme || 'auto';
-    const input = this.querySelector(`input[value="${currentTheme}"]`);
+    const input = this.shadow.querySelector(`input[value="${currentTheme}"]`);
     input.checked = true;
     this.setAttribute('scheme', input.getAttribute('data-scheme') ?? 'light');
 
     // Make theme-selector button clickable
-    const button = this.querySelector('button');
-    button.addEventListener('click', this.openHandler);
+    const button = this.shadow.querySelector('button');
+    //button.addEventListener('click', this.openHandler);
 
     // Update icon when auto theme is selected and OS-level preference changes
     this.schemeHandler();
@@ -592,7 +588,7 @@ export class ThemeSelector extends HTMLElement {
     }
 
     // Disable focusability inside the theme-selector
-    disableFocusInside(this, { exceptions: [this.querySelector('button')] });
+    disableFocusInside(this, { exceptions: [this.shadow.querySelector('button')] });
 
     // Remove the button's aria-label if the label is displayed
     this.attributeChangedCallback('label', null, this.getAttribute('label'));
@@ -600,8 +596,8 @@ export class ThemeSelector extends HTMLElement {
 
 
   disconnectedCallback() {
-    const button = this.querySelector('button');
-    button.removeEventListener('click', this.openHandler);
+    const button = this.shadow.querySelector('button');
+    //button.removeEventListener('click', this.openHandler);
 
     this.stopMonitoringChanges();
 
@@ -625,7 +621,7 @@ export class ThemeSelector extends HTMLElement {
       } break;
 
       case 'label': {
-        const button = this.querySelector('button');
+        const button = this.shadow.querySelector('button');
         if (!button) return;
         // If label shown, don't use aria-label
         if (newValue !== null) {
