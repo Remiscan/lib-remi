@@ -291,8 +291,39 @@ sheet.replaceSync(/*css*/`
     margin: 0;
     box-sizing: border-box;
     flex-direction: column;
-    top: anchor(--theme-selector-button bottom);
-    left: anchor(--theme-selector-button left);
+    /*top: anchor(--theme-selector-button bottom);
+    left: anchor(--theme-selector-button left);*/
+    position-fallback: --auto-position;
+  }
+
+  @position-fallback --auto-position {
+    /* Next try to align the top, left edge of the target
+       with the bottom, left edge of the anchor. */
+    @try {
+      top: anchor(--theme-selector-button bottom);
+      left: anchor(--theme-selector-button left);
+    }
+  
+    /* Next try to align the top, right edge of the target
+       with the bottom, right edge of the anchor. */
+    @try {
+      top: anchor(--theme-selector-button bottom);
+      right: anchor(--theme-selector-button right);
+    }
+  
+    /* Next try to align the bottom, left edge of the target
+       with the top, left edge of the anchor. */
+    @try {
+      bottom: anchor(--theme-selector-button top);
+      left: anchor(--theme-selector-button left);
+    }
+  
+    /* Next try to align the bottom, right edge of the target
+       with the top, right edge of the anchor. */
+    @try {
+      bottom: anchor(--theme-selector-button top);
+      right: anchor(--theme-selector-button right);
+    }
   }
 
   .selector:is(:popover-open, [open], [class~=":popover-open"]) {
