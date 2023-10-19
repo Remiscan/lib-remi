@@ -14,6 +14,7 @@
 
 import 'css-anchor-polyfill';
 import 'popover-polyfill';
+import popoverStyleSheet from 'popover-polyfill-css' assert { type: 'css' };
 import translationObserver from 'translation-observer';
 import { disableFocusInside } from 'trap-focus';
 
@@ -111,8 +112,6 @@ sheet.replaceSync(/*css*/`
     align-items: center;
     gap: 1ch;
     color: currentColor;
-
-    anchor-name: --theme-selector-button;
   }
 
   :host(:not([label])) > button {
@@ -125,6 +124,7 @@ sheet.replaceSync(/*css*/`
     place-items: center;
     position: relative;
     --size: 3rem;
+    anchor-name: --theme-selector-button;
   }
 
   :host(:not([label])) > button > span {
@@ -288,14 +288,15 @@ sheet.replaceSync(/*css*/`
   .selector {
     border: none;
     padding: 0;
+    margin: 0;
+    box-sizing: border-box;
     flex-direction: column;
-    position: absolute;
     top: anchor(--theme-selector-button bottom);
     left: anchor(--theme-selector-button left);
   }
 
-  .selector:is(:popover-open, [open]) {
-    display: flex;
+  .selector:is(:popover-open, [open], [class~=":popover-open"]) {
+    display: flex !important;
   }
 
   :host([open="true"]) > .selector {
@@ -427,7 +428,7 @@ export class ThemeSelector extends HTMLElement {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(template.content.cloneNode(true));
-    this.shadow.adoptedStyleSheets = [sheet];
+    this.shadow.adoptedStyleSheets = [popoverStyleSheet, sheet];
   }
 
 
