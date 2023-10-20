@@ -51,10 +51,16 @@ sheet.replaceSync(/*css*/`
     background-clip: border-box;
     background-origin: border-box;
 
-    --mask: linear-gradient(black 0% 100%);
-    -webkit-mask: var(--mask) padding-box, var(--mask);
-    -webkit-mask-composite: xor;
-    mask: var(--mask) padding-box exclude, var(--mask);
+    -webkit-mask:
+      linear-gradient(transparent 0% 100%) padding-box,
+      linear-gradient(black 0% 100%)
+      ;
+    -webkit-mask-composite: source-in;
+    mask:
+      linear-gradient(transparent 0% 100%) padding-box,
+      linear-gradient(black 0% 100%)
+      ;
+    mask-composite: intersect;
   }
 
   /* Interaction state layer */
