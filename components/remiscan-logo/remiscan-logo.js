@@ -3,7 +3,9 @@
 {
   "imports": {
     "remiscan-logo": "/_common/components/remiscan-logo/remiscan-logo.js",
-    "remiscan-logo-svg": "/_common/components/remiscan-logo/logo.svg"
+    "remiscan-logo-svg": "/_common/components/remiscan-logo/logo.svg",
+    "remiscan-logo-svg-horizontal": "/_common/components/remiscan-logo/logo-horizontal.svg",
+    "remiscan-logo-svg-square": "/_common/components/remiscan-logo/logo-square.svg"
   }
 }
 </script>
@@ -36,6 +38,8 @@ sheet.replaceSync(/*css*/`
 
     display: inline-block;
     position: relative;
+
+    --mask: url("${import.meta.resolve('remiscan-logo-svg')}");
 
     --main-gradient-bands: 6;
     --main-gradient: repeating-linear-gradient(to right,
@@ -121,6 +125,18 @@ sheet.replaceSync(/*css*/`
     }
   }
 
+  :host([type="horizontal"]) {
+    aspect-ratio: 3 / 1;
+    --width: calc(3 * 2.5rem);
+    --mask: url("${import.meta.resolve('remiscan-logo-svg-horizontal')}");
+  }
+
+  :host([type="square"]) {
+    aspect-ratio: 1;
+    --width: 2.5rem;
+    --mask: url("${import.meta.resolve('remiscan-logo-svg-square')}");
+  }
+
   a {
     width: 100%;
     height: 100%;
@@ -138,7 +154,6 @@ sheet.replaceSync(/*css*/`
     mask-size: 100% 100%;
     -webkit-mask-image: var(--mask);
     -webkit-mask-size: 100% 100%;
-    --mask: url("${import.meta.resolve('remiscan-logo-svg')}");
 
     display: none;
     width: 100%;
