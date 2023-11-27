@@ -13,9 +13,10 @@
 
 
 
+const url = 'https://remiscan.fr';
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <a href="https://remiscan.fr" part="link">
+  <a data-href="${url}" href="${url}" part="link">
     <span>remiscan</span>
     <div class="rainbow-bg" aria-hidden="true" part="text"></div>
   </a>
@@ -193,12 +194,17 @@ class RemiscanLogo extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['text-color', 'text-gradient', 'background', 'animate'];
+    return ['text-color', 'text-gradient', 'background', 'animate', 'disabled'];
   }
 
   attributeChangedCallback(attr, oldValue, newValue) {
     switch (attr) {
       case 'animate': break;
+      case 'disabled': {
+        const link = this.shadow.querySelector('a');
+        if (newValue != null) link.removeAttribute('href');
+        else                  link.setAttribute('href', url);
+      } break;
       default: {
         const link = this.shadow.querySelector('a');
         if (newValue) link.style.setProperty(`--${attr}`, newValue);
