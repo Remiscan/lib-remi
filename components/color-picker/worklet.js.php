@@ -37,6 +37,12 @@ registerPaint('range-gradient', class {
             return `${Math.round(10**3 * Number(value) / 255) / 10**3}`;
           case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl': case 'oksl': case 'oklr': case 'oksv': case 'okv':
             return `${Number(value) / 100}`;
+          case 'ciea': case 'cieb':
+            return `${125 * Number(value) / 100}`;
+          case 'ciec':
+            return `${150 * Number(value) / 100}`;
+          case 'oka': case 'okb': case 'okc':
+            return `${.4 * Number(value) / 100}`;
           default:
             return `${value}`;
         }

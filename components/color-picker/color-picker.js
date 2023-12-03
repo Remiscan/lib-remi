@@ -81,140 +81,140 @@ template.innerHTML = /*html*/`
 
     <fieldset data-format="hsl hwb" part="property-container"  data-property="h"data-value-operation="Math.round({v})" part="property-container">
       <legend data-string="prop-h-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 359]</span>
+      <span part="property-range">[0 ; 359] deg</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
       <input-slider orientation="vertical" min="0" max="359" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="hsl" data-property="s" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-s-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="hsl" data-property="l" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-l-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="hwb" data-property="w" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-w-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="hwb" data-property="bk" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-bk-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="lab lch" data-property="ciel" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-ciel-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
-    <fieldset data-format="lab" data-property="ciea" data-value-operation="Math.round({v})" part="property-container">
+    <fieldset data-format="lab" data-property="ciea" data-value-operation="Math.round(100 * {v} / 125)" part="property-container">
       <legend data-string="prop-ciea-nom" part="property-name"></legend>
-      <span part="property-range">[-80 ; 94]</span>
-      <input type="number" part="input-number" min="-80" max="94" step="1">
-      <input-slider orientation="vertical" min="-80" max="94" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+      <span part="property-range">[-100 ; 100] %</span>
+      <input type="number" part="input-number" min="-100" max="100" step="1">
+      <input-slider orientation="vertical" min="-100" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
-    <fieldset data-format="lab" data-property="cieb" data-value-operation="Math.round({v})" part="property-container">
+    <fieldset data-format="lab" data-property="cieb" data-value-operation="Math.round(100 * {v} / 125)" part="property-container">
       <legend data-string="prop-cieb-nom" part="property-name"></legend>
-      <span part="property-range">[-112 ; 94]</span>
-      <input type="number" part="input-number" min="-112" max="94" step="1">
-      <input-slider orientation="vertical" min="-112" max="94" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+      <span part="property-range">[-100 ; 100] %</span>
+      <input type="number" part="input-number" min="-100" max="100" step="1">
+      <input-slider orientation="vertical" min="-100" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
-    <fieldset data-format="lch" data-property="ciec" data-value-operation="Math.round({v})" part="property-container">
+    <fieldset data-format="lch" data-property="ciec" data-value-operation="Math.round(100 * {v} / 150)" part="property-container">
       <legend data-string="prop-ciec-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 132]</span>
-      <input type="number" part="input-number" min="0" max="132" step="1">
-      <input-slider orientation="vertical" min="0" max="132" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+      <span part="property-range">[0 ; 100] %</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="lch" data-property="cieh" data-value-operation="Math.round({v})" part="property-container">
       <legend data-string="prop-cieh-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 359]</span>
+      <span part="property-range">[0 ; 359] deg</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
       <input-slider orientation="vertical" min="0" max="359" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="oklab oklch" data-property="okl" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-okl-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="oklrab oklrch okhsl" data-property="oklr" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-oklr-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="okhsv" data-property="okv" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-okv-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
-    <fieldset data-format="oklab oklrab" data-property="oka" data-value-operation="Math.round(10**3 * {v}) / 10**3" part="property-container">
+    <fieldset data-format="oklab oklrab" data-property="oka" data-value-operation="Math.round(100 * {v} / 0.4)" part="property-container">
       <legend data-string="prop-oka-nom" part="property-name"></legend>
-      <span part="property-range">[-0.24 ; 0.28]</span>
-      <input type="number" part="input-number" min="-0.24" max="0.28" step="0.001">
-      <input-slider orientation="vertical" min="-0.24" max="0.28" step="0.001" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+      <span part="property-range">[-100 ; 100] %</span>
+      <input type="number" part="input-number" min="-100" max="100" step="1">
+      <input-slider orientation="vertical" min="-100" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
-    <fieldset data-format="oklab oklrab" data-property="okb" data-value-operation="Math.round(10**3 * {v}) / 10**3" part="property-container">
+    <fieldset data-format="oklab oklrab" data-property="okb" data-value-operation="Math.round(100 * {v} / 0.4)" part="property-container">
       <legend data-string="prop-okb-nom" part="property-name"></legend>
-      <span part="property-range">[-0.32 ; 0.20]</span>
-      <input type="number" part="input-number" min="-0.32" max="0.20" step="0.001">
-      <input-slider orientation="vertical" min="-0.32" max="0.20" step="0.001" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+      <span part="property-range">[-100 ; 100] %</span>
+      <input type="number" part="input-number" min="-100" max="100" step="1">
+      <input-slider orientation="vertical" min="-100" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
-    <fieldset data-format="oklch oklrch" data-property="okc" data-value-operation="Math.round(10**3 * {v}) / 10**3" part="property-container">
+    <fieldset data-format="oklch oklrch" data-property="okc" data-value-operation="Math.round(100 * {v} / 0.4)" part="property-container">
       <legend data-string="prop-okc-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 0.32]</span>
-      <input type="number" part="input-number" min="0" max="0.32" step="0.001">
-      <input-slider orientation="vertical" min="0" max="0.32" step="0.001" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
+      <span part="property-range">[0 ; 100] %</span>
+      <input type="number" part="input-number" min="0" max="100" step="1">
+      <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="okhsl" data-property="oksl" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-oksl-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="okhsv" data-property="oksv" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-oksv-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
 
     <fieldset data-format="oklch oklrch okhsl okhsv" data-property="okh" data-value-operation="Math.round({v})" part="property-container">
       <legend data-string="prop-okh-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 359]</span>
+      <span part="property-range">[0 ; 359] deg</span>
       <input type="number" part="input-number" min="0" max="359" step="1">
       <input-slider orientation="vertical" min="0" max="359" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
     
     <fieldset data-format="rgb hsl hwb lab lch oklab oklch oklrab oklrch okhsl okhsv" data-property="a" part="property-container" data-value-operation="Math.round(100 * {v})" part="property-container">
       <legend data-string="prop-a-nom" part="property-name"></legend>
-      <span part="property-range">[0 ; 100]</span>
+      <span part="property-range">[0 ; 100] %</span>
       <input type="number" part="input-number" min="0" max="100" step="1">
       <input-slider orientation="vertical" min="0" max="100" step="1" part="input-range" exportparts="slider-track,slider-thumb"></input-slider>
     </fieldset>
@@ -710,6 +710,12 @@ export class ColorPicker extends HTMLElement {
           return `${Number(value) / 255}`;
         case 'a': case 's': case 'l': case 'w': case 'bk': case 'ciel': case 'okl': case 'oksl': case 'oklr': case 'oksv': case 'okv':
           return `${Number(value) / 100}`;
+        case 'ciea': case 'cieb':
+          return `${125 * Number(value) / 100}`;
+        case 'ciec':
+          return `${150 * Number(value) / 100}`;
+        case 'oka': case 'okb': case 'okc':
+          return `${.4 * Number(value) / 100}`;
         default:
           return `${value}`;
       }
