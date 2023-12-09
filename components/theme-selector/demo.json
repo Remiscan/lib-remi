@@ -1,15 +1,17 @@
 {
-  "title": "<gradient-button>",
+  "title": "<theme-selector>",
   "imports": {
+    "theme-icon": "/_common/components/theme-selector/theme-icon.js",
+    "theme-list": "/_common/components/theme-selector/theme-list.js",
+    "theme-utils": "/_common/components/theme-selector/theme-utils.js",
     "trap-focus": "/_common/js/trap-focus/mod.js",
     "translation-observer": "/_common/js/translation-observer/mod.js",
     "popover-polyfill": "/_common/polyfills/popover.min.js",
-    "popover-polyfill-css": "/_common/polyfills/popover.css",
     "css-anchor-polyfill": "/_common/polyfills/css-anchor-positioning.js"
   },
   "intro": "Icon button that switches between auto, light and dark theme. Uses custom icons and animations. Supports adding additional themes.",
   "examples": [
-    "<theme-selector position=\"bottom\"></theme-selector>",
-    "<theme-selector position=\"top\" label cookie></theme-selector>"
+    "<theme-selector></theme-selector>",
+    "<theme-selector label cookie></theme-selector>"
   ]
 }
