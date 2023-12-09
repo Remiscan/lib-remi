@@ -36,10 +36,10 @@
 body {
   background: var(--bg-color);
   color: var(--sunmoon-color);
+  color-scheme: inherit;
 }
 
 theme-selector {
-  --size: 5rem;
   --primary-color: var(--sunmoon-color);
   --secondary-color: var(--sunray-color);
 }

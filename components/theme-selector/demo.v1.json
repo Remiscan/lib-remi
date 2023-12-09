@@ -1,0 +1,12 @@
+{
+  "title": "<gradient-button>",
+  "imports": {
+    "trap-focus": "/_common/js/trap-focus/mod.js",
+    "translation-observer": "/_common/js/translation-observer/mod.js"
+  },
+  "intro": "Icon button that switches between auto, light and dark theme. Uses custom icons and animations. Supports adding additional themes.",
+  "examples": [
+    "<theme-selector position=\"bottom\"></theme-selector>",
+    "<theme-selector position=\"top\" label cookie></theme-selector>"
+  ]
+}
