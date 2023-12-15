@@ -4,6 +4,7 @@
   --bg-color: #eee;
   --sunmoon-color: black;
   --sunray-color: hsl(40, 100%, 10%);
+  --example-border-color: #DBDBDB;
   --example-background-color: #F7F7F7;
 }
 
@@ -13,6 +14,7 @@
     --bg-color: #111;
     --sunmoon-color: white;
     --sunray-color: lemonchiffon;
+    --example-border-color: #242424;
     --example-background-color: #080808;
   }
 }
@@ -22,68 +24,23 @@
   --bg-color: #111;
   --sunmoon-color: white;
   --sunray-color: lemonchiffon;
+  --example-border-color: #242424;
   --example-background-color: #080808;
 }
 
 :root[data-theme="blue"] {
   color-scheme: light;
-  --bg-color: skyblue;
+  --bg-color: #ceebfd;
   --sunmoon-color: darkblue;
   --sunray-color: royalblue;
-  --example-background-color: #F7F7F750;
+  --example-border-color: #DBDBDB;
+  --example-background-color: #F7F7F7;
 }
 
 body {
   background: var(--bg-color);
   color: var(--sunmoon-color);
   color-scheme: inherit;
-}
-
-theme-selector {
-  --primary-color: var(--sunmoon-color);
-  --secondary-color: var(--sunray-color);
-}
-
-theme-selector .selector-title {
-  font-size: 1.4rem;
-  border-bottom: 1px solid;
-  padding: 10px;
-}
-
-theme-selector > .selector {
-  background: var(--bg-color);
-  font-size: 1.2rem;
-  border: 1px solid currentColor;
-  border-radius: 10px;
-  width: max-content;
-  transform: translateY(-.2rem);
-  transition: opacity .2s ease,
-              transform .2s ease;
-  overflow: hidden;
-  z-index: 10000;
-}
-
-theme-selector[position="top"] > .selector {
-  transform: translateY(.2rem);
-}
-
-theme-selector[open="true"] > .selector {
-  transform: translateY(0);
-}
-
-theme-selector .selector-choices > input {
-  width: 1.5em;
-  margin: 10px;
-  margin-right: 0;
-}
-
-theme-selector .selector-choices > input + label {
-  box-sizing: border-box;
-  height: 44px;
-  padding: 10px;
-  display: grid;
-  align-content: center;
-  justify-content: start;
 }
 
 .example {

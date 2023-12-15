@@ -72,36 +72,23 @@ sheet.replaceSync(/*css*/`
     }
 
     theme-selector-list {
-      position-fallback: --auto-position;
+      inset: 0;
     }
 
-    @position-fallback --auto-position {
-      /* Next try to align the top, right edge of the target
-        with the bottom, right edge of the anchor. */
-      @try {
-        top: anchor(implicit bottom);
-        right: anchor(implicit right);
+    theme-selector-list::backdrop {
+      background: black;
+      opacity: .1;
+    }
+
+    @supports (top: anchor(auto)) {
+      theme-selector-list {
+        inset: revert;
+        top: anchor(auto);
+        right: anchor(auto-same);
       }
 
-      /* Next try to align the top, left edge of the target
-        with the bottom, left edge of the anchor. */
-      @try {
-        top: anchor(implicit bottom);
-        left: anchor(implicit left);
-      }
-
-      /* Next try to align the bottom, right edge of the target
-        with the top, right edge of the anchor. */
-      @try {
-        bottom: anchor(implicit top);
-        right: anchor(implicit right);
-      }
-    
-      /* Next try to align the bottom, left edge of the target
-        with the top, left edge of the anchor. */
-      @try {
-        bottom: anchor(implicit top);
-        left: anchor(implicit left);
+      theme-selector-list::backdrop {
+        opacity: 0;
       }
     }
   }
@@ -130,7 +117,6 @@ export class ThemeSelector extends HTMLElement {
     const selector = this.querySelector('theme-selector-list');
 
     const theme = event.detail.theme;
-    const resolvedTheme = ['light', 'dark', 'auto'].includes(theme) ? ThemeSelectorList.resolve(theme) : theme;
     const resolvedColorScheme = ThemeSelectorList.resolve(event.detail.colorScheme);
 
     document.documentElement.setAttribute('data-theme', theme);

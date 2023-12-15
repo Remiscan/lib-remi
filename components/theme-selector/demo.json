@@ -4,7 +4,6 @@
     "theme-icon": "/_common/components/theme-selector/theme-icon.js",
     "theme-selector-list": "/_common/components/theme-selector/theme-selector-list.js",
     "theme-utils": "/_common/components/theme-selector/theme-utils.js",
-    "trap-focus": "/_common/js/trap-focus/mod.js",
     "translation-observer": "/_common/js/translation-observer/mod.js",
     "popover-polyfill": "/_common/polyfills/popover.min.js",
     "css-anchor-polyfill": "/_common/polyfills/css-anchor-positioning.js"

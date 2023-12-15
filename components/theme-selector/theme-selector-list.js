@@ -1,4 +1,3 @@
-import 'popover-polyfill';
 import { getOsTheme } from 'theme-utils';
 import translationObserver from 'translation-observer';
 
@@ -31,7 +30,7 @@ function deletePart(element, part) {
 
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-  <form name="theme" action="" part="form">
+  <form name="theme" part="form">
     <fieldset part="selector">
       <legend part="selector-title">
         <span part="selector-title-text" data-string="selector-title"></span>
@@ -56,6 +55,7 @@ sheet.replaceSync(/*css*/`
     color: inherit !important; /* to override popover polyfill styles */
     font: inherit;
     color-scheme: inherit;
+    padding: 0 .25em;
   }
   
   [part="selector"] {
@@ -89,18 +89,39 @@ sheet.replaceSync(/*css*/`
     grid-column: 1 / -1;
   }
 
-  [part="selector-choices"] > input {
-    grid-column: 1;
+  [part="selector-choices"] input {
+    margin: 0;
   }
 
   [part="selector-choices"] > label {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
+    border-bottom: 1px dashed;
   }
 
-  [part="selector-choices"] > label:not(:first-of-type) {
-    border-top: 1px dashed;
+  [part="selector-title-text"],
+  [part="selector-choices"] > label,
+  [part="selector-cookie-notice"] {
+    padding: .25em;
+    box-sizing: border-box;
+    gap: .25em;
+  }
+
+  [part="selector-choices"] > label:last-of-type {
+    border-bottom-style: solid;
+  }
+
+  :host(:not([cookie])) [part="selector-choices"] > label:last-of-type {
+    border-bottom: none;
+  }
+
+  label:has(input:focus) {
+    --focus: 1;
+  }
+
+  label:has(input:focus-visible) {
+    --focus-visible: 1;
   }
 
   @media (any-pointer: coarse) {
@@ -111,6 +132,10 @@ sheet.replaceSync(/*css*/`
 
   :host(:not([cookie])) [part="theme-cookie-star"],
   :host(:not([cookie])) [part="selector-cookie-notice"] {
+    display: none;
+  }
+
+  [for="theme-auto"] [part="theme-cookie-star"] {
     display: none;
   }
 `);
@@ -182,6 +207,8 @@ export class ThemeSelectorList extends HTMLElement {
     const root = document.documentElement;
     if (!(root.dataset.theme) || root.dataset.theme === 'auto') this.setAttribute('color-scheme', autoColorScheme);
   };
+
+  submitHandler = event => event.preventDefault;
 
   constructor() {
     super();
@@ -269,6 +296,7 @@ export class ThemeSelectorList extends HTMLElement {
     // Monitor the choice of theme
     const form = this.shadow.querySelector('form');
     form.addEventListener('change', this.changeHangler);
+    form.addEventListener('submit', this.submitHandler);
 
     // Remove the button's aria-label if the label is displayed
     this.attributeChangedCallback('label', null, this.getAttribute('label'));
@@ -278,6 +306,7 @@ export class ThemeSelectorList extends HTMLElement {
   disconnectedCallback() {
     const form = this.shadow.querySelector('form');
     form.removeEventListener('change', this.changeHangler);
+    form.removeEventListener('submit', this.submitHandler);
 
     translationObserver.unserve(this);
   }
