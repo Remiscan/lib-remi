@@ -8,7 +8,7 @@
     "popover-polyfill": "/_common/polyfills/popover.min.js",
     "css-anchor-polyfill": "/_common/polyfills/css-anchor-positioning.js"
   },
-  "intro": "Icon button that switches between auto, light and dark theme. Uses custom icons and animations. Supports adding additional themes. Uses the Popover API and the CSS anchor positioning API.",
+  "intro": "Icon button that switches between auto, light and dark theme. Uses custom icons and animations. Supports adding additional themes. Uses the Popover API and, when supported, the CSS anchor positioning API.",
   "examples": [
     "<theme-selector></theme-selector>",
     "<theme-selector label cookie></theme-selector>"

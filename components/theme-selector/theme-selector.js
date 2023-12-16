@@ -73,6 +73,12 @@ sheet.replaceSync(/*css*/`
 
     theme-selector-list {
       inset: 0;
+      transform: var(--transform);
+      transition:
+        transform .1s ease,
+        opacity .1s ease,
+        overlay .1s ease,
+        display .1s ease allow-discrete;
     }
 
     theme-selector-list::backdrop {
@@ -84,11 +90,32 @@ sheet.replaceSync(/*css*/`
       theme-selector-list {
         inset: revert;
         top: anchor(auto);
-        right: anchor(auto-same);
+        left: calc(anchor(auto-same) - 5px);
+        margin: 5px;
+        transform-origin: top left;
       }
 
       theme-selector-list::backdrop {
         opacity: 0;
+      }
+    }
+
+    @supports selector(theme-selector-list:popover-open) {
+      theme-selector-list {
+        opacity: 0;
+        --transform: scale(.9);
+      }
+
+      theme-selector-list:popover-open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      @starting-style {
+        theme-selector-list:popover-open {
+          opacity: 0;
+          transform: var(--transform);
+        }
       }
     }
   }
