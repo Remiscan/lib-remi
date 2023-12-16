@@ -77,27 +77,17 @@ sheet.replaceSync(/*css*/`
       transition:
         transform .1s ease,
         opacity .1s ease,
-        overlay .1s ease,
+        overlay .1s ease allow-discrete,
         display .1s ease allow-discrete;
     }
 
     theme-selector-list::backdrop {
       background: black;
-      opacity: .1;
-    }
-
-    @supports (top: anchor(auto)) {
-      theme-selector-list {
-        inset: revert;
-        top: anchor(auto);
-        left: calc(anchor(auto-same) - 5px);
-        margin: 5px;
-        transform-origin: top left;
-      }
-
-      theme-selector-list::backdrop {
-        opacity: 0;
-      }
+      opacity: 0;
+      transition:
+        opacity .1s ease,
+        overlay .1s ease allow-discrete,
+        display .1s ease allow-discrete;
     }
 
     @supports selector(theme-selector-list:popover-open) {
@@ -108,7 +98,11 @@ sheet.replaceSync(/*css*/`
 
       theme-selector-list:popover-open {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: scale(1);
+      }
+
+      theme-selector-list:popover-open::backdrop {
+        opacity: .15;
       }
 
       @starting-style {
@@ -116,6 +110,25 @@ sheet.replaceSync(/*css*/`
           opacity: 0;
           transform: var(--transform);
         }
+
+        theme-selector-list:popover-open::backdrop {
+          opacity: 0;
+        }
+      }
+    }
+
+    @supports (top: anchor(auto)) {
+      theme-selector-list {
+        inset: revert;
+        top: anchor(auto);
+        left: calc(anchor(auto-same) - 5px);
+        margin: 5px;
+        transform-origin: top left;
+        --transform: scale(.9);
+      }
+
+      theme-selector-list:popover-open::backdrop {
+        opacity: 0;
       }
     }
   }
