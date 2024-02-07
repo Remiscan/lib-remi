@@ -49,7 +49,7 @@ class HalfBranch extends Shape {
       Array.from(
         Array(steps)).map((p, k) => {
           return new Point2D(
-            minWidth + rng() * (maxWidth - minWidth),
+            minWidth + ((1 - k / steps) ** (1/3)) * rng() * (maxWidth - minWidth),
             k * (branchHeight / (steps - 1))
           );
         }
@@ -60,8 +60,8 @@ class HalfBranch extends Shape {
 }
 
 class Branch extends Shape {
-  constructor(branchWidth, branchHeight, rng) {
-    const halfBranch = new HalfBranch(10, branchWidth, branchHeight, rng);
+  constructor(steps, branchWidth, branchHeight, rng) {
+    const halfBranch = new HalfBranch(steps, branchWidth, branchHeight, rng);
     super(Shape.horizontalSymmetry(halfBranch.points));
   }
 }
@@ -85,10 +85,12 @@ registerPaint('snowflake', class {
 
     ctx.translate(.5 * width, .5 * width);
 
-    const hex = new Hexagon(random() * branchHeight);
+    const minHexRatio = .2;
+    const maxHexRatio = 1;
+    const hex = new Hexagon((minHexRatio + (maxHexRatio - minHexRatio) * random()) * branchHeight);
     hex.draw(ctx, flakeColor);
     
-    const branch = new Branch(branchWidth, branchHeight, random);
+    const branch = new Branch(10, branchWidth, branchHeight, random);
     console.log(branch);
     for (let i = 0; i < 6; i++) {
       ctx.save();
