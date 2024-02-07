@@ -3,6 +3,71 @@ import { mulberry32, xmur3a } from '/_common/js/prng/mod.js';
 
 
 
+class Shape {
+  constructor(points) {
+    this.points = points;
+  }
+
+  draw(ctx, fillColor) {
+    ctx.fillStyle = fillColor;
+    const shape = new Path2D();
+    shape.moveTo(this.points[0].x, this.points[0].y);
+    for (const corner of this.points) {
+      shape.lineTo(corner.x, corner.y);
+    }
+    shape.closePath();
+    ctx.fill(shape);
+  }
+
+  static horizontalSymmetry(points) {
+    return [...points, ...points.reverse().map(p => new Point2D(-p.x, p.y))];
+  }
+}
+
+// Central hexagon
+
+class Hexagon extends Shape {
+  constructor(height) {
+    super(
+      Array.from(
+        Array(6)).map((p, k) => {
+          return new Point2D(0, height)
+            .rotate((k / 6) * 360);
+        }
+      )
+    );
+  }
+}
+
+// Branches
+
+class HalfBranch extends Shape {
+  constructor(steps = 10, branchWidth, branchHeight, rng) {
+    const minWidth = .05 * branchWidth;
+    const maxWidth = .25 * branchWidth;
+    super(
+      Array.from(
+        Array(steps)).map((p, k) => {
+          return new Point2D(
+            minWidth + rng() * (maxWidth - minWidth),
+            k * (branchHeight / (steps - 1))
+          );
+        }
+      )
+    );
+    this.points[steps - 1] = new Point2D(0, branchHeight);
+  }
+}
+
+class Branch extends Shape {
+  constructor(branchWidth, branchHeight, rng) {
+    const halfBranch = new HalfBranch(10, branchWidth, branchHeight, rng);
+    super(Shape.horizontalSymmetry(halfBranch.points));
+  }
+}
+
+
+
 registerPaint('snowflake', class {
   static get contextOptions() { return {alpha: true}; }
   static get inputProperties() { return ['--base-seed', '--flake-color']; }
@@ -18,77 +83,17 @@ registerPaint('snowflake', class {
     const branchHeight = .5 * width;
     const branchWidth = .5 * width;
 
-    class Shape {
-      constructor(points) {
-        this.points = points;
-      }
-
-      draw() {
-        ctx.fillStyle = flakeColor;
-        const shape = new Path2D();
-        shape.moveTo(this.points[0].x, this.points[0].y);
-        for (const corner of this.points) {
-          shape.lineTo(corner.x, corner.y);
-        }
-        shape.closePath();
-        ctx.fill(shape);
-      }
-
-      static horizontalSymmetry(points) {
-        return [...points, ...points.reverse().map(p => new Point2D(-p.x, p.y))];
-      }
-    }
-
-    // Central hexagon
-
-    class Hexagon extends Shape {
-      constructor(height) {
-        super(
-          Array.from(
-            Array(6)).map((p, k) => {
-              return new Point2D(0, height)
-                .rotate((k / 6) * 360);
-            }
-          )
-        );
-      }
-    }
-
-    // Branches
-
-    class HalfBranch extends Shape {
-      constructor(steps = 10, minWidth = .05 * branchWidth, maxWidth = .25 * branchWidth) {
-        super(
-          Array.from(
-            Array(steps)).map((p, k) => {
-              return new Point2D(
-                minWidth + random() * (maxWidth - minWidth),
-                k * (branchHeight / (steps - 1))
-              );
-            }
-          )
-        );
-        this.points[steps - 1] = new Point2D(0, branchHeight);
-      }
-    }
-
-    class Branch extends Shape {
-      constructor(halfBranch = new HalfBranch()) {
-        super(Shape.horizontalSymmetry(halfBranch.points));
-      }
-    }
-
     ctx.translate(.5 * width, .5 * width);
 
     const hex = new Hexagon(random() * branchHeight);
-    hex.draw();
+    hex.draw(ctx, flakeColor);
     
-    const branch = new Branch();
+    const branch = new Branch(branchWidth, branchHeight, random);
     console.log(branch);
     for (let i = 0; i < 6; i++) {
       ctx.save();
       ctx.rotate((i / 6) * 2 * Math.PI);
-      branch.draw();
+      branch.draw(ctx, flakeColor);
       ctx.restore();
     }
 
