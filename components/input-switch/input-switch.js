@@ -156,6 +156,8 @@ sheet.replaceSync(/*css*/`
     outline-offset: 2px;
 
     display: grid;
+    grid-template-rows: minmax(0px, 1fr); /* forces grid to stay contained in <input-switch> */
+    grid-template-columns: minmax(0px, 1fr); /* forces grid to stay contained in <input-switch> */
     place-items: center;
     width: 100%;
     height: 100%;
