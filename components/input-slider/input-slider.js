@@ -210,6 +210,7 @@ export class InputSlider extends HTMLElement {
     this.pointerDownHandler = downEvent => {
       if (downEvent.button !== 0) return; // Only act on left mouse click, touch or pen contact
 
+      downEvent.preventDefault(); // Prevents drag interference
       this.setPointerCapture(downEvent.pointerId); // so that pointermove and pointerup events fire on ${this} even if the pointer stepped out of it
 
       const thumb = this.shadowRoot.querySelector('[role="slider"]');
