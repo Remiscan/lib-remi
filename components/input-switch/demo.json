@@ -8,8 +8,10 @@
     "<input-switch id=\"switch-0\" label='Switch 1 (with no icon)' icons=\"none\" style=\"font-size: 3rem\"></input-switch>",
     "<input-switch id=\"switch-1\" label='Switch 2 (with \"on\" icon only)' checked icons=\"checked\" style=\"font-size: 3rem\"></input-switch>",
     "<input-switch id=\"switch-2\" label='Switch 3 (with \"on\" and \"off\" icons)' icons=\"both\" style=\"font-size: 3rem\"></input-switch>",
-    "<form>\n  <label for=\"switch-3\">\n    Labeled\n    <input-switch id=\"switch-3\" checked icons=\"checked unchecked\" name=\"switch\"></input-switch>\n  </label>\n</form>",
-    "<label for=\"switch-4\" dir=\"rtl\">\n  Right-to-left\n  <input-switch id=\"switch-4\" icons=\"checked\"></input-switch>\n</label>",
-    "<label for=\"switch-5\">\n  Disabled\n  <input-switch id=\"switch-5\" checked disabled></input-switch>\n</label>"
+    "<form>\n  <input-switch id=\"switch-3\" label='Switch 4 (in form)' checked icons=\"checked unchecked\" name=\"switch\" style=\"font-size: 3rem\"></input-switch>\n</form>",
+    "<label for=\"switch-4\">\n    Labeled\n    <input-switch id=\"switch-4\" icons=\"checked unchecked\"></input-switch>\n  </label>",
+    "<label for=\"switch-5\" dir=\"rtl\">\n  Right-to-left\n  <input-switch id=\"switch-5\" icons=\"checked\" checked></input-switch>\n</label>",
+    "<label for=\"switch-6\">\n  Readonly\n  <input-switch id=\"switch-6\" readonly></input-switch>\n</label>",
+    "<label for=\"switch-7\">\n  Disabled\n  <input-switch id=\"switch-7\" checked disabled></input-switch>\n</label>"
   ]
 }

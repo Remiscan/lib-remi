@@ -246,26 +246,26 @@ sheet.replaceSync(/*css*/`
   }
 
   @media (hover: hover) {
-    [role="switch"]:hover [part~="interaction-hint"] {
+    :host(:not([readonly], [disabled])) [role="switch"]:hover [part~="interaction-hint"] {
       opacity: .08;
     }
   }
 
-  [role="switch"]:active [part~="interaction-hint"] {
+  :host(:not([readonly], [disabled])) [role="switch"]:active [part~="interaction-hint"] {
     opacity: .12;
   }
 
-  [role="switch"].dragged [part~="interaction-hint"] {
+  :host(:not([readonly], [disabled])) [role="switch"].dragged [part~="interaction-hint"] {
     opacity: .16;
     --interaction-ring-duration: 0s;
   }
 
   @media (pointer: coarse) {
-    [role="switch"]:active [part~="interaction-hint"] {
+    :host(:not([readonly], [disabled])) [role="switch"]:active [part~="interaction-hint"] {
       --interaction-ring-delay: .2s;
     }
 
-    [role="switch"].dragged [part~="interaction-hint"] {
+    :host(:not([readonly], [disabled])) [role="switch"].dragged [part~="interaction-hint"] {
       --interaction-ring-delay: 0s;
     }
   }
@@ -369,7 +369,8 @@ export default class InputSwitch extends HTMLElement {
     this.moving = false;
     this.handlers = {
       labelClick: () => {},
-      start: () => {}
+      start: () => {},
+      click: () => {},
     };
   }
 
@@ -417,6 +418,21 @@ export default class InputSwitch extends HTMLElement {
       this.cancelNextClick = false;
       this.button.click();
     }
+  }
+
+
+  // Clicking the button (with mouse or keyboard) toggles the switch
+  onButtonClick(event) {
+    // If a pointerup event says so, don't do anything
+    if (this.cancelNextClick && event.detail !== 0) {
+      this.cancelNextClick = false;
+    } else {
+      this.button.style.removeProperty('--duration');
+      this.button.style.removeProperty('--easing');
+      this.toggle();
+    }
+
+    //if (!event.pointerId) this.button.focus();
   }
 
 
@@ -540,7 +556,19 @@ export default class InputSwitch extends HTMLElement {
     if (value == null || value === false) {
       this.removeAttribute('disabled');
     } else {
-      this.setAttribute('disabled', 'true');
+      this.setAttribute('disabled', '');
+    }
+  }
+
+  get readonly() {
+    return this.getAttribute('readonly') !== null;
+  }
+
+  set readonly(value) {
+    if (value == null || value === false) {
+      this.removeAttribute('readonly');
+    } else {
+      this.setAttribute('readonly', '');
     }
   }
 
@@ -561,11 +589,52 @@ export default class InputSwitch extends HTMLElement {
       case 'disabled':
         if (newValue == null) {
           this.button.removeAttribute('disabled');
+          this.enableInteractivity();
         } else {
           this.button.setAttribute('disabled', 'true');
+          this.disableInteractivity();
         }
         break;
+      case 'readonly':
+        if (newValue == null) {
+          this.enableInteractivity();
+        } else {
+          this.disableInteractivity();
+        }
     }
+  }
+
+
+  enableInteractivity() {
+    // If <label for="id"> exists, make it clickable
+    const id = this.getAttribute('id');
+    const label = document.querySelector(`label[for="${id}"]`);
+    if (label) {
+      // Clicking on the label toggles the switch
+      this.handlers.labelClick = this.onLabelClick.bind(this);
+      label.addEventListener('click', this.handlers.labelClick);
+    }
+
+    // Make switch touchmoveable
+    this.handlers.start = this.onStart.bind(this);
+    this.button.addEventListener('pointerdown', this.handlers.start, { passive: true });
+
+    // Toggle on click (manual or keyboard)
+    this.handlers.click = this.onButtonClick.bind(this);
+    this.button.addEventListener('click', this.handlers.click);
+
+    /*for (const type of ['pointercancel', 'gotpointercapture', 'lostpointercapture', 'pointerdown', 'pointerup', 'click']) {
+      this.button.addEventListener(type, event => console.log(event.type, event, event.currentTarget, Date.now()));
+    }*/
+  }
+
+
+  disableInteractivity() {
+    const id = this.getAttribute('id');
+    const label = document.querySelector(`label[for="${id}"]`);
+    if (label) label.removeEventListener('click', this.handlers.labelClick);
+    this.button.removeEventListener('pointerdown', this.handlers.start, { passive: true });
+    this.button.removeEventListener('click', this.handlers.click);
   }
 
 
@@ -580,51 +649,22 @@ export default class InputSwitch extends HTMLElement {
     this.button.style.setProperty('--dir', this.rtl ? -1 : 1); // for broswers that don't support the :dir() pseudo-class
 
     // If <label for="id"> exists, use it to label the button
-    // and make it clickable.
     const id = this.getAttribute('id');
     const label = document.querySelector(`label[for="${id}"]`);
     if (label) {
       if (this.getAttribute('label') === null) {
         this.button.setAttribute('aria-label', label.innerText); // aria-labelledby doesn't work through shadow DOM
       }
-
-      // Clicking on the label toggles the switch
-      this.handlers.labelClick = this.onLabelClick.bind(this);
-      label.addEventListener('click', this.handlers.labelClick);
     }
 
-    // Make switch touchmoveable
-    this.handlers.start = this.onStart.bind(this);
-    this.button.addEventListener('pointerdown', this.handlers.start, { passive: true });
-
-    // Toggle on click (manual or keyboard)
-    const clickHandle = event => {     
-      // If a pointerup event says so, don't do anything
-      if (this.cancelNextClick && event.detail !== 0) {
-        this.cancelNextClick = false;
-      } else {
-        this.button.style.removeProperty('--duration');
-        this.button.style.removeProperty('--easing');
-        this.toggle();
-      }
-
-      //if (!event.pointerId) this.button.focus();
-    }
-    this.button.addEventListener('click', clickHandle);
-
-    /*for (const type of ['pointercancel', 'gotpointercapture', 'lostpointercapture', 'pointerdown', 'pointerup', 'click']) {
-      this.button.addEventListener(type, event => console.log(event.type, event, event.currentTarget, Date.now()));
-    }*/
+    if (!this.readonly && !this.disabled) this.enableInteractivity();
 
     this.button.style.removeProperty('--duration');
   }
 
 
   disconnectedCallback() {
-    const id = this.getAttribute('id');
-    const label = document.querySelector(`label[for="${id}"]`);
-    if (label) label.removeEventListener('click', this.handlers.labelClick);
-    this.button.removeEventListener('pointerdown', this.handlers.start, { passive: true });
+    this.disableInteractivity();
   }
 
 
@@ -635,7 +675,7 @@ export default class InputSwitch extends HTMLElement {
 
 
   static get observedAttributes() {
-    return ['label', 'labelledby', 'disabled'];
+    return ['label', 'labelledby', 'disabled', 'readonly'];
   }
 }
 
