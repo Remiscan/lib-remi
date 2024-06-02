@@ -5,8 +5,8 @@
 <table is="sortable-table">
   <thead>
     <tr>
-      <td>Name</td>
-      <td data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</td>
+      <th>Name</th>
+      <th data-type="date" data-format='{ "dateStyle": "short", "timeStyle": "short" }'>Date 1</th>
     </tr>
   </thead>
   <tbody>
@@ -42,8 +42,9 @@ arrowTemplate.innerHTML = /*html*/`
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   @layer sortable-table {
-    table[is="sortable-table"] thead td {
+    table[is="sortable-table"] thead :is(td, th) {
       position: relative;
+      text-wrap: nowrap;
     }
 
     table[is="sortable-table"] .sorting-arrow-button {
@@ -68,7 +69,7 @@ sheet.replaceSync(/*css*/`
       left: 0;
     }
 
-    table[is="sortable-table"] thead td svg {
+    table[is="sortable-table"] thead :is(td, th) svg {
       fill: currentColor;
       --width: .6em;
       width: var(--width);
@@ -85,12 +86,12 @@ sheet.replaceSync(/*css*/`
       transform-origin: calc(100% * (28 - 12)/28) center;
     }
 
-    table[is="sortable-table"] thead td .arrow {
+    table[is="sortable-table"] thead :is(td, th) .arrow {
       opacity: .5;
     }
 
-    table[is="sortable-table"] thead td.sorted.ascending .ascending-arrow,
-    table[is="sortable-table"] thead td.sorted.descending .descending-arrow {
+    table[is="sortable-table"] thead :is(td, th).sorted.ascending .ascending-arrow,
+    table[is="sortable-table"] thead :is(td, th).sorted.descending .descending-arrow {
       opacity: 1;
       scale: 1.4;
     }
@@ -140,7 +141,7 @@ export class SortableTable extends HTMLTableElement {
       tbody.appendChild(tr);
     }
 
-    const headers = this.querySelectorAll(`thead td`);
+    const headers = this.querySelectorAll(`thead td, thead th`);
     for (const header of headers) {
       header.classList.remove('ascending', 'descending');
       if (header.dataset.id === id) {
@@ -281,7 +282,7 @@ export class SortableTable extends HTMLTableElement {
   #initHeaders() {
     if (this.headers.size > 0) return;
 
-    const headers = this.querySelectorAll(`thead td`);
+    const headers = this.querySelectorAll(`thead td, thead th`);
     for (const [order, header] of [...headers].map((v, k) => [k, v])) {
       const title = header.innerText;
       const type = header.dataset.type;
@@ -325,7 +326,7 @@ export class SortableTable extends HTMLTableElement {
 
 
   #startHandlingClicks() {
-    const headers = this.querySelectorAll(`thead td`);
+    const headers = this.querySelectorAll(`thead td, thead th`);
     for (const header of headers) {
       const button = header.querySelector('.sorting-arrow-button');
       button.addEventListener('click', this.headers.get(header.dataset.id).clickHandler);
@@ -334,7 +335,7 @@ export class SortableTable extends HTMLTableElement {
 
 
   #stopHandlingClicks() {
-    const headers = this.querySelectorAll(`thead td`);
+    const headers = this.querySelectorAll(`thead td, thead th`);
     for (const header of headers) {
       const button = header.querySelector('.sorting-arrow-button');
       button.removeEventListener('click', this.headers.get(header.dataset.id).clickHandler);
