@@ -167,6 +167,10 @@ export class SortableTable extends HTMLTableElement {
           const [A, B] = [valueA, valueB].map(v => Number(v));
           comparison = A - B;
         } break;
+        case 'boolean': {
+          const [A, B] = [valueA, valueB].map(v => Boolean(Number(v)));
+          comparison = A - B;
+        } break;
         case 'string':
         default: {
           const [A, B] = [valueA, valueB].map(v => String(v).toLowerCase());
@@ -205,6 +209,9 @@ export class SortableTable extends HTMLTableElement {
         case 'number':
           value = Number(value);
           break;
+        case 'boolean':
+          value = Boolean(Number(value));
+          break;
         case 'string':
           value = String(value);
           break;
@@ -231,6 +238,12 @@ export class SortableTable extends HTMLTableElement {
               const date = dateTimeFormat.format(new Date(value));
               value = `${date}`;
               break;
+            }
+
+            case 'boolean': {
+              value = /*html*/`
+                <input-switch readonly icons="checked" ${value ? 'checked' : ''}></input-switch>
+              `;
             }
           }
         } catch (e) {
