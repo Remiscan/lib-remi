@@ -6,6 +6,6 @@
   },
   "intro": "A table that can be sorted by columns. Supported data types: strings, numbers, dates.",
   "examples": [
-    "<table is=\"sortable-table\">\n  <thead>\n    <tr>\n      <td>Name</td>\n      <td data-type=\"number\">Letters in name</td>\n      <td data-type=\"date\" data-format='{ \"dateStyle\": \"medium\" }'>Birthday</td>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Rémi</td>\n      <td>4</td>\n      <td>752025600000</td>\n    </tr>\n    <tr>\n      <td>Guillaume</td>\n      <td>9</td>\n      <td>373766400000</td>\n    </tr>\n    <tr>\n      <td>Christophe</td>\n      <td>10</td>\n      <td>236131200000</td>\n    </tr>\n    <tr>\n      <td>Marino</td>\n      <td>6</td>\n      <td>155084400000</td>\n    </tr>\n  </tbody>\n</table>"
+    "<table is=\"sortable-table\" unresponsive>\n  <thead>\n    <tr>\n      <td>Name</td>\n      <td data-type=\"number\">Letters in name</td>\n      <td data-type=\"date\" data-format='{ \"dateStyle\": \"medium\" }'>Birthday</td>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Rémi</td>\n      <td>4</td>\n      <td>752025600000</td>\n    </tr>\n    <tr>\n      <td>Guillaume</td>\n      <td>9</td>\n      <td>373766400000</td>\n    </tr>\n    <tr>\n      <td>Christophe</td>\n      <td>10</td>\n      <td>236131200000</td>\n    </tr>\n    <tr>\n      <td>Marino</td>\n      <td>6</td>\n      <td>155084400000</td>\n    </tr>\n  </tbody>\n</table>"
   ]
 }

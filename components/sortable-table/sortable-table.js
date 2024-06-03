@@ -42,58 +42,126 @@ arrowTemplate.innerHTML = /*html*/`
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   @layer sortable-table {
-    table[is="sortable-table"] thead :is(td, th) {
-      position: relative;
-      text-wrap: nowrap;
+    table[is="sortable-table"] {
+      border: 1px solid currentColor;
+      border-collapse: collapse;
+
+      & thead :is(td, th) {
+        position: relative;
+        text-wrap: nowrap;
+      }
+
+      & .sorting-arrow-button {
+        font-size: inherit;
+        color: inherit;
+        background: none;
+        border: none;
+        padding: 0px;
+        margin: 0px;
+        text-align: initial;
+        margin: 0 .5ch;
+        outline-offset: 5px;
+      }
+
+      & .sorting-arrow-button::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      & thead :is(td, th) svg {
+        fill: currentColor;
+        --width: .6em;
+        width: var(--width);
+        height: calc(2 * var(--width));
+        vertical-align: text-bottom;
+        overflow: visible;
+      }
+
+      & .ascending-arrow {
+        transform-origin: calc(100% * 12/28) center;
+      }
+  
+      & .descending-arrow {
+        transform-origin: calc(100% * (28 - 12)/28) center;
+      }
+
+      & thead :is(td, th) .arrow {
+        opacity: .5;
+      }
+
+      & thead :is(td, th).sorted.ascending .ascending-arrow,
+      & thead :is(td, th).sorted.descending .descending-arrow {
+        opacity: 1;
+        scale: 1.4;
+      }
+
+      & tr {
+        border: 1px solid currentColor;
+      }
+
+      & thead > tr {
+        background-color: color-mix(in oklch, transparent, currentColor 15%);
+      }
+
+      & th,
+      & td {
+        align-content: center;
+        border: 1px solid currentColor;
+        padding: 4px;
+      }
+
+      & tr:nth-of-type(2n) {
+        background-color: color-mix(in oklch, transparent, currentColor 5%);
+      }
     }
 
-    table[is="sortable-table"] .sorting-arrow-button {
-      font-size: inherit;
-      color: inherit;
-      background: none;
-      border: none;
-      padding: 0px;
-      margin: 0px;
-      text-align: initial;
-      margin: 0 .5ch;
-      outline-offset: 5px;
-    }
+    @container (width < 500px) {
+      table[is="sortable-table"]:not([unresponsive]) {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border: none;
+        border-collapse: unset;
 
-    table[is="sortable-table"] .sorting-arrow-button::before {
-      content: '';
-      display: block;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+        & thead,
+        & tbody {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
 
-    table[is="sortable-table"] thead :is(td, th) svg {
-      fill: currentColor;
-      --width: .6em;
-      width: var(--width);
-      height: calc(2 * var(--width));
-      vertical-align: text-bottom;
-      overflow: visible;
-    }
+        & tr {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          padding: 8px;
+          gap: 8px;
+        }
 
-    .ascending-arrow {
-      transform-origin: calc(100% * 12/28) center;
-    }
-
-    .descending-arrow {
-      transform-origin: calc(100% * (28 - 12)/28) center;
-    }
-
-    table[is="sortable-table"] thead :is(td, th) .arrow {
-      opacity: .5;
-    }
-
-    table[is="sortable-table"] thead :is(td, th).sorted.ascending .ascending-arrow,
-    table[is="sortable-table"] thead :is(td, th).sorted.descending .descending-arrow {
-      opacity: 1;
-      scale: 1.4;
+        & tr:nth-of-type(2n) {
+          background-color: unset;
+        }
+  
+        & td,
+        & th {
+          display: grid;
+          grid-template-columns: subgrid;
+          grid-column: 1 / -1;
+          align-items: center;
+          text-align: left;
+          border: none;
+        }
+  
+        & td::before {
+          content: attr(data-column);
+          margin-right: 1ch;
+          font-weight: bold;
+        }
+      }
     }
   }
 `);
@@ -254,6 +322,7 @@ export class SortableTable extends HTMLTableElement {
       }
 
       const td = document.createElement('td');
+      td.setAttribute('data-column', id);
       td.innerHTML = value;
       tr.appendChild(td);
     }
