@@ -1,0 +1,25 @@
+/* Progress of the animation (from 0 to 1) */
+@property --anim-progress {
+	syntax: "<number>";
+	inherits: false;
+	initial-value: 0; /* unitless */
+}
+
+@keyframes progress {
+	0% { --anim-progress: 0; }
+	100% { --anim-progress: 1; }
+}
+
+.ripple {
+	width: 200px;
+	height: 150px;
+	border: 1px solid currentColor;
+	background: paint(ripple);
+	--anim-progress: 1;
+	transition: --anim-progress 450ms linear 150ms;
+}
+
+.ripple:active {
+	--anim-progress: 0;
+	transition-duration: 0s;
+}

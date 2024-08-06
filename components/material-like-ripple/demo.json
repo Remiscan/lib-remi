@@ -1,0 +1,9 @@
+{
+	"title": "<material-like-ripple>",
+	"imports": {
+	},
+	"intro": "This block animates a Material Design-like ripple where you click.",
+	"examples": [
+	  "<div class=\"ripple\"></div>"
+	]
+  }
