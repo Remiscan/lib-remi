@@ -52,24 +52,6 @@ const cssTranslatePropertySupported = CSS.supports('translate: 0');
 
 
 
-if (cssPropertiesApiSupported) {
-  CSS.registerProperty({
-    name: '--ratio',
-    syntax: '<number>',
-    inherits: true,
-    initialValue: 0,
-  });
-
-  CSS.registerProperty({
-    name: '--integer-ratio',
-    syntax: '<integer>',
-    inherits: false,
-    initialValue: 0,
-  });
-}
-
-
-
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
   :host {
@@ -342,6 +324,24 @@ sheet.replaceSync(/*css*/`
   [role="switch"].fallback [part="visible-thumb"] {
     scale: unset;
     transform: scale(var(--scale));
+  }
+`);
+
+
+
+// Why doesn't this work in the sheet adopted by the input-switch's ShadowRoot?
+const rootNodeSheet = new CSSStyleSheet();
+rootNodeSheet.replaceSync(`
+  @property --ratio {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+
+  @property --integer-ratio {
+    syntax: "<integer>";
+    inherits: true;
+    initial-value: 0;
   }
 `);
 
@@ -639,6 +639,12 @@ export default class InputSwitch extends HTMLElement {
 
 
   connectedCallback() {
+    // Adopt root node sheet
+    const rootNode = this.getRootNode();
+    if (rootNode && !(rootNode.adoptedStyleSheets.includes(rootNodeSheet))) {
+      rootNode.adoptedStyleSheets.push(rootNodeSheet);
+    }
+
     this.button.style.setProperty('--duration', 0);
 
     // Set initial state
