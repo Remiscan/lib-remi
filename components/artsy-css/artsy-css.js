@@ -9,7 +9,7 @@
 </script>
 */
 
-import sheet from 'artsy-css-styles' assert { type: 'css' };
+import sheet from 'artsy-css-styles' with { type: 'css' };
 
 
 
