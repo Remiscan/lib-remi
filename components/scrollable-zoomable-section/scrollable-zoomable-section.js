@@ -11,6 +11,9 @@ sheet.replaceSync(/*css*/`
 		contain: size;
 		overflow: hidden;
 		touch-action: none;
+	}
+
+	:host(:active) {
 		cursor: move;
 	}
 
@@ -43,7 +46,7 @@ const resizeObserver = new ResizeObserver((entries) => {
 				? contentBlockSize + 2 * (sectionBlockSize - contentBlockSize)
 				: contentBlockSize;
 
-			console.log(sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize);
+			section.log(sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize);
 
 			section.slot.style.setProperty('--inline-size', `${slotInlineSize}px`);
 			section.slot.style.setProperty('--block-size', `${slotBlockSize}px`);
@@ -68,6 +71,14 @@ export class ScrollableZoomableSection extends HTMLElement {
 		this.shadow = this.attachShadow({ mode: 'open' });
 		this.shadow.appendChild(template.content.cloneNode(true));
 		this.shadow.adoptedStyleSheets = [sheet];
+	}
+
+
+	static log = true;
+
+	log(...args) {
+		if (!this.constructor.log) return;
+		console.log(...args);
 	}
 
 
@@ -103,18 +114,18 @@ export class ScrollableZoomableSection extends HTMLElement {
 	/** Si l'event `wheel` est en attente de la prochaine frame. */
 	wheelDebounce = false;
 
+	/** Timeout pour reset le compteur de `pointerup`. */
+	pointerUpTimeout = -1;
+
 
 	/**
 	 * Quand le pointeur touche la section, on écoute les événements requis pour détecter :
-	 * - le scroll (pour scroller la section)
-	 * - le double clic (pour zoomer la section)
-	 * - le double clic puis scroll (pour zoomer la section)
-	 * - le pinch (pour zoomer la section)
+	 * - le clic maintenu puis glissé (pour scroller la section)
+	 * - le double clic (pour zoomer la section, ou dézoomer si clic droit souris)
+	 * - le double clic maintenu puis glissé verticalement (pour zoomer la section si vers le bas, dézoomer si vers le haut)
+	 * - le pinch (pour zoomer la section si écarté, dézoomer si rapproché)
 	 */
 	onPointerDown(downEvent) {
-		// Si le pointeur est une souris, on l'ignore s'il n'est pas le bouton principal
-		if (downEvent.pointerType === 'mouse' && downEvent.button !== 0) return;
-
 		this.setPointerCapture(downEvent.pointerId);
 		this.currentPointerDownEvents.add(downEvent);
 
@@ -177,20 +188,20 @@ export class ScrollableZoomableSection extends HTMLElement {
 					top: startScrollPosition.y - (moveEvent.clientY - downEvent.clientY),
 					behavior: 'instant',
 				});
-				console.log('move', 'scroll', {
+				this.log('move', 'scroll', {
 					left: startScrollPosition.x - (moveEvent.clientX - downEvent.clientX),
 					top: startScrollPosition.y - (moveEvent.clientY - downEvent.clientY)
 				});
 			} break;
 
-			// À FAIRE
+			// 🟧 À FAIRE
 			case 'doubleTapScroll': {
-				console.log('doubleTapScroll');
+				this.log('doubleTapScroll');
 			} break;
 
-			// À FAIRE
+			// 🟧 À FAIRE
 			case 'pinch': {
-				console.log('pinch');
+				this.log('pinch');
 			} break;
 		}
 
@@ -207,18 +218,28 @@ export class ScrollableZoomableSection extends HTMLElement {
 		upEvent,
 		downEvent,
 	) {
-		console.log('up', upEvent);
+		this.log('up', upEvent);
 		this.pointerUpsCount++;
+		clearTimeout(this.pointerUpTimeout);
+		this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
 		const now = Date.now();
-		this.lastPointerUpTime = now;
-		/*const distanceMoved = Math.sqrt(
-			Math.pow()
-		)*/
 
-		if (
-			this.pointerUpsCount === 2
-			&& now - this.lastPointerUpTime < this.maxDoubleTapDelay
-		) {}
+		let action = '';
+		if (this.pointerUpsCount === 2) {
+			this.pointerUpsCount = 0
+			action = 'doubleTap';
+		}
+
+		this.log(this.pointerUpsCount);
+
+		switch (action) {
+			// 🟧 À FAIRE
+			case 'doubleTap': {
+				this.log('doubleTap', upEvent.button === 2 ? 'dézoom' : 'zoom');
+			} break;
+		}
+
+		this.lastPointerUpTime = now;
 
 		this.onPointerCancel(upEvent, downEvent);
 	}
@@ -231,7 +252,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 		cancelEvent,
 		downEvent,
 	) {
-		console.log('cancel', cancelEvent);
+		this.log('cancel', cancelEvent);
 		const abortController = this.currentPointersAbortControllers.get(cancelEvent.pointerId);
 		if (abortController) {
 			abortController.abort();
@@ -254,6 +275,12 @@ export class ScrollableZoomableSection extends HTMLElement {
 
 	}
 	boundOnDoubleTap = this.onDoubleTap.bind(this);
+
+
+	onContextMenu(event) {
+		event.preventDefault();
+	}
+	boundOnContextMenu = this.onContextMenu.bind(this);
 
 
 	disconnectAllTemporaryEventListeners() {
@@ -301,7 +328,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 			startPositionY = startPositionX;
 		}
 
-		console.log(startPositionX, startPositionY);
+		this.log(startPositionX, startPositionY);
 
 		return {
 			x: startPositionX,
@@ -366,7 +393,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 			}
 		}
 
-		console.log(startPosition, scrollLeft, scrollTop);
+		this.log(startPosition, scrollLeft, scrollTop);
 		this.scrollTo({ left: scrollLeft, top: scrollTop, behavior: 'instant' });
 	}
 	boundInitializeScrollPosition = this.initializeScrollPosition.bind(this);
@@ -375,6 +402,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 	connectedCallback() {
 		this.addEventListener('pointerdown', this.boundOnPointerDown);
 		this.addEventListener('wheel', this.boundOnWheel);
+		this.addEventListener('contextmenu', this.boundOnContextMenu);
 		this.slot.addEventListener('slotchange', this.boundOnSlotChange);
 		this.addEventListener('resized-content', this.boundInitializeScrollPosition);
 	}
@@ -382,6 +410,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 	disconnectedCallback() {
 		this.removeEventListener('pointerdown', this.boundOnPointerDown);
 		this.removeEventListener('wheel', this.boundOnWheel);
+		this.removeEventListener('contextmenu', this.boundOnContextMenu);
 		this.slot.removeEventListener('slotchange', this.boundOnSlotChange);
 		this.removeEventListener('resized-content', this.boundInitializeScrollPosition);
 		this.disconnectAllTemporaryEventListeners();
