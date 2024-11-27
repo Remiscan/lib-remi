@@ -1,0 +1,28 @@
+.intro ul {
+	margin: 0px;
+}
+
+.list-of-examples {
+	width: 100%;
+	height: 100%;
+	max-width: unset;
+	flex-grow: 1;
+}
+
+.example {
+	container-type: size;
+}
+
+.example > .element {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	max-width: 100cqw;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+scrollable-zoomable-section {
+	width: 100%;
+	height: 100%;
+}

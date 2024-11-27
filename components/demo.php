@@ -252,7 +252,7 @@ try {
 
     <h2 class="visually-hidden">What is it?</h2>
 
-    <p class="intro"><?=$data["intro"] ?? ""?></p>
+    <div class="intro"><?=$data["intro"] ?? ""?></div>
 
     <h2 class="visually-hidden">Examples of use</h2>
 
