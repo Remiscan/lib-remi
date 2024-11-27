@@ -1,0 +1,126 @@
+<style>
+	div {
+		padding: 20px;
+		border: 1px solid red;
+		position: relative;
+
+		&[interactive]::before {
+			content: '';
+			display: block;
+			width: 20px;
+			height: 20px;
+			background: rgb(from red r g b / .5);
+			border-radius: 50%;
+			position: absolute;
+			left: var(--x, 0);
+			top: var(--y, 0);
+			translate: -50% -50%;
+		}
+	}
+</style>
+
+<div>
+	<div interactive>
+		<template shadowrootmode="open">
+			<style>
+				div {
+					padding: 20px;
+					border: 1px solid red;
+					position: relative;
+
+					&[interactive]::before {
+						content: '';
+						display: block;
+						width: 20px;
+						height: 20px;
+						background: rgb(from red r g b / .5);
+						border-radius: 50%;
+						position: absolute;
+						left: var(--x, 0);
+						top: var(--y, 0);
+						translate: -50% -50%;
+					}
+				}
+			</style>
+			<div>
+				<template shadowrootmode="open">
+					<style>
+						div {
+							padding: 20px;
+							border: 1px solid red;
+							position: relative;
+
+							&[interactive]::before {
+								content: '';
+								display: block;
+								width: 20px;
+								height: 20px;
+								background: rgb(from red r g b / .5);
+								border-radius: 50%;
+								position: absolute;
+								left: var(--x, 0);
+								top: var(--y, 0);
+								translate: -50% -50%;
+							}
+						}
+					</style>
+					<div interactive>
+						
+					</div>
+				</template>
+			</div>
+		</template>
+	</div>
+</div>
+
+<script type="module">
+	/**
+	 * Gets the list of interactive elements under the pointer when it clicks on the window.
+	 */
+	function getElementsUnderPointer(
+		x,
+		y,
+		source = document,
+		condition = (element) => element.hasAttribute('interactive'),
+		elementsUnderCursor = new Set(),
+	) {
+		const tempElementsUnderCursor = source.elementsFromPoint(x, y);
+		for (const element of tempElementsUnderCursor) {
+			if (element.getRootNode() !== source) continue;
+			if (elementsUnderCursor.has(element)) continue;
+			if (element.shadowRoot) {
+				getElementsUnderPointer(x, y, element.shadowRoot, condition, elementsUnderCursor);
+			}
+			if (condition(element)) elementsUnderCursor.add(element);
+		}
+		return elementsUnderCursor;
+	}
+
+	/**
+	 * Gets the relative position of the pointer inside an interactive element after a pointerdown event.
+	 */
+	function getRelativePointerPosition(
+		event,
+		element,
+	) {
+		const rect = element.getBoundingClientRect();
+		return {
+			x: event.clientX - rect.x,
+			y: event.clientY - rect.y,
+		};
+	}
+
+	window.addEventListener('pointerdown', event => {
+		const elementsUnderCursor = getElementsUnderPointer(event.clientX, event.clientY);
+		for (const element of elementsUnderCursor) {
+			const relativePointerPos = getRelativePointerPosition(event, element);
+			element.style.setProperty('--x', relativePointerPos.x);
+			element.style.setProperty('--y', relativePointerPos.y);
+			console.log(element, getRelativePointerPosition(event, element));
+
+			// Now I should:
+			// - create a CSS variable --anim-progress that's 1 by default and starts animating from 0 to 1 on :active (but keeps animating when :active is no longer applied? how?)
+			// => I could place a css class on the element in the pointerdown listener, which would animate, and remove it when the animation is over
+		}
+	}, { capture: true });
+</script>
