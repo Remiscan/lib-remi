@@ -1,6 +1,10 @@
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-	<slot></slot>
+	<div class="scroll-margin-container">
+		<div class="content-scale-container">
+			<slot></slot>
+		</div>
+	</div>
 `;
 
 
@@ -8,6 +12,7 @@ template.innerHTML = /*html*/`
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
 	:host {
+		display: block;
 		contain: size;
 		overflow: hidden;
 		touch-action: none;
@@ -17,11 +22,18 @@ sheet.replaceSync(/*css*/`
 		cursor: move;
 	}
 
-	slot {
+	.scroll-margin-container {
 		display: grid;
-		place-items: center;
+		place-content: center;
 		inline-size: var(--inline-size, 100%);
 		block-size: var(--block-size, 100%);
+	}
+
+	.content-scale-container {
+		width: fit-content;
+		height: fit-content;
+		scale: var(--zoom-level, 1);
+		transform-origin: center center;
 	}
 `);
 
@@ -30,7 +42,7 @@ sheet.replaceSync(/*css*/`
 const resizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.borderBoxSize?.length > 0) {
-			const section = entry.target.closest('scrollable-zoomable-section');
+			const section = entry.target.closest('scroll-zoom-block');
 			const sectionStyles = window.getComputedStyle(section);
 			const sectionInlineSize = Number(sectionStyles.getPropertyValue('inline-size').replace('px', ''));
 			const sectionBlockSize = Number(sectionStyles.getPropertyValue('block-size').replace('px', ''));
@@ -38,18 +50,6 @@ const resizeObserver = new ResizeObserver((entries) => {
 			const borderBoxSize = entry.borderBoxSize[0];
 			const contentInlineSize = borderBoxSize.inlineSize;
 			const contentBlockSize = borderBoxSize.blockSize;
-
-			const slotInlineSize = contentInlineSize < sectionInlineSize
-				? contentInlineSize + 2 * (sectionInlineSize - contentInlineSize)
-				: contentInlineSize;
-			const slotBlockSize = contentBlockSize < sectionBlockSize
-				? contentBlockSize + 2 * (sectionBlockSize - contentBlockSize)
-				: contentBlockSize;
-
-			section.log(sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize);
-
-			section.slot.style.setProperty('--inline-size', `${slotInlineSize}px`);
-			section.slot.style.setProperty('--block-size', `${slotBlockSize}px`);
 
 			section.dispatchEvent(new CustomEvent('resized-content', {
 				detail: {
@@ -65,7 +65,7 @@ const resizeObserver = new ResizeObserver((entries) => {
 
 
 
-export class ScrollableZoomableSection extends HTMLElement {
+export class ScrollZoomBlock extends HTMLElement {
 	constructor() {
 		super();
 		this.shadow = this.attachShadow({ mode: 'open' });
@@ -76,11 +76,14 @@ export class ScrollableZoomableSection extends HTMLElement {
 
 	static log = true;
 
-	log(...args) {
-		if (!this.constructor.log) return;
-		console.log(...args);
+
+	get scrollMarginContainer() {
+		return this.shadow.querySelector('.scroll-margin-container');
 	}
 
+	get contentScaleContainer() {
+		return this.shadow.querySelector('.content-scale-container');
+	}
 
 	get slot() {
 		return this.shadow.querySelector('slot');
@@ -188,7 +191,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 					top: startScrollPosition.y - (moveEvent.clientY - downEvent.clientY),
 					behavior: 'instant',
 				});
-				this.log('move', 'scroll', {
+				if (this.constructor.log) console.log('move', 'scroll', {
 					left: startScrollPosition.x - (moveEvent.clientX - downEvent.clientX),
 					top: startScrollPosition.y - (moveEvent.clientY - downEvent.clientY)
 				});
@@ -196,12 +199,12 @@ export class ScrollableZoomableSection extends HTMLElement {
 
 			// 🟧 À FAIRE
 			case 'doubleTapScroll': {
-				this.log('doubleTapScroll');
+				if (this.constructor.log) console.log('doubleTapScroll');
 			} break;
 
 			// 🟧 À FAIRE
 			case 'pinch': {
-				this.log('pinch');
+				if (this.constructor.log) console.log('pinch');
 			} break;
 		}
 
@@ -218,7 +221,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 		upEvent,
 		downEvent,
 	) {
-		this.log('up', upEvent);
+		if (this.constructor.log) console.log('up', upEvent);
 		this.pointerUpsCount++;
 		clearTimeout(this.pointerUpTimeout);
 		this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
@@ -230,12 +233,12 @@ export class ScrollableZoomableSection extends HTMLElement {
 			action = 'doubleTap';
 		}
 
-		this.log(this.pointerUpsCount);
+		if (this.constructor.log) console.log(this.pointerUpsCount);
 
 		switch (action) {
 			// 🟧 À FAIRE
 			case 'doubleTap': {
-				this.log('doubleTap', upEvent.button === 2 ? 'dézoom' : 'zoom');
+				if (this.constructor.log) console.log('doubleTap', upEvent.button === 2 ? 'dézoom' : 'zoom');
 			} break;
 		}
 
@@ -252,7 +255,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 		cancelEvent,
 		downEvent,
 	) {
-		this.log('cancel', cancelEvent);
+		if (this.constructor.log) console.log('cancel', cancelEvent);
 		const abortController = this.currentPointersAbortControllers.get(cancelEvent.pointerId);
 		if (abortController) {
 			abortController.abort();
@@ -265,6 +268,14 @@ export class ScrollableZoomableSection extends HTMLElement {
 	onWheel(event) {
 		if (this.wheelDebounce) return;
 		this.wheelDebounce = true;
+
+		// ✅ FAIT
+		const zoomRatio = 1 - .1 * Math.sign(event.deltaY);
+		this.zoom(
+			this.currentZoomLevel * zoomRatio,
+			{ x: event.clientX, y: event.clientY },
+			this.getBoundingClientRect(),
+		);
 
 		requestAnimationFrame(() => this.wheelDebounce = false);
 	}
@@ -328,7 +339,7 @@ export class ScrollableZoomableSection extends HTMLElement {
 			startPositionY = startPositionX;
 		}
 
-		this.log(startPositionX, startPositionY);
+		if (this.constructor.log) console.log(startPositionX, startPositionY);
 
 		return {
 			x: startPositionX,
@@ -337,9 +348,54 @@ export class ScrollableZoomableSection extends HTMLElement {
 	}
 
 
+	#scrollMargins = {
+		inline: 0,
+		block: 0,
+	};
+
+	#contentSize = {
+		inline: 0,
+		block: 0,
+	}
+
+
+	#resizeScrollMarginContainer(
+		contentInlineSize,
+		contentBlockSize,
+		sectionInlineSize,
+		sectionBlockSize,
+	) {
+		const marginInline = Math.max(0, sectionInlineSize - contentInlineSize);
+		const marginBlock = Math.max(0, sectionBlockSize - contentBlockSize);
+
+		if (this.constructor.log) console.log(sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize, marginInline, marginBlock);
+
+		const scrollMarginContainer = this.scrollMarginContainer;
+		scrollMarginContainer.style.setProperty('--inline-size', `${(contentInlineSize + 2 * marginInline).toFixed(2)}px`);
+		scrollMarginContainer.style.setProperty('--block-size', `${(contentBlockSize + 2 * marginBlock).toFixed(2)}px`);
+
+		this.#scrollMargins = {
+			inline: marginInline,
+			block: marginBlock,
+		};
+	}
+
+
 	initializeScrollPosition(event) {
 		const startPosition = this.startPosition;
 		const { sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize } = event.detail;
+
+		this.#contentSize = {
+			inline: contentInlineSize,
+			block: contentBlockSize,
+		};
+
+		this.#resizeScrollMarginContainer(
+			contentInlineSize,
+			contentBlockSize,
+			sectionInlineSize,
+			sectionBlockSize,
+		);
 
 		let scrollLeft, scrollTop;
 
@@ -393,10 +449,101 @@ export class ScrollableZoomableSection extends HTMLElement {
 			}
 		}
 
-		this.log(startPosition, scrollLeft, scrollTop);
+		this.#size = {
+			inline: sectionInlineSize,
+			block: sectionBlockSize,
+		};
+
+		if (this.constructor.log) console.log(startPosition, scrollLeft, scrollTop);
 		this.scrollTo({ left: scrollLeft, top: scrollTop, behavior: 'instant' });
 	}
 	boundInitializeScrollPosition = this.initializeScrollPosition.bind(this);
+
+
+	#size = { inline: 0, block: 0 };
+	#currentZoomLevel = 1;
+
+	get currentZoomLevel() {
+		return this.#currentZoomLevel;
+	}
+
+	set currentZoomLevel(zoomLevel) {
+		this.zoom(zoomLevel, { x: this.#size.inline / 2, y: this.#size.block / 2 });
+	}
+
+	defaultMinZoomLevel = .25;
+	minZoomLevel = this.defaultMinZoomLevel;
+
+	defaultMaxZoomLevel = 4;
+	maxZoomLevel = this.defaultMaxZoomLevel;
+
+
+	parseZoomLevel(level) {
+		if (typeof level === 'string') {
+			if (level.endsWith('%')) return parseFloat(level) / 100;
+			else return parseFloat(level);
+		} else if (typeof level === 'number') {
+			return level;
+		} else {
+			throw new Error('Zoom level must be parsed from a string or number');
+		}
+	}
+
+
+	zoom(
+		zoomLevel,
+		zoomPoint,
+		sectionRect,
+	) {
+		zoomLevel = Math.max(this.minZoomLevel, Math.min(zoomLevel, this.maxZoomLevel));
+
+		// On récupère la position du point de zoom en pourcentage du contenu
+		// - position horizontale
+		const contentInlineSize = this.#contentSize.inline * this.#currentZoomLevel;
+		const sectionX = zoomPoint.x - sectionRect.x;
+		const sectionScrollX = this.scrollLeft + sectionX;
+		const contentX = sectionScrollX - this.#scrollMargins.inline;
+		const pctX = contentX / contentInlineSize;
+		// - position verticale
+		const contentBlockSize = this.#contentSize.block * this.#currentZoomLevel;
+		const sectionY = zoomPoint.y - sectionRect.y;
+		const sectionScrollY = this.scrollTop + sectionY;
+		const contentY = sectionScrollY - this.#scrollMargins.block;
+		const pctY = contentY / contentBlockSize;
+
+		// On applique le nouveau niveau de zoom
+		this.contentScaleContainer.style.setProperty('--zoom-level', zoomLevel.toFixed(8));
+		this.#currentZoomLevel = zoomLevel;
+
+		// On redimensionne le slot pour maintenir le contenu "prisonnier" de la section
+		// lors du scroll quand il est plus petit que la section
+		this.#resizeScrollMarginContainer(
+			this.#contentSize.inline * zoomLevel,
+			this.#contentSize.block * zoomLevel,
+			this.#size.inline,
+			this.#size.block,
+		);
+
+		// On calcule la nouvelle position de scroll de la section pour maintenir le point
+		// de zoom au même endroit
+		// - position horizontale
+		const newContentInlineSize = this.#contentSize.inline * zoomLevel;
+		const newContentX = pctX * newContentInlineSize;
+		const newSectionScrollX = newContentX + this.#scrollMargins.inline;
+		const newScrollLeft = newSectionScrollX - sectionX;
+		// - position verticale
+		const newContentBlockSize = this.#contentSize.block * zoomLevel;
+		const newContentY = pctY * newContentBlockSize;
+		const newSectionScrollY = newContentY + this.#scrollMargins.block;
+		const newScrollTop = newSectionScrollY - sectionY;
+
+		// On applique la nouvelle position du scroll
+		this.scrollTo({
+			left: newScrollLeft,
+			top: newScrollTop,
+			behavior: 'instant',
+		});
+	}
 
 
 	connectedCallback() {
@@ -419,6 +566,37 @@ export class ScrollableZoomableSection extends HTMLElement {
 	connectedMoveCallback() {
 		// do nothing
 	}
+
+	static get observedAttributes() {
+		return ['min-zoom-level', 'max-zoom-level', 'zoom-level'];
+	}
+
+	attributeChangedCallback(attr, oldValue, newValue) {
+		if (oldValue === newValue) return;
+
+		switch (attr) {
+			case 'min-zoom-level': {
+				if (newValue == null) this.minZoomLevel = this.defaultMinZoomLevel;
+				else this.minZoomLevel = this.parseZoomLevel(newValue);
+				if (this.currentZoomLevel < this.minZoomLevel) {
+					this.currentZoomLevel = this.minZoomLevel;
+				}
+			} break;
+
+			case 'max-zoom-level': {
+				if (newValue == null) this.maxZoomLevel = this.defaultMaxZoomLevel;
+				else this.maxZoomLevel = this.parseZoomLevel(newValue);
+				if (this.currentZoomLevel > this.maxZoomLevel) {
+					this.currentZoomLevel = this.maxZoomLevel;
+				}
+			} break;
+
+			case 'zoom-level': {
+				if (newValue == null) return;
+				this.currentZoomLevel = this.parseZoomLevel(newValue);
+			} break;
+		}
+	}
 }
 
-if (!customElements.get('scrollable-zoomable-section')) customElements.define('scrollable-zoomable-section', ScrollableZoomableSection);
+if (!customElements.get('scroll-zoom-block')) customElements.define('scroll-zoom-block', ScrollZoomBlock);
