@@ -102,11 +102,14 @@ export class ScrollZoomBlock extends HTMLElement {
 	/** Le nombre minimal de pixels dont l'event `pointermove` doit bouger par rapport à la position initiale. En-dessous, on ignore le `pointermove` (car sinon, l'imprécision avec un doigt déclenche l'événement). */
 	minMoveThreshold = 10; // px
 
-	/** Liste des pointeurs actuellement down. */
-	currentPointerDownEvents = new Set();
+	/** Liste des pointeurs actuellement down avec leur event `pointerdown`. */
+	currentPointerDownEvents = new Map();
 
-	/** Liste des pointeurs actuellement en mouvement. */
-	currentPointersMoving = new Set();
+	/** Liste des pointeurs actuellement en mouvement avec leur event `pointermove`. */
+	currentPointerMoveEvents = new Map();
+
+	/** Si l'event `pointermove` est en attente de la prochaine frame. */
+	pointermoveDebounce = false;
 
 	/** Associe à chaque pointeur un AbortController. */
 	currentPointersAbortControllers = new Map();
@@ -130,7 +133,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	 */
 	onPointerDown(downEvent) {
 		this.setPointerCapture(downEvent.pointerId);
-		this.currentPointerDownEvents.add(downEvent);
+		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
 
 		const abortController = new AbortController();
 		this.currentPointersAbortControllers.set(downEvent.pointerId, abortController);
@@ -171,16 +174,19 @@ export class ScrollZoomBlock extends HTMLElement {
 		startScrollPosition,
 		isCandidateForDoubleTap,
 	) {
-		if (this.currentPointersMoving.has(moveEvent.pointerId)) return;
-		this.currentPointersMoving.add(moveEvent.pointerId);
+		this.currentPointerMoveEvents.set(moveEvent.pointerId, moveEvent);
+
+		if (this.pointermoveDebounce) return;
+		this.pointermoveDebounce = true;
 
 		let action = '';
 		switch (this.currentPointerDownEvents.size) {
-			case 1: {
+			case 1:
 				if (isCandidateForDoubleTap) action = 'doubleTapScroll';
 				else action = 'scroll';
-			} break;
-			case 2: action = 'pinch'; break;
+				break;
+			default:
+				action = 'pinch';
 		}
 
 		switch (action) {
@@ -204,11 +210,33 @@ export class ScrollZoomBlock extends HTMLElement {
 
 			// 🟧 À FAIRE
 			case 'pinch': {
-				if (this.constructor.log) console.log('pinch');
+				let clientXTotal = 0, clientYTotal = 0;
+				for (const evt of this.currentPointerMoveEvents.values()) {
+					clientXTotal += evt.clientX;
+					clientYTotal += evt.clientY;
+				}
+				const pointersMiddle = {
+					x: clientXTotal / this.currentPointerMoveEvents.size,
+					y: clientYTotal / this.currentPointerMoveEvents.size
+				};
+
+				let radiusTotal = 0;
+				for (const evt of this.currentPointerMoveEvents.values()) {
+					radiusTotal += Math.sqrt(
+						(evt.clientX - pointersMiddle.x) ** 2
+						+ (evt.clientY - pointersMiddle.y) ** 2
+					);
+				}
+				const averageRadius = radiusTotal / this.currentPointerMoveEvents.size;
+
+				// TODO zoomLevel = averageRadius / startAverageRadius (calculé pareil avec les downEvents, dans le onpointerdown)
+				// TODO scrollPosition = currentScrollPos + pointersMiddle - startPointersMiddle (calculé pareil avec les downEvents, dans le onpointerdown)
+
+				if (this.constructor.log) console.log('pinch', pointersMiddle, averageRadius);
 			} break;
 		}
 
-		requestAnimationFrame(() => this.currentPointersMoving.delete(moveEvent.pointerId));
+		requestAnimationFrame(() => this.pointermoveDebounce = false);
 	}
 
 
@@ -261,7 +289,7 @@ export class ScrollZoomBlock extends HTMLElement {
 			abortController.abort();
 			this.currentPointersAbortControllers.delete(cancelEvent.pointerId);
 		}
-		this.currentPointerDownEvents.delete(downEvent);
+		this.currentPointerDownEvents.delete(downEvent.pointerId);
 	}
 
 
