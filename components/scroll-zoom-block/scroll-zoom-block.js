@@ -90,6 +90,23 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	static beforeInteractionEventType = 'before-interaction';
+	static afterInteractionEventType = 'after-interaction';
+
+	dispatchInteractionEvent(interaction, type) {
+		if (!interaction) interaction = 'none';
+		this.dispatchEvent(
+			new CustomEvent(type, {
+				bubbles: true,
+				composed: true,
+				detail: {
+					interaction,
+				}
+			})
+		);
+	}
+
+
 	/** Timestamp du dernier event `pointerup`. */
 	lastPointerUpTime = 0;
 
@@ -179,17 +196,19 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (this.pointermoveDebounce) return;
 		this.pointermoveDebounce = true;
 
-		let action = '';
+		let interaction = '';
 		switch (this.currentPointerDownEvents.size) {
 			case 1:
-				if (isCandidateForDoubleTap) action = 'doubleTapScroll';
-				else action = 'scroll';
+				if (isCandidateForDoubleTap) interaction = 'doubleTapScroll';
+				else interaction = 'scroll';
 				break;
 			default:
-				action = 'pinch';
+				interaction = 'pinch';
 		}
 
-		switch (action) {
+		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.beforeInteractionEventType);
+
+		switch (interaction) {
 			// ✅ FAIT
 			case 'scroll': {
 				this.scrollTo({
@@ -236,6 +255,8 @@ export class ScrollZoomBlock extends HTMLElement {
 			} break;
 		}
 
+		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.afterInteractionEventType);
+
 		requestAnimationFrame(() => this.pointermoveDebounce = false);
 	}
 
@@ -255,15 +276,17 @@ export class ScrollZoomBlock extends HTMLElement {
 		this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
 		const now = Date.now();
 
-		let action = '';
+		let interaction = '';
 		if (this.pointerUpsCount === 2) {
 			this.pointerUpsCount = 0
-			action = 'doubleTap';
+				interaction = 'doubleTap';
 		}
 
 		if (this.constructor.log) console.log(this.pointerUpsCount);
 
-		switch (action) {
+		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.beforeInteractionEventType);
+
+		switch (interaction) {
 			// 🟧 À FAIRE
 			case 'doubleTap': {
 				if (this.constructor.log) console.log('doubleTap', upEvent.button === 2 ? 'dézoom' : 'zoom');
@@ -271,6 +294,8 @@ export class ScrollZoomBlock extends HTMLElement {
 		}
 
 		this.lastPointerUpTime = now;
+
+		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.afterInteractionEventType);
 
 		this.onPointerCancel(upEvent, downEvent);
 	}
@@ -297,6 +322,9 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (this.wheelDebounce) return;
 		this.wheelDebounce = true;
 
+		const interaction = 'wheelZoom';
+		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.beforeInteractionEventType);
+
 		// ✅ FAIT
 		const zoomRatio = 1 - .1 * Math.sign(event.deltaY);
 		this.zoom(
@@ -304,6 +332,8 @@ export class ScrollZoomBlock extends HTMLElement {
 			{ x: event.clientX, y: event.clientY },
 			this.getBoundingClientRect(),
 		);
+
+		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.afterInteractionEventType);
 
 		requestAnimationFrame(() => this.wheelDebounce = false);
 	}
