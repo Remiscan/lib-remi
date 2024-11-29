@@ -110,6 +110,12 @@ export class ScrollZoomBlock extends HTMLElement {
 	/** Timestamp du dernier event `pointerup`. */
 	lastPointerUpTime = 0;
 
+	/** Si les deux derniers events `pointerup` avaient chacun suivi un event `pointermove` significatif. */
+	lastPointersHadMoved = [false, false];
+
+	/** Si le dernier event `pointerup` était un double-tap. */
+	lastPointerWasDoubleTap = false;
+
 	/** Compteur du nombre d'events `pointerup` depuis le dernier double-tap. */
 	pointerUpsCount = 0;
 
@@ -163,6 +169,8 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		const isCandidateForDoubleTap = downEvent.pointerType === 'touch'
 			&& this.currentPointerDownEvents.size === 1
+			&& !this.lastPointerWasDoubleTap
+			&& this.lastPointersHadMoved.every(p => !p)
 			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
 
 		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent, startScrollPosition, isCandidateForDoubleTap);
@@ -195,6 +203,13 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		if (this.pointermoveDebounce) return;
 		this.pointermoveDebounce = true;
+
+		if (Math.sqrt(
+			(moveEvent.clientX - downEvent.clientX) ** 2
+			+ (moveEvent.clientY - downEvent.clientY) ** 2
+		) > this.minMoveThreshold) {
+			downEvent.hasMovedSignificantly = true;
+		}
 
 		let interaction = '';
 		switch (this.currentPointerDownEvents.size) {
@@ -272,14 +287,25 @@ export class ScrollZoomBlock extends HTMLElement {
 	) {
 		if (this.constructor.log) console.log('up', upEvent);
 		this.pointerUpsCount++;
-		clearTimeout(this.pointerUpTimeout);
-		this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
+
 		const now = Date.now();
+
+		this.lastPointersHadMoved.push(downEvent.hasMovedSignificantly === true);
+		this.lastPointersHadMoved.shift();
+
+		clearTimeout(this.pointerUpTimeout);
+		if (downEvent.hasMovedSignificantly) {
+			this.pointerUpsCount = 0;
+		} else {
+			this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
+		}
 
 		let interaction = '';
 		if (this.pointerUpsCount === 2) {
 			this.pointerUpsCount = 0
+			if (this.lastPointersHadMoved.every(p => !p)) {
 				interaction = 'doubleTap';
+			}
 		}
 
 		if (this.constructor.log) console.log(this.pointerUpsCount);
@@ -289,8 +315,12 @@ export class ScrollZoomBlock extends HTMLElement {
 		switch (interaction) {
 			// 🟧 À FAIRE
 			case 'doubleTap': {
+				this.lastPointerWasDoubleTap = true;
 				if (this.constructor.log) console.log('doubleTap', upEvent.button === 2 ? 'dézoom' : 'zoom');
 			} break;
+
+			default:
+				this.lastPointerWasDoubleTap = false;
 		}
 
 		this.lastPointerUpTime = now;
