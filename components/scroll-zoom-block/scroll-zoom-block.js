@@ -54,6 +54,7 @@ const resizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.borderBoxSize?.length > 0) {
 			const section = entry.target.closest('scroll-zoom-block');
+
 			const sectionStyles = window.getComputedStyle(section);
 			const sectionInlineSize = Number(sectionStyles.getPropertyValue('inline-size').replace('px', ''));
 			const sectionBlockSize = Number(sectionStyles.getPropertyValue('block-size').replace('px', ''));
@@ -243,6 +244,16 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	#isInitialized = false;
+
+	get isInitialized() {
+		return new Promise(resolve => {
+			if (this.#isInitialized) return resolve();
+			this.addEventListener('initialized', resolve, { once: true });
+		});
+	}
+
+
 	initializeScrollPosition(
 		sectionSize,
 		contentSize,
@@ -252,65 +263,80 @@ export class ScrollZoomBlock extends HTMLElement {
 		this.#contentSize = contentSize;
 		this.#size = sectionSize;
 
-		this.#applyScrollMargins(1);
+		const zoomLevel = this.currentZoomLevel;
+		const scrollMargins = this.#computeScrollMargins(zoomLevel);
+		this.#applyScrollMargins(zoomLevel, scrollMargins);
 
 		let scrollLeft, scrollTop;
 
 		if (contentSize.inline < sectionSize.inline) {
 			switch (startPosition.x) {
 				case 'start':
-					scrollLeft = Math.round(sectionSize.inline - contentSize.inline);
-					break;
-				case 'center':
-					scrollLeft = Math.round(.5 * (sectionSize.inline - contentSize.inline));
+					scrollLeft = scrollMargins.inline;
 					break;
 				case 'end':
-				default:
 					scrollLeft = 0;
-			}
-
-			switch (startPosition.y) {
-				case 'start':
-					scrollTop = Math.round(sectionSize.block - contentSize.block);
 					break;
 				case 'center':
-					scrollTop = Math.round(.5 * (sectionSize.block - contentSize.block));
-					break;
-				case 'end':
 				default:
-					scrollTop = 0;
+					scrollLeft = scrollMargins.inline + .5 * (zoomLevel * contentSize.inline - sectionSize.inline);
+					break;
 			}
 		} else {
 			switch (startPosition.x) {
 				case 'start':
 					scrollLeft = 0;
 					break;
+				case 'end':
+					scrollLeft = 2 * scrollMargins.inline + zoomLevel * contentSize.inline;
+					break;
 				case 'center':
-					scrollLeft = Math.round(.5 * (contentSize.inline - sectionSize.inline));
+				default:
+					scrollLeft = scrollMargins.inline + .5 * (zoomLevel * contentSize.inline - sectionSize.inline);
+					break;
+			}
+		}
+
+		if (contentSize.block < sectionSize.block) {
+			switch (startPosition.y) {
+				case 'start':
+					scrollTop = scrollMargins.block;
 					break;
 				case 'end':
+					scrollTop = 0;
+					break;
+				case 'center':
 				default:
-					scrollLeft = Math.round(contentSize.inline - sectionSize.inline);
+					scrollTop = scrollMargins.block + .5 * (zoomLevel * contentSize.block - sectionSize.block);
+					break;
 			}
-
+		} else {
 			switch (startPosition.y) {
 				case 'start':
 					scrollTop = 0;
 					break;
-				case 'center':
-					scrollTop = Math.round(.5 * (contentSize.block - sectionSize.block));
-					break;
 				case 'end':
+					scrollTop = 2 * scrollMargins.block + zoomLevel * contentSize.block;
+					break;
+				case 'center':
 				default:
-					scrollTop = Math.round(contentSize.block - sectionSize.block);
+					scrollTop = scrollMargins.block + .5 * (zoomLevel * contentSize.block - sectionSize.block);
+					break;
 			}
 		}
 
+		scrollLeft = Math.round(scrollLeft);
+		scrollTop = Math.round(scrollTop);
+
+		console.log(contentSize, sectionSize, scrollLeft, scrollTop);
 		this.scrollTo({
 			left: scrollLeft,
 			top: scrollTop,
 			behavior: 'instant'
 		});
+
+		this.#isInitialized = true;
+		this.dispatchEvent(new Event('initialized'));
 	}
 
 
@@ -693,7 +719,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 	set currentZoomLevel(zoomLevel) {
-		this.zoom(zoomLevel, { x: this.#size.inline / 2, y: this.#size.block / 2 });
+		this.isInitialized.then(
+			() => this.zoom(zoomLevel)
+		);
 	}
 
 
@@ -785,6 +813,13 @@ export class ScrollZoomBlock extends HTMLElement {
 		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
 		dispatchEvents = true,
 	) {
+		if (typeof zoomPoint === 'undefined') {
+			zoomPoint = {
+				x: sectionRect.x + sectionRect.width / 2,
+				y: sectionRect.y + sectionRect.height / 2,
+			};
+		}
+
 		const { zoomLevel: clampedZoomLevel, newScrollMargins, newScrollPosition } = this.#computeZoom(
 			zoomLevel,
 			zoomPoint,
