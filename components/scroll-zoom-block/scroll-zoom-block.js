@@ -223,8 +223,10 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	#computeScrollMargins(zoomLevel) {
-		const marginInline = Math.max(0, Math.ceil(this.#size.inline - this.#contentSize.inline * zoomLevel));
-		const marginBlock = Math.max(0, Math.ceil(this.#size.block - this.#contentSize.block * zoomLevel));
+		// On utilise `Math.floor` car on veut que la marge soit permette **au maximum** de scroller le contenu jusqu'au bord.
+		// Avec `round` ou `ceil`, la marge pourrait être 1px plus grande, donc permettre de scroller 1px plus loin, donc faire overflow le contenu de 1px.
+		const marginInline = Math.max(0, Math.floor(this.#size.inline - this.#contentSize.inline * zoomLevel));
+		const marginBlock = Math.max(0, Math.floor(this.#size.block - this.#contentSize.block * zoomLevel));
 
 		return {
 			inline: marginInline,
@@ -238,26 +240,6 @@ export class ScrollZoomBlock extends HTMLElement {
 		scrollMarginContainer.style.setProperty('--inline-size', `${Math.ceil(this.#contentSize.inline * zoomLevel + 2 * scrollMargins.inline)}px`);
 		scrollMarginContainer.style.setProperty('--block-size', `${Math.ceil(this.#contentSize.block * zoomLevel + 2 * scrollMargins.block)}px`);
 		this.#scrollMargins = scrollMargins;
-	}
-
-
-	#resizeScrollMarginContainer(
-		contentInlineSize,
-		contentBlockSize,
-		sectionInlineSize,
-		sectionBlockSize,
-	) {
-		const marginInline = Math.max(0, Math.ceil(sectionInlineSize - contentInlineSize));
-		const marginBlock = Math.max(0, Math.ceil(sectionBlockSize - contentBlockSize));
-
-		const scrollMarginContainer = this.scrollMarginContainer;
-		scrollMarginContainer.style.setProperty('--inline-size', `${Math.ceil(contentInlineSize + 2 * marginInline)}px`);
-		scrollMarginContainer.style.setProperty('--block-size', `${Math.ceil(contentBlockSize + 2 * marginBlock)}px`);
-
-		return {
-			inline: marginInline,
-			block: marginBlock,
-		};
 	}
 
 
