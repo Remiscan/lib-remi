@@ -53,20 +53,13 @@ try {
         align-items: center;
         justify-content: center;
         position: relative;
-        --gap: 1rem;
-        gap: var(--gap);
+        gap: 16px;
         font-family: system-ui, sans-serif;
         margin: 0;
         padding: 16px;
         box-sizing: border-box;
         height: auto;
         min-height: 100%;
-      }
-
-      @media (orientation: landscape) {
-        body {
-          --gap: 1.5rem;
-        }
       }
 
       body:has(:not(:defined)) {
@@ -78,10 +71,11 @@ try {
         text-wrap: wrap;
       }
 
-      p {
+      p,
+      .intro {
         margin: 0;
         padding: 0;
-        max-width: 70ch;
+        max-width: min(100%, 70ch);
       }
 
       .log {

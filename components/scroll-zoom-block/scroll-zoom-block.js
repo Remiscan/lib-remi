@@ -1,3 +1,11 @@
+function easeInOutQuad (x) {
+	return x < 0.5 ? 2 * Math.pow(x, 2) : 1 - Math.pow(-2 * x + 2, 2) / 2;
+}
+
+
+
+
+// MARK: TEMPLATE
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
 	<div class="scroll-margin-container">
@@ -9,6 +17,7 @@ template.innerHTML = /*html*/`
 
 
 
+// MARK: STYLES
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
 	:host {
@@ -16,6 +25,7 @@ sheet.replaceSync(/*css*/`
 		contain: size;
 		overflow: hidden;
 		touch-action: none;
+		user-select: none;
 	}
 
 	:host(:active) {
@@ -39,6 +49,7 @@ sheet.replaceSync(/*css*/`
 
 
 
+// MARK: OBSERVER
 const resizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.borderBoxSize?.length > 0) {
@@ -50,15 +61,10 @@ const resizeObserver = new ResizeObserver((entries) => {
 			const borderBoxSize = entry.borderBoxSize[0];
 			const contentInlineSize = borderBoxSize.inlineSize;
 			const contentBlockSize = borderBoxSize.blockSize;
-
-			section.dispatchEvent(new CustomEvent('resized-content', {
-				detail: {
-					sectionInlineSize,
-					sectionBlockSize,
-					contentInlineSize,
-					contentBlockSize,
-				}
-			}));
+			section.initializeScrollPosition(
+				{ inline: sectionInlineSize, block: sectionBlockSize },
+				{ inline: contentInlineSize, block: contentBlockSize },
+			);
 		}
 	}
 });
@@ -66,6 +72,14 @@ const resizeObserver = new ResizeObserver((entries) => {
 
 
 export class ScrollZoomBlock extends HTMLElement {
+
+	// ----------------------
+	// #region INITIALISATION
+
+
+	// MARK: Component lifecycle
+
+
 	constructor() {
 		super();
 		this.shadow = this.attachShadow({ mode: 'open' });
@@ -74,7 +88,62 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
-	static log = true;
+	connectedCallback() {
+		this.addEventListener('pointerdown', this.boundOnPointerDown);
+		this.addEventListener('wheel', this.boundOnWheel);
+		this.addEventListener('contextmenu', this.boundOnContextMenu);
+		this.slot.addEventListener('slotchange', this.boundOnSlotChange);
+	}
+
+
+	disconnectedCallback() {
+		this.removeEventListener('pointerdown', this.boundOnPointerDown);
+		this.removeEventListener('wheel', this.boundOnWheel);
+		this.removeEventListener('contextmenu', this.boundOnContextMenu);
+		this.slot.removeEventListener('slotchange', this.boundOnSlotChange);
+		this.disconnectAllTemporaryEventListeners();
+	}
+
+
+	connectedMoveCallback() {
+		// do nothing
+	}
+
+
+	static get observedAttributes() {
+		return ['min-zoom-level', 'max-zoom-level', 'zoom-level'];
+	}
+
+
+	attributeChangedCallback(attr, oldValue, newValue) {
+		if (oldValue === newValue) return;
+
+		switch (attr) {
+			case 'min-zoom-level': {
+				if (newValue == null) this.minZoomLevel = this.defaultMinZoomLevel;
+				else this.minZoomLevel = this.parseZoomLevel(newValue);
+				if (this.currentZoomLevel < this.minZoomLevel) {
+					this.currentZoomLevel = this.minZoomLevel;
+				}
+			} break;
+
+			case 'max-zoom-level': {
+				if (newValue == null) this.maxZoomLevel = this.defaultMaxZoomLevel;
+				else this.maxZoomLevel = this.parseZoomLevel(newValue);
+				if (this.currentZoomLevel > this.maxZoomLevel) {
+					this.currentZoomLevel = this.maxZoomLevel;
+				}
+			} break;
+
+			case 'zoom-level': {
+				if (newValue == null) return;
+				this.currentZoomLevel = this.parseZoomLevel(newValue);
+			} break;
+		}
+	}
+
+
+	// MARK: Part getters
 
 
 	get scrollMarginContainer() {
@@ -90,304 +159,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
-	static beforeInteractionEventType = 'before-interaction';
-	static afterInteractionEventType = 'after-interaction';
-
-	dispatchInteractionEvent(interaction, type) {
-		if (!interaction) interaction = 'none';
-		this.dispatchEvent(
-			new CustomEvent(type, {
-				bubbles: true,
-				composed: true,
-				detail: {
-					interaction,
-				}
-			})
-		);
-	}
-
-
-	/** Timestamp du dernier event `pointerup`. */
-	lastPointerUpTime = 0;
-
-	/** Si les deux derniers events `pointerup` avaient chacun suivi un event `pointermove` significatif. */
-	lastPointersHadMoved = [false, false];
-
-	/** Si le dernier event `pointerup` était un double-tap. */
-	lastPointerWasDoubleTap = false;
-
-	/** Compteur du nombre d'events `pointerup` depuis le dernier double-tap. */
-	pointerUpsCount = 0;
-
-	/** Le délai maximal entre deux events `pointerup` pour déclencher un double-tap. */
-	maxDoubleTapDelay = 500; // ms
-
-	/** Le nombre minimal de pixels dont l'event `pointermove` doit bouger par rapport à la position initiale. En-dessous, on ignore le `pointermove` (car sinon, l'imprécision avec un doigt déclenche l'événement). */
-	minMoveThreshold = 10; // px
-
-	/** Liste des pointeurs actuellement down avec leur event `pointerdown`. */
-	currentPointerDownEvents = new Map();
-
-	/** Liste des pointeurs actuellement en mouvement avec leur event `pointermove`. */
-	currentPointerMoveEvents = new Map();
-
-	/** Si l'event `pointermove` est en attente de la prochaine frame. */
-	pointermoveDebounce = false;
-
-	/** Associe à chaque pointeur un AbortController. */
-	currentPointersAbortControllers = new Map();
-
-	/** Timestamp du dernier event `wheel`. */
-	lastWheelTime = 0;
-
-	/** Si l'event `wheel` est en attente de la prochaine frame. */
-	wheelDebounce = false;
-
-	/** Timeout pour reset le compteur de `pointerup`. */
-	pointerUpTimeout = -1;
-
-
-	/**
-	 * Quand le pointeur touche la section, on écoute les événements requis pour détecter :
-	 * - le clic maintenu puis glissé (pour scroller la section)
-	 * - le double clic (pour zoomer la section, ou dézoomer si clic droit souris)
-	 * - le double clic maintenu puis glissé verticalement (pour zoomer la section si vers le bas, dézoomer si vers le haut)
-	 * - le pinch (pour zoomer la section si écarté, dézoomer si rapproché)
-	 */
-	onPointerDown(downEvent) {
-		this.setPointerCapture(downEvent.pointerId);
-		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
-
-		const abortController = new AbortController();
-		this.currentPointersAbortControllers.set(downEvent.pointerId, abortController);
-
-		const pointerDownTime = Date.now();
-		const startScrollPosition = {
-			x: this.scrollLeft,
-			y: this.scrollTop,
-		};
-
-		const isCandidateForDoubleTap = downEvent.pointerType === 'touch'
-			&& this.currentPointerDownEvents.size === 1
-			&& !this.lastPointerWasDoubleTap
-			&& this.lastPointersHadMoved.every(p => !p)
-			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
-
-		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent, startScrollPosition, isCandidateForDoubleTap);
-		const onPointerUp = (upEvent) => this.onPointerUp.bind(this)(upEvent, downEvent);
-		const onPointerCancel = (cancelEvent) => this.onPointerCancel.bind(this)(cancelEvent, downEvent);
-
-		const abortSignal = abortController.signal;
-		this.addEventListener('pointermove', onPointerMove, { signal: abortSignal });
-		this.addEventListener('pointerup', onPointerUp, { signal: abortSignal });
-		this.addEventListener('pointercancel', onPointerCancel, { signal: abortSignal });
-	}
-	boundOnPointerDown = this.onPointerDown.bind(this);
-
-
-	/**
-	 * Quand le pointeur se déplace, on détermine si :
-	 * - un seul pointeur est down, auquel cas :
-	 *     - si on est après un double-tap, on dé/zoome si le mouvement est vertical
-	 *     - sinon, on scrolle dans la section
-	 * - deux points sont down, auquel cas :
-	 *     - on lance un événement custom `pinch`
-	 */
-	onPointerMove(
-		moveEvent,
-		downEvent,
-		startScrollPosition,
-		isCandidateForDoubleTap,
-	) {
-		this.currentPointerMoveEvents.set(moveEvent.pointerId, moveEvent);
-
-		if (this.pointermoveDebounce) return;
-		this.pointermoveDebounce = true;
-
-		if (Math.sqrt(
-			(moveEvent.clientX - downEvent.clientX) ** 2
-			+ (moveEvent.clientY - downEvent.clientY) ** 2
-		) > this.minMoveThreshold) {
-			downEvent.hasMovedSignificantly = true;
-		}
-
-		let interaction = '';
-		switch (this.currentPointerDownEvents.size) {
-			case 1:
-				if (isCandidateForDoubleTap) interaction = 'doubleTapScroll';
-				else interaction = 'scroll';
-				break;
-			default:
-				interaction = 'pinch';
-		}
-
-		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.beforeInteractionEventType);
-
-		switch (interaction) {
-			// ✅ FAIT
-			case 'scroll': {
-				this.scrollTo({
-					left: startScrollPosition.x - (moveEvent.clientX - downEvent.clientX),
-					top: startScrollPosition.y - (moveEvent.clientY - downEvent.clientY),
-					behavior: 'instant',
-				});
-				if (this.constructor.log) console.log('move', 'scroll', {
-					left: startScrollPosition.x - (moveEvent.clientX - downEvent.clientX),
-					top: startScrollPosition.y - (moveEvent.clientY - downEvent.clientY)
-				});
-			} break;
-
-			// 🟧 À FAIRE
-			case 'doubleTapScroll': {
-				if (this.constructor.log) console.log('doubleTapScroll');
-			} break;
-
-			// 🟧 À FAIRE
-			case 'pinch': {
-				let clientXTotal = 0, clientYTotal = 0;
-				for (const evt of this.currentPointerMoveEvents.values()) {
-					clientXTotal += evt.clientX;
-					clientYTotal += evt.clientY;
-				}
-				const pointersMiddle = {
-					x: clientXTotal / this.currentPointerMoveEvents.size,
-					y: clientYTotal / this.currentPointerMoveEvents.size
-				};
-
-				let radiusTotal = 0;
-				for (const evt of this.currentPointerMoveEvents.values()) {
-					radiusTotal += Math.sqrt(
-						(evt.clientX - pointersMiddle.x) ** 2
-						+ (evt.clientY - pointersMiddle.y) ** 2
-					);
-				}
-				const averageRadius = radiusTotal / this.currentPointerMoveEvents.size;
-
-				// TODO zoomLevel = averageRadius / startAverageRadius (calculé pareil avec les downEvents, dans le onpointerdown)
-				// TODO scrollPosition = currentScrollPos + pointersMiddle - startPointersMiddle (calculé pareil avec les downEvents, dans le onpointerdown)
-
-				if (this.constructor.log) console.log('pinch', pointersMiddle, averageRadius);
-			} break;
-		}
-
-		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.afterInteractionEventType);
-
-		requestAnimationFrame(() => this.pointermoveDebounce = false);
-	}
-
-
-	/**
-	 * Quand le pointeur quitte la page, on détermine si :
-	 * - c'est le deuxième pointeur à quitter la page en moins de `this.maxDoubleTapDelay` alors qu'il n'y avait qu'un pointeur sur la page, auquel cas :
-	 *     - on lance un événement custom `double-tap`
-	 */
-	onPointerUp(
-		upEvent,
-		downEvent,
-	) {
-		if (this.constructor.log) console.log('up', upEvent);
-		this.pointerUpsCount++;
-
-		const now = Date.now();
-
-		this.lastPointersHadMoved.push(downEvent.hasMovedSignificantly === true);
-		this.lastPointersHadMoved.shift();
-
-		clearTimeout(this.pointerUpTimeout);
-		if (downEvent.hasMovedSignificantly) {
-			this.pointerUpsCount = 0;
-		} else {
-			this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
-		}
-
-		let interaction = '';
-		if (this.pointerUpsCount === 2) {
-			this.pointerUpsCount = 0
-			if (this.lastPointersHadMoved.every(p => !p)) {
-				interaction = 'doubleTap';
-			}
-		}
-
-		if (this.constructor.log) console.log(this.pointerUpsCount);
-
-		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.beforeInteractionEventType);
-
-		switch (interaction) {
-			// 🟧 À FAIRE
-			case 'doubleTap': {
-				this.lastPointerWasDoubleTap = true;
-				if (this.constructor.log) console.log('doubleTap', upEvent.button === 2 ? 'dézoom' : 'zoom');
-			} break;
-
-			default:
-				this.lastPointerWasDoubleTap = false;
-		}
-
-		this.lastPointerUpTime = now;
-
-		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.afterInteractionEventType);
-
-		this.onPointerCancel(upEvent, downEvent);
-	}
-
-
-	/**
-	 * Quand le pointeur est annulé, on retire les event listeners.
-	 */
-	onPointerCancel(
-		cancelEvent,
-		downEvent,
-	) {
-		if (this.constructor.log) console.log('cancel', cancelEvent);
-		const abortController = this.currentPointersAbortControllers.get(cancelEvent.pointerId);
-		if (abortController) {
-			abortController.abort();
-			this.currentPointersAbortControllers.delete(cancelEvent.pointerId);
-		}
-		this.currentPointerDownEvents.delete(downEvent.pointerId);
-	}
-
-
-	onWheel(event) {
-		if (this.wheelDebounce) return;
-		this.wheelDebounce = true;
-
-		const interaction = 'wheelZoom';
-		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.beforeInteractionEventType);
-
-		// ✅ FAIT
-		const zoomRatio = 1 - .1 * Math.sign(event.deltaY);
-		this.zoom(
-			this.currentZoomLevel * zoomRatio,
-			{ x: event.clientX, y: event.clientY },
-			this.getBoundingClientRect(),
-		);
-
-		this.dispatchInteractionEvent(interaction, ScrollZoomBlock.afterInteractionEventType);
-
-		requestAnimationFrame(() => this.wheelDebounce = false);
-	}
-	boundOnWheel = this.onWheel.bind(this);
-
-
-	onDoubleTap(event) {
-
-	}
-	boundOnDoubleTap = this.onDoubleTap.bind(this);
-
-
-	onContextMenu(event) {
-		event.preventDefault();
-	}
-	boundOnContextMenu = this.onContextMenu.bind(this);
-
-
-	disconnectAllTemporaryEventListeners() {
-		for (const abortController of this.currentPointersAbortControllers.values()) {
-			abortController.abort();
-		}
-		this.currentPointersAbortControllers.clear();
-	}
+	// MARK: Position initialisation
 
 
 	onSlotChange(event) {
@@ -427,8 +199,6 @@ export class ScrollZoomBlock extends HTMLElement {
 			startPositionY = startPositionX;
 		}
 
-		if (this.constructor.log) console.log(startPositionX, startPositionY);
-
 		return {
 			x: startPositionX,
 			y: startPositionY
@@ -446,6 +216,30 @@ export class ScrollZoomBlock extends HTMLElement {
 		block: 0,
 	}
 
+	#size = {
+		inline: 0,
+		block: 0
+	};
+
+
+	#computeScrollMargins(zoomLevel) {
+		const marginInline = Math.max(0, Math.ceil(this.#size.inline - this.#contentSize.inline * zoomLevel));
+		const marginBlock = Math.max(0, Math.ceil(this.#size.block - this.#contentSize.block * zoomLevel));
+
+		return {
+			inline: marginInline,
+			block: marginBlock,
+		};
+	}
+
+
+	#applyScrollMargins(zoomLevel, scrollMargins = this.#computeScrollMargins(zoomLevel)) {
+		const scrollMarginContainer = this.scrollMarginContainer;
+		scrollMarginContainer.style.setProperty('--inline-size', `${Math.ceil(this.#contentSize.inline * zoomLevel + 2 * scrollMargins.inline)}px`);
+		scrollMarginContainer.style.setProperty('--block-size', `${Math.ceil(this.#contentSize.block * zoomLevel + 2 * scrollMargins.block)}px`);
+		this.#scrollMargins = scrollMargins;
+	}
+
 
 	#resizeScrollMarginContainer(
 		contentInlineSize,
@@ -453,47 +247,40 @@ export class ScrollZoomBlock extends HTMLElement {
 		sectionInlineSize,
 		sectionBlockSize,
 	) {
-		const marginInline = Math.max(0, sectionInlineSize - contentInlineSize);
-		const marginBlock = Math.max(0, sectionBlockSize - contentBlockSize);
-
-		if (this.constructor.log) console.log(sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize, marginInline, marginBlock);
+		const marginInline = Math.max(0, Math.ceil(sectionInlineSize - contentInlineSize));
+		const marginBlock = Math.max(0, Math.ceil(sectionBlockSize - contentBlockSize));
 
 		const scrollMarginContainer = this.scrollMarginContainer;
-		scrollMarginContainer.style.setProperty('--inline-size', `${(contentInlineSize + 2 * marginInline).toFixed(2)}px`);
-		scrollMarginContainer.style.setProperty('--block-size', `${(contentBlockSize + 2 * marginBlock).toFixed(2)}px`);
+		scrollMarginContainer.style.setProperty('--inline-size', `${Math.ceil(contentInlineSize + 2 * marginInline)}px`);
+		scrollMarginContainer.style.setProperty('--block-size', `${Math.ceil(contentBlockSize + 2 * marginBlock)}px`);
 
-		this.#scrollMargins = {
+		return {
 			inline: marginInline,
 			block: marginBlock,
 		};
 	}
 
 
-	initializeScrollPosition(event) {
+	initializeScrollPosition(
+		sectionSize,
+		contentSize,
+	) {
 		const startPosition = this.startPosition;
-		const { sectionInlineSize, sectionBlockSize, contentInlineSize, contentBlockSize } = event.detail;
 
-		this.#contentSize = {
-			inline: contentInlineSize,
-			block: contentBlockSize,
-		};
+		this.#contentSize = contentSize;
+		this.#size = sectionSize;
 
-		this.#resizeScrollMarginContainer(
-			contentInlineSize,
-			contentBlockSize,
-			sectionInlineSize,
-			sectionBlockSize,
-		);
+		this.#applyScrollMargins(1);
 
 		let scrollLeft, scrollTop;
 
-		if (contentInlineSize < sectionInlineSize) {
+		if (contentSize.inline < sectionSize.inline) {
 			switch (startPosition.x) {
 				case 'start':
-					scrollLeft = sectionInlineSize - contentInlineSize;
+					scrollLeft = Math.round(sectionSize.inline - contentSize.inline);
 					break;
 				case 'center':
-					scrollLeft = .5 * (sectionInlineSize - contentInlineSize);
+					scrollLeft = Math.round(.5 * (sectionSize.inline - contentSize.inline));
 					break;
 				case 'end':
 				default:
@@ -502,10 +289,10 @@ export class ScrollZoomBlock extends HTMLElement {
 
 			switch (startPosition.y) {
 				case 'start':
-					scrollTop = sectionBlockSize - contentBlockSize;
+					scrollTop = Math.round(sectionSize.block - contentSize.block);
 					break;
 				case 'center':
-					scrollTop = .5 * (sectionBlockSize - contentBlockSize);
+					scrollTop = Math.round(.5 * (sectionSize.block - contentSize.block));
 					break;
 				case 'end':
 				default:
@@ -517,11 +304,11 @@ export class ScrollZoomBlock extends HTMLElement {
 					scrollLeft = 0;
 					break;
 				case 'center':
-					scrollLeft = .5 * (contentInlineSize - sectionInlineSize);
+					scrollLeft = Math.round(.5 * (contentSize.inline - sectionSize.inline));
 					break;
 				case 'end':
 				default:
-					scrollLeft = contentInlineSize - sectionInlineSize;
+					scrollLeft = Math.round(contentSize.inline - sectionSize.inline);
 			}
 
 			switch (startPosition.y) {
@@ -529,26 +316,394 @@ export class ScrollZoomBlock extends HTMLElement {
 					scrollTop = 0;
 					break;
 				case 'center':
-					scrollTop = .5 * (contentBlockSize - sectionBlockSize);
+					scrollTop = Math.round(.5 * (contentSize.block - sectionSize.block));
 					break;
 				case 'end':
 				default:
-					scrollTop = contentBlockSize - sectionBlockSize;
+					scrollTop = Math.round(contentSize.block - sectionSize.block);
 			}
 		}
 
-		this.#size = {
-			inline: sectionInlineSize,
-			block: sectionBlockSize,
+		this.scrollTo({
+			left: scrollLeft,
+			top: scrollTop,
+			behavior: 'instant'
+		});
+	}
+
+
+	// #endregion
+	// ----------------------
+
+
+
+	// --------------------
+	// #region INTERACTIONS
+
+
+	/** Timestamp du dernier event `pointerup`. */
+	lastPointerUpTime = 0;
+
+	/** Si les deux derniers events `pointerup` avaient chacun suivi un event `pointermove` significatif. */
+	lastPointersHadMoved = [false, false];
+
+	/** Si le dernier event `pointerup` était un double-tap. */
+	lastPointerWasDoubleTap = false;
+
+	/** Compteur du nombre d'events `pointerup` depuis le dernier double-tap. */
+	pointerUpsCount = 0;
+
+	/** Le délai maximal entre deux events `pointerup` pour déclencher un double-tap. */
+	maxDoubleTapDelay = 500; // ms
+
+	/** Le nombre minimal de pixels dont l'event `pointermove` doit bouger par rapport à la position initiale. En-dessous, on ignore le `pointermove` (car sinon, l'imprécision avec un doigt déclenche l'événement). */
+	minMoveThreshold = 10; // px
+
+	/** Liste des pointeurs actuellement down avec leur event `pointerdown`. */
+	currentPointerDownEvents = new Map();
+
+	/** Liste des pointeurs actuellement en mouvement avec leur event `pointermove`. */
+	currentPointerMoveEvents = new Map();
+
+	/** Si l'event `pointermove` est en attente de la prochaine frame. */
+	pointermoveDebounce = false;
+
+	/** Timestamp du dernier event `wheel`. */
+	lastWheelTime = 0;
+
+	/** Si l'event `wheel` est en attente de la prochaine frame. */
+	wheelDebounce = false;
+
+	/** Timeout pour reset le compteur de `pointerup`. */
+	pointerUpTimeout = -1;
+
+
+	// MARK: pointerdown
+	/**
+	 * Quand le pointeur touche la section, on écoute les événements requis pour détecter :
+	 * - le clic maintenu puis glissé (pour scroller la section)
+	 * - le double clic (pour zoomer la section, ou dézoomer si clic droit souris)
+	 * - le double clic maintenu puis glissé verticalement (pour zoomer la section si vers le bas, dézoomer si vers le haut)
+	 * - le pinch (pour zoomer la section si écarté, dézoomer si rapproché)
+	 */
+	onPointerDown(downEvent) {
+		downEvent.preventDefault();
+
+		this.setPointerCapture(downEvent.pointerId);
+		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
+
+		const abortController = new AbortController();
+		this.currentPointersAbortControllers.set(downEvent.pointerId, abortController);
+
+		const pointerDownTime = Date.now();
+		const startScrollPosition = {
+			x: this.scrollLeft,
+			y: this.scrollTop,
 		};
 
-		if (this.constructor.log) console.log(startPosition, scrollLeft, scrollTop);
-		this.scrollTo({ left: scrollLeft, top: scrollTop, behavior: 'instant' });
+		const isCandidateForDoubleTap = downEvent.pointerType === 'touch'
+			&& this.currentPointerDownEvents.size === 1
+			&& !this.lastPointerWasDoubleTap
+			&& this.lastPointersHadMoved.every(p => !p)
+			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
+
+		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent, startScrollPosition, isCandidateForDoubleTap);
+		const onPointerUp = (upEvent) => this.onPointerUp.bind(this)(upEvent, downEvent);
+		const onPointerCancel = (cancelEvent) => this.onPointerCancel.bind(this)(cancelEvent, downEvent);
+
+		const abortSignal = abortController.signal;
+		this.addEventListener('pointermove', onPointerMove, { signal: abortSignal });
+		this.addEventListener('pointerup', onPointerUp, { signal: abortSignal });
+		this.addEventListener('pointercancel', onPointerCancel, { signal: abortSignal });
 	}
-	boundInitializeScrollPosition = this.initializeScrollPosition.bind(this);
+	boundOnPointerDown = this.onPointerDown.bind(this);
 
 
-	#size = { inline: 0, block: 0 };
+	// MARK: pointermove
+	/**
+	 * Quand le pointeur se déplace, on détermine si :
+	 * - un seul pointeur est down, auquel cas :
+	 *     - si on est après un double-tap, on dé/zoome si le mouvement est vertical
+	 *     - sinon, on scrolle dans la section
+	 * - deux points sont down, auquel cas :
+	 *     - on lance un événement custom `pinch`
+	 */
+	onPointerMove(
+		moveEvent,
+		downEvent,
+		startScrollPosition,
+		isCandidateForDoubleTap,
+	) {
+		moveEvent.preventDefault();
+
+		this.currentPointerMoveEvents.set(moveEvent.pointerId, moveEvent);
+
+		if (this.pointermoveDebounce) return;
+		this.pointermoveDebounce = true;
+
+		const deltaX = moveEvent.clientX - downEvent.clientX;
+		const deltaY = moveEvent.clientY - downEvent.clientY;
+		const deltaDistance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+		if (deltaDistance > this.minMoveThreshold) {
+			downEvent.hasMovedSignificantly = true;
+		}
+
+		let interaction = '';
+		switch (this.currentPointerDownEvents.size) {
+			case 1:
+				if (isCandidateForDoubleTap) interaction = 'doubleTapScroll';
+				else interaction = 'scroll';
+				break;
+			default:
+				interaction = 'pinch';
+		}
+
+		switch (interaction) {
+			// ✅ FAIT
+			case 'scroll': {
+				const newScrollPosition = {
+					x: Math.round(startScrollPosition.x - deltaX),
+					y: Math.round(startScrollPosition.y - deltaY),
+				};
+
+				const interactionDetail = {
+					previousScrollPosition: startScrollPosition,
+					newScrollPosition: newScrollPosition,
+				};
+
+				this.dispatchInteractionEvent('before', interaction, interactionDetail);
+
+				this.scrollTo({
+					left: newScrollPosition.x,
+					top: newScrollPosition.y,
+					behavior: 'instant',
+				});
+				
+				this.dispatchInteractionEvent('after', interaction, interactionDetail);
+			} break;
+
+			// 🟧 À FAIRE
+			case 'doubleTapScroll': {
+				const interactionDetail = {};
+				this.dispatchInteractionEvent('before', interaction, interactionDetail);
+				this.dispatchInteractionEvent('after', interaction, interactionDetail);
+			} break;
+
+			// 🟧 À FAIRE
+			case 'pinch': {
+				let clientXTotal = 0, clientYTotal = 0;
+				for (const evt of this.currentPointerMoveEvents.values()) {
+					clientXTotal += evt.clientX;
+					clientYTotal += evt.clientY;
+				}
+				const pinchCenter = {
+					x: Math.round(clientXTotal / this.currentPointerMoveEvents.size),
+					y: Math.round(clientYTotal / this.currentPointerMoveEvents.size)
+				};
+
+				let radiusTotal = 0;
+				for (const evt of this.currentPointerMoveEvents.values()) {
+					const _deltaX = evt.clientX - pinchCenter.x;
+					const _deltaY = evt.clientY - pinchCenter.y;
+					const _deltaDistance = Math.sqrt(_deltaX ** 2 + _deltaY ** 2);
+					radiusTotal += _deltaDistance;
+				}
+				const averageRadius = radiusTotal / this.currentPointerMoveEvents.size;
+
+				// TODO zoomLevel = averageRadius / startAverageRadius (calculé pareil avec les downEvents, dans le onpointerdown)
+				// TODO scrollPosition = currentScrollPos + pointersMiddle - startPointersMiddle (calculé pareil avec les downEvents, dans le onpointerdown)
+
+				const interactionDetail = {
+					pinchCenter: pinchCenter,
+					pinchRadius: averageRadius,
+				};
+
+				this.dispatchInteractionEvent('before', interaction, interactionDetail);
+				this.dispatchInteractionEvent('after', interaction, interactionDetail);
+			} break;
+
+			default:
+				this.dispatchInteractionEvent('before', interaction);
+				this.dispatchInteractionEvent('before', interaction);
+		}
+
+		requestAnimationFrame(() => this.pointermoveDebounce = false);
+	}
+
+
+	// MARK: pointerup
+	/**
+	 * Quand le pointeur quitte la page, on détermine si :
+	 * - c'est le deuxième pointeur à quitter la page en moins de `this.maxDoubleTapDelay` alors qu'il n'y avait qu'un pointeur sur la page, auquel cas :
+	 *     - on lance un événement custom `double-tap`
+	 */
+	onPointerUp(
+		upEvent,
+		downEvent,
+	) {
+		upEvent.preventDefault();
+
+		this.pointerUpsCount++;
+
+		const now = Date.now();
+
+		this.lastPointersHadMoved.push(downEvent.hasMovedSignificantly === true);
+		this.lastPointersHadMoved.shift();
+
+		clearTimeout(this.pointerUpTimeout);
+		if (downEvent.hasMovedSignificantly) {
+			this.pointerUpsCount = 0;
+		} else {
+			this.pointerUpTimeout = setTimeout(() => this.pointerUpsCount = 0, this.maxDoubleTapDelay);
+		}
+
+		let interaction = '';
+		if (this.pointerUpsCount === 2) {
+			this.pointerUpsCount = 0
+			if (this.lastPointersHadMoved.every(p => !p)) {
+				interaction = 'doubleTap';
+			}
+		}
+
+		switch (interaction) {
+			// 🟧 À FAIRE
+			case 'doubleTap': {
+				this.lastPointerWasDoubleTap = true;
+				const zoomDirection = upEvent.button === 2 ? -1 : 1;
+				const zoomPoint = {
+					x: Math.round(upEvent.clientX),
+					y: Math.round(upEvent.clientY),
+				};
+
+				const interactionDetail = {
+					direction: zoomDirection,
+					point: zoomPoint,
+				};
+
+				this.dispatchInteractionEvent('before', interaction, interactionDetail);
+
+				this.smoothZoom(
+					(1.7 ** zoomDirection) * this.currentZoomLevel,
+					zoomPoint,
+				).then(() => {
+					this.dispatchInteractionEvent('after', interaction, interactionDetail);
+				});
+			} break;
+
+			default:
+				this.lastPointerWasDoubleTap = false;
+				this.dispatchInteractionEvent('before', interaction);
+				this.dispatchInteractionEvent('after', interaction);
+		}
+
+		this.lastPointerUpTime = now;
+
+		this.onPointerCancel(upEvent, downEvent);
+	}
+
+
+	// MARK: pointercancel
+	/**
+	 * Quand le pointeur est annulé, on retire les event listeners.
+	 */
+	onPointerCancel(
+		cancelEvent,
+		downEvent,
+	) {
+		const abortController = this.currentPointersAbortControllers.get(cancelEvent.pointerId);
+		if (abortController) {
+			abortController.abort();
+			this.currentPointersAbortControllers.delete(cancelEvent.pointerId);
+		}
+		this.currentPointerDownEvents.delete(downEvent.pointerId);
+	}
+
+
+	// MARK: wheel
+	onWheel(event) {
+		if (this.wheelDebounce) return;
+		this.wheelDebounce = true;
+
+		const interaction = 'wheel';
+
+		// ✅ FAIT
+		const zoomRatio = 1 - .1 * Math.sign(event.deltaY);
+
+		const interactionDetail = {
+			direction: Math.sign(event.deltaY),
+		};
+
+		this.dispatchInteractionEvent('before', interaction, interactionDetail);
+
+		this.zoom(
+			this.currentZoomLevel * zoomRatio,
+			{ x: event.clientX, y: event.clientY },
+		);
+
+		this.dispatchInteractionEvent('after', interaction, interactionDetail);
+
+		requestAnimationFrame(() => this.wheelDebounce = false);
+	}
+	boundOnWheel = this.onWheel.bind(this);
+
+
+	// MARK: contextmenu
+	onContextMenu(event) {
+		event.preventDefault();
+	}
+	boundOnContextMenu = this.onContextMenu.bind(this);
+
+
+	// MARK: CustomEvent
+	dispatchInteractionEvent(timing, interaction, detail = {}) {
+		let type;
+		switch (timing) {
+			case 'before': type = 'before-interaction'; break;
+			case 'after': type = 'after-interaction'; break;
+			default: throw new Error("Cannot dispatch an interaction event that is neither before nor after interaction");
+		}
+
+		if (!interaction) interaction = 'none';
+		detail.interaction = interaction;
+		this.dispatchEvent(
+			new CustomEvent(type, {
+				bubbles: true,
+				composed: true,
+				detail: detail,
+			})
+		);
+	}
+
+
+	// MARK: abort EventListeners
+
+	/** Associe à chaque pointeur un AbortController. */
+	currentPointersAbortControllers = new Map();
+
+	disconnectAllTemporaryEventListeners() {
+		for (const abortController of this.currentPointersAbortControllers.values()) {
+			abortController.abort();
+		}
+		this.currentPointersAbortControllers.clear();
+	}
+
+
+	// #endregion
+	// ----------------------
+
+
+
+	// ------------
+	// #region ZOOM
+
+
+	defaultMinZoomLevel = .25;
+	minZoomLevel = this.defaultMinZoomLevel;
+
+	defaultMaxZoomLevel = 4;
+	maxZoomLevel = this.defaultMaxZoomLevel;
+
 	#currentZoomLevel = 1;
 
 	get currentZoomLevel() {
@@ -558,12 +713,6 @@ export class ScrollZoomBlock extends HTMLElement {
 	set currentZoomLevel(zoomLevel) {
 		this.zoom(zoomLevel, { x: this.#size.inline / 2, y: this.#size.block / 2 });
 	}
-
-	defaultMinZoomLevel = .25;
-	minZoomLevel = this.defaultMinZoomLevel;
-
-	defaultMaxZoomLevel = 4;
-	maxZoomLevel = this.defaultMaxZoomLevel;
 
 
 	parseZoomLevel(level) {
@@ -578,113 +727,169 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
-	zoom(
+	clampZoomLevel(zoomLevel) {
+		return Math.max(this.minZoomLevel, Math.min(zoomLevel, this.maxZoomLevel));
+	}
+
+
+	#computeZoom(
 		zoomLevel,
 		zoomPoint,
 		sectionRect,
+		oldZoomLevel,
+		oldScrollPosition,
 	) {
-		zoomLevel = Math.max(this.minZoomLevel, Math.min(zoomLevel, this.maxZoomLevel));
+		zoomLevel = this.clampZoomLevel(zoomLevel);
 
 		// On récupère la position du point de zoom en pourcentage du contenu
-		// - position horizontale
-		const contentInlineSize = this.#contentSize.inline * this.#currentZoomLevel;
-		const sectionX = zoomPoint.x - sectionRect.x;
-		const sectionScrollX = this.scrollLeft + sectionX;
-		const contentX = sectionScrollX - this.#scrollMargins.inline;
-		const pctX = contentX / contentInlineSize;
-		// - position verticale
-		const contentBlockSize = this.#contentSize.block * this.#currentZoomLevel;
-		const sectionY = zoomPoint.y - sectionRect.y;
-		const sectionScrollY = this.scrollTop + sectionY;
-		const contentY = sectionScrollY - this.#scrollMargins.block;
-		const pctY = contentY / contentBlockSize;
+		const contentSizeWithOldZoom = {
+			inline: this.#contentSize.inline * oldZoomLevel,
+			block: this.#contentSize.block * oldZoomLevel,
+		};
+		const zoomPointRelativeToSection = {
+			x: zoomPoint.x - sectionRect.x,
+			y: zoomPoint.y - sectionRect.y,
+		};
+		const zoomPointRelativeToSectionScroll = {
+			x: oldScrollPosition.x + zoomPointRelativeToSection.x,
+			y: oldScrollPosition.y + zoomPointRelativeToSection.y,
+		};
+		const zoomPointRelativeToContent = {
+			x: zoomPointRelativeToSectionScroll.x - this.#scrollMargins.inline,
+			y: zoomPointRelativeToSectionScroll.y - this.#scrollMargins.block,
+		};
+		const zoomPointAsPercentageOfContent = {
+			x: zoomPointRelativeToContent.x / contentSizeWithOldZoom.inline,
+			y: zoomPointRelativeToContent.y / contentSizeWithOldZoom.block,
+		};
 
-		// On applique le nouveau niveau de zoom
-		this.contentScaleContainer.style.setProperty('--zoom-level', zoomLevel.toFixed(8));
-		this.#currentZoomLevel = zoomLevel;
+		const newContentSize = {
+			inline: this.#contentSize.inline * zoomLevel,
+			block: this.#contentSize.block * zoomLevel,
+		};
 
-		// On redimensionne le slot pour maintenir le contenu "prisonnier" de la section
-		// lors du scroll quand il est plus petit que la section
-		this.#resizeScrollMarginContainer(
-			this.#contentSize.inline * zoomLevel,
-			this.#contentSize.block * zoomLevel,
-			this.#size.inline,
-			this.#size.block,
-		);
+		const newScrollMargins = this.#computeScrollMargins(zoomLevel);
 
 		// On calcule la nouvelle position de scroll de la section pour maintenir le point
 		// de zoom au même endroit
-		// - position horizontale
-		const newContentInlineSize = this.#contentSize.inline * zoomLevel;
-		const newContentX = pctX * newContentInlineSize;
-		const newSectionScrollX = newContentX + this.#scrollMargins.inline;
-		const newScrollLeft = newSectionScrollX - sectionX;
-		// - position verticale
-		const newContentBlockSize = this.#contentSize.block * zoomLevel;
-		const newContentY = pctY * newContentBlockSize;
-		const newSectionScrollY = newContentY + this.#scrollMargins.block;
-		const newScrollTop = newSectionScrollY - sectionY;
+		const zoomPointRelativeToNewContent = {
+			x: zoomPointAsPercentageOfContent.x * newContentSize.inline,
+			y: zoomPointAsPercentageOfContent.y * newContentSize.block,
+		};
+		const zoomPointRelativeToNewSectionScroll = {
+			x: zoomPointRelativeToNewContent.x + newScrollMargins.inline,
+			y: zoomPointRelativeToNewContent.y + newScrollMargins.block,
+		};
+
+		const newScrollPosition = {
+			x: Math.round(zoomPointRelativeToNewSectionScroll.x - zoomPointRelativeToSection.x),
+			y: Math.round(zoomPointRelativeToNewSectionScroll.y - zoomPointRelativeToSection.y),
+		};
+
+		return {
+			zoomLevel,
+			newScrollMargins,
+			newScrollPosition,
+		};
+	}
+
+
+	// MARK: instant zoom
+	zoom(
+		zoomLevel,
+		zoomPoint,
+		sectionRect = this.getBoundingClientRect(),
+		oldZoomLevel = this.currentZoomLevel,
+		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
+		dispatchEvents = true,
+	) {
+		const { zoomLevel: clampedZoomLevel, newScrollMargins, newScrollPosition } = this.#computeZoom(
+			zoomLevel,
+			zoomPoint,
+			sectionRect,
+			oldZoomLevel,
+			oldScrollPosition,
+		)
+
+		if (dispatchEvents) this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, clampedZoomLevel);
+
+		// On applique le nouveau niveau de zoom
+		this.contentScaleContainer.style.setProperty('--zoom-level', clampedZoomLevel.toFixed(8));
+		this.#currentZoomLevel = clampedZoomLevel;
+
+		// On redimensionne le slot pour maintenir le contenu "prisonnier" de la section
+		// lors du scroll quand il est plus petit que la section
+		this.#applyScrollMargins(clampedZoomLevel, newScrollMargins);
 
 		// On applique la nouvelle position du scroll
 		this.scrollTo({
-			left: newScrollLeft,
-			top: newScrollTop,
+			left: newScrollPosition.x,
+			top: newScrollPosition.y,
 			behavior: 'instant',
 		});
+
+		if (dispatchEvents) this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, clampedZoomLevel);
 	}
 
 
-	connectedCallback() {
-		this.addEventListener('pointerdown', this.boundOnPointerDown);
-		this.addEventListener('wheel', this.boundOnWheel);
-		this.addEventListener('contextmenu', this.boundOnContextMenu);
-		this.slot.addEventListener('slotchange', this.boundOnSlotChange);
-		this.addEventListener('resized-content', this.boundInitializeScrollPosition);
-	}
+	// MARK: smooth zoom
+	async smoothZoom(
+		zoomLevel,
+		zoomPoint,
+		zoomDuration = 400, // ms
+		sectionRect = this.getBoundingClientRect(),
+		oldZoomLevel = this.currentZoomLevel,
+		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
+	) {
+		const startTime = Date.now();
+		zoomLevel = this.clampZoomLevel(zoomLevel);
 
-	disconnectedCallback() {
-		this.removeEventListener('pointerdown', this.boundOnPointerDown);
-		this.removeEventListener('wheel', this.boundOnWheel);
-		this.removeEventListener('contextmenu', this.boundOnContextMenu);
-		this.slot.removeEventListener('slotchange', this.boundOnSlotChange);
-		this.removeEventListener('resized-content', this.boundInitializeScrollPosition);
-		this.disconnectAllTemporaryEventListeners();
-	}
+		this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, zoomLevel, true);
 
-	connectedMoveCallback() {
-		// do nothing
-	}
+		const startZoomLevel = this.currentZoomLevel;
+		let now = Date.now();
+		while (now - startTime < zoomDuration) {
+			const tempZoomLevel = startZoomLevel + (zoomLevel - startZoomLevel) * easeInOutQuad((now - startTime) / zoomDuration);
 
-	static get observedAttributes() {
-		return ['min-zoom-level', 'max-zoom-level', 'zoom-level'];
-	}
+			this.zoom(tempZoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, false);
 
-	attributeChangedCallback(attr, oldValue, newValue) {
-		if (oldValue === newValue) return;
-
-		switch (attr) {
-			case 'min-zoom-level': {
-				if (newValue == null) this.minZoomLevel = this.defaultMinZoomLevel;
-				else this.minZoomLevel = this.parseZoomLevel(newValue);
-				if (this.currentZoomLevel < this.minZoomLevel) {
-					this.currentZoomLevel = this.minZoomLevel;
-				}
-			} break;
-
-			case 'max-zoom-level': {
-				if (newValue == null) this.maxZoomLevel = this.defaultMaxZoomLevel;
-				else this.maxZoomLevel = this.parseZoomLevel(newValue);
-				if (this.currentZoomLevel > this.maxZoomLevel) {
-					this.currentZoomLevel = this.maxZoomLevel;
-				}
-			} break;
-
-			case 'zoom-level': {
-				if (newValue == null) return;
-				this.currentZoomLevel = this.parseZoomLevel(newValue);
-			} break;
+			await new Promise(resolve => requestAnimationFrame(resolve));
+			now = Date.now();
 		}
+
+		this.zoom(zoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, false);
+
+		this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, zoomLevel, true);
 	}
+
+
+	// MARK: CustomEvent
+	dispatchZoomEvent(timing, zoomPoint, previousZoomLevel, newZoomLevel, smooth = false) {
+		let type;
+		switch (timing) {
+			case 'before': type = 'before-zoom'; break;
+			case 'after': type = 'after-zoom'; break;
+			default: throw new Error("Cannot dispatch a zoom event that is neither before nor after zoom");
+		}
+
+		this.dispatchEvent(
+			new CustomEvent(type, {
+				bubbles: true,
+				composed: true,
+				detail: {
+					previousZoomLevel: previousZoomLevel,
+					zoomLevel: newZoomLevel,
+					zoomCenter: zoomPoint,
+					smooth: smooth,
+				},
+			})
+		);
+	}
+
+
+	// #endregion
+	// ------------
+
 }
 
 if (!customElements.get('scroll-zoom-block')) customElements.define('scroll-zoom-block', ScrollZoomBlock);

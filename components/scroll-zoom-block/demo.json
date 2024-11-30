@@ -2,8 +2,8 @@
   "title": "<scroll-zoom-block>",
   "imports": {
   },
-  "intro": "This block is interactive in the following ways: <ul><li>You can scroll inside it with your pointer or touch,<li>You can use pinch to zoom,<li>You can double click/tap to zoom,<li>You can double tap and maintain the second tap, then scroll vertically to zoom",
+  "intro": "This block is interactive in the following ways: <ul><li>scroll with your pointer or touch,<li>zoom in with your mouse wheel,<li>pinch to zoom,<li>double click/tap to zoom,<li>double tap, maintain and scroll to zoom.",
   "examples": [
-    "<scroll-zoom-block>\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>\n<style>\n  .big-content {\n    width: 5005px; height: 5005px;\n    background-image:\n      linear-gradient(to bottom, rgb(255, 255, 255, .5) 5px, transparent 5px),\n      linear-gradient(to right, rgb(255, 255, 255, .5) 5px, transparent 5px),\n      linear-gradient(to bottom right, red, blue);\n    background-size: 100px 100px, 100px 100px, 100% 100%;\n    box-shadow: inset 0px 0px 0px 5px white;\n  }\n</style>"
+    "<scroll-zoom-block>\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
   ]
 }
