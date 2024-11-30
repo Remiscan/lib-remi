@@ -352,11 +352,8 @@ export class ScrollZoomBlock extends HTMLElement {
 	/** Timestamp du dernier event `pointerup`. */
 	lastPointerUpTime = 0;
 
-	/** Si les deux derniers events `pointerup` avaient chacun suivi un event `pointermove` significatif. */
-	lastPointersHadMoved = [false, false];
-
-	/** Si le dernier event `pointerup` était un double-tap. */
-	lastPointerWasDoubleTap = false;
+	/** Précédent event `pointerdown`. */
+	lastPointerDownEvent = undefined;
 
 	/** Compteur du nombre d'events `pointerup` depuis le dernier double-tap. */
 	pointerUpsCount = 0;
@@ -375,9 +372,6 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	/** Si l'event `pointermove` est en attente de la prochaine frame. */
 	pointermoveDebounce = false;
-
-	/** Timestamp du dernier event `wheel`. */
-	lastWheelTime = 0;
 
 	/** Si l'event `wheel` est en attente de la prochaine frame. */
 	wheelDebounce = false;
@@ -409,13 +403,13 @@ export class ScrollZoomBlock extends HTMLElement {
 			y: this.scrollTop,
 		};
 
-		const isCandidateForDoubleTap = downEvent.pointerType === 'touch'
-			&& this.currentPointerDownEvents.size === 1
-			&& !this.lastPointerWasDoubleTap
-			&& this.lastPointersHadMoved.every(p => !p)
+		downEvent.couldBecomeDoubleTap = this.currentPointerDownEvents.size === 1
+			&& typeof this.lastPointerDownEvent !== 'undefined'
+			&& !this.lastPointerDownEvent.hasMovedSignificantly
+			&& !this.lastPointerDownEvent.becameDoubleTap
 			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
 
-		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent, startScrollPosition, isCandidateForDoubleTap);
+		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent, startScrollPosition);
 		const onPointerUp = (upEvent) => this.onPointerUp.bind(this)(upEvent, downEvent);
 		const onPointerCancel = (cancelEvent) => this.onPointerCancel.bind(this)(cancelEvent, downEvent);
 
@@ -440,7 +434,6 @@ export class ScrollZoomBlock extends HTMLElement {
 		moveEvent,
 		downEvent,
 		startScrollPosition,
-		isCandidateForDoubleTap,
 	) {
 		moveEvent.preventDefault();
 
@@ -460,7 +453,9 @@ export class ScrollZoomBlock extends HTMLElement {
 		let interaction = '';
 		switch (this.currentPointerDownEvents.size) {
 			case 1:
-				if (isCandidateForDoubleTap) interaction = 'doubleTapScroll';
+				if (downEvent.couldBecomeDoubleTap && downEvent.pointerType === 'touch' && this.lastPointerDownEvent.pointerType === 'touch') {
+					interaction = 'doubleTapScroll';
+				}
 				else interaction = 'scroll';
 				break;
 			default:
@@ -476,8 +471,8 @@ export class ScrollZoomBlock extends HTMLElement {
 				};
 
 				const interactionDetail = {
-					previousScrollPosition: startScrollPosition,
-					newScrollPosition: newScrollPosition,
+					startScrollPosition: startScrollPosition,
+					scrollPosition: newScrollPosition,
 				};
 
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
@@ -556,9 +551,6 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		const now = Date.now();
 
-		this.lastPointersHadMoved.push(downEvent.hasMovedSignificantly === true);
-		this.lastPointersHadMoved.shift();
-
 		clearTimeout(this.pointerUpTimeout);
 		if (downEvent.hasMovedSignificantly) {
 			this.pointerUpsCount = 0;
@@ -569,15 +561,25 @@ export class ScrollZoomBlock extends HTMLElement {
 		let interaction = '';
 		if (this.pointerUpsCount === 2) {
 			this.pointerUpsCount = 0
-			if (this.lastPointersHadMoved.every(p => !p)) {
+			if (
+				downEvent.couldBecomeDoubleTap
+				&& !downEvent.hasMovedSignificantly
+				&& (
+					downEvent.pointerType !== 'mouse'
+					|| (
+						downEvent.button === this.lastPointerDownEvent.button
+						&& (downEvent.button === 0 || downEvent.button === 2)
+					)
+				)
+			) {
 				interaction = 'doubleTap';
 			}
 		}
 
 		switch (interaction) {
-			// 🟧 À FAIRE
+			// ✅ FAIT
 			case 'doubleTap': {
-				this.lastPointerWasDoubleTap = true;
+				downEvent.becameDoubleTap = true;
 				const zoomDirection = upEvent.button === 2 ? -1 : 1;
 				const zoomPoint = {
 					x: Math.round(upEvent.clientX),
@@ -624,7 +626,9 @@ export class ScrollZoomBlock extends HTMLElement {
 			abortController.abort();
 			this.currentPointersAbortControllers.delete(cancelEvent.pointerId);
 		}
-		this.currentPointerDownEvents.delete(downEvent.pointerId);
+		this.currentPointerDownEvents.delete(cancelEvent.pointerId);
+		this.currentPointerMoveEvents.delete(cancelEvent.pointerId);
+		this.lastPointerDownEvent = downEvent;
 	}
 
 
@@ -850,10 +854,14 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: smooth zoom
+	/**
+	 * TODO Quand les Scoped Element Transitions existeront, s'en servir ici pour animer un seul zoom
+	 *      plutôt que d'en faire un à chaque frame.
+	 */
 	async smoothZoom(
 		zoomLevel,
 		zoomPoint,
-		zoomDuration = 400, // ms
+		zoomDuration = 300, // ms
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
 		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
