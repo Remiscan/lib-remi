@@ -1,4 +1,21 @@
 // @ts-check
+import { Point2D as BasePoint2D } from "../../js/geometry/mod.js";
+
+
+
+// MARK: Point2D
+class Point2D extends BasePoint2D {
+	round() {
+		return new Point2D(
+			Math.round(this.x),
+			Math.round(this.y),
+		);
+	}
+
+	positionVectorLength() {
+		return Math.sqrt(this.x ** 2 + this.y ** 2);
+	}
+}
 
 
 
@@ -50,9 +67,9 @@ sheet.replaceSync(/*css*/`
 
 /** @typedef {'start' | 'center' | 'end'} Alignment */
 /** @typedef {{ x: Alignment, y: Alignment }} StartPosition */
-/** @typedef {{ x: number, y: number }} Position */
 /** @typedef {{ inline: number, block: number }} Size */
-/** @typedef { PointerEvent & { couldBecomeDoubleTap?: boolean, becameDoubleTap?: boolean, hasMovedSignificantly?: boolean } } ExtPointerEvent */
+/** @typedef { PointerEvent & Partial<{ couldBecomeDoubleTap: boolean, becameDoubleTap: boolean, hasMovedSignificantly: boolean, startScrollPosition: Point2D }> } ExtPointerDownEvent */
+/** @typedef {{ centerPoint: Point2D, averageRadius: number }} PinchData */
 
 
 
@@ -231,16 +248,19 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/** @type {Size} */
 	#scrollMargins = {
 		inline: 0,
 		block: 0,
 	};
 
+	/** @type {Size} */
 	#contentSize = {
 		inline: 0,
 		block: 0,
 	}
 
+	/** @type {Size} */
 	#size = {
 		inline: 0,
 		block: 0
@@ -392,7 +412,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	/**
 	 * Précédent event `pointerdown`.
-	 * @type {ExtPointerEvent | undefined}
+	 * @type {ExtPointerDownEvent | undefined}
 	 */
 	lastPointerDownEvent = undefined;
 
@@ -407,15 +427,18 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	/**
 	 * Liste des pointeurs actuellement down avec leur event `pointerdown`.
-	 * @type {Map<number, ExtPointerEvent>}
+	 * @type {Map<number, ExtPointerDownEvent>}
 	 */
 	currentPointerDownEvents = new Map();
 
 	/**
 	 * Liste des pointeurs actuellement en mouvement avec leur event `pointermove`.
-	 * @type {Map<number, ExtPointerEvent>}
+	 * @type {Map<number, PointerEvent>}
 	 */
 	currentPointerMoveEvents = new Map();
+
+	/** @type {(PinchData & { startZoomLevel: number }) | null} */
+	lastPinchData = null;
 
 	/** Si l'event `pointermove` est en attente de la prochaine frame. */
 	pointermoveDebounce = false;
@@ -427,6 +450,12 @@ export class ScrollZoomBlock extends HTMLElement {
 	pointerUpTimeout = -1;
 
 
+	/** @returns {Point2D} */
+	get scrollPosition() {
+		return new Point2D(this.scrollLeft, this.scrollTop);
+	}
+
+
 	// MARK: pointerdown
 	/**
 	 * Quand le pointeur touche la section, on écoute les événements requis pour détecter :
@@ -435,7 +464,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * - le double clic maintenu puis glissé verticalement (pour zoomer la section si vers le bas, dézoomer si vers le haut)
 	 * - le pinch (pour zoomer la section si écarté, dézoomer si rapproché)
 	 * 
-	 * @param {ExtPointerEvent} downEvent
+	 * @param {ExtPointerDownEvent} downEvent
 	 */
 	onPointerDown(downEvent) {
 		downEvent.preventDefault();
@@ -447,10 +476,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		this.currentPointersAbortControllers.set(downEvent.pointerId, abortController);
 
 		const pointerDownTime = Date.now();
-		const startScrollPosition = {
-			x: this.scrollLeft,
-			y: this.scrollTop,
-		};
+		downEvent.startScrollPosition = this.scrollPosition;
 
 		downEvent.couldBecomeDoubleTap = this.currentPointerDownEvents.size === 1
 			&& typeof this.lastPointerDownEvent !== 'undefined'
@@ -458,7 +484,19 @@ export class ScrollZoomBlock extends HTMLElement {
 			&& !this.lastPointerDownEvent.becameDoubleTap
 			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
 
-		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent, startScrollPosition);
+		/** @type {Set<PointerEvent>} */
+		const pinchPointerEvents = new Set();
+		for (const [pointerId, evt] of this.currentPointerDownEvents.entries()) {
+			const mvEvt = this.currentPointerMoveEvents.get(pointerId);
+			if (mvEvt) pinchPointerEvents.add(mvEvt);
+			else pinchPointerEvents.add(evt);
+		}
+		this.lastPinchData = {
+			...this.computeCenterAndAverageRadius(pinchPointerEvents),
+			startZoomLevel: this.currentZoomLevel,
+		};
+
+		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent);
 		const onPointerUp = (upEvent) => this.onPointerUp.bind(this)(upEvent, downEvent);
 		const onPointerCancel = (cancelEvent) => this.onPointerCancel.bind(this)(cancelEvent, downEvent);
 
@@ -480,13 +518,11 @@ export class ScrollZoomBlock extends HTMLElement {
 	 *     - on lance un événement custom `pinch`
 	 * 
 	 * @param {PointerEvent} moveEvent
-	 * @param {ExtPointerEvent} downEvent
-	 * @param {Position} startScrollPosition
+	 * @param {ExtPointerDownEvent} downEvent
 	 */
 	onPointerMove(
 		moveEvent,
 		downEvent,
-		startScrollPosition,
 	) {
 		moveEvent.preventDefault();
 
@@ -504,38 +540,80 @@ export class ScrollZoomBlock extends HTMLElement {
 		}
 
 		let interaction = '';
-		switch (this.currentPointerDownEvents.size) {
+		switch (this.currentPointerMoveEvents.size) {
+			case 0:
+				break;
 			case 1:
-				if (downEvent.couldBecomeDoubleTap && downEvent.pointerType === 'touch' && this.lastPointerDownEvent?.pointerType === 'touch') {
+				if (
+					downEvent.couldBecomeDoubleTap
+					&& downEvent.pointerType === 'touch'
+					&& this.lastPointerDownEvent?.pointerType === 'touch'
+				) {
 					interaction = 'doubleTapScroll';
 				}
-				else interaction = 'scroll';
+
+				// Cette condition permet d'éviter un sursaut visuel à l'ajout d'un pointeur
+				else if (
+					this.lastPinchData
+					&& this.currentPointerDownEvents.size === this.currentPointerMoveEvents.size
+				) {
+					interaction = 'scroll';
+				}
 				break;
 			default:
-				interaction = 'pinch';
+				if (
+					this.lastPinchData
+					&& this.currentPointerDownEvents.size === this.currentPointerMoveEvents.size
+				) {
+					interaction = 'pinch';
+				}
 		}
 
 		switch (interaction) {
 			// ✅ FAIT
-			case 'scroll': {
-				const newScrollPosition = {
-					x: Math.round(startScrollPosition.x - deltaX),
-					y: Math.round(startScrollPosition.y - deltaY),
-				};
+			case 'scroll':
+			// ✅ FAIT
+			case 'pinch': {
+				const numberOfPointers = this.currentPointerMoveEvents.size;
+				const { centerPoint, averageRadius } = this.computeCenterAndAverageRadius(this.currentPointerMoveEvents);
 
-				const interactionDetail = {
-					startScrollPosition: startScrollPosition,
-					scrollPosition: newScrollPosition,
-				};
+				const interactionDetail = interaction === 'scroll'
+					? {
+						scrollPosition: centerPoint,
+					}
+					: {
+						numberOfPointers: numberOfPointers,
+						pinchCenter: centerPoint,
+						pinchRadius: averageRadius,
+					};
 
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
 
+				const lastPinchData = this.lastPinchData;
+				if (!lastPinchData) throw new Error('Impossible');
+
+				if (numberOfPointers > 1) {
+					const radiusRatio = averageRadius / lastPinchData.averageRadius;
+					if (Number.isFinite(radiusRatio)) {
+						const zoomLevel = lastPinchData.startZoomLevel * radiusRatio;
+						this.zoom(zoomLevel, centerPoint);
+					}
+				}
+
+				const scrollPosition = this.scrollPosition
+					.translate(
+						-(centerPoint.x - lastPinchData.centerPoint.x),
+						-(centerPoint.y - lastPinchData.centerPoint.y),
+					)
+					.round();
+
 				this.scrollTo({
-					left: newScrollPosition.x,
-					top: newScrollPosition.y,
+					left: scrollPosition.x,
+					top: scrollPosition.y,
 					behavior: 'instant',
 				});
-				
+				lastPinchData.centerPoint = centerPoint;
+
 				this.dispatchInteractionEvent('after', interaction, interactionDetail);
 			} break;
 
@@ -543,39 +621,6 @@ export class ScrollZoomBlock extends HTMLElement {
 			case 'doubleTapScroll': {
 				/** @type {Record<string, unknown>} */
 				const interactionDetail = {};
-				this.dispatchInteractionEvent('before', interaction, interactionDetail);
-				this.dispatchInteractionEvent('after', interaction, interactionDetail);
-			} break;
-
-			// 🟧 À FAIRE
-			case 'pinch': {
-				let clientXTotal = 0, clientYTotal = 0;
-				for (const evt of this.currentPointerMoveEvents.values()) {
-					clientXTotal += evt.clientX;
-					clientYTotal += evt.clientY;
-				}
-				const pinchCenter = {
-					x: Math.round(clientXTotal / this.currentPointerMoveEvents.size),
-					y: Math.round(clientYTotal / this.currentPointerMoveEvents.size)
-				};
-
-				let radiusTotal = 0;
-				for (const evt of this.currentPointerMoveEvents.values()) {
-					const _deltaX = evt.clientX - pinchCenter.x;
-					const _deltaY = evt.clientY - pinchCenter.y;
-					const _deltaDistance = Math.sqrt(_deltaX ** 2 + _deltaY ** 2);
-					radiusTotal += _deltaDistance;
-				}
-				const averageRadius = radiusTotal / this.currentPointerMoveEvents.size;
-
-				// TODO zoomLevel = averageRadius / startAverageRadius (calculé pareil avec les downEvents, dans le onpointerdown)
-				// TODO scrollPosition = currentScrollPos + pointersMiddle - startPointersMiddle (calculé pareil avec les downEvents, dans le onpointerdown)
-
-				const interactionDetail = {
-					pinchCenter: pinchCenter,
-					pinchRadius: averageRadius,
-				};
-
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
 				this.dispatchInteractionEvent('after', interaction, interactionDetail);
 			} break;
@@ -596,7 +641,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	 *     - on lance un événement custom `double-tap`
 	 * 
 	 * @param {PointerEvent} upEvent
-	 * @param {ExtPointerEvent} downEvent
+	 * @param {ExtPointerDownEvent} downEvent
 	 */
 	onPointerUp(
 		upEvent,
@@ -638,10 +683,10 @@ export class ScrollZoomBlock extends HTMLElement {
 			case 'doubleTap': {
 				downEvent.becameDoubleTap = true;
 				const zoomDirection = upEvent.button === 2 ? -1 : 1;
-				const zoomPoint = {
-					x: Math.round(upEvent.clientX),
-					y: Math.round(upEvent.clientY),
-				};
+				const zoomPoint = new Point2D(
+					Math.round(upEvent.clientX),
+					Math.round(upEvent.clientY),
+				);
 
 				const interactionDetail = {
 					direction: zoomDirection,
@@ -675,7 +720,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * Quand le pointeur est annulé, on retire les event listeners.
 	 * 
 	 * @param {PointerEvent} cancelEvent
-	 * @param {ExtPointerEvent} downEvent
+	 * @param {ExtPointerDownEvent} downEvent
 	 */
 	onPointerCancel(
 		cancelEvent,
@@ -686,8 +731,21 @@ export class ScrollZoomBlock extends HTMLElement {
 			abortController.abort();
 			this.currentPointersAbortControllers.delete(cancelEvent.pointerId);
 		}
+
 		this.currentPointerDownEvents.delete(cancelEvent.pointerId);
 		this.currentPointerMoveEvents.delete(cancelEvent.pointerId);
+		if (this.currentPointerDownEvents.size <= 0) {
+			this.lastPinchData = null;
+		} else {
+			// On recalcule la lastPinchData sans le pointeur qu'on vient de retirer,
+			// pour que les pointeurs restants puissent continuer leur pinch sans interruption
+			// ni sursaut visuel
+			this.lastPinchData = {
+				...this.computeCenterAndAverageRadius(this.currentPointerMoveEvents),
+				startZoomLevel: this.currentZoomLevel,
+			};
+		}
+
 		this.lastPointerDownEvent = downEvent;
 	}
 
@@ -713,7 +771,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		this.zoom(
 			this.currentZoomLevel * zoomRatio,
-			{ x: event.clientX, y: event.clientY },
+			new Point2D(event.clientX, event.clientY),
 		);
 
 		this.dispatchInteractionEvent('after', interaction, interactionDetail);
@@ -804,6 +862,35 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	/**
+	 * @param {Set<PointerEvent> | Map<any, PointerEvent>} pointerEvents
+	 * @returns {PinchData}
+	 */
+	computeCenterAndAverageRadius(pointerEvents) {
+		let numberOfEvents = 0;
+
+		let centerPoint = new Point2D();
+		for (const evt of pointerEvents.values()) {
+			centerPoint = centerPoint.translate(evt.clientX, evt.clientY);
+			numberOfEvents++;
+		}
+		centerPoint = centerPoint.scale(1 / numberOfEvents);
+
+		let radiusTotal = 0;
+		for (const evt of pointerEvents.values()) {
+			radiusTotal += centerPoint
+				.translate(-evt.clientX, -evt.clientY)
+				.positionVectorLength();
+		}
+
+		return {
+			// On arrondit seulement à la fin, pour ne pas impacter la précision du calcul du radius
+			centerPoint: centerPoint.round(),
+			averageRadius: radiusTotal / numberOfEvents,
+		};
+	}
+
+
+	/**
 	 * @param {string | number} level
 	 * @returns {number}
 	 */
@@ -830,11 +917,11 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	/**
 	 * @param {number} zoomLevel 
-	 * @param {Position} zoomPoint 
+	 * @param {Point2D} zoomPoint 
 	 * @param {DOMRect} sectionRect 
 	 * @param {number} oldZoomLevel 
-	 * @param {Position} oldScrollPosition 
-	 * @returns {{ zoomLevel: number, newScrollMargins: Size, newScrollPosition: Position }}
+	 * @param {Point2D} oldScrollPosition 
+	 * @returns {{ zoomLevel: number, newScrollMargins: Size, newScrollPosition: Point2D }}
 	 */
 	#computeZoom(
 		zoomLevel,
@@ -845,50 +932,33 @@ export class ScrollZoomBlock extends HTMLElement {
 	) {
 		zoomLevel = this.clampZoomLevel(zoomLevel);
 
-		// On récupère la position du point de zoom en pourcentage du contenu
 		const contentSizeWithOldZoom = {
 			inline: this.#contentSize.inline * oldZoomLevel,
 			block: this.#contentSize.block * oldZoomLevel,
 		};
-		const zoomPointRelativeToSection = {
-			x: zoomPoint.x - sectionRect.x,
-			y: zoomPoint.y - sectionRect.y,
-		};
-		const zoomPointRelativeToSectionScroll = {
-			x: oldScrollPosition.x + zoomPointRelativeToSection.x,
-			y: oldScrollPosition.y + zoomPointRelativeToSection.y,
-		};
-		const zoomPointRelativeToContent = {
-			x: zoomPointRelativeToSectionScroll.x - this.#scrollMargins.inline,
-			y: zoomPointRelativeToSectionScroll.y - this.#scrollMargins.block,
-		};
-		const zoomPointAsPercentageOfContent = {
-			x: zoomPointRelativeToContent.x / contentSizeWithOldZoom.inline,
-			y: zoomPointRelativeToContent.y / contentSizeWithOldZoom.block,
-		};
 
-		const newContentSize = {
+		const contentSizeWithNewZoom = {
 			inline: this.#contentSize.inline * zoomLevel,
 			block: this.#contentSize.block * zoomLevel,
 		};
 
 		const newScrollMargins = this.#computeScrollMargins(zoomLevel);
 
+		// On récupère la position du point de zoom en pourcentage du contenu
+		const zoomPointRelativeToSection = zoomPoint
+			.translate(-sectionRect.x, -sectionRect.y);
+		const zoomPointAsPercentageOfContent = zoomPointRelativeToSection
+			.translate(oldScrollPosition.x, oldScrollPosition.y)
+			.translate(-this.#scrollMargins.inline, -this.#scrollMargins.block)
+			.scale(1 / contentSizeWithOldZoom.inline, 1 / contentSizeWithOldZoom.block);
+
 		// On calcule la nouvelle position de scroll de la section pour maintenir le point
 		// de zoom au même endroit
-		const zoomPointRelativeToNewContent = {
-			x: zoomPointAsPercentageOfContent.x * newContentSize.inline,
-			y: zoomPointAsPercentageOfContent.y * newContentSize.block,
-		};
-		const zoomPointRelativeToNewSectionScroll = {
-			x: zoomPointRelativeToNewContent.x + newScrollMargins.inline,
-			y: zoomPointRelativeToNewContent.y + newScrollMargins.block,
-		};
-
-		const newScrollPosition = {
-			x: Math.round(zoomPointRelativeToNewSectionScroll.x - zoomPointRelativeToSection.x),
-			y: Math.round(zoomPointRelativeToNewSectionScroll.y - zoomPointRelativeToSection.y),
-		};
+		const newScrollPosition = zoomPointAsPercentageOfContent
+			.scale(contentSizeWithNewZoom.inline, contentSizeWithNewZoom.block)
+			.translate(newScrollMargins.inline, newScrollMargins.block)
+			.translate(-zoomPointRelativeToSection.x, -zoomPointRelativeToSection.y)
+			.round();
 
 		return {
 			zoomLevel,
@@ -901,10 +971,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	// MARK: instant zoom
 	/**
 	 * @param {number} zoomLevel
-	 * @param {Position=} zoomPoint
+	 * @param {Point2D=} zoomPoint
 	 * @param {DOMRect} sectionRect
 	 * @param {number} oldZoomLevel
-	 * @param {Position} oldScrollPosition
+	 * @param {Point2D} oldScrollPosition
 	 * @param {boolean} dispatchEvents
 	 */
 	zoom(
@@ -912,14 +982,14 @@ export class ScrollZoomBlock extends HTMLElement {
 		zoomPoint,
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
-		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
+		oldScrollPosition = new Point2D(this.scrollLeft, this.scrollTop),
 		dispatchEvents = true,
 	) {
 		if (typeof zoomPoint === 'undefined') {
-			zoomPoint = {
-				x: sectionRect.x + sectionRect.width / 2,
-				y: sectionRect.y + sectionRect.height / 2,
-			};
+			zoomPoint = new Point2D(
+				sectionRect.x + sectionRect.width / 2,
+				sectionRect.y + sectionRect.height / 2,
+			);
 		}
 
 		const { zoomLevel: clampedZoomLevel, newScrollMargins, newScrollPosition } = this.#computeZoom(
@@ -957,11 +1027,11 @@ export class ScrollZoomBlock extends HTMLElement {
 	 *      plutôt que d'en faire un à chaque frame.
 	 * 
 	 * @param {number} zoomLevel
-	 * @param {Position=} zoomPoint
+	 * @param {Point2D=} zoomPoint
 	 * @param {number} zoomDuration
 	 * @param {DOMRect} sectionRect
 	 * @param {number} oldZoomLevel
-	 * @param {Position} oldScrollPosition
+	 * @param {Point2D} oldScrollPosition
 	 */
 	async smoothZoom(
 		zoomLevel,
@@ -969,13 +1039,13 @@ export class ScrollZoomBlock extends HTMLElement {
 		zoomDuration = 300, // ms
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
-		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
+		oldScrollPosition = new Point2D(this.scrollLeft, this.scrollTop),
 	) {
 		if (typeof zoomPoint === 'undefined') {
-			zoomPoint = {
-				x: sectionRect.x + sectionRect.width / 2,
-				y: sectionRect.y + sectionRect.height / 2,
-			};
+			zoomPoint = new Point2D(
+				sectionRect.x + sectionRect.width / 2,
+				sectionRect.y + sectionRect.height / 2,
+			);
 		}
 
 		const startTime = Date.now();
@@ -1003,7 +1073,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	// MARK: CustomEvent
 	/**
 	 * @param {'before' | 'after'} timing
-	 * @param {Position} zoomPoint
+	 * @param {Point2D} zoomPoint
 	 * @param {number} previousZoomLevel
 	 * @param {number} newZoomLevel
 	 * @param {boolean} smooth

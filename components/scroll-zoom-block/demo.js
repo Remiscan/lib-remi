@@ -6,11 +6,12 @@ function formatInteractionDetail(eventDetail) {
 	const prefix = `<em>Last interaction</em>`;
 	let detail = 'waiting...';
 	if (eventDetail) {
-		detail = `[${eventDetail.interaction}] `;
+		detail = `[${eventDetail.interaction}] <ul>`;
 		detail += Object.entries(eventDetail)
 			.filter(([key, value]) => key !== 'interaction')
-			.map(([key, value]) => `${key} = ${JSON.stringify(value)}`)
-			.join(' , ');
+			.map(([key, value]) => `<li>${key} = ${JSON.stringify(value)}`)
+			.join('');
+		detail += '</ul>';
 	}
 	return `${prefix} ${detail}`;
 }

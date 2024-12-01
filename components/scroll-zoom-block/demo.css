@@ -40,4 +40,8 @@ scroll-zoom-block {
 
 .log {
 	white-space: normal;
+
+	& ul {
+		margin: 0;
+	}
 }
