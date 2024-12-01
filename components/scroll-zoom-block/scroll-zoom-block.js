@@ -69,7 +69,7 @@ sheet.replaceSync(/*css*/`
 /** @typedef {{ x: Alignment, y: Alignment }} StartPosition */
 /** @typedef {{ inline: number, block: number }} Size */
 /** @typedef {number} PointerID */
-/** @typedef { PointerEvent & Partial<{ couldBecomeDoubleTap: boolean, becameDoubleTap: boolean, hasMovedSignificantly: boolean, startScrollPosition: Point2D }> } ExtPointerDownEvent */
+/** @typedef { PointerEvent & Partial<{ couldBecomeDoubleTap: boolean, becameDoubleTap: boolean, becameDoubleTapDrag: boolean, hasMovedSignificantly: boolean, startScrollPosition: Point2D }> } ExtPointerDownEvent */
 /** @typedef {{ centerPoint: Point2D, averageRadius: number }} PinchData */
 
 
@@ -548,6 +548,19 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/**
+	 * Checks if any pointer in the list was used for a double-tap-drag.
+	 * @param {Iterable<ExtPointerDownEvent>} pointers - The list of pointers to check.
+	 * @returns {boolean}
+	 */
+	anyPointerWasDoubleTapDrag(pointers) {
+		for (const pointer of pointers) {
+			if (pointer.becameDoubleTapDrag) return true;
+		}
+		return false;
+	}
+
+
 	// MARK: pointerdown
 	/**
 	 * Handles the `pointerdown` events to detect when the user wants to scroll or zoom in a supported way.
@@ -575,19 +588,22 @@ export class ScrollZoomBlock extends HTMLElement {
 		downEvent.startScrollPosition = this.scrollPosition;
 
 		// Compute the useful properties for the "pinch" interaction based on every currently down (and potentially moving) pointer
-		/** @type {Set<PointerEvent>} */
-		const pinchPointerEvents = new Set();
-		for (const [pointerId, evt] of this.currentPointerDownEvents.entries()) {
-			// If the pointer has moved, use its last `pointermove` event to compute the useful properties
-			const mvEvt = this.currentPointerMoveEvents.get(pointerId);
-			if (mvEvt) pinchPointerEvents.add(mvEvt);
-			// If not, use its `pointerdown` event
-			else pinchPointerEvents.add(evt);
+		// (only when no pointer was a double-tap-drag, to prevent the pinch from interfering with it)
+		if (!this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values())) {
+			/** @type {Set<PointerEvent>} */
+			const pinchPointerEvents = new Set();
+			for (const [pointerId, evt] of this.currentPointerDownEvents.entries()) {
+				// If the pointer has moved, use its last `pointermove` event to compute the useful properties
+				const mvEvt = this.currentPointerMoveEvents.get(pointerId);
+				if (mvEvt) pinchPointerEvents.add(mvEvt);
+				// If not, use its `pointerdown` event
+				else pinchPointerEvents.add(evt);
+			}
+			this.lastPinchData = {
+				...this.computeCenterAndAverageRadius(pinchPointerEvents),
+				startZoomLevel: this.currentZoomLevel,
+			};
 		}
-		this.lastPinchData = {
-			...this.computeCenterAndAverageRadius(pinchPointerEvents),
-			startZoomLevel: this.currentZoomLevel,
-		};
 
 		/** @param {PointerEvent} moveEvent */
 		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent);
@@ -661,6 +677,8 @@ export class ScrollZoomBlock extends HTMLElement {
 				if (
 					this.lastPinchData
 					&& this.currentPointerDownEvents.size === this.currentPointerMoveEvents.size
+					// Don't pinch if a double-tap-drag is happening
+					&& !this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values())
 				) {
 					interaction = 'pinch';
 				}
@@ -726,13 +744,15 @@ export class ScrollZoomBlock extends HTMLElement {
 
 			// A double-tap-drag will zoom the content, using the center of the ScrollZoomBlock as the zoom point
 			case 'double-tap-drag': {
+				downEvent.becameDoubleTapDrag = true;
+
 				if (!this.lastPinchData) throw new Error('impossible');
 
 				// Computes by how much to scale the current zoom level depending on how much the pointer moved vertically
 				const deltaY = moveEvent.clientY - downEvent.clientY;
 				const sensitivity = .01;
-				// We use the exp() function to smooth out the zoom level curve
-				const zoomScale = Math.exp((moveEvent.clientY - downEvent.clientY) * sensitivity);
+				// We use the pow() function to smooth out the zoom level curve
+				const zoomScale = Math.pow(1.5, deltaY * sensitivity);
 
 				const interactionDetail = {
 					deltaY: deltaY,
@@ -867,10 +887,13 @@ export class ScrollZoomBlock extends HTMLElement {
 			// We recompute `lastPinchData` without the pointer that was just removed,
 			// so that other pointers that are still present can continue their "pinch" interaction
 			// without interruption or stutter
-			this.lastPinchData = {
-				...this.computeCenterAndAverageRadius(this.currentPointerMoveEvents),
-				startZoomLevel: this.currentZoomLevel,
-			};
+			// (only when no pointer was a double-tap-drag, to prevent the pinch from interfering with it)
+			if (!this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values())) {
+				this.lastPinchData = {
+					...this.computeCenterAndAverageRadius(this.currentPointerMoveEvents),
+					startZoomLevel: this.currentZoomLevel,
+				};
+			}
 		}
 
 		this.lastPointerDownEvent = downEvent;
