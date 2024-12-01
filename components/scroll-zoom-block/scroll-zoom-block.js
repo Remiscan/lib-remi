@@ -746,7 +746,7 @@ export class ScrollZoomBlock extends HTMLElement {
 			case 'double-tap-drag': {
 				downEvent.becameDoubleTapDrag = true;
 
-				if (!this.lastPinchData) throw new Error('impossible');
+				if (!this.lastPinchData) throw new Error(`Cannot perform ${interaction} interaction because of missing pinch data`);
 
 				// Computes by how much to scale the current zoom level depending on how much the pointer moved vertically
 				const deltaY = moveEvent.clientY - downEvent.clientY;
@@ -1084,6 +1084,8 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @param {DOMRect} sectionRect - The size and position of the ScrollZoomBlock.
 	 * @param {number} oldZoomLevel - The zoom level before applying the new zoom level.
 	 * @param {Point2D} oldScrollPosition - The scroll position before applying the new zoom level.
+	 * @param {Size} oldScrollMargins - The scroll margins before applying the new zoom level.
+	 * @param {Size=} newScrollMargins - The scroll margins after applying the new zoom level.
 	 * @returns {{ zoomLevel: number, newScrollMargins: Size, newScrollPosition: Point2D }}
 	 */
 	#computeZoom(
@@ -1092,8 +1094,11 @@ export class ScrollZoomBlock extends HTMLElement {
 		sectionRect,
 		oldZoomLevel,
 		oldScrollPosition,
+		oldScrollMargins,
+		newScrollMargins,
 	) {
 		zoomLevel = this.clampZoomLevel(zoomLevel);
+		if (!newScrollMargins) newScrollMargins = this.#computeScrollMargins(zoomLevel);
 
 		const contentSizeWithOldZoom = {
 			inline: this.#contentSize.inline * oldZoomLevel,
@@ -1105,23 +1110,22 @@ export class ScrollZoomBlock extends HTMLElement {
 			block: this.#contentSize.block * zoomLevel,
 		};
 
-		const newScrollMargins = this.#computeScrollMargins(zoomLevel);
-
-		// On récupère la position du point de zoom en pourcentage du contenu
+		// Compute the zoomPoint position as a percentage of the content's size before the zoom
 		const zoomPointRelativeToSection = zoomPoint
 			.translate(-sectionRect.x, -sectionRect.y);
 		const zoomPointAsPercentageOfContent = zoomPointRelativeToSection
 			.translate(oldScrollPosition.x, oldScrollPosition.y)
-			.translate(-this.#scrollMargins.inline, -this.#scrollMargins.block)
+			.translate(-oldScrollMargins.inline, -oldScrollMargins.block)
 			.scale(1 / contentSizeWithOldZoom.inline, 1 / contentSizeWithOldZoom.block);
 
-		// On calcule la nouvelle position de scroll de la section pour maintenir le point
-		// de zoom au même endroit
+		// Compute the new scroll position to keep the zoomPoint after the zoom at the same position as it was before the zoom
 		const newScrollPosition = zoomPointAsPercentageOfContent
 			.scale(contentSizeWithNewZoom.inline, contentSizeWithNewZoom.block)
 			.translate(newScrollMargins.inline, newScrollMargins.block)
 			.translate(-zoomPointRelativeToSection.x, -zoomPointRelativeToSection.y)
 			.round();
+
+		console.log(newScrollPosition);
 
 		return {
 			zoomLevel,
@@ -1139,7 +1143,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @param {DOMRect} sectionRect - The size and position of the ScrollZoomBlock.
 	 * @param {number} oldZoomLevel - The zoom level before applying the new zoom level.
 	 * @param {Point2D} oldScrollPosition - The scroll position before applying the new zoom level.
+	 * @param {Size} oldScrollMargins - The scroll margins before applying the new zoom level.
 	 * @param {boolean} dispatchEvents - Whether zoom events should be dispatched or not.
+	 * @param {Size=} forcedNewScrollMargins - The scroll margins after applying the new zoom level.
 	 */
 	zoom(
 		zoomLevel,
@@ -1147,7 +1153,9 @@ export class ScrollZoomBlock extends HTMLElement {
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
 		oldScrollPosition = new Point2D(this.scrollLeft, this.scrollTop),
+		oldScrollMargins = this.#scrollMargins,
 		dispatchEvents = true,
+		forcedNewScrollMargins,
 	) {
 		// If no zoom point is defined, use the center of the ScrollZoomBlock
 		if (typeof zoomPoint === 'undefined') {
@@ -1163,6 +1171,8 @@ export class ScrollZoomBlock extends HTMLElement {
 			sectionRect,
 			oldZoomLevel,
 			oldScrollPosition,
+			oldScrollMargins,
+			forcedNewScrollMargins,
 		)
 
 		if (dispatchEvents) this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, clampedZoomLevel);
@@ -1196,6 +1206,7 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @param {DOMRect} sectionRect - The size and position of the ScrollZoomBlock.
 	 * @param {number} oldZoomLevel - The zoom level before applying the new zoom level.
 	 * @param {Point2D} oldScrollPosition - The scroll position before applying the new zoom level.
+	 * @param {Size} oldScrollMargins - The scroll margins before applying the new zoom level.
 	 */
 	async smoothZoom(
 		zoomLevel,
@@ -1204,6 +1215,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
 		oldScrollPosition = new Point2D(this.scrollLeft, this.scrollTop),
+		oldScrollMargins = this.#scrollMargins,
 	) {
 		// If no zoom point is defined, use the center of the ScrollZoomBlock
 		if (typeof zoomPoint === 'undefined') {
@@ -1216,9 +1228,16 @@ export class ScrollZoomBlock extends HTMLElement {
 		const startTime = Date.now();
 		zoomLevel = this.clampZoomLevel(zoomLevel);
 
+		const newScrollMargins = this.#computeScrollMargins(zoomLevel);
+		/** @type {Size} */
+		const tempScrollMargins = {
+			inline: Math.max(oldScrollMargins.inline, newScrollMargins.inline),
+			block: Math.max(oldScrollMargins.block, newScrollMargins.block),
+		}
+
 		this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, zoomLevel, 'smooth');
 
-		const startZoomLevel = this.currentZoomLevel;
+		const startZoomLevel = oldZoomLevel;
 		let now = Date.now();
 		while (now - startTime < zoomDuration) {
 			// Use an easing function around the time parameter to ease in and out of the animation
@@ -1226,14 +1245,14 @@ export class ScrollZoomBlock extends HTMLElement {
 
 			// Passing the startZoomLevel and the oldScrollPosition to the zoom() function
 			// avoids an increasing shift in the scroll position as we progressively zoom
-			this.zoom(tempZoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, false);
+			this.zoom(tempZoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, oldScrollMargins, false, tempScrollMargins);
 
 			await new Promise(resolve => requestAnimationFrame(resolve));
 			now = Date.now();
 		}
 
 		// Zoom one last time after the animation to make sure the final zoom level was reached
-		this.zoom(zoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, false);
+		this.zoom(zoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, oldScrollMargins, false);
 
 		this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, zoomLevel, 'smooth');
 	}
