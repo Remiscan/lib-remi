@@ -2,7 +2,7 @@
   "title": "<scroll-zoom-block>",
   "imports": {
   },
-  "intro": "This block is interactive in the following ways: <ul><li>scroll with your pointer or touch,<li>zoom in with your mouse wheel,<li>pinch to zoom,<li>double click/tap to zoom,<li>double tap, maintain and scroll to zoom.",
+  "intro": "This block is interactive in the following ways: <ul><li>scroll by dragging the block,<li>zoom with a mouse wheel,<li>pinch to zoom,<li>double click/tap to zoom,<li>double tap, maintain and drag vertically to zoom.",
   "examples": [
     "<scroll-zoom-block>\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
   ]

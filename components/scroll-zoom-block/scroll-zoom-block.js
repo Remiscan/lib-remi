@@ -386,7 +386,6 @@ export class ScrollZoomBlock extends HTMLElement {
 		scrollLeft = Math.round(scrollLeft);
 		scrollTop = Math.round(scrollTop);
 
-		console.log(contentSize, sectionSize, scrollLeft, scrollTop);
 		this.scrollTo({
 			left: scrollLeft,
 			top: scrollTop,
@@ -557,7 +556,7 @@ export class ScrollZoomBlock extends HTMLElement {
 					this.lastPinchData
 					&& this.currentPointerDownEvents.size === this.currentPointerMoveEvents.size
 				) {
-					interaction = 'scroll';
+					interaction = 'drag';
 				}
 				break;
 			default:
@@ -571,13 +570,13 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		switch (interaction) {
 			// ✅ FAIT
-			case 'scroll':
+			case 'drag':
 			// ✅ FAIT
 			case 'pinch': {
 				const numberOfPointers = this.currentPointerMoveEvents.size;
 				const { centerPoint, averageRadius } = this.computeCenterAndAverageRadius(this.currentPointerMoveEvents);
 
-				const interactionDetail = interaction === 'scroll'
+				const interactionDetail = interaction === 'drag'
 					? {
 						scrollPosition: centerPoint,
 					}
@@ -708,7 +707,7 @@ export class ScrollZoomBlock extends HTMLElement {
 				);
 
 				const interactionDetail = {
-					direction: zoomDirection,
+					direction: zoomDirection < 0 ? 'out' : 'in',
 					point: zoomPoint,
 				};
 
@@ -783,7 +782,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		const zoomRatio = 1 - .1 * Math.sign(event.deltaY);
 
 		const interactionDetail = {
-			direction: Math.sign(event.deltaY),
+			direction: Math.sign(event.deltaY) < 0 ? 'up' : 'down',
 		};
 
 		this.dispatchInteractionEvent('before', interaction, interactionDetail);
@@ -935,11 +934,11 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	/**
-	 * @param {number} zoomLevel 
-	 * @param {Point2D} zoomPoint 
-	 * @param {DOMRect} sectionRect 
-	 * @param {number} oldZoomLevel 
-	 * @param {Point2D} oldScrollPosition 
+	 * @param {number} zoomLevel
+	 * @param {Point2D} zoomPoint
+	 * @param {DOMRect} sectionRect
+	 * @param {number} oldZoomLevel
+	 * @param {Point2D} oldScrollPosition
 	 * @returns {{ zoomLevel: number, newScrollMargins: Size, newScrollPosition: Point2D }}
 	 */
 	#computeZoom(
@@ -1070,7 +1069,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		const startTime = Date.now();
 		zoomLevel = this.clampZoomLevel(zoomLevel);
 
-		this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, zoomLevel, true);
+		this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, zoomLevel, 'smooth');
 
 		const startZoomLevel = this.currentZoomLevel;
 		let now = Date.now();
@@ -1085,7 +1084,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		this.zoom(zoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, false);
 
-		this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, zoomLevel, true);
+		this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, zoomLevel, 'smooth');
 	}
 
 
@@ -1095,9 +1094,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @param {Point2D} zoomPoint
 	 * @param {number} previousZoomLevel
 	 * @param {number} newZoomLevel
-	 * @param {boolean} smooth
+	 * @param {'smooth' | 'instant'} behavior
 	 */
-	dispatchZoomEvent(timing, zoomPoint, previousZoomLevel, newZoomLevel, smooth = false) {
+	dispatchZoomEvent(timing, zoomPoint, previousZoomLevel, newZoomLevel, behavior = 'instant') {
 		let type;
 		switch (timing) {
 			case 'before': type = 'before-zoom'; break;
@@ -1113,7 +1112,7 @@ export class ScrollZoomBlock extends HTMLElement {
 					previousZoomLevel: previousZoomLevel,
 					zoomLevel: newZoomLevel,
 					zoomCenter: zoomPoint,
-					smooth: smooth,
+					behavior,
 				},
 			})
 		);
