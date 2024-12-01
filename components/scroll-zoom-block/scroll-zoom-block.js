@@ -1,7 +1,4 @@
-function easeInOutQuad (x) {
-	return x < 0.5 ? 2 * Math.pow(x, 2) : 1 - Math.pow(-2 * x + 2, 2) / 2;
-}
-
+// @ts-check
 
 
 
@@ -49,11 +46,22 @@ sheet.replaceSync(/*css*/`
 
 
 
+// MARK: TYPES
+
+/** @typedef {'start' | 'center' | 'end'} Alignment */
+/** @typedef {{ x: Alignment, y: Alignment }} StartPosition */
+/** @typedef {{ x: number, y: number }} Position */
+/** @typedef {{ inline: number, block: number }} Size */
+/** @typedef { PointerEvent & { couldBecomeDoubleTap?: boolean, becameDoubleTap?: boolean, hasMovedSignificantly?: boolean } } ExtPointerEvent */
+
+
+
 // MARK: OBSERVER
 const resizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.borderBoxSize?.length > 0) {
 			const section = entry.target.closest('scroll-zoom-block');
+			if (!(section instanceof ScrollZoomBlock)) continue;
 
 			const sectionStyles = window.getComputedStyle(section);
 			const sectionInlineSize = Number(sectionStyles.getPropertyValue('inline-size').replace('px', ''));
@@ -91,9 +99,9 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	connectedCallback() {
 		this.addEventListener('pointerdown', this.boundOnPointerDown);
-		this.addEventListener('wheel', this.boundOnWheel);
+		this.addEventListener('wheel', this.boundOnWheel, { passive: false });
 		this.addEventListener('contextmenu', this.boundOnContextMenu);
-		this.slot.addEventListener('slotchange', this.boundOnSlotChange);
+		this.contentSlot?.addEventListener('slotchange', this.boundOnSlotChange);
 	}
 
 
@@ -101,7 +109,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		this.removeEventListener('pointerdown', this.boundOnPointerDown);
 		this.removeEventListener('wheel', this.boundOnWheel);
 		this.removeEventListener('contextmenu', this.boundOnContextMenu);
-		this.slot.removeEventListener('slotchange', this.boundOnSlotChange);
+		this.contentSlot?.removeEventListener('slotchange', this.boundOnSlotChange);
 		this.disconnectAllTemporaryEventListeners();
 	}
 
@@ -116,6 +124,11 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/**
+	 * @param {string} attr 
+	 * @param {string|null} oldValue 
+	 * @param {string|null} newValue 
+	 */
 	attributeChangedCallback(attr, oldValue, newValue) {
 		if (oldValue === newValue) return;
 
@@ -147,15 +160,18 @@ export class ScrollZoomBlock extends HTMLElement {
 	// MARK: Part getters
 
 
+	/** @returns {HTMLElement | null} */
 	get scrollMarginContainer() {
 		return this.shadow.querySelector('.scroll-margin-container');
 	}
 
+	/** @returns {HTMLElement | null} */
 	get contentScaleContainer() {
 		return this.shadow.querySelector('.content-scale-container');
 	}
 
-	get slot() {
+	/** @returns {HTMLSlotElement | null} */
+	get contentSlot() {
 		return this.shadow.querySelector('slot');
 	}
 
@@ -163,9 +179,12 @@ export class ScrollZoomBlock extends HTMLElement {
 	// MARK: Position initialisation
 
 
+	/**
+	 * @param {Event} event
+	 */
 	onSlotChange(event) {
 		const slot = event.target;
-		if (!slot) return;
+		if (!(slot instanceof HTMLSlotElement)) return;
 
 		const assignedElements = slot.assignedElements();
 		for (const element of assignedElements) {
@@ -175,6 +194,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	boundOnSlotChange = this.onSlotChange.bind(this);
 
 
+	/**
+	 * @param {string} position
+	 * @returns {Alignment}
+	 */
 	parseStartPosition(position) {
 		switch (position) {
 			case 'start':
@@ -186,6 +209,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		}
 	}
 
+	/** @returns {StartPosition} */
 	get startPosition() {
 		const startPositionAttribute = this.getAttribute('start-position') ?? '';
 		const parts = startPositionAttribute.split(' ').filter(v => v);
@@ -223,6 +247,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	};
 
 
+	/**
+	 * @param {number} zoomLevel 
+	 * @returns {Size}
+	 */
 	#computeScrollMargins(zoomLevel) {
 		// On utilise `Math.floor` car on veut que la marge soit permette **au maximum** de scroller le contenu jusqu'au bord.
 		// Avec `round` ou `ceil`, la marge pourrait être 1px plus grande, donc permettre de scroller 1px plus loin, donc faire overflow le contenu de 1px.
@@ -236,8 +264,13 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/**
+	 * @param {number} zoomLevel 
+	 * @param {Size} scrollMargins 
+	 */
 	#applyScrollMargins(zoomLevel, scrollMargins = this.#computeScrollMargins(zoomLevel)) {
 		const scrollMarginContainer = this.scrollMarginContainer;
+		if (!scrollMarginContainer) throw new TypeError('Expecting HTMLElement');
 		scrollMarginContainer.style.setProperty('--inline-size', `${Math.ceil(this.#contentSize.inline * zoomLevel + 2 * scrollMargins.inline)}px`);
 		scrollMarginContainer.style.setProperty('--block-size', `${Math.ceil(this.#contentSize.block * zoomLevel + 2 * scrollMargins.block)}px`);
 		this.#scrollMargins = scrollMargins;
@@ -246,14 +279,19 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	#isInitialized = false;
 
+	/** @returns {Promise<void>} */
 	get isInitialized() {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			if (this.#isInitialized) return resolve();
-			this.addEventListener('initialized', resolve, { once: true });
+			this.addEventListener('initialized', () => resolve(), { once: true });
 		});
 	}
 
 
+	/**
+	 * @param {Size} sectionSize 
+	 * @param {Size} contentSize 
+	 */
 	initializeScrollPosition(
 		sectionSize,
 		contentSize,
@@ -352,7 +390,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	/** Timestamp du dernier event `pointerup`. */
 	lastPointerUpTime = 0;
 
-	/** Précédent event `pointerdown`. */
+	/**
+	 * Précédent event `pointerdown`.
+	 * @type {ExtPointerEvent | undefined}
+	 */
 	lastPointerDownEvent = undefined;
 
 	/** Compteur du nombre d'events `pointerup` depuis le dernier double-tap. */
@@ -364,10 +405,16 @@ export class ScrollZoomBlock extends HTMLElement {
 	/** Le nombre minimal de pixels dont l'event `pointermove` doit bouger par rapport à la position initiale. En-dessous, on ignore le `pointermove` (car sinon, l'imprécision avec un doigt déclenche l'événement). */
 	minMoveThreshold = 10; // px
 
-	/** Liste des pointeurs actuellement down avec leur event `pointerdown`. */
+	/**
+	 * Liste des pointeurs actuellement down avec leur event `pointerdown`.
+	 * @type {Map<number, ExtPointerEvent>}
+	 */
 	currentPointerDownEvents = new Map();
 
-	/** Liste des pointeurs actuellement en mouvement avec leur event `pointermove`. */
+	/**
+	 * Liste des pointeurs actuellement en mouvement avec leur event `pointermove`.
+	 * @type {Map<number, ExtPointerEvent>}
+	 */
 	currentPointerMoveEvents = new Map();
 
 	/** Si l'event `pointermove` est en attente de la prochaine frame. */
@@ -387,6 +434,8 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * - le double clic (pour zoomer la section, ou dézoomer si clic droit souris)
 	 * - le double clic maintenu puis glissé verticalement (pour zoomer la section si vers le bas, dézoomer si vers le haut)
 	 * - le pinch (pour zoomer la section si écarté, dézoomer si rapproché)
+	 * 
+	 * @param {ExtPointerEvent} downEvent
 	 */
 	onPointerDown(downEvent) {
 		downEvent.preventDefault();
@@ -429,6 +478,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	 *     - sinon, on scrolle dans la section
 	 * - deux points sont down, auquel cas :
 	 *     - on lance un événement custom `pinch`
+	 * 
+	 * @param {PointerEvent} moveEvent
+	 * @param {ExtPointerEvent} downEvent
+	 * @param {Position} startScrollPosition
 	 */
 	onPointerMove(
 		moveEvent,
@@ -453,7 +506,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		let interaction = '';
 		switch (this.currentPointerDownEvents.size) {
 			case 1:
-				if (downEvent.couldBecomeDoubleTap && downEvent.pointerType === 'touch' && this.lastPointerDownEvent.pointerType === 'touch') {
+				if (downEvent.couldBecomeDoubleTap && downEvent.pointerType === 'touch' && this.lastPointerDownEvent?.pointerType === 'touch') {
 					interaction = 'doubleTapScroll';
 				}
 				else interaction = 'scroll';
@@ -488,6 +541,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 			// 🟧 À FAIRE
 			case 'doubleTapScroll': {
+				/** @type {Record<string, unknown>} */
 				const interactionDetail = {};
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
 				this.dispatchInteractionEvent('after', interaction, interactionDetail);
@@ -540,6 +594,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * Quand le pointeur quitte la page, on détermine si :
 	 * - c'est le deuxième pointeur à quitter la page en moins de `this.maxDoubleTapDelay` alors qu'il n'y avait qu'un pointeur sur la page, auquel cas :
 	 *     - on lance un événement custom `double-tap`
+	 * 
+	 * @param {PointerEvent} upEvent
+	 * @param {ExtPointerEvent} downEvent
 	 */
 	onPointerUp(
 		upEvent,
@@ -567,7 +624,7 @@ export class ScrollZoomBlock extends HTMLElement {
 				&& (
 					downEvent.pointerType !== 'mouse'
 					|| (
-						downEvent.button === this.lastPointerDownEvent.button
+						downEvent.button === this.lastPointerDownEvent?.button
 						&& (downEvent.button === 0 || downEvent.button === 2)
 					)
 				)
@@ -616,6 +673,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	// MARK: pointercancel
 	/**
 	 * Quand le pointeur est annulé, on retire les event listeners.
+	 * 
+	 * @param {PointerEvent} cancelEvent
+	 * @param {ExtPointerEvent} downEvent
 	 */
 	onPointerCancel(
 		cancelEvent,
@@ -633,6 +693,9 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: wheel
+	/**
+	 * @param {WheelEvent} event 
+	 */
 	onWheel(event) {
 		if (this.wheelDebounce) return;
 		this.wheelDebounce = true;
@@ -661,6 +724,9 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: contextmenu
+	/**
+	 * @param {Event} event
+	 */
 	onContextMenu(event) {
 		event.preventDefault();
 	}
@@ -668,6 +734,11 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: CustomEvent
+	/**
+	 * @param {'before'|'after'} timing 
+	 * @param {string} interaction 
+	 * @param {Record<string, unknown>} detail 
+	 */
 	dispatchInteractionEvent(timing, interaction, detail = {}) {
 		let type;
 		switch (timing) {
@@ -690,7 +761,10 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	// MARK: abort EventListeners
 
-	/** Associe à chaque pointeur un AbortController. */
+	/**
+	 * Associe à chaque pointeur un AbortController.
+	 * @type {Map<number, AbortController>}
+	 */
 	currentPointersAbortControllers = new Map();
 
 	disconnectAllTemporaryEventListeners() {
@@ -729,6 +803,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/**
+	 * @param {string | number} level
+	 * @returns {number}
+	 */
 	parseZoomLevel(level) {
 		if (typeof level === 'string') {
 			if (level.endsWith('%')) return parseFloat(level) / 100;
@@ -741,11 +819,23 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/**
+	 * @param {number} zoomLevel 
+	 * @returns {number}
+	 */
 	clampZoomLevel(zoomLevel) {
 		return Math.max(this.minZoomLevel, Math.min(zoomLevel, this.maxZoomLevel));
 	}
 
 
+	/**
+	 * @param {number} zoomLevel 
+	 * @param {Position} zoomPoint 
+	 * @param {DOMRect} sectionRect 
+	 * @param {number} oldZoomLevel 
+	 * @param {Position} oldScrollPosition 
+	 * @returns {{ zoomLevel: number, newScrollMargins: Size, newScrollPosition: Position }}
+	 */
 	#computeZoom(
 		zoomLevel,
 		zoomPoint,
@@ -809,6 +899,14 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: instant zoom
+	/**
+	 * @param {number} zoomLevel
+	 * @param {Position=} zoomPoint
+	 * @param {DOMRect} sectionRect
+	 * @param {number} oldZoomLevel
+	 * @param {Position} oldScrollPosition
+	 * @param {boolean} dispatchEvents
+	 */
 	zoom(
 		zoomLevel,
 		zoomPoint,
@@ -835,7 +933,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (dispatchEvents) this.dispatchZoomEvent('before', zoomPoint, oldZoomLevel, clampedZoomLevel);
 
 		// On applique le nouveau niveau de zoom
-		this.contentScaleContainer.style.setProperty('--zoom-level', clampedZoomLevel.toFixed(8));
+		this.contentScaleContainer?.style.setProperty('--zoom-level', clampedZoomLevel.toFixed(8));
 		this.#currentZoomLevel = clampedZoomLevel;
 
 		// On redimensionne le slot pour maintenir le contenu "prisonnier" de la section
@@ -857,6 +955,13 @@ export class ScrollZoomBlock extends HTMLElement {
 	/**
 	 * TODO Quand les Scoped Element Transitions existeront, s'en servir ici pour animer un seul zoom
 	 *      plutôt que d'en faire un à chaque frame.
+	 * 
+	 * @param {number} zoomLevel
+	 * @param {Position=} zoomPoint
+	 * @param {number} zoomDuration
+	 * @param {DOMRect} sectionRect
+	 * @param {number} oldZoomLevel
+	 * @param {Position} oldScrollPosition
 	 */
 	async smoothZoom(
 		zoomLevel,
@@ -866,6 +971,13 @@ export class ScrollZoomBlock extends HTMLElement {
 		oldZoomLevel = this.currentZoomLevel,
 		oldScrollPosition = { x: this.scrollLeft, y: this.scrollTop },
 	) {
+		if (typeof zoomPoint === 'undefined') {
+			zoomPoint = {
+				x: sectionRect.x + sectionRect.width / 2,
+				y: sectionRect.y + sectionRect.height / 2,
+			};
+		}
+
 		const startTime = Date.now();
 		zoomLevel = this.clampZoomLevel(zoomLevel);
 
@@ -889,6 +1001,13 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: CustomEvent
+	/**
+	 * @param {'before' | 'after'} timing
+	 * @param {Position} zoomPoint
+	 * @param {number} previousZoomLevel
+	 * @param {number} newZoomLevel
+	 * @param {boolean} smooth
+	 */
 	dispatchZoomEvent(timing, zoomPoint, previousZoomLevel, newZoomLevel, smooth = false) {
 		let type;
 		switch (timing) {
@@ -918,3 +1037,13 @@ export class ScrollZoomBlock extends HTMLElement {
 }
 
 if (!customElements.get('scroll-zoom-block')) customElements.define('scroll-zoom-block', ScrollZoomBlock);
+
+
+
+/**
+ * @param {number} x - Animation progress (between 0 and 1).
+ * @returns {number}
+ */
+function easeInOutQuad (x) {
+	return x < 0.5 ? 2 * Math.pow(x, 2) : 1 - Math.pow(-2 * x + 2, 2) / 2;
+}
