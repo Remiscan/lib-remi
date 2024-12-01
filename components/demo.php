@@ -93,6 +93,20 @@ try {
         white-space: nowrap;
         overflow-x: auto;
         scrollbar-width: thin;
+
+        & ul {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          column-gap: 16px;
+          row-gap: 0px;
+          padding: 0px;
+          margin: 0px;
+
+          & > li {
+            display: flex;
+          }
+        }
       }
 
       @media (max-width: 70ch) {

@@ -476,13 +476,13 @@ export class ScrollZoomBlock extends HTMLElement {
 		this.currentPointersAbortControllers.set(downEvent.pointerId, abortController);
 
 		const pointerDownTime = Date.now();
-		downEvent.startScrollPosition = this.scrollPosition;
 
 		downEvent.couldBecomeDoubleTap = this.currentPointerDownEvents.size === 1
 			&& typeof this.lastPointerDownEvent !== 'undefined'
 			&& !this.lastPointerDownEvent.hasMovedSignificantly
 			&& !this.lastPointerDownEvent.becameDoubleTap
 			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
+		downEvent.startScrollPosition = this.scrollPosition;
 
 		/** @type {Set<PointerEvent>} */
 		const pinchPointerEvents = new Set();
@@ -617,11 +617,30 @@ export class ScrollZoomBlock extends HTMLElement {
 				this.dispatchInteractionEvent('after', interaction, interactionDetail);
 			} break;
 
-			// 🟧 À FAIRE
+			// ✅ FAIT
 			case 'doubleTapScroll': {
-				/** @type {Record<string, unknown>} */
-				const interactionDetail = {};
+				if (!this.lastPinchData) throw new Error('impossible');
+
+				const deltaY = moveEvent.clientY - downEvent.clientY;
+				const sensitivity = .01;
+				const zoomScale = (moveEvent.clientY - downEvent.clientY) * sensitivity;
+
+				const interactionDetail = {
+					deltaY: deltaY,
+				};
+
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
+
+				// Passer le startZoomLevel et la startScrollPosition à la fonction zoom()
+				// permet d'éviter un décalage progressif pendant qu'on zoome
+				this.zoom(
+					this.lastPinchData.startZoomLevel * Math.exp(zoomScale),
+					undefined,
+					undefined,
+					this.lastPinchData.startZoomLevel,
+					downEvent.startScrollPosition,
+				);
+
 				this.dispatchInteractionEvent('after', interaction, interactionDetail);
 			} break;
 
