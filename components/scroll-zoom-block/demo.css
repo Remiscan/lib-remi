@@ -39,7 +39,5 @@ scroll-zoom-block {
 }
 
 .log {
-	width: fit-content;
-	max-width: 100%;
 	white-space: normal;
 }

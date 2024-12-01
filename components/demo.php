@@ -80,29 +80,34 @@ try {
 
       .log {
         position: sticky;
-        width: 100%;
+        width: fit-content;
         box-sizing: border-box;
         bottom: 0;
         z-index: 2;
         background-color: var(--code-background-color);
-        padding: 8px 0;
-        margin-bottom: -16px;
-        margin-top: calc(-1 * var(--gap) + 16px);
+        padding: 8px;
+          margin: 0;
         --shadow-offset: max(20px, 50vh);
         --border-shadow: 0 -2px 0 0 var(--body-background-color);
-        box-shadow:
-          0 var(--shadow-offset) 0 var(--shadow-offset) var(--code-background-color),
-          var(--border-shadow);
+        box-shadow: var(--border-shadow);
         white-space: nowrap;
         overflow-x: auto;
         scrollbar-width: thin;
       }
 
-      @media (orientation: landscape) {
+      @media (max-width: 70ch) {
+        body {
+          align-items: stretch;
+        }
+
         .log {
-          padding: 8px;
-          margin: 0;
-          box-shadow: var(--border-shadow);
+          width: 100%;
+          padding: 8px 0;
+          margin-bottom: -16px;
+          margin-top: calc(-1 * var(--gap) + 16px);
+          box-shadow:
+            0 var(--shadow-offset) 0 var(--shadow-offset) var(--code-background-color),
+            var(--border-shadow);
         }
       }
 
