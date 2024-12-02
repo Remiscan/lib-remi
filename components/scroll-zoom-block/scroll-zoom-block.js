@@ -914,6 +914,8 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @param {WheelEvent} event
 	 */
 	onWheel(event) {
+		event.preventDefault(); // prevents default scroll
+
 		if (this.wheelDebounce) return;
 		this.wheelDebounce = true;
 
