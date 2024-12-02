@@ -1,4 +1,5 @@
 // @ts-check
+import 'input-slider';
 import { Point2D as BasePoint2D } from "../../js/geometry/mod.js";
 
 
@@ -22,10 +23,26 @@ class Point2D extends BasePoint2D {
 // MARK: TEMPLATE
 const template = document.createElement('template');
 template.innerHTML = /*html*/`
-	<div part="scroll-margin-container">
-		<div part="content-scale-container">
-			<slot></slot>
+	<div part="scrollable-container" tabindex="0">
+		<div part="scroll-margin-container">
+			<div part="content-scale-container">
+				<slot></slot>
+			</div>
 		</div>
+	</div>
+
+	<div part="controls">
+		<slot name="zoom-in-button">
+			<button type="button">+</button>
+		</slot>
+
+		<slot name="zoom-range-slider">
+			<input-slider orientation="vertical"></input-slider>
+		</slot>
+
+		<slot name="zoom-out-button">
+			<button type="button">-</button>
+		</slot>
 	</div>
 `;
 
@@ -35,19 +52,26 @@ template.innerHTML = /*html*/`
 const sheet = new CSSStyleSheet();
 sheet.replaceSync(/*css*/`
 	:host {
+		display: grid;
+		contain: size;
+	}
+
+	[part~="scrollable-container"] {
+		grid-area: 1 / 1;
 		display: block;
 		contain: size;
 		overflow: scroll;
 		scrollbar-width: none;
 		touch-action: none;
 		user-select: none;
+		z-index: 1;
 	}
 
-	:host(:active) {
+	[part~="scrollable-container"]:active {
 		cursor: move;
 	}
 
-	:host(:focus-visible) {
+	[part~="scrollable-container"]:focus-visible {
 		outline: 5px auto Highlight;
 		outline: 5px auto -webkit-focus-ring-color;
 		outline-offset: 4px;
@@ -65,6 +89,20 @@ sheet.replaceSync(/*css*/`
 		height: fit-content;
 		scale: var(--zoom-level, 1);
 		transform-origin: center center;
+	}
+
+	[part~="controls"] {
+		grid-area: 1 / 1;
+		place-self: end end;
+		margin: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		z-index: 2;
+	}
+
+	:host(:not([controls])) [part~="controls"] {
+		display: none;
 	}
 `);
 
@@ -113,6 +151,8 @@ const resizeObserver = new ResizeObserver((entries) => {
  * - scroll by dragging the block,
  * - scroll with arrow keys after getting focus from a keyboard,
  * - zoom with a mouse wheel,
+ * TODO zoom with + and - keyboard keys
+ * TODO add visible zoom controls (optional, with "controls" attribute)
  * - pinch to zoom,
  * - double click/tap to zoom,
  * - double tap, maintain and drag vertically to zoom.
@@ -147,10 +187,11 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	connectedCallback() {
-		this.addEventListener('pointerdown', this.boundOnPointerDown);
-		this.addEventListener('wheel', this.boundOnWheel, { passive: false });
-		this.addEventListener('contextmenu', this.boundOnContextMenu);
-		this.contentSlot?.addEventListener('slotchange', this.boundOnSlotChange);
+		const scrollableContainer = this.scrollableContainer;
+		scrollableContainer.addEventListener('pointerdown', this.boundOnPointerDown);
+		scrollableContainer.addEventListener('wheel', this.boundOnWheel, { passive: false });
+		scrollableContainer.addEventListener('contextmenu', this.boundOnContextMenu);
+		this.contentSlot.addEventListener('slotchange', this.boundOnSlotChange);
 
 		// Initialize the zoom level
 		// (no need to initialize the scroll position, the ResizeObserver will cause that)
@@ -158,17 +199,15 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (initialZoomLevel) {
 			this.currentZoomLevel = this.parseZoomLevel(initialZoomLevel);
 		}
-
-		// Make it focusable by keyboard so it can be scrolled with arrow keys
-		this.tabIndex = 0;
 	}
 
 
 	disconnectedCallback() {
-		this.removeEventListener('pointerdown', this.boundOnPointerDown);
-		this.removeEventListener('wheel', this.boundOnWheel);
-		this.removeEventListener('contextmenu', this.boundOnContextMenu);
-		this.contentSlot?.removeEventListener('slotchange', this.boundOnSlotChange);
+		const scrollableContainer = this.scrollableContainer;
+		scrollableContainer.removeEventListener('pointerdown', this.boundOnPointerDown);
+		scrollableContainer.removeEventListener('wheel', this.boundOnWheel);
+		scrollableContainer.removeEventListener('contextmenu', this.boundOnContextMenu);
+		this.contentSlot.removeEventListener('slotchange', this.boundOnSlotChange);
 		this.disconnectAllTemporaryEventListeners();
 	}
 
@@ -190,6 +229,7 @@ export class ScrollZoomBlock extends HTMLElement {
 			case 'min-zoom-level': {
 				if (newValue == null) this.minZoomLevel = this.defaultMinZoomLevel;
 				else this.minZoomLevel = this.parseZoomLevel(newValue);
+				this.updateZoomRangeSlider();
 				if (this.currentZoomLevel < this.minZoomLevel) {
 					this.currentZoomLevel = this.minZoomLevel;
 				}
@@ -198,6 +238,7 @@ export class ScrollZoomBlock extends HTMLElement {
 			case 'max-zoom-level': {
 				if (newValue == null) this.maxZoomLevel = this.defaultMaxZoomLevel;
 				else this.maxZoomLevel = this.parseZoomLevel(newValue);
+				this.updateZoomRangeSlider();
 				if (this.currentZoomLevel > this.maxZoomLevel) {
 					this.currentZoomLevel = this.maxZoomLevel;
 				}
@@ -210,27 +251,85 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	/**
+	 * Block that is interactive. Gets all the event listeners.
+	 * @returns {HTMLElement}
+	 */
+	get scrollableContainer() {
+		const el = this.shadow.querySelector('[part~="scrollable-container"]');
+		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+		return el;
+	}
+
+	/**
 	 * Block that is sized appropriately to add margins on each side of the content, so that is can be moved to each corner of the ScrollZoomBlock.
-	 * @returns {HTMLElement | null}
+	 * @returns {HTMLElement}
 	 */
 	get scrollMarginContainer() {
-		return this.shadow.querySelector('[part~="scroll-margin-container"]');
+		const el = this.shadow.querySelector('[part~="scroll-margin-container"]');
+		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+		return el;
 	}
 
 	/**
 	 * Block that is scaled to simulate the zoom.
-	 * @returns {HTMLElement | null}
+	 * @returns {HTMLElement}
 	 */
 	get contentScaleContainer() {
-		return this.shadow.querySelector('[part~="content-scale-container"]');
+		const el = this.shadow.querySelector('[part~="content-scale-container"]');
+		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+		return el;
 	}
 
 	/**
 	 * Slot that contains the content that is going to be manipulated by interacting with the ScrollZoomBlock.
-	 * @returns {HTMLSlotElement | null}
+	 * @returns {HTMLSlotElement}
 	 */
 	get contentSlot() {
-		return this.shadow.querySelector('slot');
+		const el = this.shadow.querySelector('slot');
+		if (!el) throw new TypeError('Expecting HTMLElement');
+		return el;
+	}
+
+	/**
+	 * Zoom-in button.
+	 * @returns {HTMLElement}
+	 */
+	get zoomInButton() {
+		const zoomInButtonSlot = this.shadow.querySelector('slot[name="zoom-in-button"]');
+		if (!(zoomInButtonSlot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
+
+		const el = zoomInButtonSlot.assignedElements()[0] ?? zoomInButtonSlot.children[0];
+		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+
+		return el;
+	}
+
+	/**
+	 * Zoom-out button.
+	 * @returns {HTMLElement}
+	 */
+	get zoomOutButton() {
+		const zoomOutButtonSlot = this.shadow.querySelector('slot[name="zoom-out-button"]');
+		if (!(zoomOutButtonSlot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
+
+		const el = zoomOutButtonSlot.assignedElements()[0] ?? zoomOutButtonSlot.children[0];
+		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+
+		return el;
+	}
+
+	/**
+	 * Zoom range slider.
+	 * @returns {HTMLElement}
+	 */
+	get zoomRangeSlider() {
+		const zoomRangeSliderSlot = this.shadow.querySelector('slot[name="zoom-range-slider"]');
+		if (!(zoomRangeSliderSlot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
+
+		const el = zoomRangeSliderSlot.assignedElements()[0] ?? zoomRangeSliderSlot.children[0];
+		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+
+		return el;
 	}
 
 
@@ -466,7 +565,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		scrollPosition = scrollPosition.round();
 
-		this.scrollTo({
+		this.scrollableContainer.scrollTo({
 			left: scrollPosition.x,
 			top: scrollPosition.y,
 			behavior: 'instant'
@@ -484,6 +583,17 @@ export class ScrollZoomBlock extends HTMLElement {
 	reset() {
 		this.currentZoomLevel = this.initialZoomLevel;
 		this.initializeScrollPosition(this.#size, this.#contentSize);
+	}
+
+
+	updateZoomRangeSlider() {
+		this.isInitialized.then(() => {
+			const slider = this.zoomRangeSlider;
+			slider.setAttribute('min', String(this.minZoomLevel));
+			slider.setAttribute('max', String(this.maxZoomLevel));
+			slider.setAttribute('step', String((this.maxZoomLevel - this.minZoomLevel) / 100));
+			if ('value' in slider) slider.value = this.currentZoomLevel;
+		});
 	}
 
 
@@ -554,7 +664,8 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @returns {Point2D}
 	 */
 	get scrollPosition() {
-		return new Point2D(this.scrollLeft, this.scrollTop);
+		const scrollableContainer = this.scrollableContainer;
+		return new Point2D(scrollableContainer.scrollLeft, scrollableContainer.scrollTop);
 	}
 
 
@@ -579,7 +690,10 @@ export class ScrollZoomBlock extends HTMLElement {
 	onPointerDown(downEvent) {
 		downEvent.preventDefault();
 
-		this.setPointerCapture(downEvent.pointerId);
+		const scrollableContainer = downEvent.currentTarget;
+		if (!(scrollableContainer instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
+
+		scrollableContainer.setPointerCapture(downEvent.pointerId);
 		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
 
 		// Prepare an AbortController to easily remove all event listeners on the pointer later
@@ -740,7 +854,7 @@ export class ScrollZoomBlock extends HTMLElement {
 					)
 					.round();
 
-				this.scrollTo({
+				this.scrollableContainer.scrollTo({
 					left: scrollPosition.x,
 					top: scrollPosition.y,
 					behavior: 'instant',
@@ -1162,7 +1276,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		zoomPoint,
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
-		oldScrollPosition = new Point2D(this.scrollLeft, this.scrollTop),
+		oldScrollPosition = this.scrollPosition,
 		oldScrollMargins = this.#scrollMargins,
 		dispatchEvents = true,
 		forcedNewScrollMargins,
@@ -1190,13 +1304,14 @@ export class ScrollZoomBlock extends HTMLElement {
 		// We apply the new zoom level
 		this.contentScaleContainer?.style.setProperty('--zoom-level', clampedZoomLevel.toFixed(8));
 		this.#currentZoomLevel = clampedZoomLevel;
+		this.updateZoomRangeSlider();
 
 		// We resize the scroll margins container to allow the content inside the ScrollZoomBlock
 		// to be scrolled towards each corner of the ScrollZoomBlock when it's smaller than it
 		this.#applyScrollMargins(clampedZoomLevel, newScrollMargins);
 
 		// We scroll to keep the `zoomPoint` fixed
-		this.scrollTo({
+		this.scrollableContainer.scrollTo({
 			left: newScrollPosition.x,
 			top: newScrollPosition.y,
 			behavior: 'instant',
@@ -1224,7 +1339,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		zoomDuration = 300, // ms
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
-		oldScrollPosition = new Point2D(this.scrollLeft, this.scrollTop),
+		oldScrollPosition = this.scrollPosition,
 		oldScrollMargins = this.#scrollMargins,
 	) {
 		// If no zoom point is defined, use the center of the ScrollZoomBlock

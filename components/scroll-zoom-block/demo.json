@@ -1,9 +1,10 @@
 {
   "title": "<scroll-zoom-block>",
   "imports": {
+    "input-slider": "/_common/components/input-slider/input-slider.js"
   },
   "intro": "This block is interactive in the following ways: <ul><li>scroll by dragging the block,<li>scroll with arrow keys after getting focus from a keyboard,<li>zoom with a mouse wheel,<li>pinch to zoom,<li>double click/tap to zoom,<li>double tap, maintain and drag vertically to zoom.",
   "examples": [
-    "<scroll-zoom-block>\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
+    "<scroll-zoom-block controls>\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
   ]
 }
