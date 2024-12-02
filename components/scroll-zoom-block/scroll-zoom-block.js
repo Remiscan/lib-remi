@@ -37,13 +37,20 @@ sheet.replaceSync(/*css*/`
 	:host {
 		display: block;
 		contain: size;
-		overflow: hidden;
+		overflow: scroll;
+		scrollbar-width: none;
 		touch-action: none;
 		user-select: none;
 	}
 
 	:host(:active) {
 		cursor: move;
+	}
+
+	:host(:focus-visible) {
+		outline: 5px auto Highlight;
+		outline: 5px auto -webkit-focus-ring-color;
+		outline-offset: 4px;
 	}
 
 	[part~="scroll-margin-container"] {
@@ -104,6 +111,7 @@ const resizeObserver = new ResizeObserver((entries) => {
 /**
  * Block is interactive in the following ways:
  * - scroll by dragging the block,
+ * - scroll with arrow keys after getting focus from a keyboard,
  * - zoom with a mouse wheel,
  * - pinch to zoom,
  * - double click/tap to zoom,
@@ -150,6 +158,9 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (initialZoomLevel) {
 			this.currentZoomLevel = this.parseZoomLevel(initialZoomLevel);
 		}
+
+		// Make it focusable by keyboard so it can be scrolled with arrow keys
+		this.tabIndex = 0;
 	}
 
 

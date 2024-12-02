@@ -18,7 +18,8 @@
 	width: 100%;
 	height: 100%;
 	max-width: 100cqw;
-	overflow: hidden;
+	overflow: clip;
+	overflow-clip-margin: 10px;
 	box-sizing: border-box;
 }
 
@@ -50,4 +51,5 @@ scroll-zoom-block {
 	padding-inline: 8px;
 	background-color: rgb(from var(--code-background-color) r g b / .8);
 	backdrop-filter: blur(5px);
+	pointer-events: none;
 }

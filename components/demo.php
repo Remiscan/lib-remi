@@ -156,7 +156,8 @@ try {
         flex-direction: column;
         justify-content: start;
         align-items: center;
-        overflow: hidden;
+        overflow: clip;
+        overflow-clip-margin: 10px;
         gap: 6px;
         border: 2px solid var(--code-background-color);
         padding: 0 6px 6px;
