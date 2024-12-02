@@ -406,32 +406,32 @@ export class ScrollZoomBlock extends HTMLElement {
 		const scrollMargins = this.#computeScrollMargins(zoomLevel);
 		this.#applyScrollMargins(zoomLevel, scrollMargins);
 
-		let scrollLeft, scrollTop;
+		let scrollPosition = new Point2D();
 
 		if (contentSize.inline < sectionSize.inline) {
 			switch (startPosition.x) {
 				case 'start':
-					scrollLeft = scrollMargins.inline;
+					scrollPosition.x = scrollMargins.inline;
 					break;
 				case 'end':
-					scrollLeft = 0;
+					scrollPosition.x = 0;
 					break;
 				case 'center':
 				default:
-					scrollLeft = scrollMargins.inline + .5 * (zoomLevel * contentSize.inline - sectionSize.inline);
+					scrollPosition.x = scrollMargins.inline + .5 * (zoomLevel * contentSize.inline - sectionSize.inline);
 					break;
 			}
 		} else {
 			switch (startPosition.x) {
 				case 'start':
-					scrollLeft = 0;
+					scrollPosition.x = 0;
 					break;
 				case 'end':
-					scrollLeft = 2 * scrollMargins.inline + zoomLevel * contentSize.inline;
+					scrollPosition.x = 2 * scrollMargins.inline + zoomLevel * contentSize.inline;
 					break;
 				case 'center':
 				default:
-					scrollLeft = scrollMargins.inline + .5 * (zoomLevel * contentSize.inline - sectionSize.inline);
+					scrollPosition.x = scrollMargins.inline + .5 * (zoomLevel * contentSize.inline - sectionSize.inline);
 					break;
 			}
 		}
@@ -439,37 +439,36 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (contentSize.block < sectionSize.block) {
 			switch (startPosition.y) {
 				case 'start':
-					scrollTop = scrollMargins.block;
+					scrollPosition.y = scrollMargins.block;
 					break;
 				case 'end':
-					scrollTop = 0;
+					scrollPosition.y = 0;
 					break;
 				case 'center':
 				default:
-					scrollTop = scrollMargins.block + .5 * (zoomLevel * contentSize.block - sectionSize.block);
+					scrollPosition.y = scrollMargins.block + .5 * (zoomLevel * contentSize.block - sectionSize.block);
 					break;
 			}
 		} else {
 			switch (startPosition.y) {
 				case 'start':
-					scrollTop = 0;
+					scrollPosition.y = 0;
 					break;
 				case 'end':
-					scrollTop = 2 * scrollMargins.block + zoomLevel * contentSize.block;
+					scrollPosition.y = 2 * scrollMargins.block + zoomLevel * contentSize.block;
 					break;
 				case 'center':
 				default:
-					scrollTop = scrollMargins.block + .5 * (zoomLevel * contentSize.block - sectionSize.block);
+					scrollPosition.y = scrollMargins.block + .5 * (zoomLevel * contentSize.block - sectionSize.block);
 					break;
 			}
 		}
 
-		scrollLeft = Math.round(scrollLeft);
-		scrollTop = Math.round(scrollTop);
+		scrollPosition = scrollPosition.round();
 
 		this.scrollTo({
-			left: scrollLeft,
-			top: scrollTop,
+			left: scrollPosition.x,
+			top: scrollPosition.y,
 			behavior: 'instant'
 		});
 
@@ -710,7 +709,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 				const interactionDetail = interaction === 'drag'
 					? {
-						scrollPosition: centerPoint,
+						dragPoint: centerPoint,
 					}
 					: {
 						numberOfPointers: numberOfPointers,
@@ -842,10 +841,8 @@ export class ScrollZoomBlock extends HTMLElement {
 				// If the pointer is a mouse pointer and was using the right-click button, then we zoom out.
 				// Else we zoom in.
 				const zoomDirection = upEvent.button === 2 ? -1 : 1;
-				const zoomPoint = new Point2D(
-					Math.round(upEvent.clientX),
-					Math.round(upEvent.clientY),
-				);
+				const zoomPoint = new Point2D(upEvent.clientX, upEvent.clientY)
+					.round();
 
 				const interactionDetail = {
 					direction: zoomDirection < 0 ? 'out' : 'in',
