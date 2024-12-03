@@ -233,7 +233,9 @@ export class InputSlider extends HTMLElement {
 
       const min = this.min, max = this.max;
       const value = this.closestValidValue(min + ratio * (max - min));
-      this.setAttribute('value', value);
+
+      this.setValue(value);
+      this.dispatchUpdateEvent('input', 'pointerdown');
 
       let moving = false;
       const pointerMoveHandler = moveEvent => {
@@ -243,7 +245,8 @@ export class InputSlider extends HTMLElement {
 
         const ratio = getPositionRatio(moveEvent, rect, thumbRect, direction);
         const value = this.closestValidValue(min + ratio * (max - min));
-        this.setAttribute('value', value);
+        this.setValue(value);
+        this.dispatchUpdateEvent('input', 'pointermove');
 
         requestAnimationFrame(() => { moving = false });
       };
@@ -253,8 +256,9 @@ export class InputSlider extends HTMLElement {
 
         const ratio = getPositionRatio(upEvent, rect, thumbRect, direction);
         const value = this.closestValidValue(min + ratio * (max - min));
-        this.setAttribute('value', value);
-        this.dispatchUpdateEvent('change');
+        this.setValue(value);
+        this.dispatchUpdateEvent('input', 'pointerup');
+        this.dispatchUpdateEvent('change', 'pointerup');
 
         this.releasePointerCapture(upEvent.pointerId);
         this.removeEventListener('pointermove', pointerMoveHandler);
@@ -321,9 +325,12 @@ export class InputSlider extends HTMLElement {
           }
         }
 
+        console.log(this.value, newValue, this.closestValidValue(newValue));
+
         if (supportedKey) {
-          this.setAttribute('value', newValue);
-          this.dispatchUpdateEvent('change');
+          this.setValue(newValue);
+          this.dispatchUpdateEvent('input', 'keydown');
+          this.dispatchUpdateEvent('change', 'keydown');
           keydownEvent.preventDefault();
         }
       };
@@ -343,6 +350,9 @@ export class InputSlider extends HTMLElement {
     for (const [attr, obj] of ariaAttributesMap) {
       this.initAttribute(attr, obj);
     }
+
+    const initialValue = this.getAttribute('value') ?? ariaAttributesMap.get('value').default;
+    this.setValue(initialValue);
 
     if (!this.getAttribute('step')) this.setAttribute('step', this.step);
 
@@ -369,10 +379,10 @@ export class InputSlider extends HTMLElement {
   }
 
 
-  dispatchUpdateEvent(type = 'input', value = this.value, valueText = this.valueText) {
+  dispatchUpdateEvent(type, cause, value = this.value, valueText = this.valueText) {
     this.dispatchEvent(new CustomEvent(type, {
       bubbles: true,
-      detail: { value, valueText }
+      detail: { value, valueText, cause }
     }));
   }
 
@@ -383,6 +393,29 @@ export class InputSlider extends HTMLElement {
     const decimals = (`${step}`.split('.')[1] ?? '').length;
     const validValue = Math.max(min, Math.min(min + closerValidStep * step, max));
     return Number(validValue.toFixed(decimals));
+  }
+
+
+  setValue(value) {
+    const newValue = this.closestValidValue(Number(value));
+    this.internalValue = newValue;
+    this.#internals?.setFormValue(newValue);
+
+    const slider = this.shadowRoot.querySelector('[role="slider"]');
+    slider.setAttribute('aria-valuetext', this.valueText);
+
+    this.applyValue();
+  }
+
+
+  applyValue() {
+    const min = this.min, max = this.max, value = this.value;
+    const currentValue = Math.max(min, Math.min(value, max));
+    const ratio = 1 - (max - currentValue) / (max - min);
+    const slider = this.shadowRoot.querySelector('[role="slider"]');
+    const track = this.shadowRoot.querySelector('[part="slider-track"]');
+    slider.style.setProperty('--ratio', ratio);
+    track.style.setProperty('--ratio', ratio);
   }
 
 
@@ -422,13 +455,14 @@ export class InputSlider extends HTMLElement {
     this.setAttribute('step', value);
   }
 
+  internalValue = 0;
+
   get value() {
-    const value = Number(this.getAttribute('value'));
-    return this.closestValidValue(value);
+    return this.internalValue;
   }
 
   set value(val) {
-    this.setAttribute('value', val);
+    this.setValue(val);
   }
 
   get valueText() {
@@ -478,25 +512,9 @@ export class InputSlider extends HTMLElement {
     }
 
     switch (attr) {
-      case 'value': {
-        const currentValue = this.closestValidValue(Number(value));
-        if (String(currentValue) !== newValue) return this.setAttribute('value', currentValue);
-
-        const valueText = this.valueText;
-        slider.setAttribute('aria-valuetext', valueText);
-
-        this.#internals?.setFormValue(currentValue);
-        this.dispatchUpdateEvent('input', currentValue, valueText);
-      }
-
       case 'min':
       case 'max': {
-        const min = Number(this.getAttribute('min')), max = Number(this.getAttribute('max')), value = Number(this.getAttribute('value'));
-        const currentValue = Math.max(min, Math.min(value, max));
-        const ratio = 1 - (max - currentValue) / (max - min);
-        const track = this.shadowRoot.querySelector('[part="slider-track"]');
-        slider.style.setProperty('--ratio', ratio);
-        track.style.setProperty('--ratio', ratio);
+        this.applyValue();
       }
     }
   }
