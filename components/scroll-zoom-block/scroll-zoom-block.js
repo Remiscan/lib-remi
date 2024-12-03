@@ -37,7 +37,7 @@ template.innerHTML = /*html*/`
 		</slot>
 
 		<slot name="zoom-range-slider">
-			<input-slider orientation="vertical"></input-slider>
+			<input-slider orientation="vertical" min="1" max="100" step="1"></input-slider>
 		</slot>
 
 		<slot name="zoom-out-button">
@@ -213,7 +213,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	static get observedAttributes() {
-		return ['min-zoom-level', 'max-zoom-level'];
+		return ['controls'];
 	}
 
 
@@ -226,22 +226,8 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (oldValue === newValue) return;
 
 		switch (attr) {
-			case 'min-zoom-level': {
-				if (newValue == null) this.minZoomLevel = this.defaultMinZoomLevel;
-				else this.minZoomLevel = this.parseZoomLevel(newValue);
-				this.updateZoomRangeSlider();
-				if (this.currentZoomLevel < this.minZoomLevel) {
-					this.currentZoomLevel = this.minZoomLevel;
-				}
-			} break;
-
-			case 'max-zoom-level': {
-				if (newValue == null) this.maxZoomLevel = this.defaultMaxZoomLevel;
-				else this.maxZoomLevel = this.parseZoomLevel(newValue);
-				this.updateZoomRangeSlider();
-				if (this.currentZoomLevel > this.maxZoomLevel) {
-					this.currentZoomLevel = this.maxZoomLevel;
-				}
+			case 'controls': {
+				this.toggleControls(newValue != null);
 			} break;
 		}
 	}
@@ -291,17 +277,34 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 	/**
+	 * Zoom-in button slot.
+	 * @returns {HTMLSlotElement}
+	 */
+	get zoomInButtonSlot() {
+		const slot = this.shadow.querySelector('slot[name="zoom-in-button"]');
+		if (!(slot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
+		return slot;
+	}
+
+	/**
 	 * Zoom-in button.
 	 * @returns {HTMLElement}
 	 */
 	get zoomInButton() {
-		const zoomInButtonSlot = this.shadow.querySelector('slot[name="zoom-in-button"]');
-		if (!(zoomInButtonSlot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
-
-		const el = zoomInButtonSlot.assignedElements()[0] ?? zoomInButtonSlot.children[0];
+		const slot = this.zoomInButtonSlot;
+		const el = slot.assignedElements()[0] ?? slot.children[0];
 		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
-
 		return el;
+	}
+
+	/**
+	 * Zoom-in button slot.
+	 * @returns {HTMLSlotElement}
+	 */
+	get zoomOutButtonSlot() {
+		const slot = this.shadow.querySelector('slot[name="zoom-out-button"]');
+		if (!(slot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
+		return slot;
 	}
 
 	/**
@@ -309,13 +312,20 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @returns {HTMLElement}
 	 */
 	get zoomOutButton() {
-		const zoomOutButtonSlot = this.shadow.querySelector('slot[name="zoom-out-button"]');
-		if (!(zoomOutButtonSlot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
-
-		const el = zoomOutButtonSlot.assignedElements()[0] ?? zoomOutButtonSlot.children[0];
+		const slot = this.zoomOutButtonSlot
+		const el = slot.assignedElements()[0] ?? slot.children[0];
 		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
-
 		return el;
+	}
+
+	/**
+	 * Zoom range slider slot.
+	 * @returns {HTMLSlotElement}
+	 */
+	get zoomRangeSliderSlot() {
+		const slot = this.shadow.querySelector('slot[name="zoom-range-slider"]');
+		if (!(slot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
+		return slot;
 	}
 
 	/**
@@ -323,12 +333,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @returns {HTMLElement}
 	 */
 	get zoomRangeSlider() {
-		const zoomRangeSliderSlot = this.shadow.querySelector('slot[name="zoom-range-slider"]');
-		if (!(zoomRangeSliderSlot instanceof HTMLSlotElement)) throw new TypeError('Expecting HTMLSlotElement');
-
-		const el = zoomRangeSliderSlot.assignedElements()[0] ?? zoomRangeSliderSlot.children[0];
+		const slot = this.zoomRangeSliderSlot;
+		const el = slot.assignedElements()[0] ?? slot.children[0];
 		if (!(el instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
-
 		return el;
 	}
 
@@ -571,6 +578,12 @@ export class ScrollZoomBlock extends HTMLElement {
 			behavior: 'instant'
 		});
 
+		if (this.initialZoomLevel < this.minZoomLevel || this.initialZoomLevel > this.maxZoomLevel) {
+			this.currentZoomLevel = this.minZoomLevel;
+		}
+
+		this.updateZoomRangeSlider();
+
 		this.#isInitialized = true;
 		this.dispatchEvent(new Event('initialized'));
 	}
@@ -586,13 +599,12 @@ export class ScrollZoomBlock extends HTMLElement {
 	}
 
 
+	/** Updates the zoom range slider value to match the current zoom level. */
 	updateZoomRangeSlider() {
 		this.isInitialized.then(() => {
 			const slider = this.zoomRangeSlider;
-			slider.setAttribute('min', String(this.minZoomLevel));
-			slider.setAttribute('max', String(this.maxZoomLevel));
-			slider.setAttribute('step', String((this.maxZoomLevel - this.minZoomLevel) / 100));
-			if ('value' in slider) slider.value = this.currentZoomLevel;
+			const newSliderValue = this.getZoomRangeSliderValue();
+			if ('value' in slider && slider.value != newSliderValue) slider.value = newSliderValue;
 		});
 	}
 
@@ -965,12 +977,23 @@ export class ScrollZoomBlock extends HTMLElement {
 
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
 
-				this.smoothZoom(
-					(1.7 ** zoomDirection) * this.currentZoomLevel,
+				// If another smooth zoom was already in progress, abort it
+				this.lastSmoothZoomAbortController.abort();
+
+				const { promise, abortController } = this.smoothZoom(
+					this.getNextZoomLevel(zoomDirection),
 					zoomPoint,
-				).then(() => {
+				);
+
+				// Even if aborted, wait for the finalization of the previous smooth zoom before starting the new one
+				this.lastSmoothZoomPromise
+				.then(() => promise)
+				.then(() => {
 					this.dispatchInteractionEvent('after', interaction, interactionDetail);
 				});
+
+				this.lastSmoothZoomPromise = promise;
+				this.lastSmoothZoomAbortController = abortController;
 			} break;
 
 			default:
@@ -1066,6 +1089,71 @@ export class ScrollZoomBlock extends HTMLElement {
 	boundOnContextMenu = this.onContextMenu.bind(this);
 
 
+	/**
+	 * Promise that resolves when a smoothZoom is over.
+	 * @type {Promise<boolean>}
+	 */
+	lastSmoothZoomPromise = Promise.resolve(false);
+
+	/** @type {AbortController} */
+	lastSmoothZoomAbortController = new AbortController();
+
+
+	// MARK: controls click
+	/**
+	 * Handles clicks on the zoom buttons when the `controls` attribute is set.
+	 * @param {Event} event
+	 */
+	async onZoomButtonClick(event) {
+		const currentTarget = event.currentTarget;
+		if (!(currentTarget instanceof HTMLElement)) return;
+
+		// If a previous smooth zoom is still in progress, abort it
+		// and wait for its finalization
+		const previousZoomWasNotOver = this.smoothZoomInProgress;
+		if (previousZoomWasNotOver) {
+			this.lastSmoothZoomAbortController.abort();
+			await this.lastSmoothZoomPromise;
+		}
+
+		/** @type {1 | -1 | 0} */
+		let zoomDirection = 0;
+		switch (currentTarget.getAttribute('name')) {
+			case 'zoom-in-button': zoomDirection = 1; break;
+			case 'zoom-out-button': zoomDirection = -1; break;
+		}
+
+		if (!zoomDirection) return;
+
+		const { promise, abortController } = this.smoothZoom(this.getNextZoomLevel(zoomDirection));
+		this.lastSmoothZoomPromise = promise,
+		this.lastSmoothZoomAbortController = abortController;
+	}
+	boundOnZoomButtonClick = this.onZoomButtonClick.bind(this);
+
+
+	// MARK: controls slide
+	/**
+	 * Handles input events from the zoom range slider.
+	 * @param {Event} event
+	 */
+	async onZoomRangeInput(event) {
+		const target = event.target;
+		if (!target || !('value' in target)) return;
+
+		// If a previous smooth zoom is still in progress, abort it
+		// and wait for its finalization
+		this.lastSmoothZoomAbortController.abort();
+		await this.lastSmoothZoomPromise;
+
+		const newZoomLevel = this.computeZoomValueFromRangeSlider(Number(target.value));
+		if (!newZoomLevel) return;
+
+		this.zoom(newZoomLevel);
+	}
+	boundOnZoomRangeInput = this.onZoomRangeInput.bind(this);
+
+
 	// MARK: CustomEvent
 	/**
 	 * Dispatches an interaction event.
@@ -1090,6 +1178,20 @@ export class ScrollZoomBlock extends HTMLElement {
 				detail: detail,
 			})
 		);
+	}
+
+
+	// MARK: manual controls
+
+	/**
+	 * Toggles the manual controls.
+	 * @param {boolean} showControls Whether the manual controls should be shown or not.
+	 */
+	toggleControls(showControls) {
+		const methodName = showControls ? 'addEventListener' : 'removeEventListener';
+		this.zoomInButtonSlot[methodName]('click', this.boundOnZoomButtonClick);
+		this.zoomOutButtonSlot[methodName]('click', this.boundOnZoomButtonClick);
+		this.zoomRangeSliderSlot[methodName]('input', this.boundOnZoomRangeInput);
 	}
 
 
@@ -1121,13 +1223,19 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	/** Default minimum zoom level. */
 	defaultMinZoomLevel = .25;
-	/** Current minimum zoom level. */
-	minZoomLevel = this.defaultMinZoomLevel;
+
+	/** @returns {number} */
+	get minZoomLevel() {
+		return Number(this.getAttribute('min-zoom-level')) || this.defaultMinZoomLevel;
+	}
 
 	/** Default maximum zoom level. */
 	defaultMaxZoomLevel = 4;
-	/** Current maximum zoom level. */
-	maxZoomLevel = this.defaultMaxZoomLevel;
+
+	/** @returns {number} */
+	get maxZoomLevel() {
+		return Number(this.getAttribute('max-zoom-level')) || this.defaultMaxZoomLevel;
+	}
 
 	/** Currently applied zoom level. */
 	#currentZoomLevel = 1;
@@ -1198,6 +1306,58 @@ export class ScrollZoomBlock extends HTMLElement {
 	 */
 	clampZoomLevel(zoomLevel) {
 		return Math.max(this.minZoomLevel, Math.min(zoomLevel, this.maxZoomLevel));
+	}
+
+
+	/**
+	 * Gets the next zoom level for manual controls.
+	 * @param {1 | -1} direction Direction of the zoom.
+	 * @returns {number}
+	 */
+	getNextZoomLevel(direction) {
+		return (1.6 ** direction) * this.currentZoomLevel;
+	}
+
+
+	/**
+	 * Gets the zoom range slider value that corresponds to the given zoom level.  
+	 * The slider takes values in the [1, 100] range and uses its value to determine the zoom level on a logarithmic scale.
+	 * So passing the zoom level directly to it is not possible, we need to compute the value.
+	 * @param {number} zoomLevel
+	 * @param {number} minZoomLevel
+	 * @param {number} maxZoomLevel
+	 * @returns {number}
+	 */
+	getZoomRangeSliderValue(
+		zoomLevel = this.currentZoomLevel,
+		minZoomLevel = this.minZoomLevel,
+		maxZoomLevel = this.maxZoomLevel,
+	) {
+		const numberOfSliderPoints = 100;
+		const sliderValue = 1 + (numberOfSliderPoints - 1) * (
+			Math.log(zoomLevel / minZoomLevel) / Math.log(maxZoomLevel / minZoomLevel)
+		);
+		return Math.round(sliderValue);
+	}
+
+
+	/**
+	 * Computes the zoom level from the range slider value.
+	 * @param {number} sliderValue The current slider value.
+	 * @param {number} minZoomLevel
+	 * @param {number} maxZoomLevel
+	 * @returns {number}
+	 */
+	computeZoomValueFromRangeSlider(
+		sliderValue,
+		minZoomLevel = this.minZoomLevel,
+		maxZoomLevel = this.maxZoomLevel,
+	) {
+		const numberOfSliderPoints = 100;
+		return minZoomLevel * Math.pow(
+			maxZoomLevel / minZoomLevel,
+			(sliderValue - 1) / (numberOfSliderPoints - 1)
+		);
 	}
 
 
@@ -1322,6 +1482,12 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	// MARK: smooth zoom
+
+	/** Whether a smooth zoom is in progress.
+	 * @type {boolean}
+	 */
+	smoothZoomInProgress = false;
+
 	/**
 	 * Smoothly animates the zoom of the ScrollZoomBlock's content.  
 	 * TODO When Scoped Element Transitions exist, use one here instead of calling zoom() many times.
@@ -1332,16 +1498,19 @@ export class ScrollZoomBlock extends HTMLElement {
 	 * @param {number} oldZoomLevel - The zoom level before applying the new zoom level.
 	 * @param {Point2D} oldScrollPosition - The scroll position before applying the new zoom level.
 	 * @param {Size} oldScrollMargins - The scroll margins before applying the new zoom level.
+	 * @returns {{ promise: Promise<boolean>, abortController: AbortController }} A promise that resolves when the smooth zoom ends, and an AbortController that skips the animation when aborted.
 	 */
-	async smoothZoom(
+	smoothZoom(
 		zoomLevel,
 		zoomPoint,
-		zoomDuration = 300, // ms
+		zoomDuration = 200, // ms
 		sectionRect = this.getBoundingClientRect(),
 		oldZoomLevel = this.currentZoomLevel,
 		oldScrollPosition = this.scrollPosition,
 		oldScrollMargins = this.#scrollMargins,
 	) {
+		this.smoothZoomInProgress = true;
+
 		// If no zoom point is defined, use the center of the ScrollZoomBlock
 		if (typeof zoomPoint === 'undefined') {
 			zoomPoint = new Point2D(
@@ -1364,29 +1533,40 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		const startZoomLevel = oldZoomLevel;
 		let now = Date.now();
-		while (now - startTime < zoomDuration) {
-			// Use an easing function around the time parameter to ease in and out of the animation
-			const tempZoomLevel = startZoomLevel + (zoomLevel - startZoomLevel) * easeInOutQuad((now - startTime) / zoomDuration);
 
-			// Passing the startZoomLevel and the oldScrollPosition to the zoom() function
-			// avoids an increasing shift in the scroll position as we progressively zoom
-			this.zoom(tempZoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, oldScrollMargins, false, tempScrollMargins);
+		const abortController = new AbortController();
 
-			await new Promise(resolve => requestAnimationFrame(resolve));
-			now = Date.now();
-		}
+		/** @type {Promise<boolean>} */
+		const promise = new Promise(async (resolve) => {
+			while (now - startTime < zoomDuration) {
+				// Use an easing function around the time parameter to ease in and out of the animation
+				const tempZoomLevel = startZoomLevel + (zoomLevel - startZoomLevel) * easeInOutQuad((now - startTime) / zoomDuration);
+	
+				// Passing the startZoomLevel and the oldScrollPosition to the zoom() function
+				// avoids an increasing shift in the scroll position as we progressively zoom
+				this.zoom(tempZoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, oldScrollMargins, false, tempScrollMargins);
+	
+				await new Promise(res => requestAnimationFrame(res));
+				now = Date.now();
 
-		// Zoom one last time after the animation to make sure the final zoom level was reached
-		this.zoom(zoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, oldScrollMargins, false);
-
-		this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, zoomLevel, 'smooth');
+				if (abortController.signal.aborted) break;
+			}
+	
+			// Zoom one last time after the animation to make sure the final zoom level was reached
+			this.zoom(zoomLevel, zoomPoint, sectionRect, oldZoomLevel, oldScrollPosition, oldScrollMargins, false);
+	
+			this.dispatchZoomEvent('after', zoomPoint, oldZoomLevel, zoomLevel, 'smooth');
+			resolve(this.smoothZoomInProgress = false);
+		});
+		
+		return { promise, abortController };
 	}
 
 
 	// MARK: CustomEvent
 	/**
 	 * Dispatches a zoom event.
-	 * @param {'before' | 'after'} timing - Whether the event is dispatched before or after the interaction happens.
+	 * @param {'before' | 'after' | 'cancel'} timing - Whether the event is dispatched before or after the interaction happens.
 	 * @param {Point2D} zoomPoint - The point that stayed fixed during the zoom.
 	 * @param {number} previousZoomLevel - The previous zoom level.
 	 * @param {number} newZoomLevel - The current zoom level.
