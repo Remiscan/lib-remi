@@ -53,7 +53,8 @@ try {
         align-items: center;
         justify-content: center;
         position: relative;
-        gap: 16px;
+        --gap: 16px;
+        gap: var(--gap);
         font-family: system-ui, sans-serif;
         margin: 0;
         padding: 16px;
