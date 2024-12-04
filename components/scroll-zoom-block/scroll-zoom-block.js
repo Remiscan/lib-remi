@@ -141,8 +141,8 @@ sheet.replaceSync(/*css*/`
 		}
 	}
 
-	:host([controls="when-focused"]) {
-		[part~="controls"]:not(:focus-within) {
+	:host(:not(:focus-within)[controls="when-focused"]) {
+		[part~="controls"] {
 			opacity: 0;
 			pointer-events: none;
 		}
