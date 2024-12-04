@@ -3,8 +3,8 @@
   "imports": {
     "input-slider": "/_common/components/input-slider/input-slider.js"
   },
-  "intro": "This block is interactive in the following ways: <ul><li>scroll by dragging the block,<li>scroll with arrow keys after getting focus from a keyboard,<li>zoom with a mouse wheel,<li>pinch to zoom,<li>double click/tap to zoom,<li>double tap, maintain and drag vertically to zoom.",
+  "intro": "This block is interactive in the following ways: <ul><li>scroll by dragging the block, or with keyboard keys (when focused),<li>zoom with a mouse wheel, a pinch, a double click/tap, or a maintained double tap followed by vertical scrolling,<li>if using the \"controls\" attribute, zoom with the −/+ buttons and slider.",
   "examples": [
-    "<scroll-zoom-block controls>\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
+    "<scroll-zoom-block controls=\"when-focused\">\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
   ]
 }

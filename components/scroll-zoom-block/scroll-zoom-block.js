@@ -32,16 +32,16 @@ template.innerHTML = /*html*/`
 	</div>
 
 	<div part="controls">
-		<slot name="zoom-in-button">
-			<button type="button">+</button>
+		<slot name="zoom-out-button">
+			<button type="button">−</button>
 		</slot>
 
 		<slot name="zoom-range-slider">
-			<input-slider orientation="vertical" min="1" max="100" step="1"></input-slider>
+			<input-slider orientation="horizontal" min="1" max="100" step="1"></input-slider>
 		</slot>
 
-		<slot name="zoom-out-button">
-			<button type="button">-</button>
+		<slot name="zoom-in-button">
+			<button type="button">+</button>
 		</slot>
 	</div>
 `;
@@ -54,6 +54,7 @@ sheet.replaceSync(/*css*/`
 	:host {
 		display: grid;
 		contain: size;
+		container-type: size;
 	}
 
 	[part~="scrollable-container"] {
@@ -93,16 +94,58 @@ sheet.replaceSync(/*css*/`
 
 	[part~="controls"] {
 		grid-area: 1 / 1;
-		place-self: end end;
-		margin: 8px;
+		place-self: start end;
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		gap: 8px;
+		align-items: center;
 		z-index: 2;
+		max-width: 100cqw;
 	}
 
 	:host(:not([controls])) [part~="controls"] {
 		display: none;
+	}
+
+	[part~="controls"] button {
+		width: 32px;
+		height: 32px;
+		display: grid;
+		place-content: center;
+		margin: 8px;
+		position: relative;
+		font-size: 32px;
+		overflow: clip;
+		overflow-clip-margin: 10px;
+	}
+
+	[part~="controls"] button::before {
+		content: '';
+		display: block;
+		width: 48px;
+		height: 48px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		translate: -50% -50%;
+	}
+
+	[part~="controls"] input-slider {
+		--inline-size: calc(4 * var(--block-size));
+		flex-grow: 1;
+	}
+
+	@container (width < 460px) {
+		[part~="controls"] {
+			width: 100%;
+		}
+	}
+
+	:host([controls="when-focused"]) {
+		[part~="controls"]:not(:focus-within) {
+			opacity: 0;
+			pointer-events: none;
+		}
 	}
 `);
 
@@ -163,6 +206,9 @@ const resizeObserver = new ResizeObserver((entries) => {
  * @attr `min-zoom-level` - The minimal zoom level.
  * @attr `max-zom-level` - The maximal zoom level.
  * @attr `initial-zoom-level` - The initial zoom level. By calling `reset()` on the ScrollZoomBlock, it will return to its original zoom level and position.
+ * @attr `controls` - Whether to display buttons and slider controls for the zoom.
+ * - If `controls=""`, the buttons and slider will always be visible.
+ * - If `controls="when-focused"`, the buttons and slider will only be visible when focused.
  * 
  * @fires [] before-interaction - Event dispatched before an interaction's effects are applied.
  * @fires [] after-interaction - Event dispatched after an interaction's effects have been applied.
