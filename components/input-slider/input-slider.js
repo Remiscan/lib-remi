@@ -44,6 +44,8 @@ sheet.replaceSync(/*css*/`
     --vertical: 1; /* -1 if vertical */
     --ratio-coeff: calc(var(--rtl) * var(--reversed) * var(--vertical));
     touch-action: none;
+    container-type: size;
+    container-name: input-slider;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -85,11 +87,15 @@ sheet.replaceSync(/*css*/`
   :host([orientation="horizontal"]) {
     height: var(--block-size);
     width: var(--inline-size);
+    --cqb: 1cqb;
+    --cqi: 1cqi;
   }
 
   :host([orientation="vertical"]) {
     width: var(--block-size);
     height: var(--inline-size);
+    --cqb: 1cqi;
+    --cqi: 1cqb;
   }
 
   [part="slider-track"],
@@ -121,8 +127,8 @@ sheet.replaceSync(/*css*/`
 
   [part="slider-thumb"] {
     place-self: start;
-    --size: min(var(--block-size), var(--inline-size));
-    --max-translate: calc(var(--inline-size) - var(--thumb-width));
+    --size: 100cqmin;
+    --max-translate: calc(100 * var(--cqi) - var(--thumb-width));
     width: var(--size);
     height: var(--size);
     background-color: var(--thumb-color);
