@@ -254,7 +254,8 @@ export class ScrollZoomBlock extends HTMLElement {
 		scrollableContainer.removeEventListener('wheel', this.boundOnWheel);
 		scrollableContainer.removeEventListener('contextmenu', this.boundOnContextMenu);
 		this.contentSlot.removeEventListener('slotchange', this.boundOnSlotChange);
-		this.disconnectAllTemporaryEventListeners();
+		this.currentPointersAbortController.abort();
+		this.currentPointersAbortController = new AbortController();
 	}
 
 
@@ -716,6 +717,9 @@ export class ScrollZoomBlock extends HTMLElement {
 	/** Whether the `wheel` event is waiting for the next frame. */
 	wheelDebounce = false;
 
+	/** AbortController to easily clean up event listeners. */
+	currentPointersAbortController = new AbortController();
+
 
 	/**
 	 * Current scroll position of the ScrollZoomBlock.
@@ -748,15 +752,14 @@ export class ScrollZoomBlock extends HTMLElement {
 	onPointerDown(downEvent) {
 		downEvent.preventDefault();
 
+		const doubleTapPanHappening = this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values());
+		if (doubleTapPanHappening) return;
+
 		const scrollableContainer = downEvent.currentTarget;
 		if (!(scrollableContainer instanceof HTMLElement)) throw new TypeError('Expecting HTMLElement');
 
 		scrollableContainer.setPointerCapture(downEvent.pointerId);
 		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
-
-		// Prepare an AbortController to easily remove all event listeners on the pointer later
-		const abortController = new AbortController();
-		this.currentPointersAbortControllers.set(downEvent.pointerId, abortController);
 
 		const pointerDownTime = Date.now();
 
@@ -787,17 +790,12 @@ export class ScrollZoomBlock extends HTMLElement {
 			};
 		}
 
-		/** @param {PointerEvent} moveEvent */
-		const onPointerMove = (moveEvent) => this.onPointerMove.bind(this)(moveEvent, downEvent);
-		/** @param {PointerEvent} upEvent */
-		const onPointerUp = (upEvent) => this.onPointerUp.bind(this)(upEvent, downEvent);
-		/** @param {PointerEvent} cancelEvent */
-		const onPointerCancel = (cancelEvent) => this.onPointerCancel.bind(this)(cancelEvent, downEvent);
-
-		const abortSignal = abortController.signal;
-		this.addEventListener('pointermove', onPointerMove, { signal: abortSignal });
-		this.addEventListener('pointerup', onPointerUp, { signal: abortSignal });
-		this.addEventListener('pointercancel', onPointerCancel, { signal: abortSignal });
+		if (this.currentPointerDownEvents.size === 1) {
+			const abortSignal = this.currentPointersAbortController.signal;
+			this.addEventListener('pointermove', this.boundOnPointerMove, { signal: abortSignal });
+			this.addEventListener('pointerup', this.boundOnPointerUp, { signal: abortSignal });
+			this.addEventListener('pointercancel', this.boundOnPointerCancel, { signal: abortSignal });
+		}
 	}
 	boundOnPointerDown = this.onPointerDown.bind(this);
 
@@ -806,12 +804,12 @@ export class ScrollZoomBlock extends HTMLElement {
 	/**
 	 * Handles the `pointermove` event to determine if the current interaction is a pan, a pinch, or a double-tap-pan.
 	 * @param {PointerEvent} moveEvent
-	 * @param {ExtPointerDownEvent} downEvent
 	 */
-	onPointerMove(
-		moveEvent,
-		downEvent,
-	) {
+	onPointerMove(moveEvent) {
+		/** @type {ExtPointerDownEvent|undefined} */
+		const downEvent = this.currentPointerDownEvents.get(moveEvent.pointerId);
+		if (!downEvent) return;
+
 		moveEvent.preventDefault();
 
 		this.currentPointerMoveEvents.set(moveEvent.pointerId, moveEvent);
@@ -962,18 +960,19 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		requestAnimationFrame(() => this.pointermoveDebounce = false);
 	}
+	boundOnPointerMove = this.onPointerMove.bind(this);
 
 
 	// MARK: pointerup
 	/**
 	 * Handles the `pointerup` event to determine if a double-tap happened.
 	 * @param {PointerEvent} upEvent
-	 * @param {ExtPointerDownEvent} downEvent
 	 */
-	onPointerUp(
-		upEvent,
-		downEvent,
-	) {
+	onPointerUp(upEvent) {
+		/** @type {ExtPointerDownEvent|undefined} */
+		const downEvent = this.currentPointerDownEvents.get(upEvent.pointerId);
+		if (!downEvent) return;
+
 		upEvent.preventDefault();
 
 		this.pointerUpsCount++;
@@ -1050,35 +1049,32 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		this.lastPointerUpTime = now;
 
-		this.onPointerCancel(upEvent, downEvent);
+		this.onPointerCancel(upEvent);
 	}
+	boundOnPointerUp = this.onPointerUp.bind(this);
 
 
 	// MARK: pointercancel
 	/**
 	 * Handles the `pointercancel` event, and follows a `pointerup` event, to clean up.
 	 * @param {PointerEvent} cancelEvent
-	 * @param {ExtPointerDownEvent} downEvent
 	 */
-	onPointerCancel(
-		cancelEvent,
-		downEvent,
-	) {
-		const abortController = this.currentPointersAbortControllers.get(cancelEvent.pointerId);
-		if (abortController) {
-			abortController.abort();
-			this.currentPointersAbortControllers.delete(cancelEvent.pointerId);
-		}
+	onPointerCancel(cancelEvent) {
+		/** @type {ExtPointerDownEvent|undefined} */
+		const downEvent = this.currentPointerDownEvents.get(cancelEvent.pointerId);
+		if (!downEvent) return;
 
 		this.currentPointerDownEvents.delete(cancelEvent.pointerId);
 		this.currentPointerMoveEvents.delete(cancelEvent.pointerId);
 		if (this.currentPointerDownEvents.size <= 0) {
 			this.lastPinchData = null;
+			this.currentPointersAbortController.abort();
+			this.currentPointersAbortController = new AbortController();
 		} else {
 			// We recompute `lastPinchData` without the pointer that was just removed,
 			// so that other pointers that are still present can continue their "pinch" interaction
 			// without interruption or stutter
-			// (only when no pointer was a double-tap-drag, to prevent the pinch from interfering with it)
+			// (only when no pointer was a double-tap-pan, to prevent the pinch from interfering with it)
 			if (!this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values())) {
 				this.lastPinchData = {
 					...this.computeCenterAndAverageRadius(this.currentPointerMoveEvents),
@@ -1089,6 +1085,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		this.lastPointerDownEvent = downEvent;
 	}
+	boundOnPointerCancel = this.onPointerCancel.bind(this);
 
 
 	// MARK: wheel
@@ -1238,23 +1235,6 @@ export class ScrollZoomBlock extends HTMLElement {
 		this.zoomInButtonSlot[methodName]('click', this.boundOnZoomButtonClick);
 		this.zoomOutButtonSlot[methodName]('click', this.boundOnZoomButtonClick);
 		this.zoomRangeSliderSlot[methodName]('input', this.boundOnZoomRangeInput);
-	}
-
-
-	// MARK: abort EventListeners
-
-	/**
-	 * Stores an AbortController for each pointer, to easily clean up its event listeners.
-	 * @type {Map<number, AbortController>}
-	 */
-	currentPointersAbortControllers = new Map();
-
-	/** Removes all event listeners on all pointers. */
-	disconnectAllTemporaryEventListeners() {
-		for (const abortController of this.currentPointersAbortControllers.values()) {
-			abortController.abort();
-		}
-		this.currentPointersAbortControllers.clear();
 	}
 
 
