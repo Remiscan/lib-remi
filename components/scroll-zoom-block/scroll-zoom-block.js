@@ -191,14 +191,14 @@ const resizeObserver = new ResizeObserver((entries) => {
 
 /**
  * Block is interactive in the following ways:
- * - scroll by dragging the block,
+ * - scroll by panning the block,
  * - scroll with arrow keys after getting focus from a keyboard,
  * - zoom with a mouse wheel,
  * TODO zoom with + and - keyboard keys
  * TODO add visible zoom controls (optional, with "controls" attribute)
  * - pinch to zoom,
  * - double click/tap to zoom,
- * - double tap, maintain and drag vertically to zoom.
+ * - double tap, maintain and pan vertically to zoom.
  * 
  * @attr `initial-position` - One or two values among `start`, `center` (default) and `end`.
  *                          If two values are given, the first value controls the inline axis, the second value controls the block axis.
@@ -728,7 +728,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 
 	/**
-	 * Checks if any pointer in the list was used for a double-tap-drag.
+	 * Checks if any pointer in the list was used for a double-tap-pan.
 	 * @param {Iterable<ExtPointerDownEvent>} pointers - The list of pointers to check.
 	 * @returns {boolean}
 	 */
@@ -766,12 +766,12 @@ export class ScrollZoomBlock extends HTMLElement {
 			&& !this.lastPointerDownEvent.hasMovedSignificantly
 			&& !this.lastPointerDownEvent.becameDoubleTap
 			&& (pointerDownTime - this.lastPointerUpTime) < this.maxDoubleTapDelay;
-		// Store on the `downEvent` the scroll position when it happened, to be used later during double-tap-drag
+		// Store on the `downEvent` the scroll position when it happened, to be used later during double-tap-pan
 		downEvent.startScrollPosition = this.scrollPosition;
 
 		// Compute the useful properties for the "pinch" interaction based on every currently down (and potentially moving) pointer
-		// (only when no pointer was a double-tap-drag, to prevent the pinch from interfering with it)
-		if (!this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values())) {
+		// (only when no pointer was a double-tap-pan, to prevent the pinch from interfering with it)
+		if (!doubleTapPanHappening) {
 			/** @type {Set<PointerEvent>} */
 			const pinchPointerEvents = new Set();
 			for (const [pointerId, evt] of this.currentPointerDownEvents.entries()) {
@@ -804,7 +804,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 	// MARK: pointermove
 	/**
-	 * Handles the `pointermove` event to determine if the current interaction is a drag, a pinch, or a double-tap-drag.
+	 * Handles the `pointermove` event to determine if the current interaction is a pan, a pinch, or a double-tap-pan.
 	 * @param {PointerEvent} moveEvent
 	 * @param {ExtPointerDownEvent} downEvent
 	 */
@@ -834,15 +834,15 @@ export class ScrollZoomBlock extends HTMLElement {
 				break;
 
 			// If there is a single pointer down and moving :
-			// - if it was a candidate for double-tap, then the interaction is a double-tap-drag
-			// - if not, then the interaction is a drag
+			// - if it was a candidate for double-tap, then the interaction is a double-tap-pan
+			// - if not, then the interaction is a pan
 			case 1:
 				if (
 					downEvent.couldBecomeDoubleTap
 					&& downEvent.pointerType === 'touch'
 					&& this.lastPointerDownEvent?.pointerType === 'touch'
 				) {
-					interaction = 'double-tap-drag';
+					interaction = 'double-tap-pan';
 				}
 
 				// This condition avoids a visual stutter when a new pointer starts moving
@@ -850,7 +850,7 @@ export class ScrollZoomBlock extends HTMLElement {
 					this.lastPinchData
 					&& this.currentPointerDownEvents.size === this.currentPointerMoveEvents.size
 				) {
-					interaction = 'drag';
+					interaction = 'pan';
 				}
 				break;
 
@@ -859,7 +859,7 @@ export class ScrollZoomBlock extends HTMLElement {
 				if (
 					this.lastPinchData
 					&& this.currentPointerDownEvents.size === this.currentPointerMoveEvents.size
-					// Don't pinch if a double-tap-drag is happening
+					// Don't pinch if a double-tap-pan is happening
 					&& !this.anyPointerWasDoubleTapDrag(this.currentPointerDownEvents.values())
 				) {
 					interaction = 'pinch';
@@ -867,10 +867,10 @@ export class ScrollZoomBlock extends HTMLElement {
 		}
 
 		switch (interaction) {
-			// Drag and pinch can be handled the same, since a drag is basically a "moving pinch" with a single pointer
-			// - A drag will scroll the content inside the ScrollZoomBlock
+			// Drag and pinch can be handled the same, since a pan is basically a "moving pinch" with a single pointer
+			// - A pan will scroll the content inside the ScrollZoomBlock
 			// - A pinch will also zoom
-			case 'drag':
+			case 'pan':
 			case 'pinch': {
 				const numberOfPointers = this.currentPointerMoveEvents.size;
 
@@ -879,14 +879,14 @@ export class ScrollZoomBlock extends HTMLElement {
 				// - The change in average radius will be used as the zoom level
 				const { centerPoint, averageRadius } = this.computeCenterAndAverageRadius(this.currentPointerMoveEvents);
 
-				const interactionDetail = interaction === 'drag'
+				const interactionDetail = interaction === 'pan'
 					? {
-						dragPoint: centerPoint,
+						point: centerPoint,
 					}
 					: {
 						numberOfPointers: numberOfPointers,
-						pinchCenter: centerPoint,
-						pinchRadius: averageRadius,
+						center: centerPoint,
+						radius: averageRadius,
 					};
 
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
@@ -924,8 +924,8 @@ export class ScrollZoomBlock extends HTMLElement {
 				this.dispatchInteractionEvent('after', interaction, interactionDetail);
 			} break;
 
-			// A double-tap-drag will zoom the content, using the center of the ScrollZoomBlock as the zoom point
-			case 'double-tap-drag': {
+			// A double-tap-pan will zoom the content, using the center of the ScrollZoomBlock as the zoom point
+			case 'double-tap-pan': {
 				downEvent.becameDoubleTapDrag = true;
 
 				if (!this.lastPinchData) throw new Error(`Cannot perform ${interaction} interaction because of missing pinch data`);
