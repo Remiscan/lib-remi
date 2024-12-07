@@ -27,8 +27,11 @@ export class VelocityTracker2D {
 	/** in milliseconds */
 	maxDelayBetweenMoves: number = 100;
 
+	/** */
+	maxDelayBetweenMovesTimeout: number = -1;
+
 	/** in degrees */
-	directionChangeAngleThreshold: number = 45;
+	directionChangeAngleThreshold: number = 90;
 
 
 	consctructor(options: Partial<VelocityTrackerOptions> = {}) {
@@ -37,36 +40,40 @@ export class VelocityTracker2D {
 
 
 	addPosition(position: Point2D) {
+		clearTimeout(this.maxDelayBetweenMovesTimeout);
+
 		const now = Date.now();
 		const newHistory = {
 			time: now,
 			position: position,
 		};
 
-		const previousHistory = this.lastHistory;
-
-		if ((now - (previousHistory?.time ?? 0)) > this.maxDelayBetweenMoves) {
-			this.clear();
-		}
+		//const previousHistory = this.lastHistory;
 
 		// if (this.moveHistory.length > 1) :
 		// Check that the angle of speed vector for the last two entries did not change drastically
-		const beforeLastHistory = this.moveHistory.at(-2);
+		/*const beforeLastHistory = this.moveHistory.at(-2);
 		if (previousHistory && beforeLastHistory) {
-			const angle = VelocityTracker2D.getAngleBetweenVectors(
-				position.translate(previousHistory.position.x, previousHistory.position.y),
-				previousHistory.position.translate(beforeLastHistory.position.x, beforeLastHistory.position.y)
+			let angle = VelocityTracker2D.getAngleBetweenVectors(
+				position.translate(-previousHistory.position.x, -previousHistory.position.y),
+				previousHistory.position.translate(-beforeLastHistory.position.x, -beforeLastHistory.position.y)
 			);
 
 			if (Math.abs(angle) > this.directionChangeAngleThreshold) {
+				console.warn('angle change', beforeLastHistory.position, previousHistory.position, newHistory.position, angle);
 				this.clear();
 			}
-		}
+		}*/
 		
 		this.moveHistory.push(newHistory);
 		if (this.moveHistory.length > this.maxHistoryLength) {
 			this.moveHistory.shift();
 		}
+
+		this.maxDelayBetweenMovesTimeout = window.setTimeout(() => {
+			console.warn('max delay');
+			this.clear();
+		}, this.maxDelayBetweenMoves);
 	}
 
 
@@ -93,7 +100,7 @@ export class VelocityTracker2D {
 
 		return laterHistory.position
 			.translate(-earlierHistory.position.x, -earlierHistory.position.y)
-			.scale(deltaT / 1000); // per second
+			.scale(1000 / deltaT); // per second
 	}
 
 
@@ -104,6 +111,18 @@ export class VelocityTracker2D {
 		const delta = vector2.translate(-vector1.x, -vector1.y);
 		return Math.atan2(delta.y, delta.x) * (180 / Math.PI);
 	}
+
+
+	static getAverageVelocity(
+		velocityTrackers: Iterable<VelocityTracker2D>
+	): Point2D {
+		let averageVelocity = new Point2D();
+		for (const tracker of velocityTrackers) {
+			const velocity = tracker.velocity;
+			averageVelocity = averageVelocity.translate(velocity.x, velocity.y);
+		}
+		return averageVelocity;
+	}
 }
 
 
@@ -113,7 +132,7 @@ interface InertiaTrackerOptions {
 }
 
 /** Callback that takes a velocity as a Point2D with coordinates in **pixels per second**. */
-type InertiaCallback = (velocity: Point2D, deltaT: number) => void;
+type InertiaCallback = (diplacement: Point2D, velocity: Point2D, elapsedTime: number) => void;
 
 
 /**
@@ -122,11 +141,11 @@ type InertiaCallback = (velocity: Point2D, deltaT: number) => void;
  * @fires [] interia-ended when inertie is done being applied.
  */
 export class InertiaTracker2D extends EventTarget {
-	/** Fraction of speed remaining after one second. */
-	friction = .5;
+	/** Friction coefficient. */
+	friction = 4;
 
 	/** Velocity below which movement is stopped (in pixels per second). */
-	minVelocity = .1;
+	minVelocity = 20;
 
 	/** Whether inertia is currently being applied. */
 	#isBusy = false;
@@ -148,34 +167,32 @@ export class InertiaTracker2D extends EventTarget {
 	}
 
 
-	/** Current velocity during inertia. */
-	currentVelocity = new Point2D();
-
-
 	startInertia(
 		initialVelocity: Point2D,
 		callback: InertiaCallback,
-		abortSignal: AbortSignal | undefined,
+		abortSignal?: AbortSignal,
 	): Promise<unknown> {
 		if (this.isBusy) return Promise.reject('Inertia already being applied');
 
 		this.dispatchEvent(new Event('inertia-started'));
 
 		this.isBusy = true;
-		this.currentVelocity = initialVelocity;
 		
 		const promise = new Promise(resolve => {
 			this.addEventListener('inertia-ended', resolve, { once: true });
 		});
-		this.#applyInertia(callback, 0, abortSignal);
+
+		const startTime = Date.now();
+		this.#applyInertia(callback, initialVelocity, startTime, abortSignal);
 		return promise;
 	}
 
 
 	#applyInertia(
 		callback: InertiaCallback,
-		previousTime: number,
-		abortSignal: AbortSignal | undefined,
+		initialVelocity: Point2D,
+		startTime: number,
+		abortSignal?: AbortSignal,
 	): void {
 		if (abortSignal?.aborted) {
 			this.isBusy = false;
@@ -183,22 +200,38 @@ export class InertiaTracker2D extends EventTarget {
 		}
 
 		const now = Date.now();
-		if (!previousTime) previousTime = now;
-
-		const deltaT = (now - previousTime) / 1000; // seconds
+		const elapsedTime = (now - startTime) / 1000; // in seconds
 
 		// Apply friction based on elapsed time
-		this.currentVelocity = this.currentVelocity.scale(Math.pow(this.friction, deltaT));
+		const currentVelocity = initialVelocity.scale(Math.exp(-this.friction * elapsedTime));
 
 		// If we've reached minimum speed, stop
-		if (Math.sqrt(this.currentVelocity.x ** 2 + this.currentVelocity.y ** 2) < this.minVelocity) {
+		if (Math.sqrt(currentVelocity.x ** 2 + currentVelocity.y ** 2) < this.minVelocity) {
 			this.isBusy = false;
 			return;
 		}
 
-		callback(this.currentVelocity, deltaT);
+		// Total displacement after elapsedTime
+		const displacement = this.getTotalDisplacement(initialVelocity, elapsedTime);
+
+		callback(displacement, currentVelocity, elapsedTime);
 		requestAnimationFrame(() => {
-			this.#applyInertia(callback, now, abortSignal)
+			this.#applyInertia(callback, initialVelocity, startTime, abortSignal)
 		});
+	}
+
+
+	/**
+	 * 
+	 * @param initialVelocity - Initial velocity when inertia started, in pixels per second.
+	 * @param elapsedTime - Elapsed time since inertia started, in seconds.
+	 * @returns The total displacement since inertia started, in pixels.
+	 */
+	getTotalDisplacement(
+		initialVelocity: Point2D,
+		elapsedTime: number,
+	): Point2D {
+		const frictionFactor = (1 - Math.exp(-this.friction * elapsedTime)) / this.friction;
+		return initialVelocity.scale(frictionFactor);
 	}
 }

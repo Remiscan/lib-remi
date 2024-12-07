@@ -1,6 +1,6 @@
 import { Point2D as BasePoint2D } from 'geometry';
+import { InertiaTracker2D, VelocityTracker2D } from 'inertia';
 import 'input-slider';
-//import { VelocityTracker2D, InertiaTracker2D } from 'inertia';
 
 
 
@@ -157,8 +157,18 @@ type Alignment = 'start' | 'center' | 'end';
 type StartPosition = { x: Alignment; y: Alignment; };
 type Size = { inline: number; block: number; };
 type PointerID = number;
-type ExtPointerDownEvent = PointerEvent & Partial<{ couldBecomeDoubleTap: boolean; becameDoubleTap: boolean; becameDoubleTapDrag: boolean; hasMovedSignificantly: boolean; startScrollPosition: Point2D; }>;
-type PinchData = { centerPoint: Point2D; averageRadius: number; };
+type ExtPointerDownEvent = PointerEvent & Partial<{
+	couldBecomeDoubleTap: boolean;
+	lastInteraction: string;
+	becameDoubleTap: boolean;
+	becameDoubleTapDrag: boolean;
+	hasMovedSignificantly: boolean;
+	startScrollPosition: Point2D;
+}>;
+type PinchData = {
+	centerPoint: Point2D;
+	averageRadius: number;
+};
 
 
 
@@ -646,6 +656,15 @@ export class ScrollZoomBlock extends HTMLElement {
 	 */
 	currentPointerMoveEvents: Map<number, PointerEvent> = new Map();
 
+	/** VelocityTrackers of the current pointers. */
+	currentPointerVelocityTrackers: Map<number, VelocityTracker2D> = new Map();
+
+	/** InertiaTracker of the center of a pan/pinch. */
+	inertiaTracker = new InertiaTracker2D();
+
+	/** AbortController for the inertia. */
+	inertiaAbortController = new AbortController();
+
 	/** Data of the last "pinch" interaction. */
 	lastPinchData: (PinchData & { startZoomLevel: number; }) | null = null;
 
@@ -695,6 +714,16 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		scrollableContainer.setPointerCapture(downEvent.pointerId);
 		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
+
+		const velocityTracker = new VelocityTracker2D();
+		velocityTracker.addPosition(new Point2D(downEvent.clientX, downEvent.clientY));
+		this.currentPointerVelocityTrackers.set(downEvent.pointerId, velocityTracker);
+
+		if (this.inertiaTracker.isBusy) {
+			console.log('ABORTING INERTIA');
+			this.inertiaAbortController.abort();
+			this.inertiaAbortController = new AbortController();
+		}
 
 		const pointerDownTime = Date.now();
 
@@ -757,6 +786,9 @@ export class ScrollZoomBlock extends HTMLElement {
 		if (deltaDistance > this.minMoveThreshold) {
 			downEvent.hasMovedSignificantly = true;
 		}
+
+		const velocityTracker = this.currentPointerVelocityTrackers.get(downEvent.pointerId);
+		velocityTracker?.addPosition(new Point2D(moveEvent.clientX, moveEvent.clientY));
 
 		let interaction = '';
 		switch (this.currentPointerMoveEvents.size) {
@@ -890,6 +922,8 @@ export class ScrollZoomBlock extends HTMLElement {
 				this.dispatchInteractionEvent('before', interaction);
 		}
 
+		downEvent.lastInteraction = interaction;
+
 		requestAnimationFrame(() => this.pointermoveDebounce = false);
 	}
 	boundOnPointerMove = this.onPointerMove.bind(this);
@@ -971,12 +1005,39 @@ export class ScrollZoomBlock extends HTMLElement {
 				this.lastSmoothZoomAbortController = abortController;
 			} break;
 
-			default:
+			default: {
 				this.dispatchInteractionEvent('before', interaction);
+
+				if (downEvent.lastInteraction === 'pan' || downEvent.lastInteraction === 'pinch') {
+					// TODO apply inertia to center of pan/pinch
+					// Compute average velocity from all velocityTrackers of current pointers
+					const averageVelocity = VelocityTracker2D.getAverageVelocity(this.currentPointerVelocityTrackers.values());
+
+					// Apply inertia based on average velocity to the center of pan/pinch
+					const startPosition = this.scrollPosition;
+					this.inertiaTracker.startInertia(
+						averageVelocity,
+						(displacement) => {
+							const scrollPosition = startPosition
+								.translate(-displacement.x, -displacement.y)
+								.round();
+							this.scrollableContainer.scrollTo({
+								left: scrollPosition.x,
+								top: scrollPosition.y,
+								behavior: 'instant',
+							});
+						},
+						this.inertiaAbortController.signal,
+					)
+				}
+
 				this.dispatchInteractionEvent('after', interaction);
+			}
 		}
 
 		this.lastPointerUpTime = now;
+
+		downEvent.lastInteraction = interaction;
 
 		this.onPointerCancel(upEvent);
 	}
@@ -993,6 +1054,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		this.currentPointerDownEvents.delete(cancelEvent.pointerId);
 		this.currentPointerMoveEvents.delete(cancelEvent.pointerId);
+		this.currentPointerVelocityTrackers.delete(cancelEvent.pointerId);
 		if (this.currentPointerDownEvents.size <= 0) {
 			this.lastPinchData = null;
 			this.currentPointersAbortController.abort();
