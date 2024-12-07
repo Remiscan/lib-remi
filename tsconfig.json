@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "rootDir": "js",
+    "rootDir": ".",
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "paths": {
+      "geometry": ["./js/geometry/mod.ts"],
+      "inertia": ["./js/inertia/mod.ts"]
+    }
   },
-  "include": ["js/**/*"]
+  "include": ["js/**/*.ts", "components/**/*.ts"]
 }
