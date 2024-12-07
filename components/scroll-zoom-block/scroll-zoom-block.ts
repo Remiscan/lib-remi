@@ -656,11 +656,11 @@ export class ScrollZoomBlock extends HTMLElement {
 	 */
 	currentPointerMoveEvents: Map<number, PointerEvent> = new Map();
 
-	/** VelocityTrackers of the current pointers. */
-	currentPointerVelocityTrackers: Map<number, VelocityTracker2D> = new Map();
+	/** VelocityTracker of the current pointers. */
+	velocityTracker = new VelocityTracker2D();
 
-	/** InertiaTracker of the center of a pan/pinch. */
-	inertiaTracker = new InertiaTracker2D();
+	/** InertiaTracker of the center of the current pointers. */
+	inertiaTracker = new InertiaTracker2D({ minVelocity: 30, friction: 6 });
 
 	/** AbortController for the inertia. */
 	inertiaAbortController = new AbortController();
@@ -715,9 +715,8 @@ export class ScrollZoomBlock extends HTMLElement {
 		scrollableContainer.setPointerCapture(downEvent.pointerId);
 		this.currentPointerDownEvents.set(downEvent.pointerId, downEvent);
 
-		const velocityTracker = new VelocityTracker2D();
-		velocityTracker.addPosition(new Point2D(downEvent.clientX, downEvent.clientY));
-		this.currentPointerVelocityTrackers.set(downEvent.pointerId, velocityTracker);
+		this.velocityTracker.clear();
+		this.velocityTracker.addPosition(new Point2D(downEvent.clientX, downEvent.clientY));
 
 		if (this.inertiaTracker.isBusy) {
 			console.log('ABORTING INERTIA');
@@ -787,9 +786,6 @@ export class ScrollZoomBlock extends HTMLElement {
 			downEvent.hasMovedSignificantly = true;
 		}
 
-		const velocityTracker = this.currentPointerVelocityTrackers.get(downEvent.pointerId);
-		velocityTracker?.addPosition(new Point2D(moveEvent.clientX, moveEvent.clientY));
-
 		let interaction = '';
 		switch (this.currentPointerMoveEvents.size) {
 			case 0:
@@ -852,6 +848,8 @@ export class ScrollZoomBlock extends HTMLElement {
 					};
 
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
+
+				this.velocityTracker.addPosition(new Point2D(centerPoint.x, centerPoint.y));
 
 				const lastPinchData = this.lastPinchData;
 				if (!lastPinchData) throw new Error(`Cannot perform ${interaction} interaction because of missing pinch data`);
@@ -1009,14 +1007,10 @@ export class ScrollZoomBlock extends HTMLElement {
 				this.dispatchInteractionEvent('before', interaction);
 
 				if (downEvent.lastInteraction === 'pan' || downEvent.lastInteraction === 'pinch') {
-					// TODO apply inertia to center of pan/pinch
-					// Compute average velocity from all velocityTrackers of current pointers
-					const averageVelocity = VelocityTracker2D.getAverageVelocity(this.currentPointerVelocityTrackers.values());
-
 					// Apply inertia based on average velocity to the center of pan/pinch
 					const startPosition = this.scrollPosition;
 					this.inertiaTracker.startInertia(
-						averageVelocity,
+						this.velocityTracker.velocity,
 						(displacement) => {
 							const scrollPosition = startPosition
 								.translate(-displacement.x, -displacement.y)
@@ -1054,7 +1048,7 @@ export class ScrollZoomBlock extends HTMLElement {
 
 		this.currentPointerDownEvents.delete(cancelEvent.pointerId);
 		this.currentPointerMoveEvents.delete(cancelEvent.pointerId);
-		this.currentPointerVelocityTrackers.delete(cancelEvent.pointerId);
+		this.velocityTracker.clear();
 		if (this.currentPointerDownEvents.size <= 0) {
 			this.lastPinchData = null;
 			this.currentPointersAbortController.abort();
