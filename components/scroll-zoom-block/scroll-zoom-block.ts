@@ -1,6 +1,6 @@
-import 'input-slider';
 import { Point2D as BasePoint2D } from 'geometry';
-import { VelocityTracker2D, InertiaTracker2D } from 'inertia';
+import 'input-slider';
+//import { VelocityTracker2D, InertiaTracker2D } from 'inertia';
 
 
 
@@ -194,8 +194,8 @@ const resizeObserver = new ResizeObserver((entries) => {
  * - scroll by panning the block,
  * - scroll with arrow keys after getting focus from a keyboard,
  * - zoom with a mouse wheel,
- * TODO zoom with + and - keyboard keys
- * TODO add visible zoom controls (optional, with "controls" attribute)
+ * - zoom with + and - keys after getting focus from a keyboard,
+ * - zoom with on-screen controls (optional, see `controls` attribute),
  * - pinch to zoom,
  * - double click/tap to zoom,
  * - double tap, maintain and pan vertically to zoom.
@@ -214,6 +214,8 @@ const resizeObserver = new ResizeObserver((entries) => {
  * @fires [] after-interaction - Event dispatched after an interaction's effects have been applied.
  * @fires [] before-zoom - Event dispatched before a zoom is applied.
  * @fires [] after-zoom - Event dispatched after a zoom has been applied.
+ * 
+ * TODO add inertia after scroll
  */
 export class ScrollZoomBlock extends HTMLElement {
 
@@ -240,6 +242,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		scrollableContainer.addEventListener('wheel', this.boundOnWheel, { passive: false });
 		scrollableContainer.addEventListener('contextmenu', this.boundOnContextMenu);
 		this.contentSlot.addEventListener('slotchange', this.boundOnSlotChange);
+		this.addEventListener('keydown', this.boundOnKeyDown);
 
 		// Initialize the zoom level
 		// (no need to initialize the scroll position, the ResizeObserver will cause that)
@@ -256,6 +259,7 @@ export class ScrollZoomBlock extends HTMLElement {
 		scrollableContainer.removeEventListener('wheel', this.boundOnWheel);
 		scrollableContainer.removeEventListener('contextmenu', this.boundOnContextMenu);
 		this.contentSlot.removeEventListener('slotchange', this.boundOnSlotChange);
+		this.removeEventListener('keydown', this.boundOnKeyDown);
 		this.currentPointersAbortController.abort();
 		this.currentPointersAbortController = new AbortController();
 	}
@@ -1041,6 +1045,44 @@ export class ScrollZoomBlock extends HTMLElement {
 		requestAnimationFrame(() => this.wheelDebounce = false);
 	}
 	boundOnWheel = this.onWheel.bind(this);
+
+
+	// MARK: keydown
+	onKeyDown(event: KeyboardEvent) {
+		let zoomDirection: 1 | -1;
+		switch (event.key) {
+			case '-': zoomDirection = -1; break;
+			case '+': zoomDirection = 1; break;
+			default: return;
+		}
+
+		event.preventDefault();
+
+		const interaction = 'keydown';
+		const interactionDetail = {
+			direction: zoomDirection < 0 ? 'out' : 'in',
+		};
+
+		this.dispatchInteractionEvent('before', interaction, interactionDetail);
+
+		// If another smooth zoom was already in progress, abort it
+		this.lastSmoothZoomAbortController.abort();
+
+		const { promise, abortController } = this.smoothZoom(
+			this.getNextZoomLevel(zoomDirection),
+		);
+
+		// Even if aborted, wait for the finalization of the previous smooth zoom before starting the new one
+		this.lastSmoothZoomPromise
+		.then(() => promise)
+		.then(() => {
+			this.dispatchInteractionEvent('after', interaction, interactionDetail);
+		});
+
+		this.lastSmoothZoomPromise = promise;
+		this.lastSmoothZoomAbortController = abortController;
+	}
+	boundOnKeyDown = this.onKeyDown.bind(this);
 
 
 	// MARK: contextmenu
