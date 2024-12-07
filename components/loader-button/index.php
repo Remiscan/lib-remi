@@ -27,6 +27,13 @@
 
   <script type="module">
     import 'loader-button';
+
+    const buttons = document.querySelectorAll('loader-button');
+    buttons.forEach(button => {
+      button.addEventListener('click', event => {
+        button.wakeUp();
+      });
+    });
   </script>
 
   <style>
@@ -86,6 +93,6 @@
 <body>
   <p>
 
-  <loader-button text="Test" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
-  <loader-button text="Test success" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
-  <loader-button text="Test loading failure" success-text="Success ✅" failure-text="Failure ❌"></loader-button>
+  <loader-button>Test</loader-button>
+  <loader-button>Test success</loader-button>
+  <loader-button>Test loading failure</loader-button>
