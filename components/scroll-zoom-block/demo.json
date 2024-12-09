@@ -5,7 +5,7 @@
     "geometry": "/_common/js/geometry/mod.js",
     "inertia": "/_common/js/inertia/mod.js"
   },
-  "intro": "This block is interactive in the following ways: <ul><li>scroll by panning the block, or with arrow keyboard keys (when focused),<li>zoom with a mouse wheel, a pinch, a double click/tap, a maintained double tap followed by vertical scrolling, or −/+ keyboard keys (when focused),<li>if using the \"controls\" attribute, zoom with the −/+ buttons and slider.",
+  "intro": "<details><summary>This component is a block whose contents can be scrolled or zoomed in with mouse, keyboard or touch. Click here to expand and see more.</summary><ul><li>scroll:<ul><li>by dragging the block with a pointer or touch,<li>with the arrow keys on a keyboard (when focused),</ul><li>zoom:<ul><li>with a mouse wheel,<li>pinch to zoom,<li>double click/tap to zoom (including double-right-click to zoom out),<li>double tap, maintain and drag vertically to zoom,<li>zoom with the −/+ keyboard keys (when focused),<li>if using the \"controls\" attribute, zoom with the −/+ buttons and slider.</ul></details>",
   "examples": [
     "<scroll-zoom-block controls=\"when-focused\">\n  <div class=\"big-content\"></div>\n</scroll-zoom-block>"
   ]

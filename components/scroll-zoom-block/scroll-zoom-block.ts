@@ -202,14 +202,14 @@ const resizeObserver = new ResizeObserver((entries) => {
 
 /**
  * Block is interactive in the following ways:
- * - scroll by panning the block,
- * - scroll with arrow keys after getting focus from a keyboard,
+ * - scroll by dragging the block with a pointer or touch,
+ * - scroll with the arrow keys on a keyboard (when focused),
  * - zoom with a mouse wheel,
- * - zoom with + and - keys after getting focus from a keyboard,
- * - zoom with on-screen controls (optional, see `controls` attribute),
  * - pinch to zoom,
- * - double click/tap to zoom,
- * - double tap, maintain and pan vertically to zoom.
+ * - double click/tap to zoom (including double-right-click to zoom out),
+ * - double tap, maintain and drag vertically to zoom.
+ * - zoom with the −/+ keyboard keys (when focused),
+ * - zoom with on-screen controls (optional, see `controls` attribute),
  * 
  * @attr `initial-position` - One or two values among `start`, `center` (default) and `end`.
  *                          If two values are given, the first value controls the inline axis, the second value controls the block axis.
