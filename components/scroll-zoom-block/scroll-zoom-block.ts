@@ -160,6 +160,7 @@ type PointerID = number;
 type ExtPointerDownEvent = PointerEvent & Partial<{
 	couldBecomeDoubleTap: boolean;
 	lastInteraction: string;
+	becamePinch: boolean;
 	becameDoubleTap: boolean;
 	becameDoubleTapDrag: boolean;
 	hasMovedSignificantly: boolean;
@@ -224,8 +225,6 @@ const resizeObserver = new ResizeObserver((entries) => {
  * @fires [] after-interaction - Event dispatched after an interaction's effects have been applied.
  * @fires [] before-zoom - Event dispatched before a zoom is applied.
  * @fires [] after-zoom - Event dispatched after a zoom has been applied.
- * 
- * TODO add inertia after scroll
  */
 export class ScrollZoomBlock extends HTMLElement {
 
@@ -799,6 +798,7 @@ export class ScrollZoomBlock extends HTMLElement {
 					downEvent.couldBecomeDoubleTap
 					&& downEvent.pointerType === 'touch'
 					&& this.lastPointerDownEvent?.pointerType === 'touch'
+					&& !this.lastPointerDownEvent.becamePinch
 				) {
 					interaction = 'double-tap-pan';
 				}
@@ -837,15 +837,25 @@ export class ScrollZoomBlock extends HTMLElement {
 				// - The change in average radius will be used as the zoom level
 				const { centerPoint, averageRadius } = this.computeCenterAndAverageRadius(this.currentPointerMoveEvents);
 
-				const interactionDetail = interaction === 'pan'
-					? {
-						point: centerPoint,
-					}
-					: {
-						numberOfPointers: numberOfPointers,
-						center: centerPoint,
-						radius: averageRadius,
-					};
+				let interactionDetail;
+				switch (interaction) {
+					case 'pan':
+						interactionDetail = {
+							point: centerPoint,
+						};
+						break;
+
+					case 'pinch':
+						for (const evt of this.currentPointerDownEvents.values()) {
+							evt.becamePinch = true;
+						}
+						interactionDetail = {
+							numberOfPointers: numberOfPointers,
+							center: centerPoint,
+							radius: averageRadius,
+						}
+						break;
+				}
 
 				this.dispatchInteractionEvent('before', interaction, interactionDetail);
 

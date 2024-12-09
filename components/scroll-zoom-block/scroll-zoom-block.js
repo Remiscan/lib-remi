@@ -180,8 +180,6 @@ const resizeObserver = new ResizeObserver((entries) => {
  * @fires [] after-interaction - Event dispatched after an interaction's effects have been applied.
  * @fires [] before-zoom - Event dispatched before a zoom is applied.
  * @fires [] after-zoom - Event dispatched after a zoom has been applied.
- *
- * TODO add inertia after scroll
  */
 export class ScrollZoomBlock extends HTMLElement {
     // ----------------------
@@ -655,7 +653,8 @@ export class ScrollZoomBlock extends HTMLElement {
             case 1:
                 if (downEvent.couldBecomeDoubleTap
                     && downEvent.pointerType === 'touch'
-                    && this.lastPointerDownEvent?.pointerType === 'touch') {
+                    && this.lastPointerDownEvent?.pointerType === 'touch'
+                    && !this.lastPointerDownEvent.becamePinch) {
                     interaction = 'double-tap-pan';
                 }
                 // This condition avoids a visual stutter when a new pointer starts moving
@@ -685,15 +684,24 @@ export class ScrollZoomBlock extends HTMLElement {
                     // - The center point will be used as the zoom point
                     // - The change in average radius will be used as the zoom level
                     const { centerPoint, averageRadius } = this.computeCenterAndAverageRadius(this.currentPointerMoveEvents);
-                    const interactionDetail = interaction === 'pan'
-                        ? {
-                            point: centerPoint,
-                        }
-                        : {
-                            numberOfPointers: numberOfPointers,
-                            center: centerPoint,
-                            radius: averageRadius,
-                        };
+                    let interactionDetail;
+                    switch (interaction) {
+                        case 'pan':
+                            interactionDetail = {
+                                point: centerPoint,
+                            };
+                            break;
+                        case 'pinch':
+                            for (const evt of this.currentPointerDownEvents.values()) {
+                                evt.becamePinch = true;
+                            }
+                            interactionDetail = {
+                                numberOfPointers: numberOfPointers,
+                                center: centerPoint,
+                                radius: averageRadius,
+                            };
+                            break;
+                    }
                     this.dispatchInteractionEvent('before', interaction, interactionDetail);
                     this.velocityTracker.addPosition(new Point2D(centerPoint.x, centerPoint.y));
                     const lastPinchData = this.lastPinchData;
