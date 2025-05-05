@@ -74,7 +74,7 @@ class Translation {
    * @param $truncate - Whether to truncate language identifiers to their base language tag.
    */
   static function acceptedLanguages(bool $truncate = false): array {
-    $header = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+    $header = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
     if ($header == null) return [];
 
     // Detect all accepted languages and their weight
